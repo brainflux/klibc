@@ -44,11 +44,11 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    ia64:	 Needs sysstub.ph
    m68k:	 Not yet ported
    mips64:	 Not yet ported
-   mips:	 Working static, shared fails
+   mips:	 Working
    parisc:	 Needs sysstub.ph
    ppc64:	 Working
    ppc:		 Working
-   s390:	 Working static, shared support in progress
+   s390:	 Working static, shared untested
    s390x:	 Working
    sh:		 Needs sysstub.ph
    sparc64:	 sigaction() fails in ash for unknown reason
