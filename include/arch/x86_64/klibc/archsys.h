@@ -17,8 +17,8 @@ type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
 { \
 long __res; \
 register long __r10 asm("%r10") = (long)arg4;
-register long __r9  asm("%r9")  = (long)arg5; /* Should be %r8 per the docs*/
-register long __r8  asm("%r8")  = (long)arg6; /* Should be %r9 per the docs */
+register long __r8  asm("%r8")  = (long)arg5;
+register long __r9  asm("%r9")  = (long)arg6;
 __asm__ volatile (__syscall \
         : "=a" (__res) \
         : "0" (__NR_##name),"D" ((long)(arg1)),"S" ((long)(arg2)), \
