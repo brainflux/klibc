@@ -8,14 +8,14 @@
 #include <stdint.h>
 #include <endian.h>
 
-#ifdef __BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
 
 #define htonl(x) ((uint32_t)(x))
 #define ntohl(x) ((uint32_t)(x))
 #define htons(x) ((uint16_t)(x))
 #define ntohs(x) ((uint16_t)(x))
 
-#elif defined(__LITTLE_ENDIAN)
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
 
 static __inline__
 uint32_t htonl(uint32_t __x)
