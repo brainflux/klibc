@@ -7,6 +7,7 @@
 
 #include <klibc/extern.h>
 #include <linux/ioctl.h>
+#include <asm/ioctls.h>
 
 __extern int ioctl(int, int, void *);
 
