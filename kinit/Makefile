@@ -20,10 +20,10 @@ kinit: $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
 
 clean:
-	-rm *.o kinit
+	-rm -f *.o kinit
 
 spotless: clean
-	-rm .*.d
+	-rm -f .*.d
 
 ifneq ($(wildcard .*.d),)
 include $(wildcard .*.d)
