@@ -16,7 +16,27 @@ a) Create a symlink called "linux" pointing to a reasonably recent
    a "make dep".
 
 b) If you're cross-compiling, change ARCH in the main MCONFIG file to
-   the appropriate architecture, and set CROSS to your toolchain prefix.
+   the appropriate architecture, and set CROSS to your toolchain
+   prefix.
+
+   IMPORTANT: if you're on a 64-bit machine with a 32-bit default
+   userland (such as most sparc or mips machines), you need to either
+   set ARCH to the 32-bit architecture (to build the 32-bit version)
+   or set CROSS to point to the 64-bit compiler (to build the 64-bit
+   version.)
+
+   If you are on ARM, and want to build a thumb version of the library
+   (this is supported), change OPTFLAGS in arch/arm/MCONFIG to build
+   thumb code.
+
+   The following is the status of various architectures:
+
+   Known to work:	arm alpha i386 ppc s390 s390x sparc
+   Might work:		sparc64 ppc64 x86_64
+   Known not to work:	cris ia64 m68k mips64 parisc sh
+
+   Note that even the "known to work" ones likely have bugs.  Please
+   report them if you run into them.
 
 c) Type "make" and pray...
 
