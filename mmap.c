@@ -35,7 +35,7 @@ void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset
     return MAP_FAILED;
   }
 
-  return mmap2(start, length, prot, flags, fd, offset >> MMAP2_SHIFT);
+  return mmap2(start, length, prot, flags, fd, (size_t)offset >> MMAP2_SHIFT);
 }
 
 #else
