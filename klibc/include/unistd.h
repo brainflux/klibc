@@ -103,4 +103,9 @@ __extern int optind, opterr, optopt;
 
 __extern int isatty(int);
 
+/* Standard file descriptor numbers. */
+#define STDIN_FILENO	0
+#define STDOUT_FILENO	1
+#define STDERR_FILENO	2
+
 #endif /* _UNISTD_H */
