@@ -7,7 +7,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-const char * const sys_siglist[] = {
+const char * const sys_siglist[NSIG] = {
 #ifdef SIGABRT
   [SIGABRT] = "Aborted",
 #endif
