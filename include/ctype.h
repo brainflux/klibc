@@ -28,7 +28,8 @@ enum {
   __ctype_xdigit = (1 << 3),
   __ctype_space  = (1 << 4),
   __ctype_print  = (1 << 5),
-  __ctype_punct  = (1 << 6)
+  __ctype_punct  = (1 << 6),
+  __ctype_cntrl  = (1 << 7),
 };
 
 extern const unsigned char __ctypes[];
@@ -57,7 +58,7 @@ __ctype_inline int isblank(int __c)
 
 __ctype_inline int iscntrl(int __c)
 {
-  return (__c >= 0) && !(__ctypes[__c+1] & __ctype_print);
+  return __ctypes[__c+1] & __ctype_cntrl;
 }
 
 __ctype_inline int isdigit(int __c)
