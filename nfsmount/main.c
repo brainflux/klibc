@@ -81,7 +81,7 @@ static int parse_int(const char *val, const char *ctx)
 	int ret;
 
 	ret = (int) strtoul(val, &end, 0);
-	if (val == '\0' || end != '\0') {
+	if (*val == '\0' || *end != '\0') {
 		fprintf(stderr, "%s: invalid value for %s\n", val, ctx);
 		exit(1);
 	}
