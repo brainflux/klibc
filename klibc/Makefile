@@ -60,24 +60,39 @@ hello: hello.o $(LIB) $(CRT0)
 minihello: minihello.o $(LIB) $(CRT0)
 	$(LD) -o minihello $(CRT0) minihello.o $(LIB) $(LIBGCC)
 
-$(LIB): $(LIBOBJS) syscalls.dir
+$(LIB): $(LIBOBJS) syscalls.dir socketcalls.dir
 	rm -f $(LIB)
-	$(AR) cq $(LIB) $(LIBOBJS) syscalls/*.o
+	$(AR) cq $(LIB) $(LIBOBJS) syscalls/*.o socketcalls/*.o
 	$(RANLIB) $(LIB)
 
 $(SOLIB): $(SOOBJS) syscalls.dir
 	$(LD) -shared -soname $(SONAME) -o $@ \
-		$(SOOBJS) syscalls/*.lo \
+		$(SOOBJS) syscalls/*.lo socketcalls/*.lo \
 	        $(LIBGCC)
 
 syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 	rm -rf syscalls
 	mkdir syscalls
 	$(PERL) syscalls.pl < SYSCALLS
-	$(MAKE) $(patsubst %.c,%.o,$(wildcard syscalls/*.c))
-	$(MAKE) $(patsubst %.c,%.lo,$(wildcard syscalls/*.c))
+	$(MAKE) syscalls-objs
 	touch syscalls.dir
+
+SYSCALLS = $(patsubst %.c,%.o,$(wildcard syscalls/*.c)) \
+	   $(patsubst %.c,%.lo,$(wildcard syscalls/*.c))
+syscalls-objs: $(SYSCALLS)
+
+socketcalls.dir: SOCKETCALLS socketcalls.pl socketcommon.h
+	rm -rf socketcalls
+	mkdir socketcalls
+	$(PERL) socketcalls.pl < SOCKETCALLS
+	$(MAKE) socketcalls-objs
+	touch socketcalls.dir
+
+SOCKETCALLS = $(patsubst %.c,%.o,$(wildcard socketcalls/*.c)) \
+	      $(patsubst %.c,%.lo,$(wildcard socketcalls/*.c))
+socketcalls-objs: $(SOCKETCALLS)
 
 clean:
 	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls
 	rm -rf syscalls syscalls.dir
+	rm -rf socketcalls socketcalls.dir
