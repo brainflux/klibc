@@ -102,9 +102,9 @@ int kill(pid_t, int)
 int rt_sigaction(int, const struct sigaction *, struct sigaction *, size_t)
 int rt_sigsuspend(const sigset_t *, size_t)
 int rt_sigpending(sigset_t *, size_t)
-<!alpha> int pause()
-<!alpha,ia64> unsigned int alarm(unsigned int)
 int rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t)
+int getitimer(int, struct itimerval *);
+int setitimer(int, const struct itimerval *, struct itimerval *);
 
 #
 # Time-related system calls
