@@ -99,10 +99,6 @@ __syscall_return(type,__res); \
    macros can't deal with these; even the ones that give the right
    return value have the wrong clobbers. */
 
-#define _syscall_clobbers                                               \
-        "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8",                 \
-        "$22", "$23", "$24", "$25", "$27", "$28"                        \
-
 #define _syscall0_dual0(type, name)                                     \
 type name(void)                                                         \
 {                                                                       \
