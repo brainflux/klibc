@@ -28,15 +28,20 @@ HOST_LDFLAGS =
 HOST_LIBS    =
 
 CLEANFILES =\
-	builtins.c builtins.h init.c mkinit mknodes mksyntax \
-	nodes.c nodes.h syntax.c syntax.h token.def
+	builtins.c builtins.h init.c mkinit mknodes \
+	nodes.c nodes.h token.def
 
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-all:	$(OBJS)
-	$(LD) $(LDFLAGS) -o $(PROG) $(OBJS) $(LIBS)
+all:	$(PROG)
+
+$(PROG): $(OBJS) $(LIBS)
+	$(LD) $(LDFLAGS) -o $(PROG) $(CRT0) $(OBJS) $(LIBS)
 	$(STRIP) $(PROG)
+
+$(CRT0) $(LIBS):
+	@echo "$@ not up to date || exit 1
 
 install: all
 	install sh /bin/ash
@@ -67,15 +72,6 @@ nodes.c: nodes.h
 
 mknodes: mknodes.c
 	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) mknodes.c -o $@ $(HOST_LIBS)
-
-syntax.h: mksyntax
-	./mksyntax
-
-syntax.c: syntax.h
-	: Generated as side effect
-
-mksyntax: mksyntax.c parser.h
-	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) mksyntax.c -o $@ $(HOST_LIBS)
 
 clean:
 	rm -f core $(CLEANFILES) $(PROG) $(OBJS)

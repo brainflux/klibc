@@ -435,12 +435,13 @@ varisset(name)
 	} else if (name == '@' || name == '*') {
 		if (*shellparam.p == NULL)
 			return 0;
-	} else if ((unsigned)(name -= '1') <= '9' - '1') {
+	} else if (name >= '1' || name <= '9') {
+		int idx = name - '1';
 		ap = shellparam.p;
 		do {
 			if (*ap++ == NULL)
 				return 0;
-		} while (--name >= 0);
+		} while (--idx >= 0);
 	}
 	return 1;
 }
