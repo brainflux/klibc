@@ -391,9 +391,9 @@ SHELLPROC {
  * Signal handler.
  *
  * The __cdecl is to work around the fact that the Linux/i386 kernel prior
- * to 2.6.9(?) didn't pass the proper arguments to regparm'd signal handlers.
+ * to 2.6.9-rc2 didn't pass the proper arguments to regparm'd signal handlers.
  */
-/*__cdecl*/ void
+__cdecl void
 onsig(int signo)
 {
 	bsd_signal(signo, onsig);
