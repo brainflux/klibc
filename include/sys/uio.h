@@ -5,7 +5,7 @@
 #ifndef _SYS_UIO_H
 #define _SYS_UIO_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <sys/types.h>
 #include <linux/uio.h>
 

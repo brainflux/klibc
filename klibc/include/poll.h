@@ -5,7 +5,7 @@
 #ifndef _POLL_H
 #define _POLL_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <linux/poll.h>
 
 /* POSIX specifies "int" for the timeout, Linux seems to use long... */

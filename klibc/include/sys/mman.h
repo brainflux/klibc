@@ -5,7 +5,7 @@
 #ifndef _SYS_MMAN_H
 #define _SYS_MMAN_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <sys/types.h>
 #include <linux/mman.h>
 #include <asm/page.h>		/* For PAGE_SIZE */

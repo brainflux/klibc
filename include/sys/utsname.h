@@ -5,7 +5,7 @@
 #ifndef _SYS_UTSNAME_H
 #define _SYS_UTSNAME_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 
 #define SYS_NMLN 65
 

@@ -5,7 +5,7 @@
 #ifndef _SYS_WAIT_H
 #define _SYS_WAIT_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <sys/types.h>
 #include <sys/resource.h>
 

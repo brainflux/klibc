@@ -5,7 +5,7 @@
 #ifndef _SYS_REBOOT_H
 #define _SYS_REBOOT_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <linux/reboot.h>
 
 /* glibc names these constants differently; allow both versions */

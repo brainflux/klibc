@@ -5,7 +5,7 @@
 #ifndef _SYS_VFS_H
 #define _SYS_VFS_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <linux/vfs.h>
 
 __extern int statfs(const char *, struct statfs *);

@@ -5,7 +5,7 @@
 #ifndef _SYS_MOUNT_H
 #define _SYS_MOUNT_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 
 /*
  * These are the fs-independent mount-flags: up to 32 flags are supported

@@ -5,7 +5,7 @@
 #ifndef _DIRENT_H
 #define _DIRENT_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <sys/dirent.h>
 
 #ifndef __IO_DIR_DEFINED

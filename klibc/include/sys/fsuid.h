@@ -5,7 +5,7 @@
 #ifndef _SYS_FSUID_H
 #define _SYS_FSUID_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <sys/types.h>
 
 __extern int setfsuid(uid_t);

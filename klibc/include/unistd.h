@@ -5,7 +5,7 @@
 #ifndef _UNISTD_H
 #define _UNISTD_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/select.h>

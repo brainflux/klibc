@@ -5,7 +5,7 @@
 #ifndef _UTIME_H
 #define _UTIME_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <linux/utime.h>
 
 __extern int utime(char *, struct utimbuf *);

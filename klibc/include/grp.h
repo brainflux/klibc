@@ -5,7 +5,7 @@
 #ifndef _GRP_H
 #define _GRP_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <sys/types.h>
 
 __extern int setgroups(size_t, const gid_t *);

@@ -5,7 +5,7 @@
 #ifndef _SIGNAL_H
 #define _SIGNAL_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <string.h>		/* For memset() */
 #include <limits.h>		/* For LONG_BIT */
 #include <sys/types.h>

@@ -5,7 +5,7 @@
 #ifndef _SYS_STAT_H
 #define _SYS_STAT_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <asm/stat.h>
 #include <sys/types.h>
 #include <linux/stat.h>

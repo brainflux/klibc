@@ -5,7 +5,7 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <stddef.h>
 
 #define EXIT_FAILURE 1
