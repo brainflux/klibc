@@ -23,8 +23,10 @@ sub make_sysstub($$$$@) {
     print OUT ".${fname}:\n";
     print OUT "\tli 0,__NR_${sname}\n";
     print OUT "\tsc\n";
-    print OUT "\tbnslr\n";
-    print OUT "\tb __syscall_error\n";
+    print OUT "\tmfcr 0\n";
+    print OUT "\trldicl. 9,0,36,63\n";
+    print OUT "\tbeqlr- 0\n";
+    print OUT "\tb .__syscall_error\n";
     print OUT "\t.size .${fname},.-.${fname}\n";
     close(OUT);
 }
