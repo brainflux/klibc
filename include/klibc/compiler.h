@@ -7,6 +7,8 @@
 #ifndef _KLIBC_COMPILER_H
 #define _KLIBC_COMPILER_H
 
+#define __user
+
 /* Specific calling conventions */
 /* __cdecl is used when we want varadic and non-varadic functions to have
    the same binary calling convention. */
