@@ -37,6 +37,8 @@
  *	trap.h,v 1.4 1993/08/01 18:58:34 mycroft Exp
  */
 
+#include <signal.h>
+
 extern int pendingsigs;
 
 #ifdef __STDC__
@@ -46,6 +48,7 @@ void ignoresig(int);
 void dotrap(void);
 void setinteractive(int);
 void exitshell(int);
+__sighandler_t bsd_signal(int, __sighandler_t);
 #else
 void clear_traps();
 int setsignal();

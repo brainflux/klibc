@@ -105,7 +105,7 @@ main(argc, argv)  char **argv; {
 	monitor(4, etext, profile_buf, sizeof profile_buf, 50);
 #endif
 #ifdef linux
-	signal(SIGCHLD,SIG_DFL);
+	bsd_signal(SIGCHLD,SIG_DFL);
 #endif /* linux */
 	state = 0;
 	if (setjmp(jmploc.loc)) {

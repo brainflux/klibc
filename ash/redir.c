@@ -231,13 +231,13 @@ openhere(redir)
 	}
 	if (forkshell((struct job *)NULL, (union node *)NULL, FORK_NOJOB) == 0) {
 		close(pip[0]);
-		signal(SIGINT, SIG_IGN);
-		signal(SIGQUIT, SIG_IGN);
-		signal(SIGHUP, SIG_IGN);
+		bsd_signal(SIGINT, SIG_IGN);
+		bsd_signal(SIGQUIT, SIG_IGN);
+		bsd_signal(SIGHUP, SIG_IGN);
 #ifdef SIGTSTP
-		signal(SIGTSTP, SIG_IGN);
+		bsd_signal(SIGTSTP, SIG_IGN);
 #endif
-		signal(SIGPIPE, SIG_DFL);
+		bsd_signal(SIGPIPE, SIG_DFL);
 		if (redir->type == NHERE)
 			xwrite(pip[1], redir->nhere.doc->narg.text, len);
 		else

@@ -1,5 +1,3 @@
-#	Makefile,v 1.7 1993/08/09 04:58:18 mycroft Exp
-
 PROG=	sh
 SRCS=	builtins.c cd.c dirent.c bltin/echo.c error.c eval.c exec.c expand.c \
 	input.c jobs.c mail.c main.c memalloc.c miscbltin.c \
@@ -26,7 +24,7 @@ STRIP   = strip -R .comment -R .note
 
 HOST_CC      = gcc
 HOST_CFLAGS  = -g -I. -DSHELL
-HOST_LDFLAGS = -s
+HOST_LDFLAGS =
 HOST_LIBS    =
 
 CLEANFILES =\

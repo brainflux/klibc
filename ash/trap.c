@@ -188,7 +188,7 @@ setsignal(signo) {
 		 * There is a race condition here if action is not S_IGN.
 		 * A signal can be ignored that shouldn't be.
 		 */
-		if ((int)(sigact = signal(signo, SIG_IGN)) == -1)
+		if ((int)(sigact = bsd_signal(signo, SIG_IGN)) == -1)
 			error("Signal system call failed");
 		if (sigact == SIG_IGN) {
 			*t = S_HARD_IGN;
@@ -204,7 +204,7 @@ setsignal(signo) {
 		case S_IGN:	sigact = SIG_IGN;	break;
 	}
 	*t = action;
-	return (int)signal(signo, sigact);
+	return (int)bsd_signal(signo, sigact);
 }
 
 
@@ -215,7 +215,7 @@ setsignal(signo) {
 void
 ignoresig(signo) {
 	if (sigmode[signo] != S_IGN && sigmode[signo] != S_HARD_IGN) {
-		signal(signo, SIG_IGN);
+		bsd_signal(signo, SIG_IGN);
 	}
 	sigmode[signo] = S_HARD_IGN;
 }
@@ -244,7 +244,7 @@ SHELLPROC {
 
 void
 onsig(signo) {
-	signal(signo, onsig);
+	bsd_signal(signo, onsig);
 	if (signo == SIGINT && trap[SIGINT] == NULL) {
 		onint();
 		return;
@@ -324,4 +324,20 @@ l1:   handler = &loc2;			/* probably unnecessary */
 	setjobctl(0);
 #endif
 l2:   _exit(status);
+}
+
+/*
+ * Emulation of the BSD signal() call
+ */
+__sighandler_t bsd_signal(int signum, __sighandler_t handler)
+{
+  struct sigaction act;
+  int rv;
+
+  memset(&act, 0, sizeof act);
+  act.sa_handler = handler;
+  act.sa_flags   = SA_RESTART;
+  
+  return sigaction(signum, &act, &act)
+    ? SIG_ERR : act.sa_handler;
 }
