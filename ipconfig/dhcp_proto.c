@@ -24,8 +24,9 @@ static __u8 dhcp_params[] = {
 	12,			/* host name */
 	15,			/* domain name */
 	17,			/* boot path */
+	26,			/* interface mtu */
 	28,			/* broadcast addr */
-	40,			/* NIS domain name */
+	40,			/* NIS domain name (why?) */
 };
 
 static __u8 dhcp_discover_hdr[] = {

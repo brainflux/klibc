@@ -121,6 +121,10 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
 				memcpy(&dev->bootpath, ext, len);
 				dev->bootpath[len] = '\0';
 				break;
+			case 26: /* interface MTU */
+				if ( len == 2  )
+					dev->mtu = (ext[0] << 8) + ext[1];
+				break;
 			case 28: /* broadcast addr */
 				if (len > 4)
 					len = 4;

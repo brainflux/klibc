@@ -67,6 +67,10 @@ static void configure_device(struct netdev *dev)
 	if (do_not_config)
 		return;
 
+	if (netdev_setmtu(dev))
+		printf("IP-Config: failed to set MTU on %s to %u\n",
+		       dev->name, dev->mtu);
+
 	if (netdev_setaddress(dev))
 		printf("IP-Config: failed to set addresses on %s\n", dev->name);
 	if (netdev_setdefaultroute(dev))

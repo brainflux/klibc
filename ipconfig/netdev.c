@@ -100,6 +100,16 @@ int netdev_setdefaultroute(struct netdev *dev)
 	return 0;
 }
 
+int netdev_setmtu(struct netdev *dev)
+{
+	struct ifreq ifr;
+
+	copy_name(dev, &ifr);
+	ifr.ifr_mtu = dev->mtu;
+
+	return ioctl(cfd, SIOCSIFMTU, &ifr);
+}	
+
 static int netdev_gif_addr(struct ifreq *ifr, int cmd, __u32 *ptr)
 {
 	struct sockaddr_in *sin = (struct sockaddr_in *)&ifr->ifr_addr;

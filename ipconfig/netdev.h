@@ -64,6 +64,7 @@ int netdev_setdefaultroute(struct netdev *dev);
 int netdev_up(struct netdev *dev);
 int netdev_down(struct netdev *dev);
 int netdev_init_if(struct netdev *dev);
+int netdev_setmtu(struct netdev *dev);
 
 static inline int netdev_running(struct netdev *dev)
 {
