@@ -1,10 +1,10 @@
-ARCH    = alpha
+ARCH    = i386
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
 REQFLAGS = -nostdinc -iwithprefix include -I. \
 	  -I./arch/$(ARCH)/include -I./include/bits$(BITSIZE) \
-	  -I./include -I./linux/include \
+	  -DBITSIZE=$(BITSIZE) -I./include -I./linux/include \
 	  -Wall
 CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
 LDFLAGS =
@@ -34,7 +34,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  strncmp.o strncpy.o strrchr.o strspn.o strsep.o strtok.o \
 	  gethostname.o getdomainname.o getcwd.o seteuid.o setegid.o \
 	  getenv.o setenv.o unsetenv.o getopt.o readdir.o \
-	  time.o fdatasync.o
+	  time.o fdatasync.o llseek.o
 LIB     = libc.a
 
 SOFLAGS = -fPIC

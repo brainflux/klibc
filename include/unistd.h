@@ -74,6 +74,7 @@ __extern int open(const char *, int, ...);
 #endif
 __extern int close(int);
 __extern off_t lseek(int, off_t, int);
+__extern loff_t llseek(int, loff_t, int);
 __extern int dup(int);
 __extern int dup2(int, int);
 __extern int fcntl(int, int, long);
