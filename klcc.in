@@ -1,16 +1,24 @@
-# -*- perl-mode -*-
+# -*- perl -*-
+
+# klibc install directory
+$KLIBC = '/home/hpa/klibc/klibc/klibc';
 
 # Default options for gcc, ld, and strip
-@ccopt = ('-nostdinc', '-iwithprefix', );
+@ccopt = ('-mregparm=3', '-DREGPARM=3');
 @ldopt = ();
 @stripopt = ('--strip-all', '-R', '.comment', '-R', '.note');
+
+# Options necessary for proper include
+@includes = ('-nostdinc', '-iwithprefix', 'include', '-D', '__KLIBC__',
+	     "-I${KLIBC}/include");
+
+# Default optimization options (for compiles without -g)
+@optopt = ('-march=i386', '-Os', '-falign-functions=0', '-falign-jumps=0',
+	   '-falign-loops=0');
 
 $CC = '/usr/bin/gcc'; 		# The gcc to use
 $LD = '/usr/bin/ld';  		# The ld to use
 $STRIP = '/usr/bin/strip';	# The strip to use
-
-# klibc install directory
-$KLIBC = '/home/hpa/klibc/klibc/klibc';
 
 @staticopt = ("$KLIBC/crt0.o");		# Static options to ld
 @staticlib = ("$KLIBC/libc.a");
@@ -96,6 +104,7 @@ $save_temps = 0;		# The -save-temps option
 $verbose = 0;			# The -v option
 $shared = 0;	   		# Are we compiling shared?
 $debugging = 0;	   		# -g or -p option present?
+$strip = 0;			# -s option present?
 
 foreach $a ( @ARGV ) {
     if ( $a !~ /^\-/ ) {
@@ -125,6 +134,8 @@ foreach $a ( @ARGV ) {
 	$shared = 1;
     } elsif ( $a eq '-static' ) {
 	$shared = 0;
+    } elsif ( $a eq '-s' ) {
+	$strip = 1;
     } elsif ( $a =~ /^-print/ ) {
 	push(@@ccopt, $a);
 	$operation = 'c' if ( $operation eq '' );
