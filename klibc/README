@@ -38,7 +38,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    arm-thumb:	 Untested
    arm26:	 Not yet ported
    arm:		 Working
-   cris:	 Untested
+   cris:	 Working
    h8300:	 Not yet ported
    i386:	 Working
    ia64:	 Working
