@@ -11,12 +11,12 @@
  *
  * MINIX, ext3 and Reiserfs bits are currently untested.
  */
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <asm/byteorder.h>
+#include <netinet/in.h>
 
 #include <linux/romfs_fs.h>
 #include <linux/cramfs_fs.h>
@@ -31,8 +31,6 @@
  * Use a cleaned up version.
  */
 #include "reiserfs_fs.h"
-
-#define htonl __cpu_to_be32
 
 char *progname;
 
