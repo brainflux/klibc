@@ -6,16 +6,16 @@
 #define _KLIBC_ARCHSETJMP_H
 
 struct __jmp_buf {
-  unsigned long s0;
-  unsigned long s1;
-  unsigned long s2;
-  unsigned long s3;
-  unsigned long s4;
-  unsigned long s5;
-  unsigned long fp;
-  unsigned long ra;
-  unsigned long gp;
-  unsigned long sp;
+  unsigned long __s0;
+  unsigned long __s1;
+  unsigned long __s2;
+  unsigned long __s3;
+  unsigned long __s4;
+  unsigned long __s5;
+  unsigned long __fp;
+  unsigned long __ra;
+  unsigned long __gp;
+  unsigned long __sp;
 };
 
 /* Must be an array so it will decay to a pointer when a function is called */

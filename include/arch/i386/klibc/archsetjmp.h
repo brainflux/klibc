@@ -6,12 +6,12 @@
 #define _KLIBC_ARCHSETJMP_H
 
 typedef struct __jmp_buf {
-  unsigned int ebx;
-  unsigned int esp;
-  unsigned int ebp;
-  unsigned int esi;
-  unsigned int edi;
-  unsigned int eip;
+  unsigned int __ebx;
+  unsigned int __esp;
+  unsigned int __ebp;
+  unsigned int __esi;
+  unsigned int __edi;
+  unsigned int __eip;
 };
 
 typedef struct __jmp_buf jmp_buf[1];
