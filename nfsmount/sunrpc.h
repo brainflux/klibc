@@ -9,16 +9,29 @@
 #define RPC_REPLY	1
 
 #define PORTMAP_PROGRAM	100000
+#define NLM_PROGRAM	100021
 
 #define RPC_PMAP_PROGRAM	100000
 #define RPC_PMAP_VERSION	2
 #define RPC_PMAP_PORT		111
 
+#define PMAP_PROC_NULL		0
+#define PMAP_PROC_SET		1
+#define PMAP_PROC_UNSET		2
 #define PMAP_PROC_GETPORT	3
+#define PMAP_PROC_DUMP		4
 
 #define LAST_FRAG	0x80000000
 
 #define REPLY_OK	0
+#define REPLY_DENIED    1
+
+#define SUCCESS		0
+#define PROG_UNAVAIL	1
+#define PROG_MISMATCH	2
+#define PROC_UNAVAIL	3
+#define GARBAGE_ARGS	4
+#define SYSTEM_ERR	5
 
 struct rpc_udp_header
 {

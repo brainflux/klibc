@@ -10,11 +10,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include <linux/nfs_mount.h>
 
 #include "nfsmount.h"
 #include "sunrpc.h"
+#include "dummypmap.h"
 
 static char *progname;
 
@@ -161,16 +163,21 @@ int nfsmount_main(int argc, char *argv[])
 	char *hostname;
 	char *path;
 	int c;
+	int spoof_portmap = 0;
 
 	progname = argv[0];
 
 	gettimeofday(&now, NULL);
 	srand48(now.tv_usec ^ (now.tv_sec << 24));
 
-	while ((c = getopt(argc, argv, "o:")) != EOF) {
+	while ((c = getopt(argc, argv, "o:p:")) != EOF) {
 		switch (c) {
 		case 'o':
 			parse_opts(optarg);
+			break;
+		case 'p':
+			spoof_portmap = 1;
+			portmap_file  = fopen(optarg, "w");
 			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
@@ -213,9 +220,25 @@ int nfsmount_main(int argc, char *argv[])
 
 	check_path(path);
 
+	if ( spoof_portmap ) {
+		spoof_portmap = fork();
+		if ( spoof_portmap == -1 ) {
+			fprintf(stderr, "%s: cannot fork\n", progname);
+			exit(1);
+		} else if ( spoof_portmap == 0 ) {
+			/* Child process */
+			dummy_portmap();
+			_exit(255); /* Error */
+		}
+	}
+
 	if (nfs_mount(rem_name, hostname, server, rem_path, path,
 		      &mount_data) != 0)
 		return 1;
+
+	/* If we set up the spoofer, tear it down now */
+	if ( spoof_portmap )
+		kill(SIGTERM, spoof_portmap);
 
 	free(rem_name);
 
