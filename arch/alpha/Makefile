@@ -9,8 +9,10 @@
 DIVCFLAGS = $(REQFLAGS) \
 	-O3 -fomit-frame-pointer -fcall-saved-1 -fcall-saved-2 \
 	-fcall-saved-3 -fcall-saved-4 -fcall-saved-5 -fcall-saved-6 \
-	-fcall-saved-7 -fcall-saved-8 -fcall-saved-22 -fcall-saved-23 \
-	-fcall-saved-24 -fcall-saved-25 -fcall-saved-27
+	-fcall-saved-7 -fcall-saved-8 -fcall-saved-15 -fcall-saved-16 \
+	-fcall-saved-17 -fcall-saved-18 -fcall-saved-19 -fcall-saved-20 \
+	-fcall-saved-21 -fcall-saved-22 -ffixed-23 -fcall-saved-24 \
+	-fcall-saved-25 -fcall-saved-27
 
 ARCHOBJS = \
 	arch/$(ARCH)/__divqu.o \
@@ -36,12 +38,12 @@ ARCHCLEAN = arch/$(ARCH)/*.ss arch/$(ARCH)/*.lss
 arch/$(ARCH)/%.s: arch/$(ARCH)/%.ss
 	sed -e 's/\$$0\b/$$27/g' -e 's/\$$24\b/$$99/g' \
 	    -e 's/\$$16\b/$$24/g' -e 's/\$$17\b/$$25/g' \
-            -e 's/\$$99\b/$$16/g' < $< > $@
+            -e 's/\$$26\b/$$23/g' -e 's/\$$99\b/$$16/g' < $< > $@
 
 arch/$(ARCH)/%.ls: arch/$(ARCH)/%.lss
 	sed -e 's/\$$0\b/$$27/g' -e 's/\$$24\b/$$99/g' \
 	    -e 's/\$$16\b/$$24/g' -e 's/\$$17\b/$$25/g' \
-            -e 's/\$$99\b/$$16/g' < $< > $@
+            -e 's/\$$26\b/$$23/g' -e 's/\$$99\b/$$16/g' < $< > $@
 
 arch/$(ARCH)/__divqu.ss: arch/$(ARCH)/divide.c
 	$(CC) $(DIVCFLAGS) -DSIGNED=0 -DREM=0 -DBITS=64 -DNAME=__divqu -S -o $@ $<
