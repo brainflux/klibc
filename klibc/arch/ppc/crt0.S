@@ -15,9 +15,12 @@
 	.globl _start
 _start:
 	lwz	3,0(1)
-	lwz	4,4(1)
-	lwz	5,8(1)
-	addi	1,1,-16
+	addi	4,1,4
+	addi	5,1,8
+	slwi	0,3,2
+	add	5,5,0
+	li	0,0
+	stwu	0,-16(1)
 	lis	9,environ@ha
 	stw	5,environ@l(9)
 	bl	main
