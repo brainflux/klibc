@@ -18,7 +18,7 @@
 #define LOGDEV "/dev/kmsg"
 
 /* Max length of ID string */
-#define MAXID 31
+#define MAXID 31		/* MAXID+6 must be < BUFLEN */
 
 int __syslog_fd = -1;
 static char id[MAXID+1];
@@ -43,7 +43,7 @@ void openlog(const char *ident, int option, int facility)
 void vsyslog(int prio, const char *format, va_list ap)
 {
   char buf[BUFLEN];
-  int rv, len;
+  int len;
   int fd;
 
   if ( __syslog_fd == -1 )
@@ -61,13 +61,12 @@ void vsyslog(int prio, const char *format, va_list ap)
   if ( *id )
     len += sprintf(buf+3, "%s: ", id);
 
-  rv = vsnprintf(buf+len, BUFLEN-len, format, ap);
+  len += vsnprintf(buf+len, BUFLEN-len, format, ap);
 
-  len += rv;
   if ( len > BUFLEN-1 ) len = BUFLEN-1;
-  buf[len] = '\n';
+  buf[len++] = '\n';
 
-  write(fd, buf, len+1);
+  write(fd, buf, len);
 }
 
 void syslog(int prio, const char *format, ...)
