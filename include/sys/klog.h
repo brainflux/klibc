@@ -7,6 +7,6 @@
 
 #include <klibc/extern.h>
 
-__extern klogctl(int, char *, int);
+__extern int klogctl(int, char *, int);
 
 #endif /* _SYS_KLOG_H */

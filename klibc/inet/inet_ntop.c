@@ -10,7 +10,7 @@
 
 const char *inet_ntop(int af, const void *cp, char *buf, size_t len)
 {
-  int xlen;
+  size_t xlen;
 
   switch ( af ) {
   case AF_INET:
