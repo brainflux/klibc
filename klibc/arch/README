@@ -8,29 +8,17 @@ The "getenvtest" test program is a very good test for proper crt0.S
 functionality.
 
 
-extern char **environ;
-extern int main(int, char **, char **);
-extern __noreturn exit(int);
+extern __noreturn __libc_init(void *, void *);
 
 __noreturn _start(void)
 {
-  intptr_t *argptr = __stack_pointer(); /* Usually -- e.g. SPARC is special */
-  int argc;
-  char **argv, **envp;
+  void *elf_data   = get_elf_data_address(); /* Usually the stack address */
+  void *atexit_ptr = get_atexit_ptr();       /* Usually in a register */ 
 
-#if STACK_GROWS_UP
-  argc = (int)*argptr--;
-  argv = (char **)argptr;
-  envp = argv-(argc+1);
-#else
-  argc = (int)*argptr++;
-  argv = (char **)argptr;
-  envp = argv+(argc+1);
-#endif
+  /* Some architectures need this for debugging to work */
+  setup_null_stack_frame_if_necessary();
 
-  environ = envp;
-
-  exit(main(argc, argv, envp));
+  __libc_init(elf_data, atexit_ptr);
 }
 
 
