@@ -349,7 +349,7 @@ dodecl(line1, fp)
 		if (! amiddecls)
 			addchar('\n', &decls);
 		q = NULL;
-		for (p = line1 + 6 ; *p != '=' && *p != '/' ; p++);
+		for (p = line1 + 6 ; *p && *p != '=' && *p != '/' ; p++);
 		if (*p == '=') {		/* eliminate initialization */
 			for (q = p ; *q && *q != ';' ; q++);
 			if (*q == '\0')
