@@ -5,7 +5,8 @@
 #ifndef _SYS_RESOURCE_H
 #define _SYS_RESOURCE_H
 
-#include <sys/types.h>		/* MUST be included first! */
+#include <klibc/extern.h>
+#include <sys/types.h>		/* MUST be included before linux/resource.h */
 #include <linux/resource.h>
 
 __extern int getpriority(int, int);
