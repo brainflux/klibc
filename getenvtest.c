@@ -1,9 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char *envp[])
 {
   int i;
+
+  /* Verify envp == environ */
+  printf("Verifying envp == environ... %s\n",
+	 (envp == environ) ? "ok" : "ERROR");
 
   /* Test argc/argv */
   for ( i = 0 ; i < argc ; i++ ) {

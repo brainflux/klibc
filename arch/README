@@ -4,6 +4,9 @@ each architecture needs any support routines that gcc-generated code
 expects to find in the system library -- Alpha, for example, needs
 divide subroutines.
 
+The "getenvtest" test program is a very good test for proper crt0.S
+functionality.
+
 
 extern char **environ;
 extern int main(int, char **, char **);
