@@ -17,10 +17,10 @@ sub make_sysstub($$$$@) {
     print OUT ".if __NR_${sname} < 256\n";
     print OUT "\tsvc __NR_${sname}\n";
     print OUT ".else\n";
-    print OUT "\tlghi %r0,__NR_${sname}\n";
+    print OUT "\tlghi %r1,__NR_${sname}\n";
     print OUT "\tsvc 0\n";
     print OUT ".endif\n";
-    print OUT "\tbr %r14\n";
+    print OUT "\tbrasl %r3,__syscall_common\n";
     print OUT "\t.size ${fname},.-${fname}\n";
     close(OUT);
 }

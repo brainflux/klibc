@@ -54,7 +54,7 @@ fi
 mkdir -p %{buildroot} %{_rpmdir}
 
 %build
-make
+make ARCH=%{_target_cpu}
 
 %install
 rm -rf %{buildroot}
@@ -77,6 +77,7 @@ ln $lib/klibc.so $lib/libc.so
 ln $lib/klibc.so $lib/klibc-$(cat $lib/libc.so.hash).so
 
 # Next, the generated binaries.
+# These are currently static binaries, should we go for shared?
 
 install -m 755 ash/sh $exe
 install -m 755 gzip/gzip $exe
@@ -85,9 +86,7 @@ ln $exe/gzip $exe/zcat
 install -m 755 ipconfig/ipconfig $exe
 install -m 755 kinit/kinit $exe
 install -m 755 nfsmount/nfsmount $exe
-for i in chroot dd fstype mkdir mkfifo mount umount; do
-    install -m 755 utils/$i $exe
-done
+install -m 755 utils/static/* $exe
 
 # The docs.
 
@@ -102,7 +101,7 @@ install -m 444 kinit/README $udoc/README.kinit
 
 # Finally, the include files.
 
-bitsize=$(make --no-print-directory -C klibc bitsize)
+bitsize=$(make --no-print-directory -C klibc bitsize ARCH=%{_target_cpu})
 cp --parents $(find klibc/include \( -name CVS -o -name SCCS \) -prune \
     -o -name '*.h' -print) $inc
 mv $inc/klibc $inc/klibc.$$

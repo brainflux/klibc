@@ -57,6 +57,7 @@ all: tests $(CRT0) $(LIB) $(SOLIB) klibc.so
 
 # Add any architecture-specific rules
 include arch/$(ARCH)/Makefile.inc
+EMAIN ?= -e main
 
 tests: $(TESTS)
 

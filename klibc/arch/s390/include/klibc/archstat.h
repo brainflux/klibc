@@ -1,6 +1,8 @@
 #ifndef _KLIBC_ARCHSTAT_H
 #define _KLIBC_ARCHSTAT_H
 
+#define _STATBUF_ST_NSEC
+
 /* This matches struct stat64 in glibc2.1, hence the absolutely
  * insane amounts of padding around dev_t's.
  */

@@ -23,7 +23,7 @@ static __u8 dhcp_params[] = {
 	6,			/* DNS server */
 	12,			/* host name */
 	15,			/* domain name */
-	17,			/* boot path */
+	17,			/* root path */
 	26,			/* interface mtu */
 	28,			/* broadcast addr */
 	40,			/* NIS domain name (why?) */
