@@ -412,8 +412,10 @@ static unsigned int parse_proto(const char *ip)
 {
 	unsigned int caps = 0;
 
-	if (*ip == '\0' || strcmp(ip, "on") == 0 || strcmp(ip, "any") == 0 || strcmp(ip, "both") == 0)
+	if (*ip == '\0' || strcmp(ip, "on") == 0 || strcmp(ip, "any") == 0)
 		caps = CAP_BOOTP | CAP_DHCP | CAP_RARP;
+	else if (strcmp(ip, "both") == 0)
+		caps = CAP_BOOTP | CAP_RARP;
 	else if (strcmp(ip, "dhcp") == 0)
 		caps = CAP_BOOTP | CAP_DHCP;
 	else if (strcmp(ip, "bootp") == 0)
@@ -476,6 +478,8 @@ static void add_all_devices(struct netdev *template)
 			dev->ip_server = template->ip_server;
 		if (template->ip_gateway != INADDR_NONE)
 			dev->ip_gateway = template->ip_gateway;
+		if (template->ip_netmask != INADDR_NONE)
+			dev->ip_netmask = template->ip_netmask;
 		if (template->ip_nameserver[0] != INADDR_NONE)
 			dev->ip_nameserver[0] = template->ip_nameserver[0];
 		if (template->ip_nameserver[1] != INADDR_NONE)
