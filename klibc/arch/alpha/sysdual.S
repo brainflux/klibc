@@ -17,12 +17,12 @@
 	.globl	__syscall_dual1
 __syscall_dual1:
 	callsys
-	lda	v0, 0(a4)
+	mov	v0, a4
 	beq	a3, 1f
-	ldah	a1, errno(zero)
+	ldq	a1, errno(gp)	!literal
 	lda	v0, -1(zero)
-	stq	a3, errno(a1)
-1:		
+	stq	a3, 0(a1)
+1:
 	ret	zero,(ra),1
 
 	.size	__syscall_dual1,.-__syscall_dual1
