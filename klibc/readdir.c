@@ -1,5 +1,5 @@
 /*
- * opendir/readdir/closedir
+ * readdir.c: opendir/readdir/closedir
  */
 
 #include <unistd.h>
@@ -13,6 +13,7 @@ struct _IO_dir {
   int fd;
   size_t bytes_left;
   struct dirent *next;
+  /* Declaring this as an array of struct enforces correct alignment */
   struct dirent buffer[15];	/* 15 times max dirent size =~ 4K */
 };
 
@@ -51,7 +52,7 @@ struct dirent *readdir(DIR *dir)
   }
 
   dent = dir->next;
-  ((char *)dir->next) += dent->d_reclen;
+  dir->next = (struct dirent *)((char *)dir->next + dent->d_reclen);
   dir->bytes_left -= dent->d_reclen;
   
   return dent;
