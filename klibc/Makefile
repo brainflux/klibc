@@ -120,14 +120,14 @@ crt0.o: arch/$(ARCH)/crt0.o
 	cp arch/$(ARCH)/crt0.o .
 
 errlist.c:
-	$(PERL) makeerrlist.pl -errlist > $@ || rm -f $@
+	$(PERL) makeerrlist.pl $(INCLUDE) -errlist > $@ || rm -f $@
 
 # We pass -ansi to keep cpp from define e.g. "i386" as well as "__i386__"
 SYSCALLS.i: SYSCALLS.def
 	$(CC) $(CFLAGS) -D__ASSEMBLY__ -ansi -x assembler-with-cpp -E -o $@ $<
 
-syscalls.nrs: ../include/sys/syscall.h ../include/arch/$(ARCH)/klibc/archsys.h ../linux/include/asm/unistd.h
-	$(CC) $(CFLAGS) -Wp,-dM -x c -E -o $@ ../include/sys/syscall.h
+syscalls.nrs: $<
+	$(CC) $(CFLAGS) -Wp,-dM -x c -E -o $@ $<
 
 syscalls.dir: SYSCALLS.i syscalls.pl arch/$(ARCH)/sysstub.ph syscommon.h syscalls.nrs
 	rm -rf syscalls
