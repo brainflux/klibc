@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "ipconfig.h"
 #include "kinit.h"
@@ -28,6 +29,9 @@ static char *sub_client(__u32 client, char *path, size_t len)
 	return path;
 }
 
+#define NFS_ARGC 6
+#define MOUNT_POINT "/root"
+
 int mount_nfs_root(int argc, char *argv[], int flags)
 {
 	(void) flags; // FIXME - don't ignore this
@@ -36,15 +40,15 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 	__u32 client = INADDR_NONE;
 	const int len = 1024;
 	struct netdev *dev;
+	char *mtpt = MOUNT_POINT;
 	char *path = NULL;
 	char *dev_bootpath = NULL;
 	char root[len];
 	char *x, *opts;
 	int ret = 0;
-	int a;
+	int a = 1;
+	char *nfs_argv[NFS_ARGC + 1] = { "NFS-Mount" };
 
-	a = 1;
-	
 	for (dev = ifaces; dev; dev = dev->next) {
 		if (dev->ip_server != INADDR_NONE &&
 		    dev->ip_server != INADDR_ANY) {
@@ -74,8 +78,8 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 
 	if ((opts = strchr(path, ',')) != NULL) {
 		*opts++ = '\0';
-		argv[a++] = (char *) "-o";
-		argv[a++] = opts;
+		nfs_argv[a++] = (char *) "-o";
+		nfs_argv[a++] = opts;
 	}
 
 	if ((x = strchr(path, ':')) == NULL) {
@@ -86,21 +90,20 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 
 		snprintf(root, len, "%s:%s", inet_ntoa(addr), path);
 
-		argv[a++] = sub_client(client, root, len);
+		nfs_argv[a++] = sub_client(client, root, len);
 	} else {
 		strcpy(root, path);
-		argv[a++] = sub_client(client, root, len);
+		nfs_argv[a++] = sub_client(client, root, len);
 	}
 
 	DEBUG(("NFS-Root: mounting %s on %s with options '%s'\n",
-	       argv[a - 1], local, opts ? opts : "none"));
+	       argv[a - 1], mtpt, opts ? opts : "none"));
 
-	argv[a++] = (char *) "/root";
-	argv[a] = NULL;
+	nfs_argv[a++] = mtpt;
+	nfs_argv[a] = NULL;
+	assert(a <= NFS_ARGC);
 
-	dump_args(a, argv);
-
-	if ((ret = nfsmount_main(a, argv)) != 0) {
+	if ((ret = nfsmount_main(a, nfs_argv)) != 0) {
 		ret = -1;
 		goto done;
 	}
