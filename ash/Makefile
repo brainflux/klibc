@@ -29,11 +29,15 @@ CLEANFILES =\
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-all:	$(PROG)
+all:	$(PROG) $(PROG).shared
 
 $(PROG): $(OBJS) $(LIBS)
 	$(LD) $(LDFLAGS) -o $(PROG) $(CRT0) $(OBJS) $(LIBS)
 	$(STRIP) $(PROG)
+
+$(PROG).shared: $(OBJS) $(LIBS)
+	$(LD) $(LDFLAGS) -o $(PROG).shared -e main $(KLIBSRC)/interp.o $(OBJS) -R $(KLIBSRC)/libc.so $(LIBGCC)
+	$(STRIP) $(PROG).shared
 
 $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1

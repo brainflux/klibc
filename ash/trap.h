@@ -48,7 +48,6 @@ void ignoresig(int);
 void dotrap(void);
 void setinteractive(int);
 void exitshell(int);
-__sighandler_t bsd_signal(int, __sighandler_t);
 #else
 void clear_traps();
 int setsignal();

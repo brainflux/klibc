@@ -325,19 +325,3 @@ l1:   handler = &loc2;			/* probably unnecessary */
 #endif
 l2:   _exit(status);
 }
-
-/*
- * Emulation of the BSD signal() call
- */
-__sighandler_t bsd_signal(int signum, __sighandler_t handler)
-{
-  struct sigaction act;
-  int rv;
-
-  memset(&act, 0, sizeof act);
-  act.sa_handler = handler;
-  act.sa_flags   = SA_RESTART;
-  
-  return sigaction(signum, &act, &act)
-    ? SIG_ERR : act.sa_handler;
-}
