@@ -7,7 +7,7 @@ Group: Development/Libraries
 URL: http://www.zytor.com/mailman/listinfo/klibc
 Source: http://www.kernel.org/pub/linux/libs/klibc-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires: kernel-source >= 2.6.0
+BuildRequires: kernel >= 2.6.0
 Packager: H. Peter Anvin <hpa@zytor.com>
 Prefix: /usr
 Vendor: Starving Linux Artists
