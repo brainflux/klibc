@@ -5,7 +5,7 @@ while ( defined($line = <STDIN>) ) {
     chomp $line;
     $line =~ s/\s*\#.*$//;	# Strip comments and trailing blanks
 
-    if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([^\(\<\>]+[^:A-Za-z0-9_])([A-Za-z0-9_]+)(|\@[A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
+    if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([^\(\<\>]+[^\@\:A-Za-z0-9_])([A-Za-z0-9_]+)(|\@[A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
 	$archs = $1;
 	$type  = $2;
 	$sname = $3;
