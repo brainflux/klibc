@@ -36,6 +36,17 @@ void _start(void)
   uintptr_t *params = sp+16;	/* SPARC needs a window save area */
 #elif defined(__mips__) || defined(__mips64__)
   register uintptr_t *params asm("$sp");
+#elif defined(__powerpc__)
+  register uintptr_t *params asm("r9");
+#elif defined(__hppa__)
+# define STACK_GROWS_UP
+  register uintptr_t *params asm("%r25");
+#elif defined(__s390__)
+  register uintptr_t *params asm("%r15");
+#elif defined(__alpha__)
+  register uintptr_t *params asm("$sp");
+#elif defined(__arm__)
+  register uintptr_t *params asm("sp");
 #else
 #error "Need crt0.c port for this architecture!"
 #endif
