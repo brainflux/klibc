@@ -29,7 +29,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  strncmp.o strncpy.o strrchr.o strspn.o strsep.o strtok.o \
 	  gethostname.o getdomainname.o getcwd.o seteuid.o setegid.o \
 	  getenv.o setenv.o unsetenv.o getopt.o \
-	  time.o
+	  time.o fdatasync.o
 LIB     = libc.a
 
 SOFLAGS = -fPIC
