@@ -112,25 +112,6 @@ static char  **gargv;
 #define main printfcmd
 #include "bltin/bltin.h"
 #endif /* SHELL */
-/* lame implementation */
-static int asprintf(char **strp, const char *fmt, ...)
-{
-	va_list ap;
-	char p[4];
-	int len;
-
-	va_start(ap, fmt);
-	len = vsnprintf(p,sizeof(p), fmt, ap);
-	va_end(ap);
-	*strp = malloc(len + 1);
-	if (!*strp)
-		return 0;
-
-	va_start(ap, fmt);
-	len = vsnprintf(*strp, len, fmt, ap);
-	va_end(ap);
-	return len;
-}
 
 #define PF(f, func) { \
 	if (fieldwidth != -1) { \
