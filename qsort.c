@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 
-static inline int newgap(int gap)
+static inline size_t newgap(size_t gap)
 {
   gap = (gap*10)/13;
   if ( gap == 9 || gap == 10 )
@@ -21,11 +21,11 @@ static inline int newgap(int gap)
 
 void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *))
 {
-  int gap = nmemb;
-  int swapped;
+  size_t gap = nmemb;
   size_t i, j;
   void *p1, *p2;
-  char tmp[size];
+  int swapped;
+  char tmp[size];		/* This is ugly.  We really need memswap() */
 
   do {
     gap = newgap(gap);
