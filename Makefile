@@ -49,18 +49,18 @@ local-install: $(CROSS)klcc
 	mkdir -p $(INSTALLROOT)$(mandir)/man1
 	mkdir -p $(INSTALLROOT)$(SHLIBDIR)
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)
-	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/include
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/include
+	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include
+	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)lib
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
 	set -xe ; for d in linux asm asm-generic ; do \
-	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/include/$$d ; \
-	  cp -rfL $(KRNLSRC)/include/$$d/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
-	  cp -rfL $(KRNLOBJ)/include/$$d/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
+	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include/$$d ; \
+	  cp -rfL $(KRNLSRC)/include/$$d/.  $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include/$$d/. ; \
+	  cp -rfL $(KRNLOBJ)/include/$$d/.  $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include/$$d/. ; \
 	  [ ! -d $(KRNLOBJ)/include2/$$d ] || \
-	    cp -rfL $(KRNLOBJ)/include2/$$d/. $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
+	    cp -rfL $(KRNLOBJ)/include2/$$d/. $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include/$$d/. ; \
 	done
-	cp -rf include/. $(INSTALLROOT)$(INSTALLDIR)/include/.
+	cp -rf include/. $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include/.
 	$(INSTALL_DATA) klcc.1 $(INSTALLROOT)$(mandir)/man1/$(CROSS)klcc.1
 	$(INSTALL_EXEC) $(CROSS)klcc $(INSTALLROOT)$(bindir)
 
