@@ -171,7 +171,7 @@ if ( $operation ne '' ) {
 	    push(@objs, $fo);
 	    push(@rmobjs, $fo) unless ( $save_temps );
 
-	    $rv = mysystem($CC, @ccopt, '-c', '-o', $fo, $f);
+	    $rv = mysystem($CC, @ccopt, '-c', '-o', $fo, '-x', $flang{$f}, $f);
 
 	    if ( $rv ) {
 		unlink(@rmobjs);
