@@ -8,9 +8,7 @@
 #include <extern.h>
 #include <stddef.h>
 #include <sys/types.h>
-
-/* Forward declarations of types */
-struct timeval;
+#include <sys/select.h>
 
 __extern char **environ;
 __extern __noreturn _exit(int);
@@ -24,10 +22,10 @@ __extern pid_t getpgrp(void);
 __extern int setpgrp(void);
 __extern pid_t setsid(void);
 __extern pid_t getsid(pid_t);
-__extern int execv(const char *, const char * const *);
-__extern int execvp(const char *, const char * const *);
-__extern int execve(const char *, const char * const *, char * const *);
-__extern int execvpe(const char *, const char * const *, char * const *);
+__extern int execv(const char *, char * const *);
+__extern int execvp(const char *, char * const *);
+__extern int execve(const char *, char * const *, char * const *);
+__extern int execvpe(const char *, char * const *, char * const *);
 __extern int execl(const char *, const char *, ...);
 __extern int execlp(const char *, const char *, ...);
 __extern int execle(const char *, const char *, ...);
@@ -80,7 +78,6 @@ __extern int dup2(int, int);
 __extern int fcntl(int, int, long);
 __extern int ioctl(int, int, void *);
 __extern int flock(int, int);
-__extern int select(int, fd_set *, fd_set *, fd_set *, struct timeval *);
 __extern int fsync(int);
 __extern int fdatasync(int);
 

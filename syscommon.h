@@ -10,10 +10,12 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 
+#include <poll.h>
 #include <sys/dirent.h>
 #include <sys/mman.h>
 #include <sys/module.h>
 #include <sys/resource.h>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/times.h>
@@ -22,3 +24,4 @@
 #include <sys/utsname.h>
 #include <sys/vfs.h>
 #include <sys/wait.h>
+#include <unistd.h>

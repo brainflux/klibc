@@ -20,7 +20,7 @@
 
 #define DEFAULT_PATH 	"/bin:/usr/bin:."
 
-int execvpe(const char *file, const char * const *argv, char * const *envp)
+int execvpe(const char *file, char * const *argv, char * const *envp)
 {
   char path[PATH_MAX];
   const char *searchpath, *esp;
