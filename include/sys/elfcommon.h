@@ -5,6 +5,8 @@
 #ifndef _SYS_ELFCOMMON_H
 #define _SYS_ELFCOMMON_H
 
+#include <stdint.h>
+
 /* Segment types */
 #define PT_NULL    	0
 #define PT_LOAD    	1
