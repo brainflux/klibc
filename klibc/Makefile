@@ -17,8 +17,9 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  wait.o wait3.o \
 	  printf.o vprintf.o xwrite.o \
 	  brk.o malloc.o free.o \
+	  raise.o abort.o assert.o \
 	  memcpy.o memset.o \
-	  raise.o abort.o assert.o
+	  strlen.o
 LIB     = libc.a
 
 SOFLAGS = -fPIC
