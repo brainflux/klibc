@@ -72,7 +72,7 @@ make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 
 # Make the .so file in /lib a hardlink (they will be expanded as two
 # files automatically if it crosses filesystems when extracted.)
-ln -f %{buildroot}%{klibcdir}/lib/klibc-*.so /lib
+ln -f %{buildroot}%{klibcdir}/lib/klibc-*.so %{buildroot}/lib
 
 # Install the docs
 mkdir -p %{buildroot}%{bindocdir} %{buildroot}%{libdocdir}
