@@ -38,6 +38,7 @@ struct netdev {
 	char		dnsdomainname[SYS_NMLN];/* dns domain name	*/
 	char		nisdomainname[SYS_NMLN];/* nis domain name	*/
 	char		bootpath[BPLEN];	/* boot path		*/
+	struct netdev	*next;			/* next configured i/f	*/
 };
 
 /*

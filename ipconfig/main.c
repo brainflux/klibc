@@ -66,7 +66,7 @@ static void configure_device(struct netdev *dev)
 {
 	if (do_not_config)
 		return;
-	
+
 	if (netdev_setaddress(dev))
 		printf("IP-Config: failed to set addresses on %s\n", dev->name);
 	if (netdev_setdefaultroute(dev))
@@ -134,13 +134,17 @@ static void complete_device(struct netdev *dev)
 	configure_device(dev);
 	dump_device_config(dev);
 	print_device_config(dev);
+
 	++configured;
+
+	dev->next = ifaces;
+	ifaces = dev;
 }
 
 static int process_receive_event(struct state *s, time_t now)
 {
 	int handled = 1;
-	
+
 	switch (s->state) {
 	case DEVST_BOOTP:
 		s->restart_state = DEVST_BOOTP;
@@ -150,7 +154,7 @@ static int process_receive_event(struct state *s, time_t now)
 			break;
 		case 1:
 			s->state = DEVST_COMPLETE;
-			IPDBG(("\n   bootp reply\n"));
+			DEBUG(("\n   bootp reply\n"));
 			break;
 		}
 		break;
@@ -193,7 +197,7 @@ static int process_receive_event(struct state *s, time_t now)
 		/* error occurred, try again in 10 seconds */
 		s->expire = now + 10;
 	default:
-		IPDBG(("\n"));
+		DEBUG(("\n"));
 		handled = 0;
 		break;
 	}
@@ -254,6 +258,7 @@ static void process_timeout_event(struct state *s, time_t now)
 }
 
 static struct state *slist;
+struct netdev *ifaces;
 
 static int do_pkt_recv(int pkt_fd, time_t now)
 {
@@ -264,11 +269,12 @@ static int do_pkt_recv(int pkt_fd, time_t now)
 	if (ret < 0)
 		goto bail;
 
-	for (s = slist; s; s = s->next)
+	for (s = slist; s; s = s->next) {
 		if (s->dev->ifindex == ifindex) {
 			ret |= process_receive_event(s, now);
 			break;
 		}
+	}
 
  bail:
 	return ret;
@@ -318,17 +324,17 @@ static int loop(void)
 			break;
 
 		timeout_ms = timeout * 1000;
-		
+
 		for (x = 0; x < 2; x++) {
 			int delta_ms;
-			
+
 			if (timeout_ms <= 0)
 				timeout_ms = 100;
 
 			nr = poll(fds, NR_FDS, timeout_ms);
 			prev = now;
 			gettimeofday(&now, NULL);
-			
+
 			if ((fds[0].revents & POLLRDNORM)) {
 				nr = do_pkt_recv(pkt_fd, now.tv_sec);
 				if (nr == 1)
@@ -347,8 +353,8 @@ static int loop(void)
 			delta_ms = (now.tv_sec - prev.tv_sec) * 1000;
 			delta_ms += (now.tv_usec - prev.tv_usec) / 1000;
 
-			IPDBG(("Delta: %d ms\n", delta_ms));
-			
+			DEBUG(("Delta: %d ms\n", delta_ms));
+
 			timeout_ms -= delta_ms;
 		}
 	}
@@ -401,7 +407,7 @@ static void parse_addr(__u32 *addr, const char *ip)
 static unsigned int parse_proto(const char *ip)
 {
 	unsigned int caps = 0;
-	
+
 	if (*ip == '\0' || strcmp(ip, "on") == 0 || strcmp(ip, "any") == 0)
 		caps = CAP_BOOTP | CAP_DHCP | CAP_RARP;
 	else if (strcmp(ip, "dhcp") == 0)
@@ -428,13 +434,8 @@ static void bringup_device(struct netdev *dev)
 			add_one_dev(dev);
 		} else {
 			complete_device(dev);
-			goto bail;
 		}
 	}
-	return;
- bail:
-	free(dev);
-	return;
 }
 
 static struct netdev *add_device(const char *info);
@@ -459,7 +460,7 @@ static void add_all_devices(struct netdev *template)
 
 	for (i = 0; i < nif; i++) {
 		struct netdev *dev;
-		
+
 		if (strcmp(ifr[i].ifr_name, "lo") == 0)
 			continue;
 		if ((dev = add_device(ifr[i].ifr_name)) == NULL)
@@ -487,7 +488,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 {
 	char *cp;
 	int i, opt;
-	
+
 	if (strncmp(ip, "ip=", 3) == 0) {
 		ip += 3;
 	}
@@ -499,7 +500,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 		dev->name = ip;
 		goto done;
 	}
-	
+
 	for (i = opt = 0; ip && *ip; ip = cp, opt++) {
 		if ((cp = strchr(ip, ':'))) {
 			*cp++ = '\0';
@@ -509,10 +510,10 @@ static int parse_device(struct netdev *dev, const char *ip)
 				progname, dev->name);
 			exit(1);
 		}
-		
+
 		if (*ip == '\0')
 			continue;
-		IPDBG(("IP-Config: opt #%d: '%s'\n", opt, ip));
+		DEBUG(("IP-Config: opt #%d: '%s'\n", opt, ip));
 		switch (opt) {
 		case 0:
 			parse_addr(&dev->ip_addr, ip);
@@ -588,7 +589,7 @@ static int check_autoconfig(void)
 {
 	int ndev = 0, nauto = 0;
 	struct state *s;
-	
+
 	for (s = slist; s; s = s->next) {
 		ndev++;
 		if (s->dev->caps)
@@ -616,10 +617,10 @@ int ipconfig_main(int argc, char *argv[])
 	int c, port;
 
 	progname = argv[0];
-	
+
 	gettimeofday(&now, NULL);
 	srand48(now.tv_usec ^ (now.tv_sec << 24));
-	
+
 	do {
 		c = getopt(argc, argv, "c:d:np:t:");
 		if (c == EOF)
@@ -669,7 +670,7 @@ int ipconfig_main(int argc, char *argv[])
 		if (dev)
 			bringup_device(dev);
 	}
-	
+
 	if (check_autoconfig()) {
 		if (cfg_local_port != LOCAL_PORT) {
 			printf("IP-Config: binding source port to %d, "

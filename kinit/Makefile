@@ -1,17 +1,21 @@
 SRCROOT = ..
 include $(SRCROOT)/MCONFIG
 
-MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
-CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall \
+MAKEDEPS := -Wp,-MD,.$(subst /,-,$*).d
+CFLAGS	:= $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall \
 	-I$(SRCROOT)/ipconfig \
 	-I$(SRCROOT)/nfsmount
-LIBS     = \
+LIBS	:= \
 	$(SRCROOT)/nfsmount/libnfsmount.a \
 	$(SRCROOT)/ipconfig/libipconfig.a \
 	$(KLIBC) $(LIBGCC)
-PROGS    = kinit
+PROGS	:= kinit
+OBJS	:= kinit.o nfsroot.o
 
 all: $(PROGS)
 
-kinit: kinit.o
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) kinit.o $(LIBS)
+kinit: $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
+
+clean:
+	-rm *.o

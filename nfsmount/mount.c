@@ -240,29 +240,15 @@ static inline int umount_v3(const char *path, struct client *clnt)
 	return mount_call(MNTPROC_UMNT, NFS_MNT3_VERSION, path, clnt);
 }
 
-int nfs_mount(__u32 server, const char *rem_path, const char *path,
-	     struct nfs_mount_data *data)
+int nfs_mount(const char *pathname, const char *hostname,
+	      __u32 server, const char *rem_path, const char *path,
+	      struct nfs_mount_data *data)
 {
-	struct in_addr wibble = { server };
 	struct client *clnt = NULL;
 	struct sockaddr_in addr;
-	char *pathname = NULL;
 	char mounted = 0;
-	char *hostname;
 	int sock = -1;
-	int path_len;
 	int ret = 0;
-
-	hostname = inet_ntoa(wibble);
-	path_len = strlen(hostname) + strlen(rem_path) + 2;
-	pathname = malloc(path_len);
-
-	if (pathname == NULL) {
-		perror("malloc");
-		goto bail;
-	}
-
-	snprintf(pathname, path_len, "%s:%s", hostname, rem_path);
 
 	get_ports(server, data);
 
@@ -339,10 +325,6 @@ int nfs_mount(__u32 server, const char *rem_path, const char *path,
  done:
 	if (clnt) {
 		client_free(clnt);
-	}
-
-	if (pathname) {
-		free(pathname);
 	}
 
 	if (sock != -1) {

@@ -7,8 +7,9 @@
 extern __u32 nfs_port;
 
 extern int nfsmount_main(int argc, char *argv[]);
-int nfs_mount(__u32 server, const char *rem_path, const char *path,
-	     struct nfs_mount_data *data);
+int nfs_mount(const char *rem_name, const char *hostname,
+	      __u32 server, const char *rem_path,
+	      const char *path, struct nfs_mount_data *data);
 
 enum nfs_proto {
 	v2 = 2,
@@ -23,6 +24,7 @@ enum nfs_proto {
  */
 #undef NFS_DEBUG
 
+#undef DEBUG
 #ifdef NFS_DEBUG
 #define DEBUG(x) printf x
 #else

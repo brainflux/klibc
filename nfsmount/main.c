@@ -138,14 +138,8 @@ static void check_path(const char *path)
 	struct stat st;
 
 	if (stat(path, &st) == -1) {
-		if (errno != ENOENT) {
-			perror("stat");
-			exit(1);
-		}
-		if (mkdir(path, 0755) == -1) {
-			perror("mkdir");
-			exit(1);
-		}
+		perror("stat");
+		exit(1);
 	}
 	else if (!S_ISDIR(st.st_mode)) {
 		fprintf(stderr, "%s: '%s' not a directory\n",
@@ -161,7 +155,9 @@ int nfsmount_main(int argc, char *argv[])
 {
 	struct timeval now;
 	__u32 server = 0;
+	char *rem_name;
 	char *rem_path;
+	char *hostname;
 	char *path;
 	int c;
 
@@ -170,13 +166,10 @@ int nfsmount_main(int argc, char *argv[])
 	gettimeofday(&now, NULL);
 	srand48(now.tv_usec ^ (now.tv_sec << 24));
 
-	while ((c = getopt(argc, argv, "o:s:")) != EOF) {
+	while ((c = getopt(argc, argv, "o:")) != EOF) {
 		switch (c) {
 		case 'o':
 			parse_opts(optarg);
-			break;
-		case 's':
-			server = parse_addr(optarg);
 			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
@@ -185,17 +178,31 @@ int nfsmount_main(int argc, char *argv[])
 		}
 	}
 
-	if (server == 0) {
-		fprintf(stderr, "%s: need a server\n", progname);
-		exit(1);
-	}
-
 	if (optind == argc) {
 		fprintf(stderr, "%s: need a path\n", progname);
 		exit(1);
 	}
 
-	rem_path = argv[optind];
+	hostname = rem_path = argv[optind];
+
+	if ((rem_name = strdup(rem_path)) == NULL) {
+		perror("strdup");
+		exit(1);
+	}
+
+	if ((rem_path = strchr(rem_path, ':')) == NULL) {
+		fprintf(stderr, "%s: need a server\n", progname);
+		exit(1);
+	}
+
+	*rem_path++ = '\0';
+
+	if (*rem_path != '/') {
+		fprintf(stderr, "%s: need a path\n", progname);
+		exit(1);
+	}
+
+	server = parse_addr(hostname);
 
 	if (optind <= argc - 2) {
 		path = argv[optind + 1];
@@ -205,8 +212,11 @@ int nfsmount_main(int argc, char *argv[])
 
 	check_path(path);
 
-	if (nfs_mount(server, rem_path, path, &mount_data) != 0)
+	if (nfs_mount(rem_name, hostname, server, rem_path, path,
+		      &mount_data) != 0)
 		return 1;
+
+	free(rem_name);
 
 	return 0;
 }

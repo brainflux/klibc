@@ -8,6 +8,8 @@
 extern __u16 cfg_local_port;
 extern __u16 cfg_remote_port;
 
+extern struct netdev *ifaces;
+
 extern int ipconfig_main(int argc, char *argv[]);
 
 /*
@@ -16,8 +18,11 @@ extern int ipconfig_main(int argc, char *argv[]);
  * If you're turning on debugging, make sure you get rid of -Os from
  * the gcc command line, or else ipconfig will fail to link.
  */
-#if 0
-#define IPDBG(x) printf x
+#undef IPC_DEBUG
+
+#undef DEBUG
+#ifdef IPC_DEBUG
+#define DEBUG(x) printf x
 #else
-#define IPDBG(x) do { } while(0)
+#define DEBUG(x) do { } while(0)
 #endif
