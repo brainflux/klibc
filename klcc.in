@@ -15,6 +15,7 @@ $KLIBC = '/home/hpa/klibc/klibc/klibc';
 # Default optimization options (for compiles without -g)
 @optopt = ('-march=i386', '-Os', '-falign-functions=0', '-falign-jumps=0',
 	   '-falign-loops=0');
+@goptopt = ('-O');
 
 $CC = '/usr/bin/gcc'; 		# The gcc to use
 $LD = '/usr/bin/ld';  		# The ld to use
@@ -96,10 +97,6 @@ $operation = '';		# Compile and link
 # Current -x option.  If undefined, it means autodetect.
 undef $lang;
 
-# Optimization (-O) option.  klibc requires *some* -O option, so
-# if we don't specify one, this script adds -O1 by default.
-undef $opt;
-
 $save_temps = 0;		# The -save-temps option
 $verbose = 0;			# The -v option
 $shared = 0;	   		# Are we compiling shared?
@@ -114,7 +111,7 @@ foreach $a ( @ARGV ) {
     } elsif ( $a =~ /^-Wl,(.*)$/ ) {
 	# -Wl used to pass options to the linker
 	push(@ldopt, split(/,/, $1));
-    } elsif ( $a =~ /^-([fmwWQd]|std=|ansi|pedantic)/ ) {
+    } elsif ( $a =~ /^-([fmwWQdO]|std=|ansi|pedantic)/ ) {
 	# Options to gcc
 	push(@ccopt, $a);
     } elsif ( $a =~ /^-[gp]/ ) {
@@ -142,6 +139,12 @@ foreach $a ( @ARGV ) {
     } else {
 	die "$0: unknown option: $a\n";
     }
+}
+
+if ( $debugging ) {
+    @ccopt = (@includes, @goptopt, @ccopt);
+} else {
+    @ccopt = (@includes, @optopt, @ccopt);
 }
 
 if ( $operation ne '' ) {
