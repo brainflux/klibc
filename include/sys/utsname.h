@@ -5,6 +5,8 @@
 #ifndef _SYS_UTSNAME_H
 #define _SYS_UTSNAME_H
 
+#include <extern.h>
+
 #define SYS_NMLN 65
 
 struct utsname {
@@ -15,5 +17,7 @@ struct utsname {
         char machine[SYS_NMLN];
         char domainname[SYS_NMLN];
 };
+
+__extern int uname(struct utsname *);
 
 #endif /* _SYS_UTSNAME_H */

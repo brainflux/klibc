@@ -103,4 +103,6 @@ int nanosleep(const struct timespec *, struct timespec *)
 # Miscellaneous
 #
 int uname(struct utsname *)
+int setdomainname(const char *, size_t)
+int sethostname(const char *, size_t)
 

@@ -9,6 +9,9 @@
 #include <stddef.h>
 #include <sys/types.h>
 
+/* Forward declarations of types */
+struct timeval;
+
 __extern char **environ;
 __extern __noreturn _exit(int);
 
@@ -58,5 +61,10 @@ __extern int pause(void);
 __extern unsigned int alarm(unsigned int);
 __extern unsigned int sleep(unsigned int);
 __extern void usleep(unsigned long);
+
+__extern int gethostname(char *, size_t);
+__extern int sethostname(const char *, size_t);
+__extern int getdomainname(char *, size_t);
+__extern int setdomainname(const char *, size_t);
 
 #endif /* _UNISTD_H */
