@@ -347,9 +347,11 @@ popped from the stack.  The parser routines store the number of
 the current line in this variable.
 
 DEBUGGING:  If DEBUG is defined in shell.h, then the shell will
-write debugging information to the file $HOME/trace.  Most of
-this is done using the TRACE macro, which takes a set of printf
-arguments inside two sets of parenthesis.  Example:
+write debugging information to the file /tmp/trace. Or, if an
+enviroment variable KLIBC_ASH_DEBUGTRACE is set, this file will
+be used for debugging outout. Most of this is done using the
+TRACE macro, which takes a set of printf arguments inside two
+sets of parenthesis.  Example:
 "TRACE(("n=%d0, n))".  The double parenthesis are necessary be-
 cause the preprocessor can't handle functions with a variable
 number of arguments.  Defining DEBUG also causes the shell to

@@ -381,7 +381,7 @@ trargs(char **ap)
 void
 opentrace(void)
 {
-	char s[100];
+	char s[100], *p;
 #ifdef O_APPEND
 	int flags;
 #endif
@@ -405,10 +405,11 @@ opentrace(void)
 		strcat(s, "/trace");
 	}
 #else
-	scopy("./trace", s);
+	p = getenv("KLIBC_ASH_DEBUGTRACE");
+	scopy(p ? p : "/tmp/trace", s);
 #endif /* not_this_way */
 	if (tracefile) {
-		if (!freopen(s, "a", tracefile)) {
+		if (!(!fclose(tracefile) && (tracefile = fopen(s, "a")))) {
 			fprintf(stderr, "Can't re-open %s\n", s);
 			debug = 0;
 			return;
@@ -424,7 +425,6 @@ opentrace(void)
 	if ((flags = fcntl(fileno(tracefile), F_GETFL, 0)) >= 0)
 		fcntl(fileno(tracefile), F_SETFL, flags | O_APPEND);
 #endif
-	setlinebuf(tracefile);
 	fputs("\nTracing started.\n", tracefile);
 }
 #endif /* DEBUG */

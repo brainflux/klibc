@@ -74,6 +74,9 @@ typedef void *pointer;
 
 extern char nullstr[1];		/* null string */
 
+#if 0
+#define DEBUG 2
+#endif
 
 #ifdef DEBUG
 #define TRACE(param)	trace param
