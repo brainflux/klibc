@@ -44,7 +44,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    ia64:	 Needs sysstub.ph
    m68k:	 Not yet ported
    mips64:	 Not yet ported
-   mips:	 Needs sysstub.ph
+   mips:	 Working static, shared fails
    parisc:	 Needs sysstub.ph
    ppc64:	 Working
    ppc:		 Working

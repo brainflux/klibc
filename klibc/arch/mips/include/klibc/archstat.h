@@ -9,7 +9,7 @@
  * struct stat of the 64-bit kernel.
  */
 
-struct stat64 {
+struct stat {
 	unsigned long	st_dev;
 	unsigned long	st_pad0[3];	/* Reserved for st_dev expansion  */
 
