@@ -8,24 +8,48 @@
 
 
 #include <stdlib.h>
+#include <stdint.h>
 
 int errno;			/* It has to go somewhere... */
 char **environ;
 
 extern int main(int argc, char **argv, char **envp);
 
-void _start(int args)
+void _start(void)
 {
   /*
    * The argument block begins above the current stack frame, because we
    * have no return address.
    *
-   * FIXME: Is this valid for all platforms?
+   * FIXME: this needs to be ported to all platforms...
    */
-  int *params = &args-1;
-  int argc = *params;
-  char **argv = (char **) (params+1);
-  
+
+  int argc;
+  char **argv;
+
+#if defined(__i386__)
+  register uintptr_t *params asm("%esp");
+#elif defined(__x86_64__)
+  register uintptr_t *params asm("%rsp");
+#elif defined(__sparc__)
+  register uintptr_t *sp asm("%sp");
+  uintptr_t *params = sp+16;	/* SPARC needs a window save area */
+#elif defined(__mips__) || defined(__mips64__)
+  register uintptr_t *params asm("$sp");
+#else
+#error "Need crt0.c port for this architecture!"
+#endif
+
+  /* These seem to be standard for all the ELF ABIs... */
+#ifdef STACK_GROWS_UP
+  argc    = (int) *params;
+  argv    = (char **)(params-1);
+  environ = argv-argc-1;
+#else
+  argc    = (int) *params;
+  argv    = (char **)(params+1);
   environ = argv+argc+1;
+#endif
+
   exit(main(argc,argv,environ));
 }
