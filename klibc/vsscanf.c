@@ -12,6 +12,8 @@
 #include <string.h>
 #include <limits.h>
 
+#include "strntoumax.h"
+
 #ifndef LONG_BIT
 #define LONG_BIT (CHAR_BIT*sizeof(long))
 #endif
@@ -48,7 +50,7 @@ enum bail {
 static inline const char *
 skipspace(const char *p)
 {
-  while ( isspace(*p) ) p++;
+  while ( isspace((unsigned char)*p) ) p++;
   return p;
 }
 
@@ -74,7 +76,6 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
   int rank = rank_int;		/* Default rank */
   unsigned int width = UINT_MAX;
   int base;
-  size_t sz;
   enum flags flags = 0;
   enum {
     st_normal,			/* Ground state */
@@ -85,14 +86,13 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
     st_match,			/* Main state of %[ sequence */
     st_match_range,		/* After - in a %[ sequence */
   } state = st_normal;
-  char *sarg;			/* %s %c or %[ string argument */
-  int slen;			/* String length */
+  char *sarg = NULL;		/* %s %c or %[ string argument */
   enum bail bail = bail_none;
-  int sign, minus;
+  int sign;
   int converted = 0;		/* Successful conversions */
   unsigned long matchmap[((1 << CHAR_BIT)+(LONG_BIT-1))/LONG_BIT];
-  int matchinv;			/* Is match map inverted? */
-  unsigned char range_start;
+  int matchinv = 0;		/* Is match map inverted? */
+  unsigned char range_start = 0;
 
   while ( (ch = *p++) && !bail ) {
     switch ( state ) {
@@ -100,7 +100,7 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
       if ( ch == '%' ) {
 	state = st_flags;
 	flags = 0; rank = rank_int; width = UINT_MAX;
-      } else if ( isspace(ch) ) {
+      } else if ( isspace((unsigned char)ch) ) {
 	q = skipspace(q);
       } else {
 	if ( *q == ch )
@@ -170,11 +170,12 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	switch ( ch ) {
 	case 'P':		/* Upper case pointer */
 	case 'p':		/* Pointer */
+#if 0	/* Enable this to allow null pointers by name */
 	  q = skipspace(q);
-	  if ( !isdigit(*q) ) {
-	    static const char *nullnames[] =
+	  if ( !isdigit((unsigned char)*q) ) {
+	    static const char * const nullnames[] =
 	    { "null", "nul", "nil", "(null)", "(nul)", "(nil)", 0 };
-	    const char **np;
+	    const char * const *np;
 
 	    /* Check to see if it's a null pointer by name */
 	    for ( np = nullnames ; *np ; np++ ) {
@@ -188,6 +189,7 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	    break;
 	  }
 	  /* else */
+#endif
 	  rank = rank_ptr;
 	  base = 0; sign = 0;
 	  goto scan_int;
@@ -215,7 +217,7 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 
 	case 'n':		/* Number of characters consumed */
 	  val = (q-buffer);
-	  goto set_integer_noinc;
+	  goto set_integer;
 
 	scan_int:
 	  q = skipspace(q);
@@ -223,25 +225,15 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	    bail = bail_eof;
 	    break;
 	  }
-	  minus = 0;
-	  if ( sign && width && *q == '-' ) {
-	    q++; width--; minus = 1;
-	  }
-	  val = strntoumax(q, &qq, base, width);
+	  val = strntoumax(q, (char **)&qq, base, width);
 	  if ( qq == q ) {
 	    bail = bail_err;
 	    break;
 	  }
-	  if (minus) {
-	    val = (uintmax_t) -(intmax_t)val;
-	  }
-	  /* fall through */
-
-	set_integer:
 	  converted++;
 	  /* fall through */
 
-	set_integer_noinc:
+	set_integer:
 	  if ( !(flags & FL_SPLAT) ) {
 	    switch(rank) {
 	    case rank_char:
@@ -284,7 +276,7 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	  {
 	    char *sp;
 	    sp = sarg = va_arg(ap, char *);
-	    while ( width-- && *q && !isspace(*q) ) {
+	    while ( width-- && *q && !isspace((unsigned char)*q) ) {
 	      *sp++ = *q++;
 	    }
 	    if ( sarg != sp ) {
