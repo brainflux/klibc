@@ -143,6 +143,7 @@ long delete_module(const char *, unsigned int)
 <!ia64> int query_module(const char *, int, void *, size_t, size_t)
 int reboot::__reboot(int, int, int, void *)
 int syslog::klogctl(int, char *, int)
+int sysinfo(struct sysinfo *)
 
 #
 # Low-level I/O (generally architecture-specific)
