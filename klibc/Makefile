@@ -126,7 +126,7 @@ errlist.c:
 SYSCALLS.i: SYSCALLS.def
 	$(CC) $(CFLAGS) -D__ASSEMBLY__ -ansi -x assembler-with-cpp -E -o $@ $<
 
-syscalls.nrs: $<
+syscalls.nrs: ../include/sys/syscall.h
 	$(CC) $(CFLAGS) -Wp,-dM -x c -E -o $@ $<
 
 syscalls.dir: SYSCALLS.i syscalls.pl arch/$(ARCH)/sysstub.ph syscommon.h syscalls.nrs
