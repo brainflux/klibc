@@ -88,9 +88,9 @@ objects-shared: $(SHARED)
 	touch $(DIR)/shared.obj
 
 clean: archclean
-	rm -f *.o *.lo *.a *.so *.i *.s *.ls
-	rm -f $(TESTS) tests/*.o tests/*.stripped
-	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls
+	find . -type f -a \( -name \*.[isoa] -o -name \*.l[iso] \) -print0 | xargs -0rt rm -f
+	rm -f *.a *.so
+	rm -f $(TESTS) tests/*.stripped
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
 
