@@ -1,6 +1,3 @@
-%define _rpmdir rpms
-%define _builddir .
-
 Summary: A minimal libc subset for use with initramfs.
 Name: klibc
 Version: @@VERSION@@
@@ -48,7 +45,7 @@ initramfs images and embedded systems.
 cp -as /usr/src/linux-`rpm -q kernel-source | cut -d- -f3-` ./linux
 make -C linux defconfig ARCH=%{_target_cpu}
 make -C linux prepare ARCH=%{_target_cpu}
-mkdir -p %{buildroot} %{_rpmdir}
+mkdir -p %{buildroot}
 
 %build
 make ARCH=%{_target_cpu}
