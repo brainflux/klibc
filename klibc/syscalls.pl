@@ -81,7 +81,7 @@ while ( defined($line = <FILE>) ) {
 	}
 
 	$type  =~ s/\s*$//;
-	$stype =~ s/^\@/_/;
+	$stype =~ s/^\@//;
 
 	if ( $fname eq '' ) {
 	    $fname = $sname;
