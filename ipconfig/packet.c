@@ -99,11 +99,13 @@ static struct header ipudp_hdrs = {
 	},
 };
 
+#ifdef IPC_DEBUG		/* Only used by DEBUG(()) */
 static char *ntoa(__u32 addr)
 {
 	struct in_addr in = { addr };
 	return inet_ntoa(in);
 }
+#endif
 
 /*
  * Send a packet.  The options are listed in iov[1...iov_len].
