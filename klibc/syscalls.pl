@@ -17,7 +17,7 @@ for $arg ( @ARGV ) {
 	push(@args, $arg);
     }
 }
-($file, $arch, $bits, $unistd) = @args;
+($file, $arch, $bits, $unistd, $havesyscall) = @args;
 
 require "arch/$arch/sysstub.ph";
 
@@ -34,8 +34,8 @@ while ( defined($line = <UNISTD>) ) {
 }
 close(UNISTD);
 
-if (!open(HAVESYS, '>', "include/klibc/havesyscall.h")) {
-    die "$0: include/klibc/havesyscall.h: $!\n";
+if (!open(HAVESYS, '>', $havesyscall)) {
+    die "$0: $havesyscall: $!\n";
 }
 
 print HAVESYS "#ifndef _KLIBC_HAVESYSCALL_H\n";

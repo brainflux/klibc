@@ -3,15 +3,20 @@
 # Makefile configuration, without explicit rules
 #
 
+# Eventually support separate compilation, but we don't have it yet...
+OBJROOT = $(SRCROOT)
+
 ARCH    = $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
 KLIBSRC = $(SRCROOT)/klibc
-REQFLAGS = $(ARCHREQFLAGS) -nostdinc -iwithprefix include -I$(KLIBSRC) \
-	  -I$(KLIBSRC)/arch/$(ARCH)/include \
-	  -I$(KLIBSRC)/include/bits$(BITSIZE) \
-	  -D__KLIBC__ -DBITSIZE=$(BITSIZE) -I$(KLIBSRC)/include \
+KLIBOBJ = $(OBJROOT)/klibc
+REQFLAGS = $(ARCHREQFLAGS) -nostdinc -iwithprefix include \
+	  -D__KLIBC__ -DBITSIZE=$(BITSIZE) \
+	  -I$(SRCROOT)/include/arch/$(ARCH) \
+	  -I$(SRCROOT)/include/bits$(BITSIZE) \
+	  -I$(SRCROOT)/include \
 	  -I$(SRCROOT)/linux/include
 LDFLAGS =
 AR      = $(CROSS)ar
@@ -27,13 +32,13 @@ HOST_LDFLAGS =
 HOST_LIBS    =
 
 # Static library paths
-CRT0      = $(KLIBSRC)/crt0.o
-KLIBC     = $(KLIBSRC)/libc.a
+CRT0      = $(KLIBOBJ)/crt0.o
+KLIBC     = $(KLIBOBJ)/libc.a
 LIBGCC    = $(shell $(CC) --print-libgcc)
 
 # Shared library paths
-CRTSHARED = $(KLIBSRC)/interp.o
-LIBSHARED = $(KLIBSRC)/libc.so
+CRTSHARED = $(KLIBOBJ)/interp.o
+LIBSHARED = $(KLIBOBJ)/libc.so
 
 #
 # This indicates the location of the final version of the shared library.
