@@ -439,18 +439,7 @@ static unsigned int parse_proto(const char *ip)
 	return caps;
 }
 
-static void bringup_device(struct netdev *dev)
-{
-	if (netdev_up(dev) == 0) {
-		if (dev->caps) {
-			add_one_dev(dev);
-		} else {
-			complete_device(dev);
-		}
-	}
-}
-
-static void add_all_devices(struct netdev *template);
+static int add_all_devices(struct netdev *template);
 
 static int parse_device(struct netdev *dev, const char *ip)
 {
