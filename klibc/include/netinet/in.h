@@ -25,6 +25,12 @@
 #ifndef ntohl
 # define ntohl(x)	__be32_to_cpu(x)
 #endif
+#ifndef htonq
+# define htonq(x)	__cpu_to_be64(x)
+#endif
+#ifndef ntohq
+# define ntohq(x)	__be64_to_cpu(x)
+#endif
 
 #define IPPORT_RESERVED	1024
 
