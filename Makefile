@@ -20,4 +20,4 @@ clean:
 
 spotless:
 	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
-	rm -f klibc.spec
+	rm -f klibc.spec *~ tags
