@@ -1,4 +1,4 @@
-#ident "$Id: nuke.c,v 1.1 2004/06/07 20:40:32 hpa Exp $"
+#ident "$Id: nuke.c,v 1.2 2004/06/08 02:58:27 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -117,6 +117,8 @@ int main(int argc, char *argv[])
 {
   int i;
   int err = 0;
+
+  program = argv[0];
 
   for ( i = 1 ; i < argc ; i++ ) {
     err = nuke(argv[i]);
