@@ -3,6 +3,7 @@
  */
 
 #include <string.h>
+#include <stdint.h>
 
 void *memcpy(void *dst, const void *src, size_t n)
 {
@@ -17,7 +18,7 @@ void *memcpy(void *dst, const void *src, size_t n)
   size_t nq = n >> 3;
   asm volatile("cld ; rep ; movsq ; movl %3,%%ecx ; rep ; movsb"
 	       : "+c" (nq), "+S" (p), "+D" (q)
-	       : "r" ((uint32_t)n & 7));
+	       : "r" ((uint32_t)(n & 7)));
 #else
   while ( n-- ) {
     *q++ = *p++;
