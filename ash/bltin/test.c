@@ -5,7 +5,7 @@
  * (-x -c -b -p -u -g -k) plus Korn's -L -nt -ot -ef and new -S (socket).
  */
 
-static char *RCSid = "$Id: test.c,v 1.1 2002/08/17 01:36:06 hpa Exp $";
+static char *RCSid = "$Id: test.c,v 1.1.1.1 2002/08/17 01:36:06 hpa Exp $";
 
 #include <stddef.h>
 /*#include <string.h>*/
