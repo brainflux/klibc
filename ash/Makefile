@@ -143,7 +143,7 @@ arith_lex.c: arith_lex.l
 	mv lex.yy.c $@
 
 arith.h: arith.c
-	sed -n '/^#define ARITH/p' $< > $@
+	$(PERL) -ne 'print if ( /^\#\s*define\s+ARITH/ );' < $< > $@
 
 clean:
 	rm -f core $(CLEANFILES) $(OBJS) .*.d *.g
