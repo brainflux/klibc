@@ -45,7 +45,7 @@ local-all: $(CROSS)klcc
 local-clean:
 	rm -f klibc.config klcc
 
-local-spotless:
+local-spotless: local-clean
 	rm -f klibc.spec *~ tags
 
 local-install: $(CROSS)klcc
