@@ -43,6 +43,10 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
 	  inet/inet_ntop.o inet/inet_pton.o inet/bindresvport.o \
 	  send.o recv.o
+ifeq ($(ERRLIST),1)
+LIBOBJS += errlist.o
+endif
+
 SOLIB   = libc.so
 SOHASH  = klibc.so
 
@@ -108,6 +112,9 @@ interp.o: interp.S $(SOLIB).hash
 crt0.o: arch/$(ARCH)/crt0.o
 	cp arch/$(ARCH)/crt0.o .
 
+errlist.c:
+	$(PERL) makeerrlist.pl -errlist > $@ || rm -f $@
+
 # We pass -ansi to keep cpp from define e.g. "i386" as well as "__i386__"
 SYSCALLS.i: SYSCALLS.def
 	$(CC) $(CFLAGS) -D__ASSEMBLY__ -ansi -x assembler-with-cpp -E -o $@ $<
@@ -144,7 +151,7 @@ clean: archclean
 	rm -f $(TESTS) tests/*.stripped
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
-	rm -f sha1hash
+	rm -f sha1hash errlist.c
 
 spotless: clean
 	find . \( -name \*~ -o -name '.*.d' \) -not -type d -print0 | \

@@ -41,6 +41,11 @@ LIBSHARED = $(KLIBSRC)/libc.so
 #
 SHLIBDIR = /lib
 
+# Enable this to make perror/strerror return real error messages
+# This makes klibc.so and any static binary which uses these functions
+# about 4K bigger.
+ERRLIST = 1
+
 #
 # Include arch-specific rule fragments
 #
