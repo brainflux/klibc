@@ -5,6 +5,8 @@
 #ifndef _STDDEF_H
 #define _STDDEF_H
 
+#define __KLIBC__ 1
+
 #include <bitsize/stddef.h>
 
 #ifdef __cplusplus
