@@ -5,13 +5,10 @@
 int main(int argc, char *argv[], char *envp[])
 {
   int i;
-  register void *sp asm ("%sp");
 
   /* Verify envp == environ */
   printf("Verifying envp == environ... %s\n",
 	 (envp == environ) ? "ok" : "ERROR");
-
-  printf("%%sp = %p\n", sp);
 
   /* Test argc/argv */
   printf("argc = %d, argv = %p\n", argc, argv);
