@@ -49,10 +49,6 @@ void vsyslog(int prio, const char *format, va_list ap)
   if ( __syslog_fd == -1 )
     openlog(NULL, 0, 0);
 
-  fd = __syslog_fd;
-  if ( fd == -1 )
-    fd = 2;			/* Failed to open log, write to stderr */
-
   buf[0] = '<';
   buf[1] = LOG_PRI(prio)+'0';
   buf[2] = '>';
@@ -65,6 +61,10 @@ void vsyslog(int prio, const char *format, va_list ap)
 
   if ( len > BUFLEN-1 ) len = BUFLEN-1;
   buf[len++] = '\n';
+
+  fd = __syslog_fd;
+  if ( fd == -1 )
+    fd = 2;			/* Failed to open log, write to stderr */
 
   write(fd, buf, len);
 }
