@@ -46,6 +46,7 @@ local-spotless:
 
 local-install: $(CROSS)klcc
 	mkdir -p $(INSTALLROOT)$(bindir)
+	mkdir -p $(INSTALLROOT)$(mandir)/man1
 	mkdir -p $(INSTALLROOT)$(SHLIBDIR)
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)
 	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/include
@@ -58,6 +59,7 @@ local-install: $(CROSS)klcc
 	  cp -r $(KRNLOBJ)/include2/. $(INSTALLROOT)$(INSTALLDIR)/include/.
 	rm -rf $(INSTALLROOT)$(INSTALLDIR)/include/asm-*
 	cp -r include/. $(INSTALLROOT)$(INSTALLDIR)/include/.
+	$(INSTALL_DATA) klcc.1 $(INSTALLROOT)$(mandir)/man1/$(CROSS)klcc.1
 	$(INSTALL_EXEC) $(CROSS)klcc $(INSTALLROOT)$(bindir)
 
 -include MCONFIG
