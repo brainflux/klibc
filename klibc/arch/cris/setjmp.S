@@ -18,8 +18,9 @@
 _setjmp:
 	movem	$r8,[$r10+]		/* Save $r8..$r0 at $r10... */
 	move.d	$sp,[$r10+]
+	move	$srp,[$r10]
 	ret
-	  move	$srp,[$r10+]
+	  moveq	0,$r10
 
 	.size _setjmp,.-_setjmp
 
@@ -30,7 +31,7 @@ _setjmp:
 _longjmp:
 	movem	[$r10+],$r8		/* Load $r8..$r0 from $r10... */
 	move.d	[$r10+],$sp
-	jump	[$r10+]
+	jump	[$r10]
 	  move.d $r11,$r10
 	
 	.size _longjmp,.-_longjmp
