@@ -62,15 +62,15 @@ make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 
 # Install the docs
 
-mkdir -p ${_docdir} %{udocdir}
-install -m 444 README %{_docdir}
-install -m 444 klibc/README %{_docdir}/README.klibc
-install -m 444 klibc/arch/README %{_docdir}/README.klibc.arch
+mkdir -p %{buildroot}%{_docdir} %{buildroot}%{udocdir}
+install -m 444 README %{buildroot}%{_docdir}
+install -m 444 klibc/README %{buildroot}%{_docdir}/README.klibc
+install -m 444 klibc/arch/README %{buildroot}%{_docdir}/README.klibc.arch
 
-install -m 444 gzip/COPYING %{udocdir}/COPYING.gzip
-install -m 444 gzip/README %{udocdir}/README.gzip
-install -m 444 ipconfig/README %{udocdir}/README.ipconfig
-install -m 444 kinit/README %{udocdir}/README.kinit
+install -m 444 gzip/COPYING %{buildroot}%{udocdir}/COPYING.gzip
+install -m 444 gzip/README %{buildroot}%{udocdir}/README.gzip
+install -m 444 ipconfig/README %{buildroot}%{udocdir}/README.ipconfig
+install -m 444 kinit/README %{buildroot}%{udocdir}/README.kinit
 
 %clean
 rm -rf $RPM_BUILD_ROOT
