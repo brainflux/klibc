@@ -22,14 +22,14 @@ static/%: %.o $(CRT0) $(LIBS) $(LIBUTILS)
 	mkdir -p static static.g
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $< $(LIBUTILS) $(LIBS)
 	cp -f $@ static.g
-	$(STRIP) $@
+	$(STRIPCMD) $@
 
 shared/%: %.o $(CRTSHARED) $(LIBSHARED) $(LIBUTILS)
 	mkdir -p shared shared.g
 	$(LD) $(LDFLAGS) -o $@ $(EMAIN) $(CRTSHARED) $< $(LIBUTILS) \
 		-R $(LIBSHARED) $(LIBGCC)
 	cp -f $@ shared.g
-	$(STRIP) $@
+	$(STRIPCMD) $@
 
 # Programs that consist of more than one file
 mount.o: mount_main.o mount_opts.o

@@ -22,7 +22,8 @@ $(CROSS)klibc.config: Makefile
 	echo 'REQFLAGS=$(filter-out -I%,$(REQFLAGS))' >> $@
 	echo 'OPTFLAGS=$(OPTFLAGS)' >> $@
 	echo 'LDFLAGS=$(LDFLAGS)' >> $@
-	echo 'STRIP=$(STRIP)' >> $@
+	echo "STRIP=$(shell bash -c 'type -p $(STRIP)')" >> $@
+	echo 'STRIPFLAGS=$(STRIPFLAGS)' >> $@
 	echo 'EMAIN=$(EMAIN)' >> $@
 	echo 'BITSIZE=$(BITSIZE)' >> $@
 	echo 'INSTALLDIR=$(INSTALLDIR)' >> $@

@@ -37,8 +37,11 @@ AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib
 NM	= $(CROSS)nm
 PERL    = perl
-STRIP   = $(CROSS)strip --strip-all -R .comment -R .note
 OBJCOPY = $(CROSS)objcopy
+
+STRIP      = $(CROSS)strip
+STRIPFLAGS = --strip-all -R .comment -R .note
+STRIPCMD   = $(STRIP) $(STRIPFLAGS)
 
 HOST_CC      = gcc
 HOST_CFLAGS  = -g -O

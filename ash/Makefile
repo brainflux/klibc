@@ -84,12 +84,12 @@ $(OBJS): Makefile
 $(PROG): $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
 	cp -f $@ $@.g
-	$(STRIP) $@
+	$(STRIPCMD) $@
 
 $(PROG).shared: $(OBJS) $(CRTSHARED) $(LIBSHARED) $(LIBGCC)
 	$(LD) $(LDFLAGS) -o $(PROG).shared $(EMAIN) $(CRTSHARED) $(OBJS) -R $(LIBSHARED) $(LIBGCC)
 	cp -f $@ $@.g
-	$(STRIP) $@
+	$(STRIPCMD) $@
 
 $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1

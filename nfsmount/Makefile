@@ -15,14 +15,14 @@ static/nfsmount: $(OBJS) $(CRT0) $(LIBS)
 	mkdir -p static static.g
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
 	cp -f $@ static.g
-	$(STRIP) $@
+	$(STRIPCMD) $@
 
 shared/nfsmount: $(OBJS) $(CRTSHARED) $(LIBSHARED) $(LIBGCC)
 	mkdir -p shared shared.g
 	$(LD) $(LDFLAGS) -o $@ $(EMAIN) $(CRTSHARED) $(OBJS) \
 		-R $(LIBSHARED) $(LIBGCC)
 	cp -f $@ shared.g
-	$(STRIP) $@
+	$(STRIPCMD) $@
 
 dummypmap: dummypmap_test.o
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $^ $(LIBS)

@@ -88,12 +88,12 @@ tests/testvsnp.o : tests/testvsnp.c
 tests/% : tests/%.o $(LIB) $(CRT0)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
 	cp $@ $@.stripped
-	$(STRIP) $@.stripped
+	$(STRIPCMD) $@.stripped
 
 tests/%.shared : tests/%.o interp.o $(SOLIB)
 	$(LD) $(LDFLAGS) -o $@ $(EMAIN) interp.o tests/$*.o -R $(SOLIB) $(LIBGCC)
 	cp $@ $@.stripped
-	$(STRIP) $@.stripped
+	$(STRIPCMD) $@.stripped
 
 $(LIB): __static_init.o $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
 	rm -f $(LIB)

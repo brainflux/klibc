@@ -20,7 +20,7 @@ all: $(PROGS)
 kinit: $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
 	cp -f $@ $@.g
-	$(STRIP) $@
+	$(STRIPCMD) $@
 
 clean:
 	-rm -f *.o *.g kinit
