@@ -1,14 +1,12 @@
 /*
  * malloc.c
  *
- * Very simple linked-list based malloc().
+ * Very simple linked-list based malloc()/free().
  */
 
 #include <stdlib.h>
 #include <sys/mman.h>
 #include "malloc.h"
-
-void *sbrk(size_t);
 
 struct free_arena_header __malloc_head =
 {
@@ -63,6 +61,57 @@ static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
   return (void *)(&fp->a + 1);
 }
 
+static struct free_arena_header *
+__free_block(struct free_arena_header *ah)
+{
+  struct free_arena_header *pah, *nah;
+
+  pah = ah->a.prev;
+  nah = ah->a.next;
+  if ( pah->a.type == ARENA_TYPE_FREE &&
+       (char *)pah+pah->a.size == (char *)ah ) {
+    /* Coalesce into the previous block */
+    pah->a.size += ah->a.size;
+    pah->a.next = nah;
+    nah->a.prev = pah;
+
+#ifdef DEBUG_MALLOC
+    ah->a.type = ARENA_TYPE_DEAD;
+#endif
+
+    ah = pah;
+    pah = ah->a.prev;
+  } else {
+    /* Need to add this block to the free chain */
+    ah->a.type = ARENA_TYPE_FREE;
+
+    ah->next_free = __malloc_head.next_free;
+    ah->prev_free = &__malloc_head;
+    __malloc_head.next_free = ah;
+    ah->next_free->prev_free = ah;
+  }
+
+  /* In either of the previous cases, we might be able to merge
+     with the subsequent block... */
+  if ( nah->a.type == ARENA_TYPE_FREE &&
+       (char *)ah+ah->a.size == (char *)nah ) {
+    ah->a.size += nah->a.size;
+
+    /* Remove the old block from the chains */
+    nah->next_free->prev_free = nah->prev_free;
+    nah->prev_free->next_free = nah->next_free;
+    ah->a.next = nah->a.next;
+    nah->a.next->a.prev = ah;
+
+#ifdef DEBUG_MALLOC
+    nah->a.type = ARENA_TYPE_DEAD;
+#endif
+  }
+
+  /* Return the block that contains the called block */
+  return ah;
+}
+
 void *malloc(size_t size)
 {
   struct free_arena_header *fp;
@@ -92,16 +141,12 @@ void *malloc(size_t size)
     return NULL;		/* Failed to get a block */
   }
 
-  /* Insert the block into the management chains */
+  /* Insert the block into the management chains.  We need to set
+     up the size and the main block list pointer, the rest of
+     the work is logically identical to free(). */
   fp->a.type = ARENA_TYPE_FREE;
   fp->a.size = fsize;
 
-  /* Add it to the free chain */
-  fp->next_free = __malloc_head.next_free;
-  fp->prev_free = &__malloc_head;
-  __malloc_head.next_free = fp;
-  fp->next_free->prev_free = fp;
-  
   /* We need to insert this into the main block list in the proper
      place -- this list is required to be sorted.  Since we most likely
      get memory assignments in ascending order, search backwards for
@@ -119,7 +164,29 @@ void *malloc(size_t size)
   pah->a.next  = fp;
   fp->a.next->a.prev = fp;
 
+
+  /* Insert into the free chain and coalesce with adjacent blocks */
+  fp = __free_block(fp);
+
   /* Now we can allocate from this block */
   return __malloc_from_block(fp, size);
 }
 
+void free(void *ptr)
+{
+  struct free_arena_header *ah;
+
+  if ( !ptr )
+    return;
+
+  ah = (struct free_arena_header *)
+    ((struct arena_header *)ptr - 1);
+
+#ifdef DEBUG_MALLOC
+  assert( ah->a.type == ARENA_TYPE_USED );
+#endif
+
+  __free_block(ah);
+
+  /* Here we could insert code to return memory to the system. */
+}
