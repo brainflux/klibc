@@ -13,13 +13,16 @@ size_t strlcpy(char *dst, const char *src, size_t size)
   char ch;
 
   while ( (ch = *p++) ) {
-    if ( bytes < size )
+    if ( bytes+1 < size )
       *q++ = ch;
 
     bytes++;
   }
 
-  *q = '\0';
+  /* If size == 0 there is no space for a final null... */
+  if ( size )
+    *q = '\0';
+
   return bytes;
 }
 
