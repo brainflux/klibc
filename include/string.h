@@ -27,6 +27,7 @@ __extern int strncmp(const char *, const char *, size_t);
 __extern char *strncpy(char *, const char *, size_t);
 __extern char *strpbrk(const char *, const char *);
 __extern char *strrchr(const char *, int);
+__extern char *strsep(char **, const char *);
 __extern size_t strspn(const char *, const char *);
 __extern char *strstr(const char *, const char *);
 __extern char *strtok(char *, const char *);
