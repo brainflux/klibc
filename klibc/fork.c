@@ -8,6 +8,7 @@
 #include <sys/syscall.h>
 #include <signal.h>
 #include <unistd.h>
+#include <sched.h>
 
 #ifndef __NR_fork
 
