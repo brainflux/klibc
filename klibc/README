@@ -42,6 +42,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    h8300:	 Not yet ported
    i386:	 Working
    ia64:	 Working
+   m32r:	 Untested
    m68k:	 Not yet ported
    mips64:	 Not yet ported
    mips:	 Working
