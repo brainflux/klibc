@@ -15,23 +15,24 @@ char *strtotimeval(const char *str, struct timeval *tv)
 {
   int n;
   char *s;
+  int us;
 
-  tv->tv_sec  = strtoul(str, &s, 10);
-  tv->tv_usec = 0;
+  tv->tv_sec = strtoul(str, &s, 10);
+  us = 0;
 
-  if ( *s != '.' )
-    return s;
-
-  s++;
-
-  for ( n = 0 ; n < 6 && isdigit(*s) ; n++ )
-    tv->tv_usec = tv->tv_usec*10 + (*s++ - '0');
-
-  while ( isdigit(*s) )
+  if ( *s == '.' ) {
     s++;
-  
-  for ( ; n < 6 ; n++ )
-    tv->tv_usec *= 10;
 
+    for ( n = 0 ; n < 9 && isdigit(*s) ; n++ )
+      us = us*10 + (*s++ - '0');
+    
+    while ( isdigit(*s) )
+      s++;
+    
+    for ( ; n < 9 ; n++ )
+      us *= 10;
+  }
+
+  tv->tv_usec = us;
   return s;
 }
