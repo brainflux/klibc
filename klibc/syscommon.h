@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
+#include <sys/dirent.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/time.h>

@@ -1,3 +1,4 @@
+# -*- fundamental -*-
 #
 # This is a list of system calls we invoke "directly".  These
 # are generated into syscall stubs in their own C files, so the
@@ -28,6 +29,13 @@ gid_t setgid()
 uid_t geteuid()
 gid_t getegid()
 int getgroups(int, gid_t *)
+
+#
+# Filesystem-related system calls
+#
+int mount(const char *, const char *, const char *, unsigned long, const void *)
+int umount(const char *)
+int umount2(const char *, int)
 
 #
 # Inode-related system calls
