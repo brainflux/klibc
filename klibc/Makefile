@@ -12,7 +12,7 @@ PERL    = perl
 TESTS   = testvsnp hello minihello microhello getenvtest \
 	  getopttest malloctest
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
-	  vsscanf.o ctypes.o \
+	  vsscanf.o sscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
 	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
