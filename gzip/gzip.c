@@ -45,7 +45,7 @@ static char  *license_msg[] = {
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: gzip.c,v 1.2 2004/02/09 23:18:14 hpa Exp $";
+static char rcsid[] = "$Id: gzip.c,v 1.3 2005/02/12 21:03:28 olh Exp $";
 #endif
 
 #include <ctype.h>
@@ -106,7 +106,7 @@ int exit_code = OK;   /* program exit code */
 int save_orig_name;   /* set if original name must be saved */
 int last_member;      /* set for .zip and .Z files */
 int part_nb;          /* number of parts in .gz file */
-unsigned long time_stamp; /* original time stamp (modification time) */
+time_t time_stamp; /* original time stamp (modification time) */
 long ifile_size;      /* input file size, -1 for devices (debug only) */
 char *env;            /* contents of GZIP env variable */
 char **args = NULL;   /* argv pointer if GZIP env variable defined */

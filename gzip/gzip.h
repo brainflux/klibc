@@ -129,7 +129,7 @@ extern char ifname[];   /* input file name or "stdin" */
 extern char ofname[];   /* output file name or "stdout" */
 extern char *progname;  /* program name */
 
-extern unsigned long time_stamp; /* original time stamp (modification time) */
+extern time_t time_stamp; /* original time stamp (modification time) */
 extern long ifile_size; /* input file size, -1 for devices (debug only) */
 
 typedef int file_t;     /* Do not use stdio */
