@@ -49,11 +49,9 @@ int NAME (const char *path, const char *arg0, ...)
   envp = va_arg(ap, char * const *);
 #endif
 
-  rv = execve(path, argv, envp);
+  rv = (EXEC_P ? execvpe : execve)(path, argv, envp);
 
   va_end(ap);
 
   return rv;
 }
-
-

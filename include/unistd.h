@@ -24,9 +24,14 @@ __extern pid_t getpgrp(void);
 __extern int setpgrp(void);
 __extern pid_t setsid(void);
 __extern pid_t getsid(pid_t);
-__extern int execve(const char *, const char * const *, char * const *);
-__extern int execl(const char *, const char *, ...);
 __extern int execv(const char *, const char * const *);
+__extern int execvp(const char *, const char * const *);
+__extern int execve(const char *, const char * const *, char * const *);
+__extern int execvpe(const char *, const char * const *, char * const *);
+__extern int execl(const char *, const char *, ...);
+__extern int execlp(const char *, const char *, ...);
+__extern int execle(const char *, const char *, ...);
+__extern int execlpe(const char *, const char *, ...);
 
 __extern int setuid(uid_t);
 __extern uid_t getuid(void);
