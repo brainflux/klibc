@@ -15,7 +15,7 @@ while ( defined($l = <KLIBCCONF>) ) {
     if ( $l =~ /^([^=]+)\=(.*)$/ ) {
 	$n = $1;  $s = $2;
 	print "\$$n = \"\Q$s\E\";\n";
-	print "\@$n = qw ($s);\n";
+	print "\@$n = qw($s);\n";
 	print "\$conf{\'\L$n\E\'} = \\\$$n;\n";
     }
 }
