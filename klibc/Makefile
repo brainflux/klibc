@@ -10,6 +10,7 @@ LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib
 PERL    = perl
+STRIP   = $(CROSS)strip -R .comment -R .note
 
 TESTS   = testvsnp hello minihello microhello getenvtest \
 	  getopttest malloctest minips
@@ -41,7 +42,6 @@ SOLIB   = libc.so
 SONAME  = libc.so
 CRT0    = crt0.o
 LIBGCC  = $(shell $(CC) --print-libgcc)
-STRIP   = strip -R .comment -R .note
 
 all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
@@ -68,8 +68,8 @@ all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 .c.ls:
 	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
 
-% : %.o
-	$(LD) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
+% : %.o $(LIB) $(CRT0)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
 	cp $@ $@.stripped
 	$(STRIP) $@.stripped
 
@@ -89,44 +89,48 @@ malloctest: malloctest.o $(LIB) $(CRT0)
 
 minips: minips.o $(LIB) $(CRT0)
 
-$(LIB): $(LIBOBJS) syscalls.dir socketcalls.dir
+$(LIB): $(LIBOBJS) syscalls/static.obj socketcalls/static.obj
 	rm -f $(LIB)
 	$(AR) cq $(LIB) $(LIBOBJS) syscalls/*.o socketcalls/*.o
 	$(RANLIB) $(LIB)
 
-$(SOLIB): $(SOOBJS) syscalls.dir
+$(SOLIB): $(SOOBJS) syscalls/shared.obj socketcalls/shared.obj
 	$(LD) -shared -soname $(SONAME) -o $@ \
 		$(SOOBJS) syscalls/*.lo socketcalls/*.lo \
 	        $(LIBGCC)
 
-crt0.S: arch/$(ARCH)/crt0.S
-	cp arch/$(ARCH)/crt0.S .
+crt0.o: arch/$(ARCH)/crt0.o
+	cp arch/$(ARCH)/crt0.o .
 
 syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 	rm -rf syscalls
 	mkdir syscalls
 	$(PERL) syscalls.pl $(ARCH) < SYSCALLS
-	$(MAKE) syscalls-objs
-	touch syscalls.dir
-
-SYSCALLS = \
-	$(addsuffix .o,$(basename $(wildcard syscalls/*.[cS]))) \
-	$(addsuffix .lo,$(basename $(wildcard syscalls/*.[cS])))
-syscalls-objs: $(SYSCALLS)
+	touch $@
 
 socketcalls.dir: SOCKETCALLS socketcalls.pl socketcommon.h
 	rm -rf socketcalls
 	mkdir socketcalls
 	$(PERL) socketcalls.pl $(ARCH) < SOCKETCALLS
-	$(MAKE) socketcalls-objs
-	touch socketcalls.dir
+	touch $@
 
-SOCKETCALLS = \
-	$(addsuffix .o,$(basename $(wildcard socketcalls/*.[cS]))) \
-	$(addsuffix .lo,$(basename $(wildcard socketcalls/*.[cS])))
-socketcalls-objs: $(SOCKETCALLS)
+%/static.obj: %.dir
+	$(MAKE) objects-$(notdir $(@:.obj=)) DIR=$*
+
+%/shared.obj: %.dir
+	$(MAKE) objects-$(notdir $(@:.obj=)) DIR=$*
+
+STATIC = $(addsuffix .o,$(basename $(wildcard $(DIR)/*.[cS])))
+SHARED = $(addsuffix .lo,$(basename $(wildcard $(DIR)/*.[cS])))
+
+objects-static: $(STATIC)
+	touch $(DIR)/static.obj
+
+objects-shared: $(SHARED)
+	touch $(DIR)/shared.obj
 
 clean:
 	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls *.stripped
+	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
