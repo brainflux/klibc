@@ -57,6 +57,9 @@ SHLIBDIR = /lib
 # about 4K bigger.
 ERRLIST = 1
 
+# Include zlib in klibc.  This roughly triples the size of klibc!
+ZLIB = 0
+
 #
 # Include arch-specific rule fragments
 #

@@ -48,12 +48,16 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  lrand48.o jrand48.o mrand48.o nrand48.o srand48.o seed48.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
 	  inet/inet_ntop.o inet/inet_pton.o inet/bindresvport.o \
-	  send.o recv.o \
-	  zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/gzio.o \
-	  zlib/uncompr.o zlib/deflate.o zlib/trees.o zlib/zutil.o \
-	  zlib/inflate.o zlib/infback.o zlib/inftrees.o zlib/inffast.o
+	  send.o recv.o
+
 ifeq ($(ERRLIST),1)
 LIBOBJS += errlist.o
+endif
+
+ifeq ($(ZLIB),1)
+LIBOBJS += zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/gzio.o \
+	   zlib/uncompr.o zlib/deflate.o zlib/trees.o zlib/zutil.o \
+	   zlib/inflate.o zlib/infback.o zlib/inftrees.o zlib/inffast.o
 endif
 
 SOLIB   = libc.so
