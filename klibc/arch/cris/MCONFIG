@@ -22,8 +22,5 @@ SHAREDFLAGS     = --section-start .init=0x0e000100
 INCLUDE_PREFIX  = $(shell $(CC) -print-libgcc-file-name | sed -e s/libgcc.a//)
 ARCHREQFLAGS = -iprefix $(INCLUDE_PREFIX) -mlinux
 
-# How to tell the linker main() is the entrypoint
-EMAIN		:= -e main
-
 # Special flags needed for linking
 LDFLAGS 	+= -mcrislinux
