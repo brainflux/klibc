@@ -1,12 +1,12 @@
 CC	= gcc
 LD      = ld
-CFLAGS  = -I. -I./include -I./linux/include -Wall -g -O2 -fomit-frame-pointer -march=i386 -mcpu=i686
+CFLAGS  = -I. -I./include -I./linux/include -Wall -g -Os -fomit-frame-pointer -march=i386 -mcpu=i686
 LDFLAGS =
 AR      = ar
 RANLIB  = ranlib
 PERL    = perl
 
-TESTS   = testvsnp hello minihello
+TESTS   = testvsnp hello minihello microhello
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -30,6 +30,7 @@ SOLIB   = libc.so
 SONAME  = libc.so
 CRT0    = crt0.o
 LIBGCC  = $(shell $(CC) --print-libgcc)
+STRIP   = strip -R .comment -R .note
 
 all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
@@ -50,14 +51,18 @@ all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 .c.ls:
 	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
 
+%: %.o $(LIB) $(CRT0)
+	$(LD) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
+	cp $@ $@.stripped
+	$(STRIP) $@.stripped
+
 testvsnp: testvsnp.o $(LIB) $(CRT0)
-	$(LD) -o testvsnp $(CRT0) testvsnp.o $(LIB) $(LIBGCC)
 
 hello: hello.o $(LIB) $(CRT0)
-	$(LD) -o hello $(CRT0) hello.o $(LIB) $(LIBGCC)
 
 minihello: minihello.o $(LIB) $(CRT0)
-	$(LD) -o minihello $(CRT0) minihello.o $(LIB) $(LIBGCC)
+
+microhello: microhello.o $(LIB) $(CRT0)
 
 $(LIB): $(LIBOBJS) syscalls.dir socketcalls.dir
 	rm -f $(LIB)
@@ -92,6 +97,6 @@ SOCKETCALLS = $(patsubst %.c,%.o,$(wildcard socketcalls/*.c)) \
 socketcalls-objs: $(SOCKETCALLS)
 
 clean:
-	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls
+	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls *.stripped
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
