@@ -1,9 +1,9 @@
 /*
- * extern.h
+ * klibc/extern.h
  */
 
-#ifndef _EXTERN_H
-#define _EXTERN_H
+#ifndef _KLIBC_EXTERN_H
+#define _KLIBC_EXTERN_H
 
 #ifdef __cplusplus
 #define __extern extern "C"
@@ -11,4 +11,4 @@
 #define __extern extern
 #endif
 
-#endif /* _EXTERN_H */
+#endif /* _KLIBC_EXTERN_H */
