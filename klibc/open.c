@@ -5,6 +5,7 @@
  * system call, to indicate that we're 64-bit safe.
  */
 
+#define _KLIBC_IN_OPEN_C
 #include <unistd.h>
 #include <fcntl.h>
 

@@ -16,9 +16,9 @@ char *strerror(int errnum)
   *--p = '\0';
 
   do {
-    *--p = (errnum % 10) + '0';
-    errnum /= 10;
-  } while ( errnum );
+    *--p = (e % 10) + '0';
+    e /= 10;
+  } while ( e );
 
   memcpy(message+6, p, (numbuf+sizeof numbuf)-p);
 
