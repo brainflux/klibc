@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
   unsigned short seed1[] = { 0x1234, 0x5678, 0x9abc };
   unsigned short *oldseed;

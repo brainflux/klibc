@@ -10,7 +10,7 @@ LD      = $(CROSS)ld
 REQFLAGS = -nostdinc -iwithprefix include -I. \
 	  -I./arch/$(ARCH)/include -I./include/bits$(BITSIZE) \
 	  -DBITSIZE=$(BITSIZE) -I./include -I./linux/include \
-	  -Wall -Wpointer-arith -Wwrite-strings -Wstrict-prototypes -Winline
+	  -W -Wall -Wpointer-arith -Wwrite-strings -Wstrict-prototypes -Winline
 CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
 LDFLAGS =
 AR      = $(CROSS)ar

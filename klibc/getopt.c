@@ -19,6 +19,9 @@ int getopt(int argc, char * const *argv, const char *optstring)
   const char *osptr;
   int opt;
 
+  /* We don't actually need argc */
+  (void)argc;
+
   /* First, eliminate all non-option cases */
   
   if ( !carg || carg[0] != '-' || !carg[1] ) {

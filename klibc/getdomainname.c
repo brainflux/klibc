@@ -19,5 +19,7 @@ int getdomainname(char *name, size_t len)
     return -1;
   }
 
+  strcpy(name, un.domainname);
+
   return 0;
 }

@@ -4105,7 +4105,7 @@ int sizes[NCYCLES] = {
 
 char *pointers[NCYCLES];
 
-int main(int argc, char *argv[])
+int main(void)
 {
   int r, i, j, sp, sq;
   char *p, *q, *ep, *eq;

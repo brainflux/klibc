@@ -1,11 +1,13 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/utsname.h>
+#include <sys/mount.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /* Default path we try to mount. "%s" gets replaced by our IP address */
 #define NFS_ROOT		"/tftpboot/%s"
@@ -268,6 +270,7 @@ static u_int32_t XID;
 static int flag;
 static void timeout(int n)
 {
+	(void)n;
 	flag = 1;
 }
 static int do_call(struct sockaddr_in *sin, u_int32_t msg[], u_int32_t rmsg[],
@@ -472,11 +475,13 @@ static int root_nfs_ports(void)
 	return 0;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	unsigned char *p;
 	struct timeval tv;
 	char *s;
+
+	/* FIX: use getopt() instead of this */
 
 	s = getenv("root_server_addr");
 	if (s)

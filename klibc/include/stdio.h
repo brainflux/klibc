@@ -46,7 +46,7 @@ __extern FILE *fopen(const char *, const char *);
 
 static __inline__ FILE *fdopen(int __fd, const char *__m)
 {
-  return __create_file(__fd);
+  (void)__m; return __create_file(__fd);
 }
 static __inline__ int fclose(FILE *__f)
 {
