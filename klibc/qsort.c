@@ -25,7 +25,6 @@ void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, co
   size_t i, j;
   void *p1, *p2;
   int swapped;
-  char tmp[size];		/* This is ugly.  We really need memswap() */
 
   do {
     gap = newgap(gap);
@@ -34,9 +33,7 @@ void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, co
     for ( i = 0, p1 = base ; i < nmemb-gap ; i++, (char *)p1 += size ) {
       j = i+gap;
       if ( compar(p1, p2 = (char *)base+j*size) > 0 ) {
-	memcpy(tmp, p1, size);
-	memcpy(p1, p2, size);
-	memcpy(p2, tmp, size);
+	memswap(p1, p2, size);
 	swapped = 1;
       }
     }
