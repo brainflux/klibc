@@ -42,5 +42,5 @@ FILE *fopen(const char *file, const char *mode)
   if ( fd < 0 )
     return NULL;
   else
-    return __create_file(fd);
+    return fdopen(fd, mode);
 }
