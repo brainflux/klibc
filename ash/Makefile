@@ -23,7 +23,6 @@ include ../MRULES
 MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
 CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -DSHELL
 LIBS     = $(KLIBC) $(LIBGCC)
-STRIP    = $(CROSS)strip -R .comment -R .note
 
 HOST_CFLAGS  = -g -O -I. -DSHELL
 
@@ -34,12 +33,14 @@ CLEANFILES =\
 all:	$(PROG) $(PROG).shared
 
 $(PROG): $(OBJS) $(LIBS) $(CRT0)
-	$(LD) $(LDFLAGS) -o $(PROG) $(CRT0) $(OBJS) $(LIBS)
-	# $(STRIP) $(PROG)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
+	cp -f $@ $@.g
+	$(STRIP) $@
 
 $(PROG).shared: $(OBJS) $(CRTSHARED) $(LIBSHARED) $(LIBGCC)
 	$(LD) $(LDFLAGS) -o $(PROG).shared -e main $(CRTSHARED) $(OBJS) -R $(LIBSHARED) $(LIBGCC)
-	# $(STRIP) $(PROG).shared
+	cp -f $@ $@.g
+	$(STRIP) $@
 
 $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1
@@ -79,7 +80,8 @@ mknodes: mknodes.c
 	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) mknodes.c -o $@ $(HOST_LIBS)
 
 clean:
-	rm -f core $(CLEANFILES) $(PROG) $(PROG).shared $(OBJS) .*.d
+	rm -f core $(CLEANFILES) $(OBJS) .*.d *.g
+	rm -f $(PROG) $(PROG).shared
 
 spotless: clean
 	find . -name \*~ -not -type d -print0 | xargs -0rt rm -f
