@@ -10,6 +10,7 @@ include MCONFIG
 TESTS   = $(patsubst %.c,%,$(wildcard tests/*.c)) \
 	  $(patsubst %.c,%.shared,$(wildcard tests/*.c))
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
+	  asprintf.o vasprintf.o \
 	  vsscanf.o sscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
 	  atoi.o atol.o atoll.o \
@@ -32,7 +33,8 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  memmove.o \
 	  strcasecmp.o strncasecmp.o strndup.o strerror.o \
 	  strcat.o strchr.o strcmp.o strcpy.o strdup.o strlen.o strnlen.o \
-	  strncat.o strstr.o strncmp.o strncpy.o strrchr.o strspn.o \
+	  strncat.o strlcpy.o strlcat.o \
+	  strstr.o strncmp.o strncpy.o strrchr.o strspn.o \
 	  strsep.o strtok.o \
 	  gethostname.o getdomainname.o getcwd.o \
 	  seteuid.o setegid.o \

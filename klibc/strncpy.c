@@ -1,7 +1,5 @@
 /*
  * strncpy.c
- *
- * strncpy()
  */
 
 #include <string.h>
@@ -17,6 +15,9 @@ char *strncpy(char *dst, const char *src, size_t n)
     if ( !ch )
       break;
   }
+
+  /* The specs say strncpy() fills the entire buffer with NUL.  Sigh. */
+  memset(q, 0, n);
 
   return dst;
 }
