@@ -1,5 +1,6 @@
 SRCROOT = ..
 include $(SRCROOT)/MCONFIG
+include $(SRCROOT)/MRULES
 
 MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
 CFLAGS	= $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall \

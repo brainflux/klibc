@@ -18,6 +18,7 @@ OBJ_BUILDINS = b.o eval.o exec.o
 
 SRCROOT  = ..
 include ../MCONFIG
+include ../MRULES
 
 MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
 CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -DSHELL
@@ -29,9 +30,6 @@ HOST_CFLAGS  = -g -O -I. -DSHELL
 CLEANFILES =\
 	builtins.c builtins.h init.c mkinit mknodes \
 	nodes.c nodes.h token.def
-
-.c.o:
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 all:	$(PROG) $(PROG).shared
 

@@ -16,13 +16,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# $Id: Makefile,v 1.4 2002/08/23 21:06:05 hpa Exp $
+# $Id: Makefile,v 1.5 2004/02/09 23:18:14 hpa Exp $
 
 #### Start of system configuration section. ####
 
 SRCROOT = ..
 include ../MCONFIG
 include MCONFIG
+include ../MRULES
 
 #### End of system configuration section. ####
 
@@ -41,9 +42,6 @@ ifeq ($(ZIP),y)
 DEFS += -DSUPPORT_ZIP
 SRCS += $(ZIPSRCS)
 endif
-
-.c.o:
-	$(CC) -c $(CFLAGS) $<
 
 all:	gzip gunzip zcat gzip.stripped
 

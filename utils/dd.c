@@ -430,11 +430,11 @@ static int dd(int rd_fd, int wr_fd, struct stats *stats)
 
 	ret = sigsetjmp(jmp, 1);
 	if (ret == 0) {
-		signal(SIGINT, sigint_handler);
+		sysv_signal(SIGINT, sigint_handler);
 		ret = do_dd(rd_fd, wr_fd, stats);
 	}
 
-	signal(SIGINT, SIG_DFL);
+	sysv_signal(SIGINT, SIG_DFL);
 	return ret;
 }
 

@@ -45,7 +45,7 @@ static char  *license_msg[] = {
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: gzip.c,v 1.1 2002/08/18 00:59:21 hpa Exp $";
+static char rcsid[] = "$Id: gzip.c,v 1.2 2004/02/09 23:18:14 hpa Exp $";
 #endif
 
 #include <ctype.h>
@@ -238,18 +238,18 @@ int main (argc, argv)
     env = add_envopt(&argc, &argv, OPTIONS_VAR);
     if (env != NULL) args = argv;
 
-    foreground = signal(SIGINT, SIG_IGN) != SIG_IGN;
+    foreground = sysv_signal(SIGINT, SIG_IGN) != SIG_IGN;
     if (foreground) {
-	(void) signal (SIGINT, (sig_type)abort_gzip);
+	(void) sysv_signal(SIGINT, (sig_type)abort_gzip);
     }
 #ifdef SIGTERM
-    if (signal(SIGTERM, SIG_IGN) != SIG_IGN) {
-	(void) signal(SIGTERM, (sig_type)abort_gzip);
+    if (sysv_signal(SIGTERM, SIG_IGN) != SIG_IGN) {
+	(void) sysv_signal(SIGTERM, (sig_type)abort_gzip);
     }
 #endif
 #ifdef SIGHUP
-    if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
-	(void) signal(SIGHUP,  (sig_type)abort_gzip);
+    if (sysv_signal(SIGHUP, SIG_IGN) != SIG_IGN) {
+	(void) sysv_signal(SIGHUP,  (sig_type)abort_gzip);
     }
 #endif
 
