@@ -1,4 +1,4 @@
-#ident "$Id: run-init.c,v 1.7 2004/10/17 20:30:50 hpa Exp $"
+#ident "$Id: run-init.c,v 1.8 2005/01/01 22:34:34 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -54,6 +54,19 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/vfs.h>
+
+/* Make it possible to compile on glibc by including constants that the
+   always-behind shipped glibc headers may not include.  Classic example
+   on why the lack of ABI headers screw us up. */
+#ifndef TMPFS_MAGIC
+# define TMPFS_MAGIC	0x01021994
+#endif
+#ifndef RAMFS_MAGIC
+# define RAMFS_MAGIC	0x858458f6
+#endif
+#ifndef MS_MOVE
+# define MS_MOVE	8192
+#endif
 
 static const char *program;
 
