@@ -36,12 +36,12 @@ ARCHCLEAN = arch/$(ARCH)/*.ss arch/$(ARCH)/*.lss
 arch/$(ARCH)/%.s: arch/$(ARCH)/%.ss
 	sed -e 's/\$$0\b/$$27/g' -e 's/\$$24\b/$$99/g' \
 	    -e 's/\$$16\b/$$24/g' -e 's/\$$17\b/$$25/g' \
-            -e 's/\$$99\b/$$24/g' < $< > $@
+            -e 's/\$$99\b/$$16/g' < $< > $@
 
 arch/$(ARCH)/%.ls: arch/$(ARCH)/%.lss
 	sed -e 's/\$$0\b/$$27/g' -e 's/\$$24\b/$$99/g' \
 	    -e 's/\$$16\b/$$24/g' -e 's/\$$17\b/$$25/g' \
-            -e 's/\$$99\b/$$24/g' < $< > $@
+            -e 's/\$$99\b/$$16/g' < $< > $@
 
 arch/$(ARCH)/__divqu.ss: arch/$(ARCH)/divide.c
 	$(CC) $(DIVCFLAGS) -DSIGNED=0 -DREM=0 -DBITS=64 -DNAME=__divqu -S -o $@ $<
