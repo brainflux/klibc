@@ -6,7 +6,8 @@
 #define _NETINET_IN_H
 
 #include <stdint.h>
-#include <endian.h>
+#include <endian.h>		/* Must be included *before* <linux/in.h> */
+#include <linux/in.h>
 
 #define htons(x)	__cpu_to_be16(x)
 #define ntohs(x)	__be16_to_cpu(x)

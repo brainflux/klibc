@@ -7,9 +7,9 @@
 
 #include <asm/byteorder.h>
 
-/* Linux' asm/byteorder.h defines either __LITTLE_ENDIAN or __BIG_ENDIAN,
-   but the BSD-ish macros expect both to be defined with __BYTE_ORDER
-   defining which is actually used... */
+/* Linux' asm/byteorder.h defines either __LITTLE_ENDIAN or
+   __BIG_ENDIAN, but the glibc/BSD-ish macros expect both to be
+   defined with __BYTE_ORDER defining which is actually used... */
 
 #if defined(__LITTLE_ENDIAN)
 # undef  __LITTLE_ENDIAN
