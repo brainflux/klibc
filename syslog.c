@@ -8,29 +8,56 @@
 #include <string.h>
 #include <stdarg.h>
 #include <syslog.h>
-#include <sys/klog.h>
+#include <unistd.h>
+#include <fcntl.h>
 
-/* The kernel limits the size to 1024 chars anyway... */
+/* Maximum size for a kernel message */
 #define BUFLEN 1024
+
+/* Logging node */
+#define LOGDEV "/dev/kmsg"
+
+/* Max length of ID string */
+#define MAXID 31
+
+int __syslog_fd = -1;
+static char id[MAXID+1];
+
+void openlog(const char *ident, int option, int facility)
+{
+  (void)option; (void)facility;	/* Unused */
+  
+  if ( __syslog_fd == -1 )
+    __syslog_fd = open(LOGDEV, O_WRONLY);
+  
+  strncpy(id, ident?ident:"", MAXID);
+  id[MAXID] = '\0';		/* Make sure it's null-terminated */
+}
 
 void syslog(int prio, const char *format, ...)
 {
   va_list ap;
   char buf[BUFLEN];
-  int rv;
+  int rv, len;
 
-  va_start(ap, format);
+  if ( __syslog_fd == -1 )
+    openlog(NULL, 0, 0);
+
   buf[0] = '<';
   buf[1] = LOG_PRI(prio)+'0';
   buf[2] = '>';
-  /* -4 to make room for priority and newline */
-  rv = vsnprintf(buf+3, BUFLEN-4, format, ap);
-  if ( rv > BUFLEN-5 ) rv = BUFLEN-5;
+  len = 3;
+
+  if ( *id )
+    len += sprintf(buf+3, "%s: ", id);
+  
+  va_start(ap, format);
+  rv = vsnprintf(buf+len, BUFLEN-len, format, ap);
   va_end(ap);
 
-  buf[rv+3] = '\n';
-  buf[rv+4] = '\0';
+  len += rv;
+  if ( len > BUFLEN-1 ) len = BUFLEN-1;
+  buf[len] = '\n';
 
-  klogctl(KLOG_WRITE, buf, rv+5);
+  write(__syslog_fd, buf, len+1);
 }
-

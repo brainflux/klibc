@@ -46,10 +46,8 @@
 #define LOG_FACMASK	01770
 #define LOG_FAC(x)	(((x) >> 3) & (LOG_FACMASK >> 3))
 
-/* openlog() and closelog() aren't used */
-#define openlog(x,y,z)
-#define closelog()
-
+__extern void openlog(const char *, int, int);
 __extern void syslog(int, const char *, ...);
+__extern void closelog(void);
 
 #endif /* _SYSLOG_H */
