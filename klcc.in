@@ -54,13 +54,15 @@ sub files_with_lang($$) {
 
     foreach $f ( @{$files} ) {
 	$need = ${$flang}{$f};
-	$need = 'none' if ( $need eq 'obj' );
-	unless ( $xopt eq $need ||
-		 ($xopt eq 'none' && filename2lang($f) eq $need) ) {
-	    push(@as, '-x', $need);
-	    $xopt = $need;
+
+	# Skip object files
+	if ( $need ne 'obj' ) {
+	    unless ( $xopt eq $need ) {
+		push(@as, '-x', $need);
+		$xopt = $need;
+	    }
+	    push(@as, $f);
 	}
-	push(@as, $f);
     }
 
     return @as;
