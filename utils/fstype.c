@@ -16,7 +16,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <endian.h>
 #include <netinet/in.h>
+
+#define cpu_to_be32(x) __cpu_to_be32(x)	/* Needed by romfs_fs.h */
 
 #include <linux/romfs_fs.h>
 #include <linux/cramfs_fs.h>

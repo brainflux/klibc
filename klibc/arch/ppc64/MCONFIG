@@ -7,6 +7,8 @@
 # accordingly.
 #
 
+CC      += -m64
+LD	+= -m elf64ppc
 OPTFLAGS = -Os -fomit-frame-pointer
 BITSIZE  = 64
 
