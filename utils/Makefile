@@ -10,10 +10,13 @@ PROGS       := chroot dd fstype mkdir mkfifo mount pivot_root umount \
 		insmod uname
 STATICPROGS := $(patsubst %,static/%,$(PROGS))
 SHAREDPROGS := $(patsubst %,shared/%,$(PROGS))
+OBJS        := $(patsubst %,%.o,$(PROGS))
 LIBOBJS	     = file_mode.o
 LIBUTILS     = libutils.a
 
 all:	$(STATICPROGS) $(SHAREDPROGS)
+
+.SECONDARY: $(OBJS)
 
 static/%: %.o $(CRT0) $(LIBS) $(LIBUTILS)
 	mkdir -p static static.g
