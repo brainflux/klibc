@@ -12,7 +12,7 @@ void abort(void)
 
   sigemptyset(&set);
   sigaddset(&set, SIGABRT);
-  rt_sigprocmask(SIG_UNBLOCK, &set, NULL, sizeof set);
+  sigprocmask(SIG_UNBLOCK, &set, NULL);
   raise(SIGABRT);
   _exit(255);			/* raise() should have killed us */
 }
