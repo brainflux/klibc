@@ -48,5 +48,6 @@ __extern int mount(const char *, const char *,
 		   const void *);
 __extern int umount(const char *);
 __extern int umount2(const char *, int);
+__extern int pivot_root(const char *, const char *);
 
 #endif /* _SYS_MOUNT_H */

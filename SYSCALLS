@@ -10,8 +10,9 @@
 #
 pid_t fork()
 pid_t vfork()
-int getpid()
+pid_t getpid()
 int setpgid(pid_t, pid_t)
+pid_t getpgid(pid_t)
 pid_t getppid()
 pid_t getpgrp()
 pid_t setsid()
@@ -37,17 +38,18 @@ int mount(const char *, const char *, const char *, unsigned long, const void *)
 int umount(const char *)
 int umount2(const char *, int)
 int pivot_root(const char *, const char *)
+int sync()
 
 #
 # Inode-related system calls
 #
+int access(const char *, int)
 int link(const char *, const char *)
 int unlink(const char *)
 int chdir(const char *)
 int mknod(const char *, mode_t, dev_t)
 int chmod(const char *, mode_t)
 int utime(const char *, struct utimbuf *)
-int access(const char *, int)
 int mkdir(const char *, mode_t)
 int rmdir(const char *)
 int pipe(int *)
@@ -58,23 +60,23 @@ int readlink(const char *, char *, size_t)
 int stat(const char *, struct stat *)
 int lstat(const char *, struct stat *)
 int fstat(int, struct stat *)
-int getdents(int, struct dirent *, unsigned int)
+int getdents(unsigned int, struct dirent *, unsigned int)
 
 #
 # I/O operations
 #
-int read(int, void *, size_t)
-int write(int, const void *, size_t)
+ssize_t read(int, void *, size_t)
+ssize_t write(int, const void *, size_t)
 int open(const char *, int, mode_t)
 int close(int)
 off_t lseek(int, off_t, int)
-int sync()
 int dup(int)
 int dup2(int, int)
 int fcntl(int, int, long)
 int ioctl(int, int, void *)
 int flock(int, int)
 int select(int, fd_set *, fd_set *, fd_set *, struct timeval *)
+int fsync(int)
 
 #
 # Signal operations
@@ -94,6 +96,7 @@ int sigprocmask(int, const sigset_t *, sigset_t *)
 time_t time(time_t *)
 clock_t times(struct tms *)
 int gettimeofday(struct timeval *, struct timezone *)
+int settimeofday(const struct timeval *, const struct timezone *)
 int nanosleep(const struct timespec *, struct timespec *)
 
 #

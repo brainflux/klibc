@@ -4,6 +4,7 @@
  * Common header file for system call stubs
  */
 
+#define __IN_SYS_COMMON
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>

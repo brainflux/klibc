@@ -3,9 +3,7 @@
  */
 
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <linux/times.h>
+#include <time.h>
 
 unsigned int sleep(unsigned int seconds)
 {
