@@ -6,7 +6,7 @@ AR      = ar
 RANLIB  = ranlib
 PERL    = perl
 
-TESTS   = testvsnp hello
+TESTS   = testvsnp hello minihello
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -54,6 +54,9 @@ testvsnp: testvsnp.o $(LIB) $(CRT0)
 
 hello: hello.o $(LIB) $(CRT0)
 	$(LD) -o hello $(CRT0) hello.o $(LIB) $(LIBGCC)
+
+minihello: minihello.o $(LIB) $(CRT0)
+	$(LD) -o minihello $(CRT0) minihello.o $(LIB) $(LIBGCC)
 
 $(LIB): $(LIBOBJS) syscalls.dir
 	rm -f $(LIB)
