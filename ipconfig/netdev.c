@@ -201,7 +201,12 @@ int netdev_init_if(struct netdev *dev)
 	case ARPHRD_ETHER:
 		dev->hwlen = 6;
 		break;
-
+	case ARPHRD_EUI64:
+		dev->hwlen = 8;
+		break;
+	case ARPHRD_LOOPBACK:
+		dev->hwlen = 0;
+		break;
 	default:
 		return -1;
 	}

@@ -51,6 +51,9 @@ from 2.4 and earlier kernels.
 
 Here are a few examples of valid ipconfig command lines.
 
+Enable the loopback interface:
+    ipconfig 127.0.0.1::::lo:none
+
 Try to configure eth0 using bootp for up to 30 seconds:
     ipconfig -t 30 -c bootp eth0
 
