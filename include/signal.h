@@ -11,6 +11,14 @@
 #include <sys/types.h>
 #include <linux/signal.h>
 
+/* Some architectures don't define these */
+#ifndef SA_RESETHAND
+# define SA_RESETHAND SA_ONESHOT
+#endif
+#ifndef SA_NODEFER
+# define SA_NODEFER SA_NOMASK
+#endif
+
 /* This assumes sigset_t is either an unsigned long or an array of such,
    and that _NSIG_BPW in the kernel is always LONG_BIT */
 
