@@ -1,20 +1,13 @@
-ARCH    = i386
-CROSS   = 
-CC	= $(CROSS)gcc
-LD      = $(CROSS)ld
-REQFLAGS = -nostdinc -iwithprefix include -I. \
-	  -I./arch/$(ARCH)/include -I./include/bits$(BITSIZE) \
-	  -DBITSIZE=$(BITSIZE) -I./include -I./linux/include \
-	  -Wall
-CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
-LDFLAGS =
-AR      = $(CROSS)ar
-RANLIB  = $(CROSS)ranlib
-PERL    = perl
-STRIP   = $(CROSS)strip -R .comment -R .note
+#
+# Makefile
+#
+# Main makefile
+#
 
-TESTS   = testvsnp hello minihello microhello getenvtest \
-	  getopttest malloctest minips idtest
+# Include configuration rules
+include MCONFIG
+
+TESTS   = $(patsubst %.c,%,$(wildcard tests/*.c))
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o sscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -39,71 +32,18 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o
 LIB     = libc.a
 
-SOFLAGS = -fPIC
-SOOBJS  = $(patsubst %.o,%.lo,$(LIBOBJS))
-SOLIB   = libc.so
-SONAME  = libc.so
-CRT0    = crt0.o
-LIBGCC  = $(shell $(CC) --print-libgcc)
+all: tests $(CRT0) $(LIB) $(SOLIB)
 
-all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
-
-#
-# Include arch-specific rule fragments
-#
+# Add any architecture-specific rules
 include arch/$(ARCH)/Makefile.inc
 
-.SUFFIXES: .c .o .a .so .lo .i .S .s .ls .ss .lss
+tests: $(TESTS)
 
-.c.o:
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-.c.i:
-	$(CC) $(CFLAGS) -E -o $@ $<
-
-.c.s:
-	$(CC) $(CFLAGS) -S -o $@ $<
-
-.S.o:
-	$(CC) $(CFLAGS) -D__ASSEMBLY__ -c -o $@ $<
-
-.S.lo:
-	$(CC) $(CFLAGS) $(SOFLAGS) -D__ASSEMBLY__ -c -o $@ $<
-
-.s.o:
-	$(CC) $(CFLAGS) -x assembler -c -o $@ $<
-
-.ls.lo:
-	$(CC) $(CFLAGS) $(SOFLAGS) -x assembler -c -o $@ $<
-
-.c.lo:
-	$(CC) $(CFLAGS) $(SOFLAGS) -c -o $@ $<
-
-.c.ls:
-	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
-
-% : %.o $(LIB) $(CRT0)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
+tests/% : tests/%.c $(LIB) $(CRT0)
+	$(CC) $(CFLAGS) -c -o $*.o $<
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) $*.o $(LIB) $(LIBGCC)
 	cp $@ $@.stripped
 	$(STRIP) $@.stripped
-
-testvsnp: testvsnp.o $(LIB) $(CRT0)
-
-hello: hello.o $(LIB) $(CRT0)
-
-minihello: minihello.o $(LIB) $(CRT0)
-
-microhello: microhello.o $(LIB) $(CRT0)
-
-getenvtest: getenvtest.o $(LIB) $(CRT0)
-
-getopttest: getopttest.o $(LIB) $(CRT0)
-
-malloctest: malloctest.o $(LIB) $(CRT0)
-
-minips: minips.o $(LIB) $(CRT0)
-
-idtest: idtest.o $(LIB) $(CRT0)
 
 $(LIB): $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
 	rm -f $(LIB)
@@ -146,7 +86,8 @@ objects-shared: $(SHARED)
 	touch $(DIR)/shared.obj
 
 clean: archclean
-	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls *.stripped
+	rm -f *.o *.lo *.a *.so *.i *.s *.ls
+	rm -f $(TESTS) tests/*.o tests/*.stripped
 	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir

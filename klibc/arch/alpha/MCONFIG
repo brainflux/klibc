@@ -1,0 +1,10 @@
+# -*- makefile -*-
+#
+# arch/alpha/MCONFIG
+#
+# Build configuration for this architecture
+#
+
+OPTFLAGS = -Os -fomit-frame-pointer
+BITSIZE  = 64
+

@@ -1,0 +1,62 @@
+# -*- makefile -*-
+#
+# Makefile configuration, without explicit rules
+#
+
+ARCH    = i386
+CROSS   = 
+CC	= $(CROSS)gcc
+LD      = $(CROSS)ld
+REQFLAGS = -nostdinc -iwithprefix include -I. \
+	  -I./arch/$(ARCH)/include -I./include/bits$(BITSIZE) \
+	  -DBITSIZE=$(BITSIZE) -I./include -I./linux/include \
+	  -Wall
+CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
+LDFLAGS =
+AR      = $(CROSS)ar
+RANLIB  = $(CROSS)ranlib
+PERL    = perl
+STRIP   = $(CROSS)strip -R .comment -R .note
+
+SOFLAGS = -fPIC
+SOOBJS  = $(patsubst %.o,%.lo,$(LIBOBJS))
+SOLIB   = libc.so
+SONAME  = libc.so
+CRT0    = crt0.o
+LIBGCC  = $(shell $(CC) --print-libgcc)
+
+#
+# Include arch-specific rule fragments
+#
+include arch/$(ARCH)/MCONFIG
+
+.SUFFIXES: .c .o .a .so .lo .i .S .s .ls .ss .lss
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+.c.i:
+	$(CC) $(CFLAGS) -E -o $@ $<
+
+.c.s:
+	$(CC) $(CFLAGS) -S -o $@ $<
+
+.S.o:
+	$(CC) $(CFLAGS) -D__ASSEMBLY__ -c -o $@ $<
+
+.S.lo:
+	$(CC) $(CFLAGS) $(SOFLAGS) -D__ASSEMBLY__ -c -o $@ $<
+
+.s.o:
+	$(CC) $(CFLAGS) -x assembler -c -o $@ $<
+
+.ls.lo:
+	$(CC) $(CFLAGS) $(SOFLAGS) -x assembler -c -o $@ $<
+
+.c.lo:
+	$(CC) $(CFLAGS) $(SOFLAGS) -c -o $@ $<
+
+.c.ls:
+	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
+
+

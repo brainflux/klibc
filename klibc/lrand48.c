@@ -7,7 +7,7 @@
 
 unsigned short __rand48_seed[3];
 
-long mrand48(unsigned short xsubi[3])
+long jrand48(unsigned short xsubi[3])
 {
   uint64_t x;
 
@@ -25,18 +25,18 @@ long mrand48(unsigned short xsubi[3])
   return (long)(int32_t)(x >> 16);
 }
 
-long jrand48(void)
+long mrand48(void)
 {
-  return mrand48(__rand48_seed);
+  return jrand48(__rand48_seed);
 }
 
 long nrand48(unsigned short xsubi[3])
 {
-  return (long)((uint32_t)mrand48(xsubi) >> 1);
+  return (long)((uint32_t)jrand48(xsubi) >> 1);
 }
 
 long lrand48(void)
 {
-  return nrand48(__rand48_seed);
+  return (long)((uint32_t)(mrand48() >> 1));
 }
 

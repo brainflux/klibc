@@ -18,6 +18,10 @@ typedef struct _IO_file FILE;
 #define stdout ((FILE *)1)
 #define stderr ((FILE *)2)
 
+#ifndef EOF
+# define EOF (-1)
+#endif
+
 static __inline__
 int fileno(FILE *__f)
 {

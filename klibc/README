@@ -17,15 +17,7 @@ b) Change ARCH in the main Makefile to match your architecture.
 
 c) Type "make" and pray...
 
-d) Try the test programs:
-       microhello
-       minihello
-       hello
-       testvsnp
-       getenvtest
-       getopttest
-       malloctest
-       minips
+d) Try the test programs in the tests/ directory.  They should run...
 
 Contact me at <hpa@zytor.com> for more info.
 

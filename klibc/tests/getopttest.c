@@ -12,6 +12,7 @@
 int main(int argc, char * const *argv)
 {
   const char *parser;
+  char showchar[] = "\'?\'";
   int c;
 
   parser = getenv("GETOPTTEST");
@@ -19,8 +20,10 @@ int main(int argc, char * const *argv)
 
   do {
     c = getopt(argc, argv, parser);
-    printf("c = \'%c\', optind = %d (%s), optarg = \"%s\", optopt = \'%c\'\n",
-	   c, optind, argv[optind], optarg, optopt);
+    showchar[1] = c;
+    printf("c = %s, optind = %d (%s), optarg = \"%s\", optopt = \'%c\'\n",
+	   (c == EOF) ? "EOF" : showchar,
+	   optind, argv[optind], optarg, optopt);
   } while ( c != -1 );
   
   return 0;

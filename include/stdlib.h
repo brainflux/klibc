@@ -55,8 +55,8 @@ __extern int unsetenv(const char *);
 __extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
 
-__extern long mrand48(unsigned short *);
-__extern long jrand48(void);
+__extern long jrand48(unsigned short *);
+__extern long mrand48(void);
 __extern long nrand48(unsigned short *);
 __extern long lrand48(void);
 __extern unsigned short *seed48(const unsigned short *);
