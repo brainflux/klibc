@@ -1,0 +1,31 @@
+BOOTP/DHCP client for klibc
+---------------------------
+
+Notes:
+
+1. This client is able to configure multiple interfaces if required:
+
+	ipconfig -d eth0 -d eth1
+
+   It will wait for all listed interfaces to complete bootp/dhcp
+   configuration.
+
+2. We should have a timeout parameter:
+
+	ipconfig -t 30
+
+   so we can optionally bound the time we allow for the configuration
+   to complete.
+
+3. We should let the user specify the configuration protocol
+   (maybe per-interface?)  The code internally supports per-interface.
+
+4. Static IP configuration.
+
+5. Command line arguments.  Maybe we should accept an ip= string on the
+   command line to remain compatible with the kernel?
+
+6. The code in main.c is yucky imho.  Needs cleaning.
+
+--
+Russell King (22/10/2002)
