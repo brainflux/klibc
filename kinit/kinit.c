@@ -160,7 +160,7 @@ char *get_arg(int argc, char *argv[], const char *name)
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i] && strncmp(argv[i], name, len) == 0 &&
-		    (argv[i][len] == '\0')) {
+		    (argv[i][len] != '\0')) {
 			ret = argv[i] + len;
 			break;
 		}
