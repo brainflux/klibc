@@ -9,7 +9,7 @@ AR      = ar
 RANLIB  = ranlib
 PERL    = perl
 
-TESTS   = testvsnp hello minihello microhello
+TESTS   = testvsnp hello minihello microhello getenvtest
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -57,7 +57,10 @@ all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 .c.ls:
 	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
 
-%: %.o $(LIB) $(CRT0)
+# Kill implicit rule
+% : %.o
+
+% : %.o $(LIB) $(CRT0)
 	$(LD) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
 	cp $@ $@.stripped
 	$(STRIP) $@.stripped
@@ -69,6 +72,8 @@ hello: hello.o $(LIB) $(CRT0)
 minihello: minihello.o $(LIB) $(CRT0)
 
 microhello: microhello.o $(LIB) $(CRT0)
+
+getenvtest: getenvtest.o $(LIB) $(CRT0)
 
 $(LIB): $(LIBOBJS) syscalls.dir socketcalls.dir
 	rm -f $(LIB)

@@ -4,21 +4,12 @@
 
 #include <extern.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-#include "atexit.h"
-
-struct atexit *__atexit_list;
+/* This allows atexit/on_exit to install a hook */
+__noreturn (*__exit_handler)(int) = _exit;
 
 __noreturn exit(int rv)
 {
-  struct atexit *ap;
-
-  for ( ap = __atexit_list ; ap ; ap = ap->next ) {
-    ap->fctn(rv, ap->arg);	/* This assumes extra args are harmless */
-  }
-
-  _exit(rv);
+  __exit_handler(rv);
 }
-
-  
-  
