@@ -43,9 +43,12 @@ SONAME  = libc.so
 CRT0    = crt0.o
 LIBGCC  = $(shell $(CC) --print-libgcc)
 
+# If there is an arch-specific file...
+-include arch/$(ARCH)/Makefile
+
 all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
-.SUFFIXES: .c .o .a .so .lo .i .S .s .ls
+.SUFFIXES: .c .o .a .so .lo .i .S .s .ls .ss .lss
 
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -61,6 +64,12 @@ all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
 .S.lo:
 	$(CC) $(CFLAGS) $(SOFLAGS) -D__ASSEMBLY__ -c -o $@ $<
+
+.s.o:
+	$(CC) $(CFLAGS) -x assembler -c -o $@ $<
+
+.ls.lo:
+	$(CC) $(CFLAGS) $(SOFLAGS) -x assembler -c -o $@ $<
 
 .c.lo:
 	$(CC) $(CFLAGS) $(SOFLAGS) -c -o $@ $<
@@ -89,14 +98,14 @@ malloctest: malloctest.o $(LIB) $(CRT0)
 
 minips: minips.o $(LIB) $(CRT0)
 
-$(LIB): $(LIBOBJS) syscalls/static.obj socketcalls/static.obj
+$(LIB): $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
 	rm -f $(LIB)
-	$(AR) cq $(LIB) $(LIBOBJS) syscalls/*.o socketcalls/*.o
+	$(AR) cq $(LIB) $(LIBOBJS) $(ARCHOBJS) syscalls/*.o socketcalls/*.o
 	$(RANLIB) $(LIB)
 
-$(SOLIB): $(SOOBJS) syscalls/shared.obj socketcalls/shared.obj
+$(SOLIB): $(SOOBJS) $(ARCHSOOBJS) syscalls/shared.obj socketcalls/shared.obj
 	$(LD) -shared -soname $(SONAME) -o $@ \
-		$(SOOBJS) syscalls/*.lo socketcalls/*.lo \
+		$(SOOBJS) $(ARCHSOOBJS) syscalls/*.lo socketcalls/*.lo \
 	        $(LIBGCC)
 
 crt0.o: arch/$(ARCH)/crt0.o

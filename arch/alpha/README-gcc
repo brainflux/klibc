@@ -1,0 +1,13 @@
+/* The current Alpha chips don't provide hardware for integer
+   division.  The C compiler expects the functions
+
+        __divqu: 64-bit unsigned long divide
+        __remqu: 64-bit unsigned long remainder
+        __divqs/__remqs: signed 64-bit
+        __divlu/__remlu: unsigned 32-bit
+        __divls/__remls: signed 32-bit
+
+   These are not normal C functions: instead of the normal calling
+   sequence, these expect their arguments in registers t10 and t11, and
+   return the result in t12 (aka pv).  Register AT may be clobbered
+   (assembly temporary), anything else must be saved.  */
