@@ -15,20 +15,23 @@
 	.ent _start, 0
 	.globl _start
 _start:
-	.frame fp, 0, zero
-	mov	zero, fp
-	br	gp, 1f
-1:	ldgp	gp, 0(gp)
-	subq	sp, 16, sp
+	.frame  $15, 0, $31
+	mov	$31, $15
+	br	$29, 1f
+1:	ldgp	$29, 0($29)
+	subq	$30, 16, $30
 	.prologue 0
 
-	ldl	a0, 16(sp)
-	lda	a1, 24(sp)
-	addq	a0, 1, a2
-	s8addq	a2, a1, a2
-	jsr	ra, main
+	ldl	$16, 16($30)
+	lda	$17, 24($30)
+	addq	$16, 1, $18
+	s8addq	$18, $17, $18
+	jsr	$26, main
 
-	mov	v0, a0
-	jsr	ra, exit
+	mov	$0, $16
+	jsr	$26, exit
 	
 	.size _start,.-_start
+
+	.weak __start
+__start	= _start

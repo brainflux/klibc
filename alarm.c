@@ -17,7 +17,7 @@ unsigned int alarm(unsigned int seconds)
 {
   struct itimerval iv;
 
-  iv.it_interval.tv_sec = iv.it_interval.it_usec = 0;
+  iv.it_interval.tv_sec = iv.it_interval.tv_usec = 0;
   iv.it_value.tv_sec = seconds;
   iv.it_value.tv_usec = 0;
 

@@ -9,10 +9,10 @@
 # Process-related syscalls
 #
 <!mips,mips64> pid_t vfork()
-pid_t getpid()
+<!alpha> pid_t getpid()
 int setpgid(pid_t, pid_t)
 pid_t getpgid(pid_t)
-pid_t getppid()
+<!alpha> pid_t getppid()
 <!ia64> pid_t getpgrp()
 pid_t setsid()
 pid_t getsid(pid_t)

@@ -10,5 +10,7 @@
 
 __extern int gettimeofday(struct timeval *, struct timezone *);
 __extern int settimeofday(const struct timeval *, const struct timezone *);
+__extern int getitimer(int, struct itimerval *);
+__extern int setitimer(int, const struct itimerval *, struct itimerval *);
 
 #endif /* _SYS_TIME_H */

@@ -1,5 +1,3 @@
-	.file "exits.S"
-
 #
 # exit and _exit get included in *every* program, and gcc generates
 # horrible code for them.  Yes, this only saves a few bytes, but
@@ -45,4 +43,3 @@ _exit:
 	.size _exit,.-exit
 
 #endif
-
