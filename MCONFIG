@@ -3,6 +3,10 @@
 # Makefile configuration, without explicit rules
 #
 
+# Location for installation
+INSTALLDIR  = /usr/lib/klibc
+INSTALLROOT =
+
 # Eventually support separate compilation, but we don't have it yet...
 OBJROOT = $(SRCROOT)
 
@@ -20,9 +24,8 @@ INCLUDE = -I$(SRCROOT)/include/arch/$(ARCH) \
 	  -I$(SRCROOT)/include/bits$(BITSIZE) \
 	  -I$(SRCROOT)/include \
 	  -I$(KRNLOBJ)/include -I$(KRNLOBJ)/include2 -I$(KRNLSRC)/include
-REQFLAGS = $(ARCHREQFLAGS) -nostdinc -iwithprefix include \
-	  -D__KLIBC__ -DBITSIZE=$(BITSIZE) \
-	  $(INCLUDE)
+REQFLAGS = $(ARCHREQFLAGS) -nostdinc -iwithprefix include -D__KLIBC__ \
+	   $(INCLUDE)
 LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib

@@ -1,35 +1,17 @@
 # -*- perl -*-
 
-# klibc install directory
-$KLIBC = '/home/hpa/klibc/i386/klibc';
-
-# Default options for gcc, ld, and strip
-@ccopt = ('-m32', '-mregparm=3', '-DREGPARM=3');
-@ldopt = ('-m', 'elf_i386');
-@stripopt = ('--strip-all', '-R', '.comment', '-R', '.note');
-
-# Options necessary for proper include
-@includes = ('-nostdinc', '-iwithprefix', 'include', '-D', '__KLIBC__',
-	     "-I${KLIBC}/include/arch/i386",
-	     "-I${KLIBC}/include/bits32",
-	     "-I${KLIBC}/include",
-	     "-I${KLIBC}/linux/include",
-	     "-I${KLIBC}/linux/include2");
+# Standard includes
+@includes = ("-I${INSTALLDIR}/include",
+	     "-I${INSTALLDIR}/include/bits${BITSIZE}");
 
 # Default optimization options (for compiles without -g)
-@optopt = ('-march=i386', '-Os', '-falign-functions=0', '-falign-jumps=0',
-	   '-falign-loops=0');
+@optopt =  @OPTFLAGS;
 @goptopt = ('-O');
 
-$CC = '/usr/bin/gcc'; 		# The gcc to use
-$LD = '/usr/bin/ld';  		# The ld to use
-$STRIP = '/usr/bin/strip';	# The strip to use
-
-@staticopt = ("$KLIBC/klibc/crt0.o");		# Static options to ld
-@staticlib = ("$KLIBC/klibc/libc.a");
-@sharedopt = ('-e', 'main');
-@sharedlib = ('-R', "$KLIBC/klibc/libc.so");
-
+@staticopt = ("$INSTALLDIR/lib/crt0.o");  # Static options to ld
+@staticlib = ("$INSTALLDIR/lib/libc.a");
+@sharedopt = @EMAIN;
+@sharedlib = ('-R', "$INSTALLDIR/lib/libc.so");
 
 # Returns the language (-x option string) for a specific extension.
 sub filename2lang($) {
@@ -97,6 +79,9 @@ sub mysystem(@) {
 # Begin parsing options.
 #
 
+@ccopt = ();
+@ldopt = ();
+
 @files = ();			# List of files
 %flang = ();			# Languages for files
 
@@ -146,6 +131,9 @@ while ( defined($a = shift(@ARGV)) ) {
 	$strip = 1;
     } elsif ( $a eq '-o' ) {
 	$output = shift(@ARGV);
+    } elsif ( $a eq '-nostdinc' ) {
+	push(@ccopt, $a);
+	@includes = ();
     } elsif ( $a =~ /^-print/ ) {
 	push(@ccopt, $a);
 	$operation = 'c' if ( $operation eq '' );
@@ -155,15 +143,15 @@ while ( defined($a = shift(@ARGV)) ) {
 }
 
 if ( $debugging ) {
-    @ccopt = (@includes, @goptopt, @ccopt);
+    @ccopt = (@REQFLAGS, @includes, @goptopt, @ccopt);
 } else {
-    @ccopt = (@includes, @optopt, @ccopt);
+    @ccopt = (@REQFLAGS, @includes, @optopt, @ccopt);
 }
 
 if ( $operation ne '' ) {
     # Just run gcc with the appropriate options
     @outopt = ('-o', $output) if ( defined($output) );
-    $rv = mysystem($CC, @ccopt, @outopt, files_with_lang(\@files, \%flang));
+    $rv = mysystem(@CC, @ccopt, @outopt, files_with_lang(\@files, \%flang));
 } else {
     @outopt = ('-o', $output || 'a.out');
 
@@ -181,7 +169,7 @@ if ( $operation ne '' ) {
 	    push(@objs, $fo);
 	    push(@rmobjs, $fo) unless ( $save_temps );
 
-	    $rv = mysystem($CC, @ccopt, '-c', '-o', $fo, $f);
+	    $rv = mysystem(@CC, @ccopt, '-c', '-o', $fo, $f);
 
 	    if ( $rv ) {
 		unlink(@rmobjs);
@@ -191,15 +179,15 @@ if ( $operation ne '' ) {
     }
 
     if ( $shared ) {
-	$rv = mysystem($LD, @ldopt, @sharedopt, @outopt, @objs, @sharedlib);
+	$rv = mysystem(@LD, @ldopt, @sharedopt, @outopt, @objs, @sharedlib);
     } else {
-	$rv = mysystem($LD, @ldopt, @staticopt, @outopt, @objs, @staticlib);
+	$rv = mysystem(@LD, @ldopt, @staticopt, @outopt, @objs, @staticlib);
     }
 
     unlink(@rmobjs);
 
     if ( $strip && !$rv ) {
-	$rv = mysystem($STRIP, @stripopt, $output);
+	$rv = mysystem(@STRIP, @stripopt, $output);
     }
 }
 
