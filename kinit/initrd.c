@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <sys/mount.h>
 #include <sys/ioctl.h>
+#include <sys/wait.h>
 #include "do_mounts.h"
 #include "kinit.h"
 
@@ -21,13 +22,13 @@
  * Copy the initrd to /dev/ram0, copy from the end to the beginning
  * to avoid taking 2x the memory.
  */
-int rd_copy_image(const char *path)
+int rd_copy_image(int ffd)
 {
-	int ffd = open(path, O_RDONLY);
 	int dfd = open("/dev/ram0", O_RDWR);
 	char buffer[BUF_SIZE];
 	struct stat st;
 	off_t bytes;
+	int rv = -1;
 
 	if ( ffd < 0 || dfd < 0 )
 		goto barf;
@@ -47,27 +48,33 @@ int rd_copy_image(const char *path)
 		ftruncate(ffd, offset); /* Free up memory */
 		bytes = offset;
 	}
-
-	return 0;		/* Success! */
+	rv = 0;			/* Done! */
 
  barf:
 	close(ffd);
 	close(dfd);
-	return -1;
+	return rv;
 }
 
 /*
  * Run /linuxrc, for emulation of old-style initrd
  */
-int run_linuxrc(const char *ramdisk)
+static int
+run_linuxrc(int argc, char *argv[], dev_t root_dev)
 {
 	int root_fd, old_fd;
 	pid_t pid;
-	int err;
 	long realroot = Root_RAM0;
+	const char *ramdisk_name = "/dev/ram0";
+	FILE *fp;
 
-	if ( err = mount_block_root(ramdisk, root_mountflags & ~MS_RDONLY) )
-		return err;
+	if ( !mount_block(ramdisk_name, "/", NULL, MS_VERBOSE, NULL) )
+		return -errno;
+
+	/* Write the current "real root device" out to procfs */
+	fp = fopen("/proc/sys/kernel/real-root-dev", "w");
+	fprintf(fp, "%lu", (unsigned long)root_dev);
+	fclose(fp);
 
 	mkdir("/old", 0700);
 	root_fd = open_cloexec("/", O_RDONLY|O_DIRECTORY, 0);
@@ -104,37 +111,44 @@ int run_linuxrc(const char *ramdisk)
 	close(old_fd);
 
 	getintfile("/proc/sys/kernel/real-root-dev", &realroot);
-	mount_root((dev_t)realroot);
+	mount_root(argc, argv, (dev_t)realroot, NULL);
 
 	/* If /root/initrd exists, move the initrd there, otherwise discard */
 	if ( !mount("/old", "/root/initrd", NULL, MS_MOVE, NULL) ) {
 		/* We're good */
 	} else {
-		int olddev = open(ramdisk, O_RDWR);
+		int olddev = open(ramdisk_name, O_RDWR);
 		umount2("/old", MNT_DETACH);
 		if ( olddev < 0 ||
 		     ioctl(olddev, BLKFLSBUF, (long)0) ||
 		     close(olddev) ) {
-			/* Print error message */
+			fprintf(stderr, "%s: Cannot flush initrd contents\n", progname);
 		}
 	}
+
+	return 0;
 }
 
 
-int initrd_load(dev_t *root_dev)
+int initrd_load(int argc, char *argv[], dev_t root_dev)
 {
-	int mount_initrd = 1;
+	int initrd_fd;
 
-	if ( mount_initrd ) {
-		create_dev("/dev/ram0", Root_RAM0, NULL);
-
-		if ( rd_copy_image("/initrd.image") == 0 && *root_dev != Root_RAM0 ) {
-			run_linuxrc(root_dev)
-				return 1;
-		}
+	initrd_fd = open("/initrd.image", O_RDWR);
+	if ( initrd_fd < 0 )
+		return 0;
+	
+	create_dev("/dev/ram0", Root_RAM0, NULL);
+	
+	if ( rd_copy_image(initrd_fd) ||
+	     unlink("/initrd.image") )
+		return 0;
+	
+	if ( root_dev != Root_RAM0 ) {
+		run_linuxrc(argc, argv, root_dev);
+		return 1;
 	}
 
-	unlink("/initrd.image");
 	return 0;
 }
 					

@@ -18,9 +18,9 @@ int getintfile(const char *path, long *val)
 	if ( !f )
 		return -1;
 
-	memset(buffer, 0, sizeof buffer);
-	fread(buffer, 1, sizeof buffer, f);
+	ep = buffer + fread(buffer, 1, sizeof buffer-1, f);
 	fclose(f);
+	*ep = '\0';
 
 	*val = strtol(buffer, &ep, 0);
 	if ( *ep && *ep != '\n' )

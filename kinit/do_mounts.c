@@ -14,7 +14,6 @@
 
 #define BUF_SZ		4096
 
-static const char *progname = "VFS";
 static const int do_devfs; // FIXME
 
 /* Find dev_t for e.g. "hda,NULL" or "hdb,2" */
@@ -195,7 +194,7 @@ find_in_devfs(char *path, dev_t dev)
 }
 
 /* Create the device node "name" */
-static int
+int
 create_dev(const char *name, dev_t dev, const char *devfs_name)
 {
 	char path[BUF_SZ];
@@ -221,70 +220,82 @@ create_dev(const char *name, dev_t dev, const char *devfs_name)
 	return symlink(path + 5, name);
 }
 
-/* get a list of all filesystems to try to mount root with */
-static void
-get_fs_names(int argc, char *argv[], char *buf)
+/* mount a filesystem, possibly trying a set of different types */
+const char *
+mount_block(const char *source, const char *target,
+	    const char *type, unsigned long flags,
+	    const void *data)
 {
-	char *s, *p;
-	char line[BUF_SZ];
-	const char *root_fs_names;
-	FILE *fp;
+	char *fslist, *p, *ep;
+	const char *rp;
+	ssize_t fsbytes;
 
-	root_fs_names = get_arg(argc, argv, "rootfstype=");
-	if (root_fs_names) {
-		strcpy(buf, root_fs_names);
-		for (s = buf; *s; s++) {
-			if (*s == ',')
-				*s = 0;
-		}
-	} else {
-		buf[0] = 0;
-		if ((fp = fopen("/proc/filesystems", "r")) == NULL)
-			goto done;
-
-		s = buf;
-		while (fgets(line, BUF_SZ, fp)) {
-			if (line[0] != '\t')
-				continue;
-			p = strchr(line, '\n');
-			if (!p)
-				continue;
-
-			*p = 0;
-			strcpy(s, line + 1);
-			s += strlen(line + 1) + 1;
-		}
+	if ( type ) {
+		int rv = mount(source, target, type, flags, data);
+		/* Mount readonly if necessary */
+		if ( rv == -1 && errno == EACCES && !(flags & MS_RDONLY) )
+			rv = mount(source, target, type, flags|MS_RDONLY, data);
+		return rv ? NULL : type;
 	}
- done:
-	return;
+
+	fsbytes = readfile("/proc/filesystems", &fslist);
+
+	errno = EINVAL;
+	if ( fsbytes < 0 )
+		return NULL;
+
+	p = fslist;
+	ep = fslist+fsbytes;
+
+	rp = NULL;
+
+	while ( p < ep ) {
+		type = p;
+		p = strchr(p, '\n');
+		if (!p)
+			break;
+		*p++ = '\0';
+		if (*type != '\t')/* We can't mount a block device as a "nodev" fs */
+			continue;
+		
+		type++;
+		rp = mount_block(source, target, type, flags, data);
+		if ( rp )
+			break;
+		if ( errno != EINVAL )
+			break;
+	}
+
+	free(fslist);
+	return rp;
 }
 
 /* mount the root filesystem from a block device */
 static int
 mount_block_root(int argc, char *argv[], dev_t root_dev,
-		 const char *root_dev_name, int flags)
+		 const char *root_dev_name, unsigned long flags)
 {
-	char fs_names[BUF_SZ];
-	const char *data;
-	char *p;
+	const char *data, *type;
+	const char *rp;
 
 	data = get_arg(argc, argv, "rootflags=");
-
 	create_dev("/dev/root", root_dev, root_dev_name);
 
-	get_fs_names(argc, argv, fs_names);
-retry:
-	for (p = fs_names; *p; p += strlen(p)+1) {
-		if (mount("/dev/root", "/root", p, flags, data) == 0)
-			goto out;
+	errno = 0;
 
-		switch (errno) {
-			case -EACCES:
-				flags |= MS_RDONLY;
-				goto retry;
-			case -EINVAL:
-				continue;
-		}
+	type = get_arg(argc, argv, "rootfstype=");
+	if ( type ) {
+		if ( (rp = mount_block("/dev/root", "/root", type, flags, data)) )
+			goto ok;
+		if ( errno != EINVAL )
+			goto bad;
+	}
+	
+	if ( !errno && (rp = mount_block("/dev/root", "/root", NULL, flags, data)) )
+		goto ok;
+
+ bad:
+	if ( errno != EINVAL ) {
 	        /*
 		 * Allow the user to distinguish between failed open
 		 * and bad superblock on root device.
@@ -292,31 +303,23 @@ retry:
 		fprintf(stderr, "%s: Cannot open root device \"%04x\"\n",
 			progname, root_dev);
 		return -errno;
+	} else {
+		fprintf(stderr, "%s: Unable to mount root fs on \"%04x\"\n",
+			progname, root_dev);
+		return -ESRCH;
 	}
-	fprintf(stderr, "%s: Unable to mount root fs on \"%04x\"\n",
-		progname, root_dev);
-	return -ESRCH;
 
-out:
+ok:
 	printf("%s: Mounted root (%s filesystem)%s.\n",
-	       progname, p, (flags & MS_RDONLY) ? " readonly" : "");
+	       progname, rp, (flags & MS_RDONLY) ? " readonly" : "");
 	return 0;
 }
 
 int
-do_mounts(int argc, char *argv[])
+mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 {
-	const char *root_dev_name = get_arg(argc, argv, "root=");
-	int flags = MS_RDONLY | MS_VERBOSE;
-	dev_t root_dev = 0;
+	unsigned long flags = MS_RDONLY|MS_VERBOSE;
 	int ret;
-
-	if (root_dev_name) {
-		root_dev = name_to_dev_t(root_dev_name);
-		if (strncmp(root_dev_name, "/dev/", 5) == 0) {
-			root_dev_name += 5;
-		}
-	}
 
 	if (get_arg(argc, argv, "ro")) {
 		flags |= MS_RDONLY;
@@ -336,4 +339,40 @@ do_mounts(int argc, char *argv[])
 	}
 	
 	return ret;
+}
+
+void
+md_run_setup(void)
+{
+	/* Muck around with md device(s) if necessary */
+}
+
+int do_mounts(int argc, char *argv[])
+{
+	const char *root_dev_name = get_arg(argc, argv, "root=");
+	const char *root_delay = get_arg(argc, argv, "rootdelay=");
+	dev_t root_dev = 0;
+
+	if (root_delay) {
+		int delay = atoi(root_delay);
+		fprintf(stderr, "Waiting %d s before mounting root device...\n", delay);
+		sleep(delay);
+	}
+
+	md_run_setup();
+
+	if (root_dev_name) {
+		root_dev = name_to_dev_t(root_dev_name);
+		if (strncmp(root_dev_name, "/dev/", 5) == 0) {
+			root_dev_name += 5;
+		}
+	}
+
+	if ( initrd_load(argc, argv, root_dev) )
+		return 0;
+
+	/* If it's a floppy(only?) and load_ramdisk is set, then load
+	   a non-initrd ramdisk */
+
+	return mount_root(argc, argv, root_dev, root_dev_name);
 }

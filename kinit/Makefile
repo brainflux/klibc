@@ -13,7 +13,8 @@ LIBS	= \
 	$(SRCROOT)/ipconfig/libipconfig.a \
 	$(KLIBC) $(LIBGCC)
 PROGS	= kinit
-OBJS	= kinit.o do_mounts.o nfsroot.o
+OBJS	= kinit.o do_mounts.o nfsroot.o getintfile.o initrd.o \
+	  open.o readfile.o
 
 all: $(PROGS)
 

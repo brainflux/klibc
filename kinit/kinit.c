@@ -11,7 +11,7 @@
 #include "kinit.h"
 #include "ipconfig.h"
 
-static const char *progname = "kinit";
+const char *progname = "kinit";
 int mnt_procfs;
 int mnt_sysfs;
 
@@ -193,6 +193,8 @@ static void check_path(const char *path)
 int init_argc;
 char **init_argv;
 
+extern ssize_t readfile(const char *, char **);
+
 int main(int argc, char *argv[])
 {
 	char **cmdv;
@@ -202,6 +204,11 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	int cmdc;
 	int fd;
+	
+	ret = readfile("/proc/cmdline", &cmdline);
+	printf("Got: len = %d data = \"%s\"\n", ret, cmdline);
+
+	exit(0);
 
 	/* Default parameters for anything init-like we execute */
 	init_argc = argc;
