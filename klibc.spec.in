@@ -23,7 +23,7 @@ Summary: Small utilities built with klibc.
 Group: Utilities/System
 Requires: klibc = %{version}
 
-%define docdir %{_docdir}/%{name}-%{version}
+%define docdir %{_docdir}/%{name}-%{version}-%{release}
 
 %description utils
 This package contains a collection of programs that are linked against
@@ -32,7 +32,7 @@ toolset, but are typically much smaller than their full-function
 counterparts.  They are intended for inclusion in initramfs images and
 embedded systems.
 
-%define udocdir %{_docdir}/%{name}-utils-%{version}
+%define udocdir %{_docdir}/%{name}-utils-%{version}-%{release}
 
 %prep
 %setup -q
@@ -89,7 +89,6 @@ rm -rf $RPM_BUILD_ROOT
 %files utils
 %defattr(-,root,root,-)
 %{_libdir}/klibc/bin
-%{prefix}/share/doc/%{name}-utils-%{version}
 %docdir %{udocdir}
 
 %changelog
