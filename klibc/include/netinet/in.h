@@ -8,7 +8,7 @@
 /* added this include by Mats Petersson */
 #include <linux/socket.h>
 
-
+#include <klibc/extern.h>
 #include <stdint.h>
 #include <endian.h>		/* Must be included *before* <linux/in.h> */
 #include <linux/in.h>
@@ -25,5 +25,9 @@
 #ifndef ntohl
 # define ntohl(x)	__be32_to_cpu(x)
 #endif
+
+#define IPPORT_RESERVED	1024
+
+__extern int bindresvport (int sd, struct sockaddr_in *sin);
 
 #endif /* _NETINET_IN_H */
