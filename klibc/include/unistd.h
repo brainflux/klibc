@@ -120,8 +120,14 @@ __extern int optind, opterr, optopt;
 
 __extern int isatty(int);
 
-__extern int getpagesize(void);
-__extern int __getpageshift(void);
+static __inline__ int getpagesize(void) {
+  extern unsigned int __page_size;
+  return __page_size;
+}
+static __inline__ int __getpageshift(void) {
+  extern unsigned int __page_shift;
+  return __page_shift;
+}
 
 /* Standard file descriptor numbers. */
 #define STDIN_FILENO	0

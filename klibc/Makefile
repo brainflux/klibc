@@ -26,7 +26,6 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  __signal.o sysv_signal.o bsd_signal.o siglist.o siglongjmp.o \
 	  sigaction.o sigpending.o sigprocmask.o sigsuspend.o \
 	  brk.o sbrk.o malloc.o realloc.o calloc.o mmap.o \
-	  getpagesize.o getpageshift.o \
 	  memcpy.o memcmp.o memset.o memccpy.o memmem.o memswap.o \
 	  memmove.o \
 	  strcasecmp.o strncasecmp.o strndup.o strerror.o \
