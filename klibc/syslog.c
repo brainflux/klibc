@@ -25,10 +25,16 @@ static char id[MAXID+1];
 
 void openlog(const char *ident, int option, int facility)
 {
+  int fd;
+
   (void)option; (void)facility;	/* Unused */
   
-  if ( __syslog_fd == -1 )
-    __syslog_fd = open(LOGDEV, O_WRONLY);
+  if ( __syslog_fd == -1 ) {
+    __syslog_fd = fd = open(LOGDEV, O_WRONLY);
+    if ( fd == -1 )
+      return;
+    fcntl(fd, F_SETFD, (long)FD_CLOEXEC);
+  }
   
   strncpy(id, ident?ident:"", MAXID);
   id[MAXID] = '\0';		/* Make sure it's null-terminated */
