@@ -14,6 +14,7 @@
 static __inline__ __noreturn _Exit(int __n) {
   __extern __noreturn _exit(int);
   _exit(__n);
+  for(;;);			/* Some gcc versions are stupid */
 }
 __extern __noreturn abort(void);
 static __inline__ int abs(int __n) {
@@ -41,6 +42,7 @@ static __inline__ long long llabs(long long __n) {
 #endif
 
 __extern __attribute_malloc void *malloc(size_t);
+__extern __attribute_malloc void *calloc(size_t, size_t);
 __extern void *realloc(void *, size_t);
 __extern long strtol(const char *, char **, int);
 __extern long long strtoll(const char *, char **, int);

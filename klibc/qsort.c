@@ -22,7 +22,8 @@ static inline int newgap(int gap)
 void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *))
 {
   int gap = nmemb;
-  int swapped, i, j;
+  int swapped;
+  size_t i, j;
   void *p1, *p2;
   char tmp[size];
 

@@ -16,7 +16,10 @@ void *memmem(const void *haystack, size_t n, const void *needle, size_t m)
   const unsigned char *y = (const unsigned char *)haystack;
   const unsigned char *x = (const unsigned char *)needle;
 
-  int j, k, l;
+  size_t j, k, l;
+
+  if ( m > n )
+    return NULL;
 
   if ( x[0] == x[1] ) {
     k = 2;

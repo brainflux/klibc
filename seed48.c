@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 extern unsigned short __rand48_seed[3];
 

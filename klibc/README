@@ -10,7 +10,10 @@ this:
 a) Create a symlink called "linux" pointing to a reasonably recent
    Linux kernel tree (2.4 or 2.5 should be OK.)  This tree must have
    the include/asm symlink set up for the architecture you're
-   compiling for, and include/linux/autoconf.h must exist.
+   compiling for, and include/linux/autoconf.h must exist.  The
+   easiest way to make sure of all of these is to do a "make config"
+   or any of its variants on the kernel tree is question, followed by
+   a "make dep".
 
 b) Change ARCH in the main Makefile to match your architecture.
    If you're cross-compiling, set CROSS to your toolchain prefix.

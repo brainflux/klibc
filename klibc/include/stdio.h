@@ -8,6 +8,7 @@
 #include <klibc/extern.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <sys/types.h>
 
 /* This structure doesn't really exist, but it gives us something
    to define FILE * with */
@@ -22,11 +23,41 @@ typedef struct _IO_file FILE;
 # define EOF (-1)
 #endif
 
-static __inline__
-int fileno(FILE *__f)
+#ifndef BUFSIZ
+# define BUFSIZ 4096
+#endif
+
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+
+static __inline__ int fileno(FILE *__f)
 {
   /* This should really be intptr_t, but size_t should be the same size */
   return (int)(size_t)__f;
+}
+
+static __inline__ FILE * __create_file(int __fd)
+{
+  return (FILE *)__fd;
+}
+
+__extern FILE *fopen(const char *, const char *);
+
+static __inline__ int fclose(FILE *__f)
+{
+  extern int close(int);
+  return close(fileno(__f));
+}
+static __inline__ int fseek(FILE *__f, off_t __o, int __w)
+{
+  extern off_t lseek(int, off_t, int);
+  return (lseek(fileno(__f), __o, __w) == (off_t)-1) ? -1 : 0;
+}
+static __inline__ off_t ftell(FILE *__f)
+{
+  extern off_t lseek(int, off_t, int);
+  return lseek(fileno(__f), 0, SEEK_CUR);
 }
 
 __extern int fputs(const char *, FILE *);

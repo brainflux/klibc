@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 enum flags {
   FL_ZERO   = 0x01,		/* Zero modifier */

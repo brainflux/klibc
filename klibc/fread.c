@@ -18,7 +18,7 @@ size_t __fread(void *buf, size_t count, FILE *f)
       if ( errno == EINTR )
 	continue;
       else
-	return bytes ? bytes : -1;
+	break;
     } else if ( rv == 0 ) {
       break;
     }
