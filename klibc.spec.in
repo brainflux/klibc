@@ -12,6 +12,10 @@ Packager: H. Peter Anvin <hpa@zytor.com>
 Prefix: /usr
 Vendor: Starving Linux Artists
 
+%define klibcdir  %{_prefix}/lib/klibc
+%define libdocdir %{_docdir}/%{name}-%{version}-%{release}
+%define bindocdir %{_docdir}/%{name}-utils-%{version}-%{release}
+
 %description
 %{name} is intended to be a minimalistic libc subset for use with
 initramfs.  It is deliberately written for small size, minimal
@@ -23,16 +27,12 @@ Summary: Small utilities built with klibc.
 Group: Utilities/System
 Requires: klibc = %{version}
 
-%define libdocdir %{_docdir}/%{name}-%{version}-%{release}
-
 %description utils
 This package contains a collection of programs that are linked against
 klibc.  These duplicate some of the functionality of a regular Linux
 toolset, but are typically much smaller than their full-function
 counterparts.  They are intended for inclusion in initramfs images and
 embedded systems.
-
-%define bindocdir %{_docdir}/%{name}-utils-%{version}-%{release}
 
 %prep
 %setup -q
@@ -54,12 +54,12 @@ mkdir -p %{buildroot}
 
 %build
 make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
-	libdir=%{_libdir} mandir=%{_mandir} INSTALLROOT=%{buildroot}
+	INSTALLDIR=%{klibcdir} mandir=%{_mandir} INSTALLROOT=%{buildroot}
 
 %install
 rm -rf %{buildroot}
 make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
-	libdir=%{_libdir} mandir=%{_mandir} INSTALLROOT=%{buildroot} \
+	INSTALLDIR=%{klibcdir} mandir=%{_mandir} INSTALLROOT=%{buildroot} \
 	install
 
 # Install the docs
@@ -79,8 +79,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_libdir}/klibc/lib
-%{_libdir}/klibc/include
+%{klibcdir}/lib
+%{klibcdir}/include
 %{_bindir}/klcc
 /lib/klibc-*.so
 %doc %{_mandir}/man1/*
@@ -88,7 +88,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files utils
 %defattr(-,root,root,-)
-%{_libdir}/klibc/bin
+%{klibcdir}/bin
 %doc %{bindocdir}/*
 
 %changelog

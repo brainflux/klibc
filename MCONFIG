@@ -8,7 +8,7 @@ prefix      = /usr
 bindir      = $(prefix)/bin
 libdir      = $(prefix)/lib
 mandir      = $(prefix)/man
-INSTALLDIR  = $(libdir)/klibc
+INSTALLDIR  = $(prefix)/lib/klibc
 INSTALLROOT =
 
 INSTALL_EXEC = install -m 755
