@@ -120,7 +120,7 @@ crt0.o: arch/$(ARCH)/crt0.o
 	cp arch/$(ARCH)/crt0.o .
 
 errlist.c:
-	$(PERL) makeerrlist.pl $(INCLUDE) -errlist > $@ || rm -f $@
+	$(PERL) makeerrlist.pl -q $(INCLUDE) -errlist > $@ || rm -f $@
 
 # We pass -ansi to keep cpp from define e.g. "i386" as well as "__i386__"
 SYSCALLS.i: SYSCALLS.def
