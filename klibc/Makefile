@@ -20,7 +20,8 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  printf.o vprintf.o fprintf.o vfprintf.o \
 	  fopen.o fread.o fread2.o fwrite.o fwrite2.o fputs.o puts.o \
 	  sleep.o usleep.o raise.o abort.o assert.o alarm.o pause.o \
-	  signal.o sigaction.o sigpending.o sigprocmask.o sigsuspend.o \
+	  signal.o siglist.o \
+	  sigaction.o sigpending.o sigprocmask.o sigsuspend.o \
 	  brk.o sbrk.o malloc.o realloc.o calloc.o mmap.o \
 	  memcpy.o memcmp.o memset.o memccpy.o memmem.o memswap.o \
 	  strcat.o strchr.o strcmp.o strcpy.o strdup.o strlen.o \
