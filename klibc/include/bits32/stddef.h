@@ -1,3 +1,7 @@
+/*
+ * bits32/stddef.h
+ */
+
 #ifndef _BITSIZE_STDDEF_H
 #define _BITSIZE_STDDEF_H
 

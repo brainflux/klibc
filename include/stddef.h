@@ -15,4 +15,10 @@
 
 #define offsetof(t,m) ((size_t)&((t *)0->m))
 
+#ifdef __GNUC__
+# define __noreturn void __attribute__((noreturn))
+#else
+# define __noreturn void
+#endif
+
 #endif /* _STDDEF_H */
