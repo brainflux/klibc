@@ -40,7 +40,8 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  getopt.o readdir.o \
 	  syslog.o closelog.o pty.o getpt.o isatty.o reboot.o \
 	  time.o utime.o llseek.o nice.o getpriority.o \
-	  qsort.o lrand48.o srand48.o seed48.o \
+	  qsort.o \
+	  lrand48.o jrand48.o mrand48.o nrand48.o srand48.o seed48.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
 	  inet/inet_ntop.o inet/inet_pton.o inet/bindresvport.o \
 	  send.o recv.o
