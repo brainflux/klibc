@@ -13,8 +13,8 @@
 # them to be cdecl
 # REGPARM = -mregparm=3 -DREGPARM
 
-OPTFLAGS = $(REGPARM) -march=i386 -Os -fomit-frame-pointer \
-	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
+OPTFLAGS = $(REGPARM) -march=i386 -Os \
+	   -falign-functions=0 -falign-jumps=0 -falign-loops=0
 BITSIZE  = 32
 
 # Extra linkflags when building the shared version of the library
