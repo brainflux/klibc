@@ -4,8 +4,14 @@
 #
 
 # Location for installation
-INSTALLDIR  = /usr/lib/klibc
+prefix      = /usr
+bindir      = $(prefix)/bin
+libdir      = $(prefix)/lib
+INSTALLDIR  = $(libdir)/klibc
 INSTALLROOT =
+
+INSTALL_EXEC = install -m 755
+INSTALL_DATA = install -m 644
 
 # Eventually support separate compilation, but we don't have it yet...
 OBJROOT = $(SRCROOT)

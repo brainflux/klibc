@@ -1,8 +1,9 @@
 # -*- perl -*-
 
 # Standard includes
-@includes = ("-I${INSTALLDIR}/include",
-	     "-I${INSTALLDIR}/include/bits${BITSIZE}");
+@includes = ("-I${INSTALLDIR}/include/arch/${ARCH}",
+	     "-I${INSTALLDIR}/include/bits${BITSIZE}",
+	     "-I${INSTALLDIR}/include");
 
 # Default optimization options (for compiles without -g)
 @optopt =  @OPTFLAGS;

@@ -31,15 +31,26 @@ $(CROSS)klcc: klcc.in $(CROSS)klibc.config makeklcc
 		$(shell sh -c 'type -p $(PERL)') > $@ || ( rm -f $@ ; exit 1 )
 	chmod a+x $@
 
-%:
+%: local-%
 	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
 
-clean:
+local-clean:
 	rm -f klibc.config klcc
-	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
 
-spotless:
-	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
+local-spotless:
 	rm -f klibc.spec *~ tags
+
+local-install: $(CROSS)klcc
+	mkdir -p $(INSTALLROOT)$(bindir)
+	mkdir -p $(INSTALLROOT)$(libdir)
+	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/include
+	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)lib
+	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
+	cp -r $(KRNLSRC)/linux/include/. $(INSTALLDIR)/include/.
+	cp -r $(KRNLOBJ)/linux/include/. $(INSTALLDIR)/include/.
+	cp -r $(KRNLOBJ)/linux/include2/. $(INSTALLDIR)/include/.
+	rm -rf $(INSTALLDIR)/include/asm-*
+	cp -r include/. $(INSTALLDIR)/include/.
+	$(INSTALL_EXEC) $(CROSS)klcc $(bindir)
 
 -include MCONFIG
