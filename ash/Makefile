@@ -31,7 +31,7 @@ CLEANFILES =\
 
 all:	$(PROG) $(PROG).shared
 
-$(PROG): $(OBJS) $(LIBS)
+$(PROG): $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $(PROG) $(CRT0) $(OBJS) $(LIBS)
 	$(STRIP) $(PROG)
 
