@@ -21,17 +21,22 @@
 
 static __inline__ int tcgetattr(int __fd, struct termios *__s)
 {
-  return ioctl(__fd, TCGETS, (void *)__s);
+  return ioctl(__fd, TCGETS, __s);
 }
 
 static __inline__ int tcsetattr(int __fd, int __opt, const struct termios *__s)
 {
-  return ioctl(__fd, __opt, __s);
+  return ioctl(__fd, __opt, (void *)__s);
+}
+
+static __inline__ int tcflow(int __fd, int __action)
+{
+  return ioctl(__fd, TCXONC, (void *)(intptr_t)__action);
 }
 
 static __inline__ int tcflush(int __fd, int __queue)
 {
-  return ioctl(__fd, TCFLSH, (void *)(uintptr_t)__queue);
+  return ioctl(__fd, TCFLSH, (void *)(intptr_t)__queue);
 }
 
 static __inline__ pid_t tcgetpgrp(int __fd)
@@ -56,5 +61,26 @@ static __inline__ int tcsetpgrp(int __fd, pid_t __p)
   return ioctl(__fd, TIOCSPGRP, &__p);
 }
 
+static __inline__ speed_t cfgetospeed(const struct termios *__s)
+{
+  return (speed_t)(__s->c_cflags & CBAUD);
+}
+
+static __inline__ speed_t cfgetispeed(const struct termios *__s)
+{
+  return (speed_t)(__s->c_cflags & CBAUD);
+}
+
+static __inline__ int cfsetospeed(struct termios *__s, speed_t __v)
+{
+  __s->c_cflags = (__s->c_cflags & ~CBAUD) | (__v & CBAUD);
+  return 0;
+}
+
+static __inline__ int cfsetispeed(struct termios *__s, speed_t __v)
+{
+  __s->c_cflags = (__s->c_cflags & ~CBAUD) | (__v & CBAUD);
+  return 0;
+}
 
 #endif /* _TERMIOS_H */
