@@ -13,6 +13,7 @@ OBJ2 =	builtins.o cd.o dirent.o bltin/echo.o error.o eval.o exec.o expand.o \
 OBJS =	$(OBJ1) $(OBJ2)
 
 OBJ_NODES = cd.o eval.o exec.o expand.o jobs.o main.o nodes.o options.o parser.o redir.o show.o trap.o var.o
+OBJ_BUILDINS = b.o eval.o exec.o
 
 
 SRCROOT  = ..
@@ -67,6 +68,8 @@ mkinit: mkinit.c
 	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) mkinit.c -o $@ $(HOST_LIBS)
 
 $(OBJ_NODES): nodes.h
+
+$(OBJ_BUILDINS): builtins.h
 
 nodes.h: mknodes nodetypes nodes.c.pat
 	./mknodes nodetypes nodes.c.pat
