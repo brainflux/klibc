@@ -6,7 +6,6 @@
  * exit() and _exit().
  */
 
-#include <extern.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/syscall.h>

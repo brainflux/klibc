@@ -3,7 +3,8 @@ CROSS   =
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
 REQFLAGS = -nostdinc -iwithprefix include -I. -I./include \
-	  -I./linux/include -Wall
+	  -I./arch/$(ARCH)/include -I./linux/include \
+	  -Wall
 CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
 LDFLAGS =
 AR      = $(CROSS)ar
