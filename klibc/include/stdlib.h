@@ -52,4 +52,6 @@ __extern int putenv(const char *);
 __extern int setenv(const char *, const char *, int);
 __extern int unsetenv(const char *);
 
+__extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+
 #endif /* _STDLIB_H */
