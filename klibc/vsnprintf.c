@@ -334,7 +334,7 @@ int vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 	    val = (uintmax_t)(unsigned char)va_arg(ap, unsigned int);
 	    break;
 	  case rank_short:
-	    val = (uintmax_t)(unsigned short)va_arg(ap, unsigned short);
+	    val = (uintmax_t)(unsigned short)va_arg(ap, unsigned int);
 	    break;
 	  case rank_int:
 	    val = (uintmax_t)va_arg(ap, unsigned int);
@@ -354,7 +354,7 @@ int vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 	  break;
 
 	case 'c':		/* Character */
-	  carg = va_arg(ap, char);
+	  carg = (char)va_arg(ap, int);
 	  sarg = &carg;
 	  slen = 1;
 	  goto is_string;
