@@ -168,6 +168,8 @@ spotless: clean
 bitsize:
 	@echo $(BITSIZE)
 
-ifneq ($(wildcard $(DIR).*.d),)
-include $(wildcard $(DIR).*.d)
-endif
+-include .*.d
+
+# ifneq ($(wildcard $(DIR).*.d),)
+# include $(wildcard $(DIR).*.d)
+# endif
