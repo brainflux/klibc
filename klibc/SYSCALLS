@@ -1,0 +1,94 @@
+#
+# This is a list of system calls we invoke "directly".  These
+# are generated into syscall stubs in their own C files, so the
+# linker can do its job properly.
+#
+
+#
+# Process-related syscalls
+#
+pid_t fork()
+pid_t vfork()
+int getpid()
+int setpgid(pid_t, pid_t)
+pid_t getppid()
+pid_t getpgrp()
+pid_t setsid()
+pid_t waitpid(pid_t, int *, int)
+pid_t wait4(pid_t, int *, int, struct rusage *)
+int execve(const char *, char * const *, char * const *)
+
+#
+# User and group IDs
+#
+int setuid(uid_t)
+uid_t getuid()
+int setgid(gid_t)
+gid_t setgid()
+uid_t geteuid()
+gid_t getegid()
+int getgroups(int, gid_t *)
+
+#
+# Inode-related system calls
+#
+int link(const char *, const char *)
+int unlink(const char *)
+int chdir(const char *)
+int mknod(const char *, mode_t, dev_t)
+int chmod(const char *, mode_t)
+int utime(const char *, struct utimbuf *)
+int access(const char *, int)
+int mkdir(const char *, mode_t)
+int rmdir(const char *)
+int pipe(int *)
+mode_t umask(mode_t)
+int chroot(const char *)
+int symlink(const char *, const char *)
+int readlink(const char *, char *, size_t)
+int stat(const char *, struct stat *)
+int lstat(const char *, struct stat *)
+int fstat(int, struct stat *)
+int getdents(int, struct dirent *, unsigned int)
+
+#
+# I/O operations
+#
+int read(int, void *, size_t)
+int write(int, const void *, size_t)
+int open(const char *, int, mode_t)
+int close(int)
+off_t lseek(int, off_t, int)
+int sync()
+int dup(int)
+int dup2(int, int)
+int fcntl(int, int, long)
+int ioctl(int, int, void *)
+int flock(int, int)
+int select(int, fd_set *, fd_set *, fd_set *, struct timeval *)
+
+#
+# Signal operations
+#
+int kill(pid_t, int)
+__sighandler_t signal(int, __sighandler_t)
+int sigaction(int, const struct sigaction *, struct sigaction *)
+int sigsuspend(const sigset_t *)
+int sigpending(sigset_t *)
+int pause()
+unsigned int alarm(unsigned int)
+int sigprocmask(int, const sigset_t *, sigset_t *)
+
+#
+# Time-related system calls
+#
+time_t time(time_t *)
+clock_t times(struct tms *)
+int gettimeofday(struct timeval *, struct timezone *)
+int nanosleep(const struct timespec *, struct timespec *)
+
+#
+# Miscellaneous
+#
+int uname(struct utsname *)
+

@@ -158,7 +158,7 @@ format_int(char *q, size_t n, uintmax_t val, enum flags flags,
 }
 
 
-int my_vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
+int vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 {
   const char *p = format;
   char ch;

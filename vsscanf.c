@@ -66,7 +66,7 @@ test_bit(unsigned long *bitmap, unsigned int bit)
   return (int)(bitmap[bit/LONG_BIT] >> (bit%LONG_BIT)) & 1;
 }
 
-int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
+int vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 {
   const char *p = format;
   char ch;

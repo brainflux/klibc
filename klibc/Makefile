@@ -1,17 +1,22 @@
 CC	= gcc
 LD      = ld
-CFLAGS  = -I./include -I./linux/include -Wall -g -O2 -fomit-frame-pointer -march=i386 -mcpu=i686
+CFLAGS  = -I. -I./include -I./linux/include -Wall -g -O2 -fomit-frame-pointer -march=i386 -mcpu=i686
 LDFLAGS =
 AR      = ar
 RANLIB  = ranlib
+PERL    = perl
 
 TESTS   = 
-LIBOBJS = vsnprintf.o snprintf.o vsscanf.o ctypes.o \
+LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
+	  vsscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
 	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
 	  strtoimax.o strtoumax.o \
-	  _exit.o exit.o atexit.o onexit.o
+	  _exit.o exit.o atexit.o onexit.o \
+	  wait.o wait3.o \
+	  printf.o vprintf.o xwrite.o \
+	  brk.o malloc.o free.o
 LIB     = libmyc.a
 
 SOFLAGS = -fPIC
@@ -41,16 +46,27 @@ all: $(TESTS) crt0.o $(LIB) $(SOLIB)
 testvsnp: testvsnp.o $(LIB)
 	$(CC) $(LDFLAGS) -o $@ testvsnp.o $(LIB)
 
-$(LIB): $(LIBOBJS)
+$(LIB): $(LIBOBJS) syscalls.dir
 	rm -f $(LIB)
-	$(AR) cq $(LIB) $(LIBOBJS)
+	$(AR) cq $(LIB) $(LIBOBJS) syscalls/*.o
 	$(RANLIB) $(LIB)
 
-$(SOLIB): $(SOOBJS)
-	$(LD) -shared -soname $(SONAME) -o $@ $(SOOBJS) `$(CC) --print-libgcc`
+$(SOLIB): $(SOOBJS) syscalls.dir
+	$(LD) -shared -soname $(SONAME) -o $@ \
+		$(SOOBJS) syscalls/*.lo \
+	        `$(CC) --print-libgcc`
+
+syscalls.dir: SYSCALLS syscalls.pl syscommon.h
+	rm -rf syscalls
+	mkdir syscalls
+	$(PERL) syscalls.pl < SYSCALLS
+	$(MAKE) $(patsubst %.c,%.o,$(wildcard syscalls/*.c))
+	$(MAKE) $(patsubst %.c,%.lo,$(wildcard syscalls/*.c))
+	touch syscalls.dir
 
 clean:
 	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls
+	rm -rf syscalls syscalls.dir
 
 vsnprintf.o: vsnprintf.c
 
