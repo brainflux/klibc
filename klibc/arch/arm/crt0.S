@@ -15,37 +15,11 @@
 	.globl _start
 
 #ifdef __thumb__
-
-/*
- * Thumb version
- */
-
 	.thumb_func
-_start:	pop	{r0}
-	mov	r1, sp
-	ldr	r3, =environ
-	lsl	r2, r0, #2
-	add	r2, r1, r2
-	add	r2, r2, #4
-	str	r2, [r3, #0]
-	bl	main
-	bl	exit
-
-#else
-
-/*
- * ARM version 
- */
-
-_start: ldr	r0, [sp], #4
-	mov	r1, sp
-	ldr	r3, =environ
-	add	r2, r1, r0, lsl #2
-	add	r2, r2, #4
-	str	r2, [r3, #0]
-	bl	main
-	b	exit
-
 #endif
+
+_start:	mov	r0, sp
+	mov	r1, #0
+	bl	__libc_init
 
 	.size _start,.-_start
