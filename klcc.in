@@ -1,0 +1,140 @@
+# -*- perl-mode -*-
+
+# Default options for gcc, ld, and strip
+@ccopt = ('-nostdinc', '-iwithprefix', );
+@ldopt = ();
+@stripopt = ('--strip-all', '-R', '.comment', '-R', '.note');
+
+$CC = '/usr/bin/gcc'; 		# The gcc to use
+$LD = '/usr/bin/ld';  		# The ld to use
+$STRIP = '/usr/bin/strip';	# The strip to use
+
+# klibc install directory
+$KLIBC = '/home/hpa/klibc/klibc/klibc';
+
+@staticopt = ("$KLIBC/crt0.o");		# Static options to ld
+@staticlib = ("$KLIBC/libc.a");
+@sharedopt = ('-e', 'main');
+@sharedlib = ('-R', "$KLIBC/libc.so");
+
+
+# Returns the language (-x option string) for a specific extension.
+sub filename2lang($) {
+    my ($file) = @_;
+
+    return "c" if ( $file =~ /\.c$/ );
+    return "c-header" if ( $file =~ /\.h$/ );
+    return "cpp-output" if ( $file =~ /\.i$/ );
+    return "c++-cpp-output" if ( $file =~ /\.ii$/ );
+    return "objective-c" if ( $file =~ /\.m$/ );
+    return "objc-cpp-output" if ( $file =~ /\.mi$/ );
+    return "c++" if ( $file =~/\.(cc|cp|cxx|cpp|CPP|c\+\+|C)$/ );
+    return "c++-header" if ( $file =~ /\.(hh|H)$/ );
+    return "f77" if ( $file =~ /\.(f|for|FOR)$/ );
+    return "f77-cpp-input" if ( $file =~ /\.(F|fpp|FPP)$/ );
+    return "ratfor" if ( $file =~ /\.r$/ );
+
+    # Is this correct?
+    return "ada" if ( $file =~ /\.(ads|adb)$/ );
+
+    return "assembler" if ( $file =~ /\.s$/ );
+    return "assembler-with-cpp" if ( $file =~/ \.S$/ );
+
+    # There is no gcc -x option for "pass file to the linker", so we
+    # use -x none
+    return "none";
+}
+
+# Produces a series of -x options and files
+sub files_with_lang($$) {
+    my($files, $flang) = @_;
+    my(@as) = ();
+    my($xopt) = 'none';
+    my($need);
+
+    foreach $f ( @{$files} ) {
+	$need = ${$flang}{$f};
+	$need = 'none' if ( $need eq 'obj' );
+	unless ( $xopt eq $need ||
+		 ($xopt eq 'none' && filename2lang($f) eq $need) ) {
+	    push(@as, '-x', $need);
+	    $xopt = $need;
+	}
+	push(@as, $f);
+    }
+
+    return @as;
+}
+
+# Convert a return value from system() to an exit() code
+sub syserr($) {
+    my($e) = @_;
+
+    return ($e & 0x7f) | 0x80 if ( $e & 0xff );
+    return $e >> 8;
+}
+
+#
+# Begin parsing options.
+#
+
+@files = ();			# List of files
+%flang = ();			# Languages for files
+
+# This is 'c' for compile only, 'E' for preprocess only,
+# 'S' for compile to assembly.
+$operation = '';		# Compile and link
+
+# Current -x option.  If undefined, it means autodetect.
+undef $lang;
+
+# Optimization (-O) option.  klibc requires *some* -O option, so
+# if we don't specify one, this script adds -O1 by default.
+undef $opt;
+
+$save_temps = 0;		# The -save-temps option
+$verbose = 0;			# The -v option
+$shared = 0;	   		# Are we compiling shared?
+$debugging = 0;	   		# -g or -p option present?
+
+foreach $a ( @ARGV ) {
+    if ( $a !~ /^\-/ ) {
+	# Not an option.  Must be a filename then.
+	push(@files, $a);
+	$flang{$a} = $lang || filename2lang($a);
+    } elsif ( $a =~ /^-Wl,(.*)$/ ) {
+	# -Wl used to pass options to the linker
+	push(@ldopt, split(/,/, $1));
+    } elsif ( $a =~ /^-([fmwWQd]|std=|ansi|pedantic)/ ) {
+	# Options to gcc
+	push(@ccopt, $a);
+    } elsif ( $a =~ /^-[gp]/ ) {
+	# Debugging options to gcc *and* ld
+	push(@ccopt, $a);
+	push(@ldopt, $a);
+	$debugging = 1;
+    } elsif ( $a eq '-v' ) {
+	push(@ccopt, $a);
+	$verbose = 1;
+    } elsif ( $a eq '-save-temps' ) {
+	push(@ccopt, $a);
+	$save_temps = 1;
+    } elsif ( $a =~ '^-([cSE])$' ) {
+	$operation = $1;
+    } elsif ( $a eq '-shared' ) {
+	$shared = 1;
+    } elsif ( $a eq '-static' ) {
+	$shared = 0;
+    } elsif ( $a =~ /^-print/ ) {
+	push(@@ccopt, $a);
+	$operation = 'c' if ( $operation eq '' );
+    } else {
+	die "$0: unknown option: $a\n";
+    }
+}
+
+if ( $operation ne '' ) {
+    # Just run gcc with the appropriate options
+    exit(syserr(system($CC, @ccopt, files_with_lang(\@files, \%flang))));
+}
+
