@@ -10,7 +10,7 @@ klibc.spec: klibc.spec.in version
 
 .PHONY: rpm
 rpm: klibc.spec
-	+$(rpmbuild) -ba klibc.spec
+	+$(rpmbuild) -bb klibc.spec
 
 %:
 	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
