@@ -1,6 +1,7 @@
 /*
  * ipconfig/main.c
  */
+#include <errno.h>
 #include <poll.h>
 #include <limits.h>
 #include <stdio.h>
@@ -149,7 +150,7 @@ static int process_receive_event(struct state *s, time_t now)
 			break;
 		case 1:
 			s->state = DEVST_COMPLETE;
-			DEBUG(("\n   bootp reply\n"));
+			IPDBG(("\n   bootp reply\n"));
 			break;
 		}
 		break;
@@ -192,7 +193,7 @@ static int process_receive_event(struct state *s, time_t now)
 		/* error occurred, try again in 10 seconds */
 		s->expire = now + 10;
 	default:
-		DEBUG(("\n"));
+		IPDBG(("\n"));
 		handled = 0;
 		break;
 	}
@@ -346,7 +347,7 @@ static int loop(void)
 			delta_ms = (now.tv_sec - prev.tv_sec) * 1000;
 			delta_ms += (now.tv_usec - prev.tv_usec) / 1000;
 
-			DEBUG(("Delta: %d ms\n", delta_ms));
+			IPDBG(("Delta: %d ms\n", delta_ms));
 			
 			timeout_ms -= delta_ms;
 		}
@@ -420,7 +421,69 @@ static unsigned int parse_proto(const char *ip)
 	return caps;
 }
 
-static void parse_device(struct netdev *dev, const char *ip)
+static void bringup_device(struct netdev *dev)
+{
+	if (netdev_up(dev) == 0) {
+		if (dev->caps) {
+			add_one_dev(dev);
+		} else {
+			complete_device(dev);
+			goto bail;
+		}
+	}
+	return;
+ bail:
+	free(dev);
+	return;
+}
+
+static struct netdev *add_device(const char *info);
+
+static void add_all_devices(struct netdev *template)
+{
+#define MAX_IFS 128
+	struct ifreq ifr[MAX_IFS];
+	struct ifconf ifc;
+	int fd, nif, i;
+
+	fd = packet_open();
+
+	ifc.ifc_len = sizeof(ifr);
+	ifc.ifc_req = ifr;
+
+	if (ioctl(fd, SIOCGIFCONF, &ifc) == -1) {
+		perror("SIOCGIFCONF");
+		exit(1);
+	}
+	nif = ifc.ifc_len / sizeof(ifr[0]);
+
+	for (i = 0; i < nif; i++) {
+		struct netdev *dev;
+		
+		if (strcmp(ifr[i].ifr_name, "lo") == 0)
+			continue;
+		if ((dev = add_device(ifr[i].ifr_name)) == NULL)
+			continue;
+
+		if (template->ip_addr != INADDR_NONE)
+			dev->ip_addr = template->ip_addr;
+		if (template->ip_server != INADDR_NONE)
+			dev->ip_server = template->ip_server;
+		if (template->ip_gateway != INADDR_NONE)
+			dev->ip_gateway = template->ip_gateway;
+		if (template->ip_nameserver[0] != INADDR_NONE)
+			dev->ip_nameserver[0] = template->ip_nameserver[0];
+		if (template->ip_nameserver[1] != INADDR_NONE)
+			dev->ip_nameserver[1] = template->ip_nameserver[1];
+		if (template->hostname[0] != '\0')
+			strcpy(dev->hostname, template->hostname);
+		dev->caps &= template->caps;
+
+		bringup_device(dev);
+	}
+}
+
+static int parse_device(struct netdev *dev, const char *ip)
 {
 	char *cp;
 	int i, opt;
@@ -441,9 +504,15 @@ static void parse_device(struct netdev *dev, const char *ip)
 		if ((cp = strchr(ip, ':'))) {
 			*cp++ = '\0';
 		}
+		if (opt > 6) {
+			fprintf(stderr, "%s: too many options for %s\n",
+				progname, dev->name);
+			exit(1);
+		}
+		
 		if (*ip == '\0')
 			continue;
-		DEBUG(("IP-Config: opt #%d: '%s'\n", opt, ip));
+		IPDBG(("IP-Config: opt #%d: '%s'\n", opt, ip));
 		switch (opt) {
 		case 0:
 			parse_addr(&dev->ip_addr, ip);
@@ -467,20 +536,19 @@ static void parse_device(struct netdev *dev, const char *ip)
 		case 6:
 			dev->caps = parse_proto(ip);
 			break;
-		default:
-			fprintf(stderr, "%s: too many options for %s\n",
-				progname, dev->name);
-			exit(1);
 		}
 	}
  done:
-	if (dev->name == NULL || dev->name[0] == '\0') {
-		fprintf(stderr, "%s: no device name given\n", progname);
-		exit(1);
+	if (dev->name == NULL ||
+	    dev->name[0] == '\0' ||
+	    strcmp(dev->name, "all") == 0) {
+		add_all_devices(dev);
+		return 0;
 	}
+	return 1;
 }
 
-static void add_device(const char *info)
+static struct netdev *add_device(const char *info)
 {
 	struct netdev *dev;
 	int i;
@@ -493,7 +561,9 @@ static void add_device(const char *info)
 
 	memset(dev, 0, sizeof(struct netdev));
 	dev->caps = default_caps;
-	parse_device(dev, info);
+
+	if (parse_device(dev, info) == 0)
+		goto bail;
 
 	if (netdev_init_if(dev) == -1)
 		goto bail;
@@ -507,22 +577,14 @@ static void add_device(const char *info)
 	printf(" mtu %d%s%s\n", dev->mtu,
 		dev->caps & CAP_DHCP  ? " DHCP"  :
 		dev->caps & CAP_BOOTP ? " BOOTP" : "",
-		dev->caps & CAP_RARP  ? " RARP"  : "");
-
-	if (netdev_up(dev) == 0) {
-		if (dev->caps) {
-			add_one_dev(dev);
-		} else {
-			complete_device(dev);
-			goto bail;
-		}
-	}
-	return;
+	       dev->caps & CAP_RARP  ? " RARP"  : "");
+	return dev;
  bail:
 	free(dev);
+	return NULL;
 }
 
-static void check_autoconfig(void)
+static int check_autoconfig(void)
 {
 	int ndev = 0, nauto = 0;
 	struct state *s;
@@ -539,12 +601,17 @@ static void check_autoconfig(void)
 				progname);
 			exit(1);
 		}
-		exit(0);
 	}
+
+	return nauto;
 }
 
 int main(int argc, char *argv[])
+	__attribute__ ((weak, alias ("ipconfig_main")));
+
+int ipconfig_main(int argc, char *argv[])
 {
+	struct netdev *dev;
 	struct timeval now;
 	int c, port;
 
@@ -570,8 +637,8 @@ int main(int argc, char *argv[])
 					progname, port);
 				exit(1);
 			}
-			local_port = port;
-			remote_port = local_port - 1;
+			cfg_local_port = port;
+			cfg_remote_port = cfg_local_port - 1;
 			break;
 		case 't':
 			loop_timeout = atoi(optarg);
@@ -586,7 +653,9 @@ int main(int argc, char *argv[])
 			do_not_config = 1;
 			break;
 		case 'd':
-			add_device(optarg);
+			dev = add_device(optarg);
+			if (dev)
+				bringup_device(dev);
 			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
@@ -596,16 +665,20 @@ int main(int argc, char *argv[])
 	} while (1);
 
 	for (c = optind; c < argc; c++) {
-		add_device(argv[c]);
+		dev = add_device(argv[c]);
+		if (dev)
+			bringup_device(dev);
 	}
 	
-	check_autoconfig();
-	
-	if (local_port != LOCAL_PORT) {
-		printf("IP-Config: binding source port to %d, "
-		       "dest to %d\n", local_port, remote_port);
+	if (check_autoconfig()) {
+		if (cfg_local_port != LOCAL_PORT) {
+			printf("IP-Config: binding source port to %d, "
+			       "dest to %d\n",
+			       cfg_local_port,
+			       cfg_remote_port);
+		}
+		loop();
 	}
-	loop();
 
 	return 0;
 }

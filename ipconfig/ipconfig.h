@@ -5,8 +5,10 @@
 #define LOCAL_PORT	68
 #define REMOTE_PORT	(LOCAL_PORT - 1)
 
-extern __u16 local_port;
-extern __u16 remote_port;
+extern __u16 cfg_local_port;
+extern __u16 cfg_remote_port;
+
+extern int ipconfig_main(int argc, char *argv[]);
 
 /*
  * Note for gcc 3.2.2:
@@ -15,7 +17,7 @@ extern __u16 remote_port;
  * the gcc command line, or else ipconfig will fail to link.
  */
 #if 0
-#define DEBUG(x) printf x
+#define IPDBG(x) printf x
 #else
-#define DEBUG(x) do { } while(0)
+#define IPDBG(x) do { } while(0)
 #endif

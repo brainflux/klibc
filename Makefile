@@ -1,4 +1,4 @@
-SUBDIRS = klibc ash utils gzip ipconfig
+SUBDIRS = klibc ash ipconfig utils kinit gzip
 
 all:
 

@@ -20,15 +20,18 @@
 #include "netdev.h"
 #include "packet.h"
 
-static int pkt_fd;
+static int pkt_fd = -1;
 
-__u16 local_port = LOCAL_PORT;
-__u16 remote_port = REMOTE_PORT;
+__u16 cfg_local_port = LOCAL_PORT;
+__u16 cfg_remote_port = REMOTE_PORT;
 
 int packet_open(void)
 {
 	int fd, one = 1;
 
+	if (pkt_fd != -1)
+		return pkt_fd;
+	
 	/*
 	 * Get a PACKET socket for IP traffic.
 	 */
@@ -56,6 +59,7 @@ int packet_open(void)
 void packet_close(void)
 {
 	close(pkt_fd);
+	pkt_fd = -1;
 }
 
 static unsigned int ip_checksum(__u16 *hdr, int len)
@@ -119,16 +123,16 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 	};
 	int i, len = 0;
 
-	if (local_port != LOCAL_PORT) {
-		ipudp_hdrs.udp.source = htons(local_port);
-		ipudp_hdrs.udp.dest = htons(remote_port);
+	if (cfg_local_port != LOCAL_PORT) {
+		ipudp_hdrs.udp.source = htons(cfg_local_port);
+		ipudp_hdrs.udp.dest = htons(cfg_remote_port);
 	}
 	
-	DEBUG(("\n   udp src %d dst %d", ntohs(ipudp_hdrs.udp.source),
+	IPDBG(("\n   udp src %d dst %d", ntohs(ipudp_hdrs.udp.source),
 	       ntohs(ipudp_hdrs.udp.dest)));
 
-	DEBUG(("\n   ip src %s ", ntoa(ipudp_hdrs.ip.saddr)));
-	DEBUG(("dst %s ", ntoa(ipudp_hdrs.ip.daddr)));
+	IPDBG(("\n   ip src %s ", ntoa(ipudp_hdrs.ip.saddr)));
+	IPDBG(("dst %s ", ntoa(ipudp_hdrs.ip.daddr)));
 
 	/*
 	 * Glue in the ip+udp header iovec
@@ -154,7 +158,7 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 
 	ipudp_hdrs.udp.len      = htons(len - sizeof(struct iphdr));
 
-	DEBUG(("\n   bytes %d\n", len));
+	IPDBG(("\n   bytes %d\n", len));
 	
 	return sendmsg(pkt_fd, &msg, 0);
 }
@@ -240,24 +244,24 @@ int packet_recv(struct iovec *iov, int iov_len)
 	if (ret == -1)
 		goto free_pkt;
 
-	DEBUG(("<- bytes %d ", ret));
+	IPDBG(("<- bytes %d ", ret));
 
 	if (ip_checksum((__u16 *)ip, ip->ihl) != 0)
 		goto free_pkt;
 
-	DEBUG(("\n   ip src %s ", ntoa(ip->saddr)));
-	DEBUG(("dst %s ", ntoa(ip->daddr)));
+	IPDBG(("\n   ip src %s ", ntoa(ip->saddr)));
+	IPDBG(("dst %s ", ntoa(ip->daddr)));
 
 	if (ntohs(ip->tot_len) > ret || ip->protocol != IPPROTO_UDP)
 		goto free_pkt;
 
 	ret -= 4 * ip->ihl;
 
-	DEBUG(("\n   udp src %d dst %d ", ntohs(udp->source),
+	IPDBG(("\n   udp src %d dst %d ", ntohs(udp->source),
 	       ntohs(udp->dest)));
 	
-	if (udp->source != htons(remote_port) ||
-	    udp->dest != htons(local_port))
+	if (udp->source != htons(cfg_remote_port) ||
+	    udp->dest != htons(cfg_local_port))
 		goto free_pkt;
 
 	if (ntohs(udp->len) > ret)
@@ -274,7 +278,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 	return 0;
 
  discard_pkt:
-	DEBUG(("discarded\n"));
+	IPDBG(("discarded\n"));
 	packet_discard();
 	return 0;
 }

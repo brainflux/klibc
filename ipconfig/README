@@ -14,8 +14,9 @@ ipconfig [-c proto] [-d interface] [-n] [-p port] [-t timeout] [interface ...]
 -t timeout	Give up on all unconfigured interfaces after TIMEOUT secs.
 
 You can configure multiple interfaces by passing multiple interface
-specs on the command line.  If you're autoconfiguring any, ipconfig
-will wait until either all have been configured, or the timeout
+specs on the command line, or by using the special interface name
+"all".  If you're autoconfiguring any interfaces, ipconfig will wait
+until either all such interfaces have been configured, or the timeout
 passes.
 
 PROTO can be one of the following, which selects the autoconfiguration
@@ -37,7 +38,7 @@ addr		the local IP address
 server		the server's IP address (doubles as DNS server)
 gateway		default gateway
 netmask		netmask
-interface	name of the interface
+interface	name of the interface (empty string is synonym for "all")
 proto		the autoconfig protocol to use, as outlined above
 
 IP addresses and netmasks must be either absent (defaulting to zero)
