@@ -8,13 +8,16 @@
 #include <klibc/extern.h>
 #include <klibc/compiler.h>
 #include <sys/types.h>
+#if defined(__mips__) && !defined(__mips64__)
+# include <klibc/archfcntl.h>
+#endif
 #include <linux/fcntl.h>
 
 /* This is ugly, but "struct flock" has actually been defined with
    a long off_t, so it's really "struct flock64".  It just happens
    to work.  Gag.  Barf.
 
-   FIX THIS: It's broken on MIPS. */
+   This happens to work on all 32-bit architectures except MIPS. */
 
 #ifdef F_GETLK64
 # undef F_GETLK
