@@ -16,4 +16,6 @@
 #include <sys/times.h>
 #include <sys/utime.h>
 #include <sys/utsname.h>
+#include <sys/vfs.h>
 #include <sys/wait.h>
+#include <sys/module.h>

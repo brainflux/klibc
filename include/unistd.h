@@ -29,11 +29,12 @@ __extern int execl(const char *, const char *, ...);
 __extern int execv(const char *, const char * const *);
 
 __extern int setuid(uid_t);
-__extern uid_t getuid();
+__extern uid_t getuid(void);
 __extern int setgid(gid_t);
-__extern gid_t setgid(void);
 __extern uid_t geteuid(void);
+__extern int seteuid(uid_t);
 __extern gid_t getegid(void);
+__extern int setegid(gid_t);
 __extern int getgroups(int, gid_t *);
 __extern int setgroups(size_t, const gid_t *);
 __extern int setreuid(uid_t, uid_t);
@@ -58,6 +59,7 @@ __extern int readlink(const char *, char *, size_t);
 __extern int chown(const char *, uid_t, gid_t);
 __extern int fchown(int, uid_t, gid_t);
 __extern int lchown(const char *, uid_t, gid_t);
+__extern char *getcwd(char *, size_t);
 
 __extern int sync(void);
 
