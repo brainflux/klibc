@@ -23,7 +23,7 @@ Summary: Small utilities built with klibc.
 Group: Utilities/System
 Requires: klibc = %{version}
 
-%define docdir %{_docdir}/%{name}-%{version}-%{release}
+%define libdocdir %{_docdir}/%{name}-%{version}-%{release}
 
 %description utils
 This package contains a collection of programs that are linked against
@@ -32,7 +32,7 @@ toolset, but are typically much smaller than their full-function
 counterparts.  They are intended for inclusion in initramfs images and
 embedded systems.
 
-%define udocdir %{_docdir}/%{name}-utils-%{version}-%{release}
+%define bindocdir %{_docdir}/%{name}-utils-%{version}-%{release}
 
 %prep
 %setup -q
@@ -64,15 +64,15 @@ make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 
 # Install the docs
 
-mkdir -p %{buildroot}%{docdir} %{buildroot}%{udocdir}
-install -m 444 README %{buildroot}%{docdir}
-install -m 444 klibc/README %{buildroot}%{docdir}/README.klibc
-install -m 444 klibc/arch/README %{buildroot}%{docdir}/README.klibc.arch
+mkdir -p %{buildroot}%{bindocdir} %{buildroot}%{libdocdir}
+install -m 444 README %{buildroot}%{libdocdir}
+install -m 444 klibc/README %{buildroot}%{libdocdir}/README.klibc
+install -m 444 klibc/arch/README %{buildroot}%{libdocdir}/README.klibc.arch
 
-install -m 444 gzip/COPYING %{buildroot}%{udocdir}/COPYING.gzip
-install -m 444 gzip/README %{buildroot}%{udocdir}/README.gzip
-install -m 444 ipconfig/README %{buildroot}%{udocdir}/README.ipconfig
-install -m 444 kinit/README %{buildroot}%{udocdir}/README.kinit
+install -m 444 gzip/COPYING %{buildroot}%{bindocdir}/COPYING.gzip
+install -m 444 gzip/README %{buildroot}%{bindocdir}/README.gzip
+install -m 444 ipconfig/README %{buildroot}%{bindocdir}/README.ipconfig
+install -m 444 kinit/README %{buildroot}%{bindocdir}/README.kinit
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -84,12 +84,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/klcc
 %doc %{_mandir}/man1/*
 /lib/klibc-*.so
-%docdir %{docdir}
+%docdir %{libdocdir}
 
 %files utils
 %defattr(-,root,root,-)
 %{_libdir}/klibc/bin
-%docdir %{udocdir}
+%docdir %{bindocdir}
 
 %changelog
 * Tue Mar 1 2005 H. Peter Anvin <hpa@zytor.com>
