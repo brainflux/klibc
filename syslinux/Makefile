@@ -11,3 +11,4 @@ spotless:
 	$(MAKE) -C $(SYSDIR) clean
 	$(MAKE) -f Makefile.main spotless
 
+install:

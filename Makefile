@@ -2,7 +2,7 @@ VERSION := $(shell cat version)
 SUBDIRS = klibc ash ipconfig nfsmount utils kinit gzip
 SRCROOT = .
 
-all: klcc
+all:
 
 rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 
@@ -36,6 +36,8 @@ $(CROSS)klcc: klcc.in $(CROSS)klibc.config makeklcc.pl
 %: local-%
 	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
 
+local-all: $(CROSS)klcc
+
 local-clean:
 	rm -f klibc.config klcc
 
@@ -44,15 +46,18 @@ local-spotless:
 
 local-install: $(CROSS)klcc
 	mkdir -p $(INSTALLROOT)$(bindir)
-	mkdir -p $(INSTALLROOT)$(libdir)
+	mkdir -p $(INSTALLROOT)$(SHLIBDIR)
+	mkdir -p $(INSTALLROOT)$(INSTALLDIR)
+	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/include
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/include
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)lib
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
-	cp -r $(KRNLSRC)/linux/include/. $(INSTALLDIR)/include/.
-	cp -r $(KRNLOBJ)/linux/include/. $(INSTALLDIR)/include/.
-	cp -r $(KRNLOBJ)/linux/include2/. $(INSTALLDIR)/include/.
-	rm -rf $(INSTALLDIR)/include/asm-*
-	cp -r include/. $(INSTALLDIR)/include/.
-	$(INSTALL_EXEC) $(CROSS)klcc $(bindir)
+	cp -r $(KRNLSRC)/include/.  $(INSTALLROOT)$(INSTALLDIR)/include/.
+	cp -r $(KRNLOBJ)/include/.  $(INSTALLROOT)$(INSTALLDIR)/include/.
+	[ ! -d $(KRNLOBJ)/include2 ] || \
+	  cp -r $(KRNLOBJ)/include2/. $(INSTALLROOT)$(INSTALLDIR)/include/.
+	rm -rf $(INSTALLROOT)$(INSTALLDIR)/include/asm-*
+	cp -r include/. $(INSTALLROOT)$(INSTALLDIR)/include/.
+	$(INSTALL_EXEC) $(CROSS)klcc $(INSTALLROOT)$(bindir)
 
 -include MCONFIG

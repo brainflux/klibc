@@ -128,28 +128,21 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %docdir %{prefix}/share/doc/%{name}-%{version}
-%{prefix}/%{_lib}/klibc
-%dir %{prefix}/include/klibc
-%{prefix}/include/klibc/*.h
-%{prefix}/include/klibc/arpa
-%{prefix}/include/klibc/bitsize
-%{prefix}/include/klibc/klibc
-%{prefix}/include/klibc/net
-%{prefix}/include/klibc/netinet
-%{prefix}/include/klibc/sys
+%{prefix}/%{_lib}/klibc/lib
+%{prefix}/${_bin}/klcc
+/lib/klibc-*.so
 %{prefix}/share/doc/%{name}-%{version}
-
-%files kernheaders
-%defattr(-,root,root,-)
-%{prefix}/include/klibc/kernel
 
 %files utils
 %defattr(-,root,root,-)
-%{prefix}/libexec/klibc
+%{prefix}/%{_lib}/klibc/bin
 %docdir %{prefix}/share/doc/%{name}-utils-%{version}
 %{prefix}/share/doc/%{name}-utils-%{version}
 
 %changelog
+* Tue Mar 1 2005 H. Peter Anvin <hpa@zytor.com>
+- New "make install" scheme, klcc
+
 * Tue Jul 6 2004 H. Peter Anvin <hpa@zytor.com>
 - Update to use kernel-source RPM for the kernel symlink.
 

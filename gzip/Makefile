@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# $Id: Makefile,v 1.5 2004/02/09 23:18:14 hpa Exp $
+# $Id: Makefile,v 1.6 2005/03/01 22:36:46 hpa Exp $
 
 #### Start of system configuration section. ####
 
@@ -69,6 +69,10 @@ clean:
 
 spotless: clean
 	rm -f *~
+
+# These should presumably be shared...
+install: all
+	$(INSTALL_EXEC) gzip gunzip zcat $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
 
 ifneq ($(wildcard .*.d),)
 include $(wildcard .*.d)

@@ -177,6 +177,14 @@ spotless: clean
 bitsize:
 	@echo $(BITSIZE)
 
+install: all
+	$(INSTALL_DATA) $(LIB) $(SOLIB) $(CRT0) $(INTERP_O) \
+		$(INSTALLROOT)$(INSTALLDIR)/$(CROSS)lib
+	$(INSTALL_EXEC) klibc-`cat $(SOLIB).hash`.so \
+		$(INSTALLROOT)$(INSTALLDIR)/$(CROSS)lib
+	$(INSTALL_EXEC) klibc-`cat $(SOLIB).hash`.so \
+		$(INSTALLROOT)/$(SHLIBDIR)
+
 ifneq ($(wildcard $(DIR).*.d),)
 include $(wildcard $(DIR).*.d)
 endif

@@ -50,6 +50,8 @@ clean:
 spotless: clean
 	$(RM) *~
 
+install: all
+	$(INSTALL_EXEC) shared/* $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin	
 ifneq ($(wildcard .*.d),)
 include $(wildcard .*.d)
 endif

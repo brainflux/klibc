@@ -153,6 +153,9 @@ spotless: clean
 	find . \( -name \*~ -o -name \*.orig -o -name \*.rej -o -name \*.o \) -not -type d -print0 | xargs -0rt rm -f
 	rm -f tags
 
+install: all
+	$(INSTALL_EXEC) sh.shared $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin/sh
+
 ifneq ($(wildcard .*.d),)
 include $(wildcard .*.d)
 endif

@@ -28,6 +28,10 @@ clean:
 spotless: clean
 	-rm -f .*.d *~
 
+# This should perhaps be a shared binary?
+install: all
+	$(INSTALL_EXEC) $(PROGS) $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
+
 ifneq ($(wildcard .*.d),)
 include $(wildcard .*.d)
 endif
