@@ -48,8 +48,8 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    parisc:	 Needs sysstub.ph
    ppc64:	 Working
    ppc:		 Working
-   s390:	 Needs sysstub.ph
-   s390x:	 Needs sysstub.ph
+   s390:	 Working static, shared support in progress
+   s390x:	 Working
    sh:		 Needs sysstub.ph
    sparc64:	 sigaction() fails in ash for unknown reason
    sparc:	 Working
