@@ -11,10 +11,11 @@
 	.globl	__syscall_common
 __syscall_common:
 	callsys
+	ldgp	gp, 0(pv)
 	beq	a3, 1f
-	ldq	a1, errno(gp)	!literal
+	lda	a1, errno
 	lda	v0, -1(zero)
-	stq	a3, 0(a1)
+	std	a3, 0(a1)
 1:
 	ret	zero,(ra),1
 
