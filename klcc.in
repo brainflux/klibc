@@ -134,7 +134,7 @@ while ( defined($a = shift(@ARGV)) ) {
     } elsif ( $a eq '-nostdinc' ) {
 	push(@ccopt, $a);
 	@includes = ();
-    } elsif ( $a =~ /^-print/ ) {
+    } elsif ( $a =~ /^(-print|--help)/ ) {
 	push(@ccopt, $a);
 	$operation = 'c' if ( $operation eq '' );
     } else {
