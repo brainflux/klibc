@@ -130,6 +130,9 @@ spotless: clean
 	find . \( -name \*~ -o -name '.*.d' \) -not -type d -print0 | \
 		xargs -0rt rm -f
 
+bitsize:
+	@echo $(BITSIZE)
+
 ifneq ($(wildcard $(DIR)/.*.d),)
 include $(wildcard $(DIR)/.*.d)
 endif
