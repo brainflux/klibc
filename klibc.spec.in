@@ -21,7 +21,7 @@ progress, and a lot of things are still missing.
 %package utils
 Summary: Small utilities built with klibc.
 Group: Utilities/System
-Requires: klibc
+Requires: klibc = %{version}
 
 %description utils
 This package contains a collection of programs that are linked against
