@@ -31,9 +31,10 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
 
    The following is the status of various architectures:
 
-   Known to work:	arm alpha i386 ppc s390 s390x sparc
-   Might work:		sparc64 ppc64 x86_64
-   Known not to work:	cris ia64 m68k mips64 parisc sh
+   Known to work:	arm alpha i386 ppc sparc sparc64
+   Missing setjmp:	s390 s390x ppc64
+   May or may not work:	x86_64
+   Need porting work:	cris ia64 m68k mips64 parisc sh
 
    Note that even the "known to work" ones likely have bugs.  Please
    report them if you run into them.
