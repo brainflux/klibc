@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 
-static int newgap(int gap)
+static inline int newgap(int gap)
 {
   gap = (gap*10)/13;
   if ( gap == 9 || gap == 10 )
