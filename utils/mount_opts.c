@@ -76,7 +76,7 @@ parse_mount_options(char *arg, unsigned long rwflag, struct extra_opts *extra)
 				else
 					rwflag |= options[i].rwset;
 			}
-			if (res >= 0)
+			if (res <= 0)
 				break;
 		}
 
