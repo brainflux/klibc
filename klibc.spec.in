@@ -82,14 +82,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/klibc/lib
 %{_libdir}/klibc/include
 %{_bindir}/klcc
-%doc %{_mandir}/man1/*
 /lib/klibc-*.so
-%docdir %{libdocdir}
+%doc %{_mandir}/man1/*
+%doc %{libdocdir}/*
 
 %files utils
 %defattr(-,root,root,-)
 %{_libdir}/klibc/bin
-%docdir %{bindocdir}
+%doc %{bindocdir}/*
 
 %changelog
 * Tue Mar 1 2005 H. Peter Anvin <hpa@zytor.com>
