@@ -10,6 +10,7 @@ char *strerror(int errnum)
 
   char numbuf[32];
   char *p;
+  unsigned int e = (unsigned int)errnum;
 
   p = numbuf+sizeof numbuf;
   *--p = '\0';
@@ -19,6 +20,8 @@ char *strerror(int errnum)
     errnum /= 10;
   } while ( errnum );
 
-  return (char *)memcpy(message+6, p, (numbuf+sizeof numbuf)-p);
+  memcpy(message+6, p, (numbuf+sizeof numbuf)-p);
+
+  return message;
 }
 
