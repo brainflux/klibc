@@ -14,4 +14,5 @@ BITSIZE  = 32
 # Extra linkflags when building the shared version of the library
 # This address needs to be reachable using normal inter-module
 # calls, and work on the memory models for this architecture
-SHAREDFLAGS	= -Ttext 0x38000000
+# 96 MB - normal binaries start at 128 MB
+SHAREDFLAGS	= -Ttext 0x06000000
