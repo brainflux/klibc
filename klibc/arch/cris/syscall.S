@@ -19,7 +19,6 @@ __syscall_common:
 	move.d	[$sp+4],$mof
 	move.d	[$sp+8],$srp
 	break	13
-	pop	$srp
 
 	cmpq.d	-4096,$r10
 	blt	1f
@@ -27,7 +26,7 @@ __syscall_common:
 	move.d	$r11,[errno]
 	moveq.d	-1,$r10
 1:
-	ret
+	jump	[sp+]
 	  nop
 
 	.size	__syscall_common,.-__syscall_common
