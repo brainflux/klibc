@@ -15,7 +15,7 @@ _syscall0(pid_t,fork);
 
 #else
 
-static inline _syscall2(pid_t,clone,unsigned long,flags,void *,newsp)
+static inline _syscall2(pid_t,clone,unsigned long,flags,void *,newsp);
 
 pid_t fork(void)
 {
