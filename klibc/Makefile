@@ -1,4 +1,4 @@
-ARCH    = i386
+ARCH    = alpha
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
@@ -14,7 +14,7 @@ PERL    = perl
 STRIP   = $(CROSS)strip -R .comment -R .note
 
 TESTS   = testvsnp hello minihello microhello getenvtest \
-	  getopttest malloctest minips
+	  getopttest malloctest minips idtest
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o sscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -100,6 +100,8 @@ getopttest: getopttest.o $(LIB) $(CRT0)
 malloctest: malloctest.o $(LIB) $(CRT0)
 
 minips: minips.o $(LIB) $(CRT0)
+
+idtest: idtest.o $(LIB) $(CRT0)
 
 $(LIB): $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
 	rm -f $(LIB)

@@ -33,11 +33,12 @@ __extern int execlpe(const char *, const char *, ...);
 
 __extern int setuid(uid_t);
 __extern uid_t getuid(void);
-__extern int setgid(gid_t);
-__extern uid_t geteuid(void);
 __extern int seteuid(uid_t);
-__extern gid_t getegid(void);
+__extern uid_t geteuid(void);
+__extern int setgid(gid_t);
+__extern gid_t getgid(void); 
 __extern int setegid(gid_t);
+__extern gid_t getegid(void);
 __extern int getgroups(int, gid_t *);
 __extern int setgroups(size_t, const gid_t *);
 __extern int setreuid(uid_t, uid_t);
