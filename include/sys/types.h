@@ -117,4 +117,9 @@ struct ustat {
 	char			f_fpack[6];
 };
 
+/*
+ * Some apps want this in <sys/types.h>
+ */
+#include <sys/sysmacros.h>
+
 #endif
