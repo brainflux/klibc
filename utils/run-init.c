@@ -1,4 +1,4 @@
-#ident "$Id: run-init.c,v 1.5 2004/07/30 16:24:11 hpa Exp $"
+#ident "$Id: run-init.c,v 1.6 2004/07/30 16:26:59 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -93,7 +93,7 @@ static int nuke_dir(const char *what)
   int err = 0;
   struct stat st;
 
-  if ( stat(what, &st) )
+  if ( lstat(what, &st) )
     return errno;
   
   if ( !S_ISDIR(st.st_mode) )
