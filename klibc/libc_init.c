@@ -18,6 +18,11 @@
 #include <klibc/compiler.h>
 #include <elf.h>
 
+/* This file is included from __static_init.c or __shared_init.c */
+#ifndef SHARED
+# error "SHARED should be defined to 0 or 1"
+#endif
+
 char **environ;
 unsigned int __page_size, __page_shift;
 
