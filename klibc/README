@@ -34,7 +34,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
 
    The following is the last known status of various architectures:
 
-   alpha:	 Needs sysstub.ph
+   alpha:	 Untested
    arm-thumb:	 Probably OK
    arm26:	 Not yet ported
    arm:		 Working

@@ -26,7 +26,9 @@ ARCHOBJS = \
 	arch/$(ARCH)/__divl.o \
 	arch/$(ARCH)/__reml.o \
 	arch/$(ARCH)/pipe.o \
-	arch/$(ARCH)/setjmp.o
+	arch/$(ARCH)/setjmp.o \
+	arch/$(ARCH)/syscall.o \
+	arch/$(ARCH)/sysdual.o \
 
 ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
 
