@@ -12,6 +12,7 @@
 #  define __must_inline static __inline__ __attribute__((always_inline))
 # else
 #  define __must_inline extern __inline__
+# endif
 #else
 # define __must_inline inline	/* Just hope this works... */
 #endif
