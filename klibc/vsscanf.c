@@ -349,6 +349,7 @@ int vsscanf(const char *buffer, const char *format, va_list ap)
 	*sarg++ = *q++;
       }
       if ( q != qq ) {
+	*sarg = '\0';
 	converted++;
       } else {
 	bail = *q ? bail_err : bail_eof;
