@@ -16,7 +16,8 @@ b) Create a symlink in the include directory called "bitsize" pointing
 
 c) Type "make" and pray...
 
-d) Try the "hello" and "testvsnp" programs... they should run.
+d) Try the "hello", "minihello" and "testvsnp" programs... they should
+   run.
 
 Contact me at <hpa@zytor.com> for more info.
 
