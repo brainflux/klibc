@@ -15,11 +15,11 @@ typedef unsigned short int	uint16_t;
 typedef unsigned int		uint32_t;
 typedef unsigned long int	uint64_t;
 
-typedef signed char 		int_fast8_t;
-typedef long int		int_fast64_t;
+typedef long int		int_fast16_t;
+typedef long int		int_fast32_t;
 
-typedef unsigned char 		uint_fast8_t;
-typedef unsigned long int	uint_fast64_t;
+typedef unsigned long int	uint_fast16_t;
+typedef unsigned long int	uint_fast32_t;
 
 typedef long int		intptr_t;
 typedef unsigned long int	uintptr_t;
