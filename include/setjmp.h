@@ -34,7 +34,7 @@ typedef struct __sigjmp_buf sigjmp_buf[1];
 #define sigsetjmp(__env, __save) \
 ({ \
   struct __sigjmp_buf *__e = (__env); \
-  sigprocmask(0, NULL, __e->__sigs); \
+  sigprocmask(0, NULL, &__e->__sigs); \
   setjmp(__e->__jmpbuf); \
 })
 

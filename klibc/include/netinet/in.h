@@ -5,6 +5,10 @@
 #ifndef _NETINET_IN_H
 #define _NETINET_IN_H
 
+/* added this include by Mats Petersson */
+#include <linux/socket.h>
+
+
 #include <stdint.h>
 #include <endian.h>		/* Must be included *before* <linux/in.h> */
 #include <linux/in.h>

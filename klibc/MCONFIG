@@ -8,7 +8,7 @@ KLIBSRC = .
 include ../MCONFIG
 
 WARNFLAGS = -W -Wall -Wpointer-arith -Wwrite-strings -Wstrict-prototypes -Winline
-CFLAGS  = $(OPTFLAGS) $(REQFLAGS) $(WARNFLAGS)
+CFLAGS  = -Wp,-MD,$(dir $*).$(notdir $*).d $(OPTFLAGS) $(REQFLAGS) $(WARNFLAGS)
 
 SOFLAGS = -fPIC
 SOOBJS  = $(patsubst %.o,%.lo,$(LIBOBJS))

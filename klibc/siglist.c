@@ -76,9 +76,6 @@ const char * const sys_siglist[NSIG] = {
 #ifdef SIGSTOP
   [SIGSTOP] = "Stopped (signal)",
 #endif
-#ifdef SIGSWI
-  [SIGSWI] = "Software interrupt",
-#endif
 #ifdef SIGSYS
   [SIGSYS] = "Bad system call",
 #endif

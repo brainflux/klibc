@@ -15,10 +15,10 @@ void *memset(void *dst, int c, size_t n)
 	       : "a" ((unsigned char)c * 0x01010101U)
 	       : "edx");
 #elif defined(__x86_64__)
-  asm volatile("cld ; movl %0,%%rdx ; shrq $3,%0 ; rep ; stosq ; "
-	       "movl %%rdx,%0 ; andl $7,%0 ; rep ; stosb"
+  asm volatile("cld ; movl %0,%%edx ; shrq $3,%0 ; rep ; stosq ; "
+	       "movl %%edx,%0 ; andl $7,%0 ; rep ; stosb"
 	       : "+c" (n), "+D" (q)
-	       : "a" ((unsigned char)c * 0x01010101U)
+	       : "a" ((unsigned char)c * 0x0101010101010101U)
 	       : "rdx");
 #else
   while ( n-- ) {

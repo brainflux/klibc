@@ -46,6 +46,13 @@ while ( defined($line = <STDIN>) ) {
 
 	open(OUT, "> syscalls/${fname}.c")
 	    or die "$0: Cannot open syscalls/${fname}.c\n";
+
+	if ( $fname eq "rt_sigaction") {
+	    print OUT "#ifdef __x86_64__\n\n";
+	    print OUT "struct sigaction;\n\n";
+            print OUT "#endif\n\n"
+	}
+
 	print OUT "#include \"syscommon.h\"\n\n";
 	
 	if ( $fname ne $sname ) {
@@ -54,6 +61,7 @@ while ( defined($line = <STDIN>) ) {
 	}
 
 	print OUT "_syscall", scalar(@args), $stype, "(", $type, ',', $fname;
+
 	$i = 0;
 	foreach $arg ( @args ) {
 	    print OUT ",", $arg, ",a",$i++;

@@ -15,9 +15,10 @@ OBJS =	$(OBJ1) $(OBJ2)
 KLIBSRC = ../klibc
 include ../MCONFIG
 
-CFLAGS  = $(OPTFLAGS) $(REQFLAGS) -DSHELL
-LIBS    = $(KLIBC) $(LIBGCC)
-STRIP   = $(CROSS)strip -R .comment -R .note
+MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
+CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -DSHELL
+LIBS     = $(KLIBC) $(LIBGCC)
+STRIP    = $(CROSS)strip -R .comment -R .note
 
 HOST_CFLAGS  = -g -I. -DSHELL
 
@@ -70,3 +71,5 @@ mknodes: mknodes.c
 clean:
 	rm -f core $(CLEANFILES) $(PROG) $(OBJS)
 
+spotless: clean
+	find . -name \*~ -not -type d -print0 | xargs -0rt rm -f

@@ -98,3 +98,7 @@ clean: archclean
 
 spotless: clean
 	find . -name \*~ -not -type d -print0 | xargs -0rt rm -f
+
+ifneq ($(wildcard $(DIR)/.*.d),)
+include $(wildcard $(DIR)/.*.d)
+endif

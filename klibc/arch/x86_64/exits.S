@@ -28,7 +28,7 @@ exit:
 	.globl _exit
 	.type _exit,@function
 _exit:
-	movl $__NR_exit,%rax
+	movl $__NR_exit,%eax
 	/* The argument is already in %rdi */
 	syscall
 	.size _exit,.-exit

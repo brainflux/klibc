@@ -15,10 +15,13 @@ const char *inet_ntop(int af, const void *cp, char *buf, size_t len)
   switch ( af ) {
   case AF_INET:
     {
-      uint32_t v = ((const struct in_addr *)cp)->s_addr;
+      union {
+        uint8_t  b[4];
+        uint32_t l;
+      } a;
+      a.l = ((const struct in_addr *)cp)->s_addr;
 
-      xlen = snprintf(buf, len, "%u.%u.%u.%u",
-		      (v >> 24), (v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff);
+      xlen = snprintf(buf, len, "%u.%u.%u.%u", a.b[0], a.b[1], a.b[2], a.b[3]);
     }
     break;
 

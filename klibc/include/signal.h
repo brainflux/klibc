@@ -24,6 +24,7 @@
 
 __extern const char * const sys_siglist[];
 
+#if !defined(__x86_64__)
 /* This assumes sigset_t is either an unsigned long or an array of such,
    and that _NSIG_BPW in the kernel is always LONG_BIT */
 
@@ -54,6 +55,8 @@ static __inline__ int sigismember(sigset_t *set, int signum)
   unsigned long *lset = (unsigned long *)set;
   return (int)((lset[signum/LONG_BIT] >> (signum%LONG_BIT)) & 1);
 }
+
+#endif
 
 __extern __sighandler_t signal(int, __sighandler_t);
 __extern int sigaction(int, const struct sigaction *, struct sigaction *);
