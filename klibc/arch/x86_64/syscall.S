@@ -19,7 +19,7 @@ __syscall_common:
 
 	# Error return, must set errno
 	negl	%eax
-	movl	%eax,errno		# errno is type int, so 32 bits
+	movl	%eax,errno(%rip)	# errno is type int, so 32 bits
 	orq	$-1,%rax		# orq $-1 smaller than movq $-1
 
 1:
