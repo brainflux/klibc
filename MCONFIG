@@ -17,7 +17,8 @@ REQFLAGS = $(ARCHREQFLAGS) -nostdinc -iwithprefix include \
 	  -I$(SRCROOT)/include/arch/$(ARCH) \
 	  -I$(SRCROOT)/include/bits$(BITSIZE) \
 	  -I$(SRCROOT)/include \
-	  -I$(SRCROOT)/linux/include
+	  -I$(SRCROOT)/linux/include -I$(SRCROOT)/linux/include2
+ 
 LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib
