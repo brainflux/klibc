@@ -23,6 +23,8 @@ Summary: Small utilities built with klibc.
 Group: Utilities/System
 Requires: klibc = %{version}
 
+%define docdir %{_docdir}/%{name}-%{version}
+
 %description utils
 This package contains a collection of programs that are linked against
 klibc.  These duplicate some of the functionality of a regular Linux
@@ -30,7 +32,7 @@ toolset, but are typically much smaller than their full-function
 counterparts.  They are intended for inclusion in initramfs images and
 embedded systems.
 
-%define udocdir %{_defaultdocdir}/%{name}-utils-%{version}
+%define udocdir %{_docdir}/%{name}-utils-%{version}
 
 %prep
 %setup -q
@@ -62,10 +64,10 @@ make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 
 # Install the docs
 
-mkdir -p %{buildroot}%{_docdir} %{buildroot}%{udocdir}
-install -m 444 README %{buildroot}%{_docdir}
-install -m 444 klibc/README %{buildroot}%{_docdir}/README.klibc
-install -m 444 klibc/arch/README %{buildroot}%{_docdir}/README.klibc.arch
+mkdir -p %{buildroot}%{docdir} %{buildroot}%{udocdir}
+install -m 444 README %{buildroot}%{docdir}
+install -m 444 klibc/README %{buildroot}%{docdir}/README.klibc
+install -m 444 klibc/arch/README %{buildroot}%{docdir}/README.klibc.arch
 
 install -m 444 gzip/COPYING %{buildroot}%{udocdir}/COPYING.gzip
 install -m 444 gzip/README %{buildroot}%{udocdir}/README.gzip
@@ -78,10 +80,11 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %{_libdir}/klibc/lib
+%{_libdir}/klibc/include
 %{_bindir}/klcc
 %doc %{_mandir}/man1/*
 /lib/klibc-*.so
-%docdir %{_docdir}
+%docdir %{docdir}
 
 %files utils
 %defattr(-,root,root,-)
