@@ -43,8 +43,9 @@ embedded systems.
 %prep
 %setup -q
 cp -dRs /lib/modules/`uname -r`/build ./linux
-make -C linux defconfig ARCH=%{_target_cpu}
-make -C linux prepare ARCH=%{_target_cpu}
+# Shouldn't need this when getting the build tree from /lib/modules
+# make -C linux defconfig ARCH=%{_target_cpu}
+# make -C linux prepare ARCH=%{_target_cpu}
 # Deal with braindamage in RedHat's kernel-source RPM
 rm -f linux/include/linux/config.h
 cat <<EOF > linux/include/linux/config.h
