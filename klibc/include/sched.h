@@ -17,7 +17,7 @@ struct sched_param {
   int sched_priority;
 };
 
-__extern int sched_setschedule(pid_t, int, const struct sched_param *);
+__extern int sched_setscheduler(pid_t, int, const struct sched_param *);
 __extern int sched_yield(void);
 
 #endif /* _SCHED_H */
