@@ -7,4 +7,11 @@
 # accordingly.
 #
 
+ARCHOBJS = \
+	arch/$(ARCH)/sigjmp.o \
+	arch/$(ARCH)/vfork.o \
+	arch/$(ARCH)/setjmp.o
+
+ARCHSOOBJS = $(patsubst %o,%.lo,%(ARCHOBJS))
+
 archclean:

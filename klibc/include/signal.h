@@ -11,6 +11,8 @@
 #include <sys/types.h>
 #include <asm/signal.h>
 
+#include <klibc/archsignal.h>
+
 /* Some architectures don't define these */
 #ifndef SA_RESETHAND
 # define SA_RESETHAND SA_ONESHOT
