@@ -202,7 +202,6 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	int cmdc;
 	int fd;
-	int i;
 
 	/* Default parameters for anything init-like we execute */
 	init_argc = argc;
@@ -246,8 +245,9 @@ int main(int argc, char *argv[])
 	do_ipconfig(cmdc, cmdv);
 
 	check_path("/root");
-	check_path("/old_root");
 	do_mounts(cmdc, cmdv);
+	/* do_mounts cd's to /root so below tests /root/old_root */
+	check_path("old_root");
 
 #ifndef INI_DEBUG
 	if (pivot_root(".", "old_root") == -1) {
@@ -255,6 +255,8 @@ int main(int argc, char *argv[])
 		ret = 2;
 		goto bail;
 	}
+	/* the below chdir() is recommended after a pivot_root() */
+	chdir("/");
 
 	if (mnt_procfs == 1)
 		umount2("/proc", 0);
@@ -262,18 +264,12 @@ int main(int argc, char *argv[])
 	if (mnt_sysfs == 1)
 		umount2("/sys", 0);
 
-	for (i = 1; i < cmdc; i++) {
-		if (strncmp(cmdv[i], "kinit=", 6) == 0) {
-			kinit = cmdv[i] + 6;
-		}
-	}
-	
-	if (kinit) {
+	if ((kinit = get_arg(cmdc, cmdv, "kinit="))) {
 		char *s = strrchr(kinit, '/');
 		if (s) {
 			s++;
 		}
-		init_argv[0] = kinit;
+		init_argv[0] = s;
 		execv(kinit, init_argv);
 	}
 	init_argv[0] = "init";
