@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# $Id: Makefile,v 1.1 2002/08/18 00:59:21 hpa Exp $
+# $Id: Makefile,v 1.2 2002/08/18 10:11:34 hpa Exp $
 
 #### Start of system configuration section. ####
 
@@ -51,7 +51,7 @@ gzip:	Makefile $(OBJS) $(CRT0) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
 
 $(CRT0) $(LIBS):
-	@echo "$@ not up to date || exit 1
+	@echo '*** error: $@ not up to date' || exit 1
 
 gunzip:	gzip
 	rm -f $@

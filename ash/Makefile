@@ -35,7 +35,7 @@ $(PROG): $(OBJS) $(LIBS)
 	$(STRIP) $(PROG)
 
 $(CRT0) $(LIBS):
-	@echo "$@ not up to date || exit 1
+	@echo '*** error: $@ not up to date' || exit 1
 
 install: all
 	install sh /bin/ash

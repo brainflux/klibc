@@ -17,6 +17,9 @@ mkfifo:	mkfifo.o file_mode.o $(CRT0) $(LIBS)
 pivot_root: pivot_root.o $(CRT0) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) pivot_root.o $(LIBS)
 
+$(CRT0) $(LIBS):
+	@echo '*** error: $@ not up to date' || exit 1
+
 clean:
 	$(RM) *.o $(PROGS) core
 
