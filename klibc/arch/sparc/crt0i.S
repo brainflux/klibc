@@ -83,33 +83,18 @@ _start:
 	sub	%sp, 64, %sp		! make room for incoming arguments
 #endif
 
-! Set up pointers to argc and argv
+! Set up pointers to the ELF data structure (argc, argv, ...)
+! Pass as the first argument to __libc_init
 #if TARGET_PTR_SIZE == 32
-       	ld	[%g5 + 0x40], %o0	! argc
-	add	%g5, 0x44, %o1		! argv
-	add	%o0, 1, %o2
-	sll	%o2, 2, %o2
+	add	%g5, 0x40, %o0
 #else /* TARGET_PTR_SIZE == 64 */
-	ldx	[%g5 + 0x80], %o0	! argc.lo
-	add	%g5, 0x88, %o1		! argv
-	add	%o0, 1, %o2
-	sll	%o2, 3, %o2
-#endif
-	add	%o1, %o2, %o2		! envp
-	sethi	%hi (environ), %o3
-	or	%o3, %lo (environ), %o3
-#if TARGET_PTR_SIZE == 32
-        st	%o2, [%o3 + %g4]
-#else /* TARGET_PTR_SIZE == 64 */
-	stx	%o2, [%o3 + %g4]
+	add	%g5, 0x80, %o0
 #endif
 
-	call	main
-	 nop
-	
-	call	exit
-	 nop
+	call	__libc_init
+	 mov	%g1, %o1	! This is the "atexit" pointer;
+				! pass as the second argument to __libc_init
 
-! If all the above methods fail to terminate the program, try an illegal insn.
+! If __libc_init returns, something is hosed.  Try an illegal insn.
 ! If that does not work, the o/s is hosed more than we are.
 	.long 0

@@ -25,7 +25,7 @@ extern int main(int, char **, char **);
 __noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
 {
   int argc;
-  char **argv, **envp, **envend;
+  char **argv, **envp;
 
   (void)onexit;			/* For now, we ignore this... */
 
