@@ -11,7 +11,7 @@ int strcmp(const char *s1, const char *s2)
   int d = 0;
 
   while ( 1 ) {
-    d = (int)*c2++ - (int)(ch = *c1++);
+    d = (int)(ch = *c1++) - (int)*c2++;
     if ( d || !ch )
       break;
   }

@@ -10,7 +10,7 @@ int memcmp(const void *s1, const void *s2, size_t n)
   int d = 0;
 
   while ( n-- ) {
-    d = (int)*c2++ - (int)*c1++;
+    d = (int)*c1++ - (int)*c2++;
     if ( d )
       break;
   }
