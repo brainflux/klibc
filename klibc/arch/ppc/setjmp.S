@@ -28,7 +28,7 @@ longjmp:
         mtcr    %r12                    /* restore CR */
         mr      %r2,%r9                 /* restore GPR2 (not needed) */
         mr      %r1,%r10                /* restore stack */
-        or      %r3,%r4,%r4             /* get return value */
+        mr      %r3,%r4                 /* get return value */
         blr                             /* return */
 
 	.size longjmp,.-longjmp
