@@ -17,5 +17,9 @@ __extern int munmap(void *, size_t);
 __extern void *mremap(void *, size_t, size_t, unsigned long);
 __extern int msync(const void *, size_t, int);
 __extern int mprotect(const void *, size_t, int);
+__extern int mlockall(int);
+__extern int munlockall(void);
+__extern int mlock(const void *, size_t);
+__extern int munlock(const void *, size_t);
 
 #endif /* _SYS_MMAN_H */
