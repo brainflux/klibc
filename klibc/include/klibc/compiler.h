@@ -49,4 +49,13 @@
 # define __formatfunc(t,f,a)
 #endif
 
+/* likely/unlikely */
+#if defined(__GNUC__) && (__GNUC_MAJOR__ > 2 || (__GNUC_MAJOR__ == 2 && __GNUC_MINOR__ >= 95))
+# define __likely(x)   __builtin_expect((x), 1)
+# define __unlikely(x) __builtin_expect((x), 0)
+#else
+# define __likely(x)   (x)
+# define __unlikely(x) (x)
+#endif
+
 #endif
