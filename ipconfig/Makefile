@@ -19,7 +19,7 @@ static/ipconfig: $(OBJS) $(CRT0) $(LIBS)
 	cp -f $@ static.g
 	$(STRIP) $@
 
-shared/ipconfig: $(OBJS) $(CRT0) $(LIBSHARED) $(LIBGCC)
+shared/ipconfig: $(OBJS) $(CRTSHARED) $(LIBSHARED) $(LIBGCC)
 	mkdir -p shared shared.g
 	$(LD) $(LDFLAGS) -o $@ $(EMAIN) $(CRTSHARED) $(OBJS) \
 		-R $(LIBSHARED) $(LIBGCC)
