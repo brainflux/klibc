@@ -14,6 +14,7 @@ __extern int memcmp(const void *, const void *, size_t);
 __extern void *memcpy(void *, const void *, size_t);
 __extern void *memmove(void *, const void *, size_t);
 __extern void *memset(void *, int, size_t);
+__extern void *memmem(const void *, size_t, const void *, size_t);
 __extern char *strcat(char *, const char *);
 __extern char *strchr(const char *, int);
 __extern int strcmp(const char *, const char *);
