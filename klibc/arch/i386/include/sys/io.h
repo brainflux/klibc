@@ -1,4 +1,4 @@
-#ident "$Id: io.h,v 1.1 2004/01/25 01:34:28 hpa Exp $"
+#ident "$Id: io.h,v 1.2 2004/01/25 07:49:39 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -65,7 +65,7 @@ inb(unsigned short __p)
 {
   unsigned char __v;
   asm volatile("inb %1,%0" : "=a" (__v) : "dN" (__p));
-  return v;
+  return __v;
 }
 
 static __inline__ unsigned short
@@ -73,7 +73,7 @@ inw(unsigned short __p)
 {
   unsigned short __v;
   asm volatile("inw %1,%0" : "=a" (__v) : "dN" (__p));
-  return v;
+  return __v;
 }
 
 static __inline__ unsigned int
@@ -81,7 +81,7 @@ inl(unsigned short __p)
 {
   unsigned int __v;
   asm volatile("inl %1,%0" : "=a" (__v) : "dN" (__p));
-  return v;
+  return __v;
 }
 
 /* String I/O macros */
