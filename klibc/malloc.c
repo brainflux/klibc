@@ -5,6 +5,7 @@
  */
 
 #include <stdlib.h>
+#include <sys/mman.h>
 #include "malloc.h"
 
 void *sbrk(size_t);
@@ -28,6 +29,7 @@ static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
 
   fsize = fp->a.size;
   
+  /* We need the 2* to account for the larger requirements of a free block */
   if ( fsize >= size+2*sizeof(struct arena_header) ) {
     /* Bigger block than required -- split block */
     nfp = (struct free_arena_header *)((char *)fp + size);
@@ -67,10 +69,14 @@ void *malloc(size_t size)
   struct free_arena_header *pah;
   size_t fsize;
 
+  if ( size == 0 )
+    return NULL;
+
   /* Add the obligatory arena header, and round up */
   size = (size+2*sizeof(struct arena_header)-1) & ARENA_SIZE_MASK;
 
-  for ( fp = __malloc_head.next_free ;	fp->a.size ; fp = fp->next_free ) {
+  for ( fp = __malloc_head.next_free ; fp->a.type != ARENA_TYPE_HEAD ;
+	fp = fp->next_free ) {
     if ( fp->a.size >= size ) {
       /* Found fit -- allocate out of this block */
       return __malloc_from_block(fp, size);
@@ -79,15 +85,18 @@ void *malloc(size_t size)
 
   /* Nothing found... need to request a block from the kernel */
   fsize = (size+MALLOC_CHUNK_MASK) & ~MALLOC_CHUNK_MASK; 
-  fp = (struct free_arena_header *) sbrk(fsize);
+  fp = (struct free_arena_header *)
+    mmap(NULL, fsize, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
 
-  if ( fp == (struct free_arena_header *)-1 ) {
+  if ( fp == (struct free_arena_header *)MAP_FAILED ) {
     return NULL;		/* Failed to get a block */
   }
 
   /* Insert the block into the management chains */
   fp->a.type = ARENA_TYPE_FREE;
   fp->a.size = fsize;
+
+  /* Add it to the free chain */
   fp->next_free = __malloc_head.next_free;
   fp->prev_free = &__malloc_head;
   __malloc_head.next_free = fp;
@@ -97,8 +106,7 @@ void *malloc(size_t size)
      place -- this list is required to be sorted.  Since we most likely
      get memory assignments in ascending order, search backwards for
      the proper place. */
-
-  for ( pah = &__malloc_head ; pah->a.type != ARENA_TYPE_HEAD ;
+  for ( pah = __malloc_head.a.prev ; pah->a.type != ARENA_TYPE_HEAD ;
 	pah = pah->a.prev ) {
     if ( pah < fp )
       break;

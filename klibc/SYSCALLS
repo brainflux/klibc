@@ -119,7 +119,7 @@ int nanosleep(const struct timespec *, struct timespec *)
 #
 # Memory
 #
-# void * brk::__brk(void *)
+void * brk::__brk(void *)
 int munmap(void *, size_t)
 void * mremap(void *, size_t, size_t, unsigned long)
 int msync(const void *, size_t, int)

@@ -26,9 +26,16 @@ struct arena_header {
   struct free_arena_header *next, *prev;
 };
 
+#ifdef DEBUG_MALLOC
+#define ARENA_TYPE_USED 0x64e69c70
+#define ARENA_TYPE_FREE 0x012d610a
+#define ARENA_TYPE_HEAD 0x971676b5
+#define ARENA_TYPE_DEAD 0xeeeeeeee
+#else
 #define ARENA_TYPE_USED 0
 #define ARENA_TYPE_FREE 1
 #define ARENA_TYPE_HEAD 2
+#endif
 
 #define ARENA_SIZE_MASK (~(sizeof(struct arena_header)-1))
 

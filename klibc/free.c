@@ -2,6 +2,7 @@
  * free.c
  */
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "malloc.h"
@@ -15,6 +16,10 @@ void free(void *ptr)
 
   ah = (struct free_arena_header *)
     ((struct arena_header *)ptr - 1);
+
+#ifdef DEBUG_MALLOC
+  assert( ah->a.type == ARENA_TYPE_USED );
+#endif
   
   pah = ah->a.prev;
   nah = ah->a.next;
@@ -24,33 +29,38 @@ void free(void *ptr)
     pah->a.size += ah->a.size;
     pah->a.next = nah;
     nah->a.prev = pah;
+
+#ifdef DEBUG_MALLOC
+    ah->a.type = ARENA_TYPE_DEAD;
+#endif
+
     ah = pah;
     pah = ah->a.prev;
-  }
-
-  if ( nah->a.type == ARENA_TYPE_FREE &&
-       (char *)ah+ah->a.size == (char *)nah ) {
-    /* Coalesce into the subsequent block */
-    ah->a.type = ARENA_TYPE_FREE;
-    ah->a.size += nah->a.size;
-
-    ah->next_free = nah->next_free;
-    ah->prev_free = nah->prev_free;
-    ah->next_free->prev_free = ah;
-    ah->prev_free->next_free = ah;
-
-    ah->a.next = nah->a.next;
-    nah->a.next->a.prev = ah;
-  }
-
-  if ( ah->a.type != ARENA_TYPE_FREE ) {
-    /* Neither.  Need to add this block to the free chain */
+  } else {
+    /* Need to add this block to the free chain */
     ah->a.type = ARENA_TYPE_FREE;
 
     ah->next_free = __malloc_head.next_free;
     ah->prev_free = &__malloc_head;
     __malloc_head.next_free = ah;
     ah->next_free->prev_free = ah;
+  }
+
+  /* In either of the previous cases, we might be able to merge
+     with the subsequent block... */
+  if ( nah->a.type == ARENA_TYPE_FREE &&
+       (char *)ah+ah->a.size == (char *)nah ) {
+    ah->a.size += nah->a.size;
+
+    /* Remove the old block from the chains */
+    nah->next_free->prev_free = nah->prev_free;
+    nah->prev_free->next_free = nah->next_free;
+    ah->a.next = nah->a.next;
+    nah->a.next->a.prev = ah;
+
+#ifdef DEBUG_MALLOC
+    nah->a.type = ARENA_TYPE_DEAD;
+#endif
   }
 }
 
