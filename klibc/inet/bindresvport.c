@@ -23,7 +23,7 @@ int bindresvport(int sd, struct sockaddr_in *sin)
 	if (sin == NULL) {
 		sin = &me;
 		memset(sin, 0, sizeof(me));
-		sin->sin_port = AF_INET;
+		sin->sin_family = AF_INET;
 	}
 	else if (sin->sin_family != AF_INET) {
 		errno = EPFNOSUPPORT;
