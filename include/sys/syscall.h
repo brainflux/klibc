@@ -7,6 +7,7 @@
 #define _SYS_SYSCALL_H
 
 #include <errno.h>
+#include <sys/types.h>
 #include <asm/unistd.h>
 
 /* Many architectures have incomplete, defective or non-applicable
