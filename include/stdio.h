@@ -90,7 +90,7 @@ fread(void *__p, size_t __s, size_t __n, FILE *__f)
 }
 
 extern __inline__ size_t
-fwrite(void *__p, size_t __s, size_t __n, FILE *__f)
+fwrite(const void *__p, size_t __s, size_t __n, FILE *__f)
 {
   return _fwrite(__p, __s*__n, __f)/__s;
 }
