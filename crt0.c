@@ -11,6 +11,7 @@
 
 int errno;			/* It has to go somewhere... */
 char **environ;
+
 extern int main(int argc, char **argv, char **envp);
 
 void _start(int args)
