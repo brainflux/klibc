@@ -8,7 +8,9 @@ The build procedure is not very polished yet, but it should work like
 this:
 
 a) Create a symlink called "linux" pointing to a reasonably recent
-   Linux kernel tree (2.4 or 2.5 should be OK.)
+   Linux kernel tree (2.4 or 2.5 should be OK.)  This tree must have
+   the include/asm symlink set up for the architecture you're
+   compiling for.
 
 b) Create a symlink in the include directory called "bitsize" pointing
    either to the "bits32" or the "bits64" directory, depending on the
