@@ -10,6 +10,9 @@ void free(void *ptr)
 {
   struct free_arena_header *ah, *pah, *nah;
 
+  if ( !ptr )
+    return;
+
   ah = (struct free_arena_header *)
     ((struct arena_header *)ptr - 1);
   
