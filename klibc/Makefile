@@ -85,7 +85,8 @@ $(SOHASH): $(SOLIB) $(SOLIB).hash
 	ln -f $@ klibc-`cat $(SOLIB).hash`.so
 
 interp.o: interp.S $(SOLIB).hash
-	$(CC) $(CFLAGS) -D__ASSEMBLY__ -DSOHASH=\"`cat $(SOLIB).hash`\" \
+	$(CC) $(CFLAGS) -D__ASSEMBLY__ -DLIBDIR=\"$(SHLIBDIR)\" \
+		-DSOHASH=\"`cat $(SOLIB).hash`\" \
 		-c -o $@ $<
 
 crt0.o: arch/$(ARCH)/crt0.o

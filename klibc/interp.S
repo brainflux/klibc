@@ -4,7 +4,8 @@
 #
 
         .section ".interp","a"
-        .ascii "/lib/klibc-"
+        .ascii LIBDIR
+	.ascii "/klibc-"
         .ascii SOHASH
         .ascii ".so"
         .byte 0

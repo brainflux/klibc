@@ -29,6 +29,13 @@ KLIBC   = $(KLIBSRC)/libc.a
 LIBGCC  = $(shell $(CC) --print-libgcc)
 
 #
+# This indicates the location of the final version of the shared library.
+# THIS MUST BE AN ABSOLUTE PATH WITH NO FINAL SLASH.
+# Leave this empty to make it the root.
+#
+SHLIBDIR = /lib
+
+#
 # Include arch-specific rule fragments
 #
 include $(KLIBSRC)/arch/$(ARCH)/MCONFIG
