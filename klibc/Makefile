@@ -43,10 +43,10 @@ SONAME  = libc.so
 CRT0    = crt0.o
 LIBGCC  = $(shell $(CC) --print-libgcc)
 
+all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
+
 # If there is an arch-specific file...
 -include arch/$(ARCH)/Makefile
-
-all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
 .SUFFIXES: .c .o .a .so .lo .i .S .s .ls .ss .lss
 
