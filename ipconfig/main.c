@@ -412,7 +412,7 @@ static unsigned int parse_proto(const char *ip)
 {
 	unsigned int caps = 0;
 
-	if (*ip == '\0' || strcmp(ip, "on") == 0 || strcmp(ip, "any") == 0)
+	if (*ip == '\0' || strcmp(ip, "on") == 0 || strcmp(ip, "any") == 0 || strcmp(ip, "both") == 0)
 		caps = CAP_BOOTP | CAP_DHCP | CAP_RARP;
 	else if (strcmp(ip, "dhcp") == 0)
 		caps = CAP_BOOTP | CAP_DHCP;
@@ -420,7 +420,7 @@ static unsigned int parse_proto(const char *ip)
 		caps = CAP_BOOTP;
 	else if (strcmp(ip, "rarp") == 0)
 		caps = CAP_RARP;
-	else if (strcmp(ip, "none") == 0 || strcmp(ip, "static") == 0)
+	else if (strcmp(ip, "none") == 0 || strcmp(ip, "static") == 0 || strcmp(ip, "off") == 0)
 		goto bail;
 	else {
 		fprintf(stderr, "%s: invalid protocol '%s'\n",
