@@ -136,7 +136,8 @@ while ( defined($a = shift(@ARGV)) ) {
 	# Options to gcc which always take a disjoint argument
 	push(@ccopt, $a, shift(@ARGV));
     } elsif ( $a eq '-M' || $a eq '-MM' ) {
-	# These options force preprocessing
+	# gcc options, that force preprocessing mode
+	push(@ccopt, $a);
 	$operation = 'E';
     } elsif ( $a =~ /^-[gp]/ || $a eq '-p' ) {
 	# Debugging options to gcc
@@ -159,6 +160,8 @@ while ( defined($a = shift(@ARGV)) ) {
 	$strip = 1;
     } elsif ( $a eq '-o' ) {
 	$output = shift(@ARGV);
+    } elsif ( $a eq '-x' ) {
+	$lang = shift(@ARGV);
     } elsif ( $a eq '-nostdinc' ) {
 	push(@ccopt, $a);
 	@includes = ();
@@ -189,6 +192,10 @@ if ( $operation ne '' ) {
     @outopt = ('-o', $output) if ( defined($output) );
     $rv = mysystem($CC, @ccopt, @outopt, files_with_lang(\@files, \%flang));
 } else {
+    if ( scalar(@files) == 0 ) {
+	die "$0: No input files!\n";
+    }
+
     @outopt = ('-o', $output || 'a.out');
 
     @objs = ();
