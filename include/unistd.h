@@ -6,6 +6,7 @@
 #define _UNISTD_H
 
 #include <klibc/extern.h>
+#include <klibc/compiler.h>
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/select.h>
@@ -52,7 +53,6 @@ __extern int access(const char *, int);
 __extern int link(const char *, const char *);
 __extern int unlink(const char *);
 __extern int chdir(const char *);
-__extern int mknod(const char *, mode_t, dev_t);
 __extern int chmod(const char *, mode_t);
 __extern int mkdir(const char *, mode_t);
 __extern int rmdir(const char *);
@@ -100,5 +100,7 @@ __extern void *sbrk(ptrdiff_t);
 __extern int getopt(int, char * const *, const char *);
 __extern char *optarg;
 __extern int optind, opterr, optopt;
+
+__extern int isatty(int);
 
 #endif /* _UNISTD_H */

@@ -19,6 +19,8 @@
 # define SA_NODEFER SA_NOMASK
 #endif
 
+__extern const char * const sys_siglist[];
+
 /* This assumes sigset_t is either an unsigned long or an array of such,
    and that _NSIG_BPW in the kernel is always LONG_BIT */
 

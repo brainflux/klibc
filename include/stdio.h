@@ -8,7 +8,7 @@
 #include <klibc/extern.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <sys/types.h>
+#include <unistd.h>
 
 /* This structure doesn't really exist, but it gives us something
    to define FILE * with */

@@ -9,18 +9,14 @@
 
 #include <bitsize/stddef.h>
 
+#undef NULL
 #ifdef __cplusplus
-#define NULL 0
+# define NULL 0
 #else
-#define NULL ((void *)0)
+# define NULL ((void *)0)
 #endif
 
+#undef offsetof
 #define offsetof(t,m) ((size_t)&((t *)0->m))
-
-#ifdef __GNUC__
-# define __noreturn void __attribute__((noreturn))
-#else
-# define __noreturn void
-#endif
 
 #endif /* _STDDEF_H */

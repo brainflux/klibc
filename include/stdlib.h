@@ -6,6 +6,7 @@
 #define _STDLIB_H
 
 #include <klibc/extern.h>
+#include <klibc/compiler.h>
 #include <stddef.h>
 
 #define EXIT_FAILURE 1

@@ -20,8 +20,6 @@ typedef ptrdiff_t ssize_t;
 /* Keeps linux/types.h from getting included elsewhere */
 #define _LINUX_TYPES_H		
 
-#ifndef __KERNEL_STRICT_NAMES
-
 typedef __kernel_fd_set		fd_set;
 typedef __kernel_dev_t		dev_t;
 typedef __kernel_ino_t		ino_t;
@@ -33,29 +31,10 @@ typedef __kernel_daddr_t	daddr_t;
 typedef __kernel_key_t		key_t;
 typedef __kernel_suseconds_t	suseconds_t;
 
-#ifdef __KERNEL__
-typedef __kernel_uid32_t	uid_t;
-typedef __kernel_gid32_t	gid_t;
-typedef __kernel_uid16_t        uid16_t;
-typedef __kernel_gid16_t        gid16_t;
-
-#ifdef CONFIG_UID16
-/* This is defined by include/asm-{arch}/posix_types.h */
-typedef __kernel_old_uid_t	old_uid_t;
-typedef __kernel_old_gid_t	old_gid_t;
-#endif /* CONFIG_UID16 */
-
-/* libc5 includes this file to define uid_t, thus uid_t can never change
- * when it is included by non-kernel code
- */
-#else
 typedef __kernel_uid_t		uid_t;
 typedef __kernel_gid_t		gid_t;
-#endif /* __KERNEL__ */
 
-#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 typedef __kernel_loff_t		loff_t;
-#endif
 
 /*
  * The following typedefs are also protected by individual ifdefs for
@@ -109,26 +88,9 @@ typedef unsigned long		ulong;
 typedef		__u8		u_int8_t;
 typedef		__u16		u_int16_t;
 typedef		__u32		u_int32_t;
-#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 typedef		__u64		u_int64_t;
-#endif
 
 #endif /* !(__BIT_TYPES_DEFINED__) */
-
-#if 0 /* KLIBC */
-typedef		__s8		int8_t;
-typedef		__s16		int16_t;
-typedef		__s32		int32_t;
-
-typedef		__u8		uint8_t;
-typedef		__u16		uint16_t;
-typedef		__u32		uint32_t;
-
-#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-typedef		__u64		uint64_t;
-typedef		__s64		int64_t;
-#endif
-#endif /* KLIBC */
 
 /*
  * transition to 64-bit sector_t, possibly making it an option...
@@ -148,8 +110,6 @@ typedef unsigned long sector_t;
 #ifndef pgoff_t
 #define pgoff_t unsigned long
 #endif
-
-#endif /* __KERNEL_STRICT_NAMES */
 
 /*
  * Below are truly Linux-specific types that should never collide with
