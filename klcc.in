@@ -19,27 +19,27 @@
 sub filename2lang($) {
     my ($file) = @_;
 
-    return "c" if ( $file =~ /\.c$/ );
-    return "c-header" if ( $file =~ /\.h$/ );
-    return "cpp-output" if ( $file =~ /\.i$/ );
-    return "c++-cpp-output" if ( $file =~ /\.ii$/ );
-    return "objective-c" if ( $file =~ /\.m$/ );
-    return "objc-cpp-output" if ( $file =~ /\.mi$/ );
-    return "c++" if ( $file =~/\.(cc|cp|cxx|cpp|CPP|c\+\+|C)$/ );
-    return "c++-header" if ( $file =~ /\.(hh|H)$/ );
-    return "f77" if ( $file =~ /\.(f|for|FOR)$/ );
-    return "f77-cpp-input" if ( $file =~ /\.(F|fpp|FPP)$/ );
-    return "ratfor" if ( $file =~ /\.r$/ );
+    return 'c' if ( $file =~ /\.c$/ );
+    return 'c-header' if ( $file =~ /\.h$/ );
+    return 'cpp-output' if ( $file =~ /\.i$/ );
+    return 'c++-cpp-output' if ( $file =~ /\.ii$/ );
+    return 'objective-c' if ( $file =~ /\.m$/ );
+    return 'objc-cpp-output' if ( $file =~ /\.mi$/ );
+    return 'c++' if ( $file =~/\.(cc|cp|cxx|cpp|CPP|c\+\+|C)$/ );
+    return 'c++-header' if ( $file =~ /\.(hh|H)$/ );
+    return 'f77' if ( $file =~ /\.(f|for|FOR)$/ );
+    return 'f77-cpp-input' if ( $file =~ /\.(F|fpp|FPP)$/ );
+    return 'ratfor' if ( $file =~ /\.r$/ );
 
     # Is this correct?
-    return "ada" if ( $file =~ /\.(ads|adb)$/ );
+    return 'ada' if ( $file =~ /\.(ads|adb)$/ );
 
-    return "assembler" if ( $file =~ /\.s$/ );
-    return "assembler-with-cpp" if ( $file =~/ \.S$/ );
+    return 'assembler' if ( $file =~ /\.s$/ );
+    return 'assembler-with-cpp' if ( $file =~/ \.S$/ );
 
-    # There is no gcc -x option for "pass file to the linker", so we
-    # use -x none
-    return "none";
+    # Linker file; there is no option to gcc to assume something
+    # is a linker file, so we make up our own...
+    return 'obj';
 }
 
 # Produces a series of -x options and files
@@ -109,7 +109,7 @@ while ( defined($a = shift(@ARGV)) ) {
     } elsif ( $a =~ /^-Wl,(.*)$/ ) {
 	# -Wl used to pass options to the linker
 	push(@ldopt, split(/,/, $1));
-    } elsif ( $a =~ /^-([fmwWQdO]|std=|ansi|pedantic)/ ) {
+    } elsif ( $a =~ /^-([fmwWQdODUI]|std=|ansi|pedantic)/ ) {
 	# Options to gcc
 	push(@ccopt, $a);
     } elsif ( $a =~ /^-[gp]/ ) {
@@ -124,6 +124,7 @@ while ( defined($a = shift(@ARGV)) ) {
 	push(@ccopt, $a);
 	$save_temps = 1;
     } elsif ( $a =~ '^-([cSE])$' ) {
+	push(@ccopt, $a);
 	$operation = $1;
     } elsif ( $a eq '-shared' ) {
 	$shared = 1;
