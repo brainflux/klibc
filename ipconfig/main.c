@@ -9,6 +9,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <fcntl.h>
+
+#include <linux/if_arp.h>
 
 #include "ipconfig.h"
 #include "netdev.h"
@@ -17,6 +22,7 @@
 #include "dhcp_proto.h"
 #include "packet.h"
 
+static const char sysfs_class_net[] = "/sys/class/net";
 static const char *progname;
 static char do_not_config;
 static unsigned int default_caps = CAP_DHCP | CAP_BOOTP | CAP_RARP;
@@ -444,53 +450,7 @@ static void bringup_device(struct netdev *dev)
 	}
 }
 
-static struct netdev *add_device(const char *info);
-
-static void add_all_devices(struct netdev *template)
-{
-#define MAX_IFS 128
-	struct ifreq ifr[MAX_IFS];
-	struct ifconf ifc;
-	int fd, nif, i;
-
-	fd = packet_open();
-
-	ifc.ifc_len = sizeof(ifr);
-	ifc.ifc_req = ifr;
-
-	if (ioctl(fd, SIOCGIFCONF, &ifc) == -1) {
-		perror("SIOCGIFCONF");
-		exit(1);
-	}
-	nif = ifc.ifc_len / sizeof(ifr[0]);
-
-	for (i = 0; i < nif; i++) {
-		struct netdev *dev;
-
-		if (strcmp(ifr[i].ifr_name, "lo") == 0)
-			continue;
-		if ((dev = add_device(ifr[i].ifr_name)) == NULL)
-			continue;
-
-		if (template->ip_addr != INADDR_NONE)
-			dev->ip_addr = template->ip_addr;
-		if (template->ip_server != INADDR_NONE)
-			dev->ip_server = template->ip_server;
-		if (template->ip_gateway != INADDR_NONE)
-			dev->ip_gateway = template->ip_gateway;
-		if (template->ip_netmask != INADDR_NONE)
-			dev->ip_netmask = template->ip_netmask;
-		if (template->ip_nameserver[0] != INADDR_NONE)
-			dev->ip_nameserver[0] = template->ip_nameserver[0];
-		if (template->ip_nameserver[1] != INADDR_NONE)
-			dev->ip_nameserver[1] = template->ip_nameserver[1];
-		if (template->hostname[0] != '\0')
-			strcpy(dev->hostname, template->hostname);
-		dev->caps &= template->caps;
-
-		bringup_device(dev);
-	}
-}
+static void add_all_devices(struct netdev *template);
 
 static int parse_device(struct netdev *dev, const char *ip)
 {
@@ -557,6 +517,36 @@ static int parse_device(struct netdev *dev, const char *ip)
 	return 1;
 }
 
+static void bringup_device(struct netdev *dev)
+{
+	if (netdev_up(dev) == 0) {
+		if (dev->caps) {
+			add_one_dev(dev);
+		} else {
+			complete_device(dev);
+		}
+	}
+}
+
+static void bringup_one_dev(struct netdev *template, struct netdev *dev)
+{
+		if (template->ip_addr != INADDR_NONE)
+			dev->ip_addr = template->ip_addr;
+		if (template->ip_server != INADDR_NONE)
+			dev->ip_server = template->ip_server;
+		if (template->ip_gateway != INADDR_NONE)
+			dev->ip_gateway = template->ip_gateway;
+		if (template->ip_nameserver[0] != INADDR_NONE)
+			dev->ip_nameserver[0] = template->ip_nameserver[0];
+		if (template->ip_nameserver[1] != INADDR_NONE)
+			dev->ip_nameserver[1] = template->ip_nameserver[1];
+		if (template->hostname[0] != '\0')
+			strcpy(dev->hostname, template->hostname);
+		dev->caps &= template->caps;
+
+		bringup_device(dev);
+}
+
 static struct netdev *add_device(const char *info)
 {
 	struct netdev *dev;
@@ -591,6 +581,53 @@ static struct netdev *add_device(const char *info)
  bail:
 	free(dev);
 	return NULL;
+}
+
+static int add_all_devices(struct netdev *template)
+{
+	DIR *d;
+	struct dirent *de;
+	struct netdev *dev;
+	char t[PATH_MAX], p[255];
+	int i, fd;
+	unsigned long flags;
+
+	d = opendir(sysfs_class_net);
+	if (!d)
+		return 0;
+
+	while((de = readdir(d)) != NULL ) {
+		/* This excludes devices beginning with dots or "dummy", as well as . or .. */
+		if ( de->d_name[0] == '.' || !strcmp(de->d_name, "..") )
+			continue;
+		i = snprintf(t, PATH_MAX-1, "%s/%s/flags", sysfs_class_net, de->d_name);
+		if (i < 0 || i >= PATH_MAX-1)
+			continue;
+		t[i] = '\0';
+		fd = open(t, O_RDONLY);
+		if (fd < 0) {
+			perror(t);
+			continue;
+		}
+		i = read(fd, &p, sizeof(p) - 1);
+		close(fd);
+		if (i < 0) {
+			perror(t);
+			continue;
+		}
+		p[i] = '\0';
+		flags = strtoul(p, NULL, 0);
+		/* Heuristic for if this is a reasonable boot interface.  This is the same
+		   logic the in-kernel ipconfig uses... */
+		if ( !(flags & IFF_LOOPBACK) &&
+		     (flags & (IFF_BROADCAST|IFF_POINTOPOINT)) )
+			continue;
+		if ((dev = add_device(de->d_name)) == NULL)
+			continue;
+		bringup_one_dev(template, dev);
+	}
+	closedir(d);
+	return 1;
 }
 
 static int check_autoconfig(void)
