@@ -25,15 +25,8 @@ ARCHOBJS = \
 	arch/$(ARCH)/__remlu.o \
 	arch/$(ARCH)/__divl.o \
 	arch/$(ARCH)/__reml.o
-ARCHSOOBJS = \
-	arch/$(ARCH)/__divqu.lo \
-	arch/$(ARCH)/__remqu.lo \
-	arch/$(ARCH)/__divq.lo \
-	arch/$(ARCH)/__remq.lo \
-	arch/$(ARCH)/__divlu.lo \
-	arch/$(ARCH)/__remlu.lo \
-	arch/$(ARCH)/__divl.lo \
-	arch/$(ARCH)/__reml.lo
+
+ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
 
 arch/$(ARCH)/%.s: arch/$(ARCH)/%.ss
 	sed -e 's/\$$0\b/$$27/g' -e 's/\$$24\b/$$99/g' \

@@ -7,4 +7,10 @@
 # accordingly.
 #
 
+ARCHOBJS = \
+	arch/$(ARCH)/exits.o \
+	arch/$(ARCH)/socketcall.o
+
+ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
+
 archclean:

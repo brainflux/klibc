@@ -7,4 +7,9 @@
 # accordingly.
 #
 
+ARCHOBJS = \
+	arch/$(ARCH)/exits.o
+
+ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
+
 archclean:

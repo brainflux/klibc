@@ -7,5 +7,5 @@
 # accordingly.
 #
 
-OPTFLAGS = -Os -fomit-frame-pointer
+OPTFLAGS = -Os -fomit-frame-pointer -fno-pic -mno-abicalls
 BITSIZE  = 32
