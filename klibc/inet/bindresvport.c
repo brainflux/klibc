@@ -9,7 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define START_PORT	600
+#define START_PORT	768
 #define END_PORT	IPPORT_RESERVED
 #define NUM_PORTS	(END_PORT - START_PORT)
 
