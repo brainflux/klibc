@@ -60,12 +60,13 @@ mkdir -p %{buildroot}
 
 %build
 make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
-	libdir=%{_libdir} mandir=%{_mandir}
+	libdir=%{_libdir} mandir=%{_mandir} INSTALLROOT=%{buildroot}
 
 %install
 rm -rf %{buildroot}
 make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
-	libdir=%{_libdir} mandir=%{_mandir} install
+	libdir=%{_libdir} mandir=%{_mandir} INSTALLROOT=%{buildroot} \
+	install
 
 # Install the docs
 
