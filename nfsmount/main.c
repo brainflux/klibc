@@ -164,6 +164,7 @@ int nfsmount_main(int argc, char *argv[])
 	char *path;
 	int c;
 	int spoof_portmap = 0;
+	FILE *portmap_file = NULL;
 
 	progname = argv[0];
 
@@ -221,14 +222,30 @@ int nfsmount_main(int argc, char *argv[])
 	check_path(path);
 
 	if ( spoof_portmap ) {
-		spoof_portmap = fork();
-		if ( spoof_portmap == -1 ) {
-			fprintf(stderr, "%s: cannot fork\n", progname);
-			exit(1);
-		} else if ( spoof_portmap == 0 ) {
-			/* Child process */
-			dummy_portmap();
-			_exit(255); /* Error */
+		int sock = bind_portmap();
+
+		if ( sock == -1 ) {
+			if ( errno == EINVAL || errno == EADDRINUSE )
+				spoof_portmap = 0; /* Assume not needed */
+			else {
+				fprintf(stderr,
+					"%s: portmap spoofing failed\n",
+					progname);
+				exit(1);
+			}
+		} else {
+			spoof_portmap = fork();
+			if ( spoof_portmap == -1 ) {
+				fprintf(stderr, "%s: cannot fork\n", progname);
+				exit(1);
+			} else if ( spoof_portmap == 0 ) {
+				/* Child process */
+				dummy_portmap(sock, portmap_file);
+				_exit(255); /* Error */
+			} else {
+				/* Parent process */
+				close(sock);
+			}
 		}
 	}
 
@@ -237,8 +254,11 @@ int nfsmount_main(int argc, char *argv[])
 		return 1;
 
 	/* If we set up the spoofer, tear it down now */
-	if ( spoof_portmap )
+	if ( spoof_portmap ) {
 		kill(SIGTERM, spoof_portmap);
+		while ( waitpid(spoof_portmap, NULL, 0) == -1 &&
+			errno == EINTR );
+	}
 
 	free(rem_name);
 

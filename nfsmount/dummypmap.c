@@ -34,18 +34,10 @@ struct portmap_reply
         __u32 port;
 };
 
-FILE *portmap_file = 0;
-
-int dummy_portmap(void)
+int bind_portmap(void)
 {
 	int sock = socket(PF_INET, SOCK_DGRAM, 0);
 	struct sockaddr_in sin;
-	int pktlen, addrlen;
-	union {
-		struct portmap_call c;
-		unsigned char b[65536];	/* Max UDP packet size */
-	} pkt;
-	struct portmap_reply rply;
 	
 	if ( sock < 0 )
 		return -1;
@@ -60,6 +52,19 @@ int dummy_portmap(void)
 		errno = err;
 		return -1;
 	}
+	
+	return sock;
+}
+
+int dummy_portmap(int sock, FILE *portmap_file)
+{
+	struct sockaddr_in sin;
+	int pktlen, addrlen;
+	union {
+		struct portmap_call c;
+		unsigned char b[65536];	/* Max UDP packet size */
+	} pkt;
+	struct portmap_reply rply;
 	
 	for(;;) {
 		addrlen = sizeof sin;

@@ -6,6 +6,6 @@
 
 #include <stdio.h>
 
-extern FILE *portmap_file;
-int dummy_portmap(void);
+int bind_portmap(void);
+int dummy_portmap(int sock, FILE *portmap_file);
 
