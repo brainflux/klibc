@@ -19,6 +19,7 @@
 /* pid_t vfork(void) */
 /* Implemented as clone(CLONE_VFORK | CLONE_VM | SIGCHLD, 0) */
 
+	.align 32
 	.proc vfork
 	.global vfork
 vfork:	
