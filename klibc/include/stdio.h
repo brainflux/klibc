@@ -18,6 +18,13 @@ typedef struct _IO_file FILE;
 #define stdout ((FILE *)1)
 #define stderr ((FILE *)2)
 
+static __inline__
+int fileno(FILE *__f)
+{
+  /* This should really be intptr_t, but size_t should be the same size */
+  return (int)(size_t)__f;
+}
+
 __extern int fputs(const char *, FILE *);
 __extern int puts(const char *);
 

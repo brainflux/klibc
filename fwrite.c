@@ -13,7 +13,7 @@ size_t __fwrite(const void *buf, size_t count, FILE *f)
   const char *p = buf;
 
   while ( count ) {
-    rv = write((int)f, p, count);
+    rv = write(fileno(f), p, count);
     if ( rv == -1 ) {
       if ( errno == EINTR )
 	continue;

@@ -13,7 +13,7 @@ size_t __fread(void *buf, size_t count, FILE *f)
   char *p = buf;
 
   while ( count ) {
-    rv = read((int)f, p, count);
+    rv = read(fileno(f), p, count);
     if ( rv == -1 ) {
       if ( errno == EINTR )
 	continue;
