@@ -10,7 +10,7 @@
 static __inline__ void
 __divide_error(void)
 {
-  asm volatile("divl %0" : "=rm" (0));
+  asm volatile("divl %0" :: "rm" (0) : "eax", "edx");
 }
 
 #endif /* _KLIBC_DIVERR_H */
