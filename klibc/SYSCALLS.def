@@ -1,7 +1,7 @@
 ; -*- fundamental -*-
 ;
 ; This is a list of system calls we invoke "directly".  These
-; are generated into syscall stubs in their own C files, so the
+; are generated into syscall stubs in their own files, so the
 ; linker can do its job properly.
 ;
 ; The full description of a line is:
@@ -66,8 +66,16 @@ int mount(const char *, const char *, const char *, unsigned long, const void *)
 <alpha,ia64> int umount::umount2(const char *, int)
 <!m68k> int pivot_root(const char *, const char *)
 int sync()
-int statfs64,statfs::statfs(const char *, struct statfs *)
-int fstatfs64,fstatfs::fstatfs(int, struct statfs *)
+#ifdef __NR_statfs64
+int statfs64::__statfs64(const char *, size_t, struct statfs *)
+#else
+int statfs(const char *, struct statfs *)
+#endif
+#ifdef __NR_fstatfs64
+int fstatfs64::__fstatfs64(int, size_t, struct statfs *)
+#else
+int fstatfs(int, struct statfs *)
+#endif
 int swapon(const char *, int)
 int swapoff(const char *)
 
