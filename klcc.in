@@ -102,8 +102,9 @@ $verbose = 0;			# The -v option
 $shared = 0;	   		# Are we compiling shared?
 $debugging = 0;	   		# -g or -p option present?
 $strip = 0;			# -s option present?
+undef $output;			# -o option present?
 
-foreach $a ( @ARGV ) {
+while ( defined($a = shift(@ARGV)) ) {
     if ( $a !~ /^\-/ ) {
 	# Not an option.  Must be a filename then.
 	push(@files, $a);
@@ -133,6 +134,8 @@ foreach $a ( @ARGV ) {
 	$shared = 0;
     } elsif ( $a eq '-s' ) {
 	$strip = 1;
+    } elsif ( $a eq '-o' ) {
+	$output = shift(@ARGV);
     } elsif ( $a =~ /^-print/ ) {
 	push(@@ccopt, $a);
 	$operation = 'c' if ( $operation eq '' );
@@ -149,6 +152,41 @@ if ( $debugging ) {
 
 if ( $operation ne '' ) {
     # Just run gcc with the appropriate options
-    exit(syserr(system($CC, @ccopt, files_with_lang(\@files, \%flang))));
+    @outopt = ('-o', $output) if ( defined($output) );
+    $rv = system($CC, @ccopt, @outopt, files_with_lang(\@files, \%flang));
+} else {
+    @outopt = ('-o', $output || 'a.out');
+
+    for $f in ( @files ) {
+	@objs = ();
+	@rmobjs = ();
+	if ( $flang{$f} eq 'obj' ) {
+	    push(@objs, $f);
+	} else {
+	    $fo = $f;
+	    $fo =~ s/\.[^/.]+$/\.o/;
+
+	    die if ( $f eq $fo ); # safety check
+
+	    push(@objs, $fo);
+	    push(@rmobjs, $fo) unless ( $save_temps );
+
+	    $rv = system($CC, @ccopt, '-c', '-o', $fo, $f);
+
+	    if ( $rv ) {
+		unlink(@rmobjs);
+		exit syserr($rv);
+	    }
+	}
+    }
+
+    if ( $shared ) {
+	$rv = system($LD, @ldopt, @sharedopt, @outopt, @objs, @sharedlib);
+    } else {
+	$rv = system($LD, @ldopt, @staticopt, @outopt, @objs, @staticlib);
+    }
+
+    unlink(@rmobjs);
 }
 
+exit syserr($rv);
