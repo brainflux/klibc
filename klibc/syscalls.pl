@@ -66,8 +66,9 @@ while ( defined($line = <FILE>) ) {
 	    print OUT "#define __NR_${fname} __NR_${sname}\n\n";
 	}
 
-	print OUT "_syscall", scalar(@args), $stype, "(", $type, ',', $fname;
 
+	print OUT "_syscall", scalar(@args), $stype, "(", $type, ',', $fname;
+	
 	$i = 0;
 	foreach $arg ( @args ) {
 	    print OUT ",", $arg, ",a",$i++;

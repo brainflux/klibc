@@ -9,7 +9,7 @@
 
 # Enable this to compile with register parameters; only safe for
 # gcc > 3
-REGPARM_OPT := -mregparm=3 -DREGPARM
+REGPARM_OPT := -mregparm=3 -DREGPARM=3
 
 gcc_major := $(shell $(CC) -v 2>&1 | awk '/gcc version/{print int($$3)}')
 
