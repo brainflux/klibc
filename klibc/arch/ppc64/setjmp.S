@@ -16,14 +16,13 @@ setjmp:
 	.globl	setjmp
 	.globl	.setjmp
 .setjmp:
-	addi	%r3,%r3,-8
-        mflr    %r11                    /* save return address */
-        mfcr    %r12                    /* save condition register */
-	stdu	%r2,8(%r3)
-	stdu	%r1,8(%r3)
+	mflr	%r11			/* save return address */
+	mfcr	%r12			/* save condition register */
+	std	%r2,0(%r3)		/* save TOC pointer (not needed) */
+	stdu	%r1,8(%r3)		/* save stack pointer */
 	stdu	%r11,8(%r3)
 	stdu	%r12,8(%r3)
-	stdu	%r13,8(%r3)
+	stdu	%r13,8(%r3)		/* save caller saved regs */
 	stdu	%r14,8(%r3)
 	stdu	%r15,8(%r3)
 	stdu	%r16,8(%r3)
@@ -42,8 +41,8 @@ setjmp:
 	stdu	%r29,8(%r3)
 	stdu	%r30,8(%r3)
 	std	%r31,8(%r3)
-        li      %r3,0                   /* indicate success */
-        blr                             /* return */
+	li	%r3,0			/* indicate success */
+	blr				/* return */
 
 	.size .setjmp,.-.setjmp
 	.section ".opd","aw"
@@ -55,12 +54,11 @@ longjmp:
 	.globl	longjmp
 	.globl	.longjmp
 .longjmp:
-	addi	%r3,%r3,-8
-	ldu	%r2,8(%r3)
-	ldu	%r10,8(%r3)
+	ld	%r2,0(%r3)		/* restore TOC pointer (not needed) */
+	ldu	%r1,8(%r3)		/* restore stack */
 	ldu	%r11,8(%r3)
 	ldu	%r12,8(%r3)
-	ldu	%r13,8(%r3)
+	ldu	%r13,8(%r3)		/* restore caller saved regs */
 	ldu	%r14,8(%r3)
 	ldu	%r15,8(%r3)
 	ldu	%r16,8(%r3)
@@ -79,10 +77,9 @@ longjmp:
 	ldu	%r29,8(%r3)
 	ldu	%r30,8(%r3)
 	ld	%r31,8(%r3)
-        mtlr    %r11                    /* restore LR */
-        mtcr    %r12                    /* restore CR */
-        mr      %r1,%r10                /* restore stack */
-        mr      %r3,%r4                 /* get return value */
-        blr                             /* return */
+	mtlr	%r11			/* restore LR */
+	mtcr	%r12			/* restore CR */
+	mr	%r3,%r4			/* get return value */
+	blr				/* return */
 
 	.size .longjmp,.-.longjmp

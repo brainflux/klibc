@@ -57,6 +57,8 @@ SOHASH  = klibc.so
 CRT0    = crt0.o
 LIB     = libc.a
 
+INTERP_O = interp.o
+
 all: tests $(CRT0) $(LIB) $(SOLIB) klibc.so
 
 # Add any architecture-specific rules
@@ -109,7 +111,7 @@ $(SOHASH): $(SOLIB) $(SOLIB).hash
 	rm -f klibc-??????????????????????.so
 	ln -f $@ klibc-`cat $(SOLIB).hash`.so
 
-interp.o: interp.S $(SOLIB).hash
+$(INTERP_O): interp.S $(SOLIB).hash
 	$(CC) $(CFLAGS) -D__ASSEMBLY__ -DLIBDIR=\"$(SHLIBDIR)\" \
 		-DSOHASH=\"`cat $(SOLIB).hash`\" \
 		-c -o $@ $<
