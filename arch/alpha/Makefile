@@ -11,12 +11,24 @@ DIVCFLAGS = $(CFLAGS) -O3 -fomit-frame-pointer -fcall-saved-1 -fcall-saved-2 \
 	-fcall-saved-7 -fcall-saved-8 -fcall-saved-22 -fcall-saved-23 \
 	-fcall-saved-24 -fcall-saved-25 -fcall-saved-27
 
-
-ARCHOBJS = __divqu.o __remqu.o __divqs.o __remqs.o \
-	   __divlu.o __remlu.o __divls.o __remls.o
-
-ARCHSOOBJS = __divqu.lo __remqu.lo __divqs.lo __remqs.lo \
-	     __divlu.lo __remlu.lo __divls.lo __remls.lo
+ARCHOBJS = \
+	arch/$(ARCH)/__divqu.o \
+	arch/$(ARCH)/__remqu.o \
+	arch/$(ARCH)/__divqs.o \
+	arch/$(ARCH)/__remqs.o \
+	arch/$(ARCH)/__divlu.o \
+	arch/$(ARCH)/__remlu.o \
+	arch/$(ARCH)/__divls.o \
+	arch/$(ARCH)/__remls.o
+ARCHSOOBJS = \
+	arch/$(ARCH)/__divqu.lo \
+	arch/$(ARCH)/__remqu.lo \
+	arch/$(ARCH)/__divqs.lo \
+	arch/$(ARCH)/__remqs.lo \
+	arch/$(ARCH)/__divlu.lo \
+	arch/$(ARCH)/__remlu.lo \
+	arch/$(ARCH)/__divls.lo \
+	arch/$(ARCH)/__remls.lo
 
 arch/$(ARCH)/%.s: arch/$(ARCH)/%.ss
 	sed -e 's/\$0\b/$27/g' -e 's/\$24\b/$99/g' -e 's/\$16\b/$24/g' -e 's/\$17\b/$25/g' -e 's/\$99\b/$24/g' < $< > $@
