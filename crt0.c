@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 
+int errno;			/* It has to go somewhere... */
 char **environ;
 extern int main(int argc, char **argv, char **envp);
 

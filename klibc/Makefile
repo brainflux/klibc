@@ -6,7 +6,7 @@ AR      = ar
 RANLIB  = ranlib
 PERL    = perl
 
-TESTS   = 
+TESTS   = testvsnp hello
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -16,15 +16,19 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  _exit.o exit.o atexit.o onexit.o \
 	  wait.o wait3.o \
 	  printf.o vprintf.o xwrite.o \
-	  brk.o malloc.o free.o
-LIB     = libmyc.a
+	  brk.o malloc.o free.o \
+	  memcpy.o memset.o \
+	  raise.o abort.o assert.o
+LIB     = libc.a
 
 SOFLAGS = -fPIC
 SOOBJS  = $(patsubst %.o,%.lo,$(LIBOBJS))
-SOLIB   = libmyc.so
-SONAME  = libmyc.so
+SOLIB   = libc.so
+SONAME  = libc.so
+CRT0    = crt0.o
+LIBGCC  = $(shell $(CC) --print-libgcc)
 
-all: $(TESTS) crt0.o $(LIB) $(SOLIB)
+all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
 .SUFFIXES: .c .o .a .so .lo .i .s .ls
 
@@ -43,8 +47,11 @@ all: $(TESTS) crt0.o $(LIB) $(SOLIB)
 .c.ls:
 	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
 
-testvsnp: testvsnp.o $(LIB)
-	$(CC) $(LDFLAGS) -o $@ testvsnp.o $(LIB)
+testvsnp: testvsnp.o $(LIB) $(CRT0)
+	$(LD) -o testvsnp $(CRT0) testvsnp.o $(LIB) $(LIBGCC)
+
+hello: hello.o $(LIB) $(CRT0)
+	$(LD) -o hello $(CRT0) hello.o $(LIB) $(LIBGCC)
 
 $(LIB): $(LIBOBJS) syscalls.dir
 	rm -f $(LIB)
@@ -54,7 +61,7 @@ $(LIB): $(LIBOBJS) syscalls.dir
 $(SOLIB): $(SOOBJS) syscalls.dir
 	$(LD) -shared -soname $(SONAME) -o $@ \
 		$(SOOBJS) syscalls/*.lo \
-	        `$(CC) --print-libgcc`
+	        $(LIBGCC)
 
 syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 	rm -rf syscalls
@@ -67,11 +74,3 @@ syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 clean:
 	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls
 	rm -rf syscalls syscalls.dir
-
-vsnprintf.o: vsnprintf.c
-
-vsnprintf.lo: vsnprintf.c
-
-snprintf.o: snprintf.c
-
-snprintf.lo: snprintf.c
