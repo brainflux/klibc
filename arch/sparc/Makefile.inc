@@ -13,7 +13,8 @@ ARCHOBJS = \
 	arch/$(ARCH)/srem.o \
 	arch/$(ARCH)/urem.o \
 	arch/$(ARCH)/smul.o \
-	arch/$(ARCH)/umul.o
+	arch/$(ARCH)/umul.o \
+	arch/$(ARCH)/setjmp.o
 
 arch/$(ARCH)/sdiv.S: arch/$(ARCH)/divrem.m4
 	@echo 'building $@ from $^'
