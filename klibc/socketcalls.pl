@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
-$quiet = defined($ENV{'V'}) ? !$ENV{'V'} : 0;
+$v = $ENV{'KBUILD_VERBOSE'};
+$quiet = defined($v) ? !$v : 0;
 
 @args = ();
 for $arg ( @ARGV ) {

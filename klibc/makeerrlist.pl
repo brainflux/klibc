@@ -53,7 +53,8 @@ sub parse_file($) {
     print STDERR "closing $file\n" unless ( $quiet );
 }
 	 
-$quiet = defined($ENV{'V'}) ? !$ENV{'V'} : 0;
+$v = $ENV{'KBUILD_VERBOSE'};
+$quiet = defined($v) ? !$v : 0;
 
 foreach $arg ( @ARGV ) {
     if ( $arg eq '-q' ) {
