@@ -4,6 +4,7 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <xio.h>
 
 ssize_t __xwrite(int fd, const void *buf, size_t count)
 {
