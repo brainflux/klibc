@@ -26,7 +26,7 @@ name (void)                                                             \
                errno = (_retval);                                       \
                _retval = -1;                                            \
        }                                                                \
-       return _retval;                                                  \
+       return (type)_retval;                                                  \
 }
 
 #define _syscall1(type,name,type1,arg1)                                 \
@@ -48,7 +48,7 @@ name (type1 arg1)                                                       \
                errno = (_retval);                                       \
                _retval = -1;                                            \
        }                                                                \
-       return _retval;                                                  \
+       return (type)_retval;                                                  \
 }
 
 #define _syscall2(type,name,type1,arg1,type2,arg2)                      \
@@ -70,7 +70,7 @@ name (type1 arg1, type2 arg2)                                           \
                errno = (_retval);                                       \
                _retval = -1;                                            \
        }                                                                \
-       return _retval;                                                  \
+       return (type)_retval;                                                  \
 }
 
 #define _syscall3(type,name,type1,arg1,type2,arg2,type3,arg3)           \
@@ -92,7 +92,7 @@ name (type1 arg1, type2 arg2, type3 arg3)                               \
                errno = (_retval);                                       \
                _retval = -1;                                            \
        }                                                                \
-       return _retval;                                                  \
+       return (type)_retval;                                                  \
 }
 
 #define _syscall4(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4) \
@@ -114,7 +114,7 @@ name (type1 arg1, type2 arg2, type3 arg3, type4 arg4)                   \
                errno = (_retval);                                       \
                _retval = -1;                                            \
        }                                                                \
-       return _retval;                                                  \
+       return (type)_retval;                                                  \
 }
 
 #define _syscall5(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4,type5,arg5) \
@@ -136,7 +136,7 @@ name (type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5)       \
                errno = (_retval);                                       \
                _retval = -1;                                            \
        }                                                                \
-       return _retval;                                                  \
+       return (type)_retval;                                                  \
 }
 
 #define _syscall6(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4,type5,arg5,type6,arg6) \
@@ -158,7 +158,7 @@ name (type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5, type6 arg6)   
                errno = (_retval);                                       \
                _retval = -1;                                            \
        }                                                                \
-       return _retval;                                                  \
+       return (type)_retval;                                                  \
 }
   
 
