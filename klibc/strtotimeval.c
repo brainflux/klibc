@@ -23,13 +23,13 @@ char *strtotimeval(const char *str, struct timeval *tv)
   if ( *s == '.' ) {
     s++;
 
-    for ( n = 0 ; n < 9 && isdigit(*s) ; n++ )
+    for ( n = 0 ; n < 6 && isdigit(*s) ; n++ )
       us = us*10 + (*s++ - '0');
     
     while ( isdigit(*s) )
       s++;
     
-    for ( ; n < 9 ; n++ )
+    for ( ; n < 6 ; n++ )
       us *= 10;
   }
 
