@@ -8,7 +8,7 @@ if (!open(FILE, "< $file")) {
 
 while ( defined($line = <FILE>) ) {
     chomp $line;
-    $line =~ s/\s*\#.*$//;	# Strip comments and trailing blanks
+    $line =~ s/\s*[\#\;].*$//;	# Strip comments and trailing blanks
     next unless $line;
 
     if ( $line =~ /^\s*(.*)\s+([_a-zA-Z][_a-zA-Z0-9]+)\s*\((.*)\)$/ ) {
@@ -26,7 +26,7 @@ while ( defined($line = <FILE>) ) {
 	$nargs = $i;
 
 	if ( $arch eq 'i386' ) {
-	    open(OUT, "> socketcalls/${name}.S")
+	    open(OUT, '>', "socketcalls/${name}.S")
 		or die "$0: Cannot open socketcalls/${name}.S\n";
 
 	    print OUT "#include <sys/socketcalls.h>\n";
@@ -39,29 +39,9 @@ while ( defined($line = <FILE>) ) {
 	    print OUT "\tmovb \$SYS_\U${name}\E,%al\n";
 	    print OUT "\tjmp __socketcall_common\n";
 	    print OUT "\t.size ${name},.-${name}\n";
+	    close(OUT);
 	} else {
-	    open(OUT, "> socketcalls/${name}.c")
-		or die "$0: Cannot open socketcalls/${name}.c\n";
-	    print OUT "#include \"socketcommon.h\"\n\n";
-	    
-	    print OUT "#ifdef __NR_$name\n\n";
-	    print OUT "_syscall", scalar(@args), "(", $type, ',', $name;
-	    $i = 0;
-	    foreach $arg ( @args ) {
-		print OUT ",", $arg, ",a",$i++;
-	    }
-	    print OUT ");\n";
-	    print OUT "\n#else\n\n";
-	    
-	    print OUT "$type $name (", join(', ', @cargs), ")\n";
-	    print OUT "{\n";
-	    print OUT "    unsigned long args[$nargs];\n";
-	    for ( $i = 0 ; $i < $nargs ; $i++ ) {
-		print OUT "    args[$i] = (unsigned long)a$i;\n";
-	    }
-	    print OUT "    return ($type) socketcall(SYS_\U${name}\E, args);\n";
-	    print OUT "}\n";
-	    print OUT "\n#endif\n";
+	    # No socketcalls on this architecture
 	}
 	close(OUT);
     } else {

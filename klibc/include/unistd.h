@@ -77,10 +77,8 @@ __extern int sync(void);
 
 __extern ssize_t read(int, void *, size_t);
 __extern ssize_t write(int, const void *, size_t);
-#ifndef __IN_OPEN_C
 /* Also in <fcntl.h> */
-__extern __cdecl int open(const char *, int, ...);
-#endif
+__extern int open(const char *, int, ...);
 __extern int close(int);
 __extern off_t lseek(int, off_t, int);
 __extern loff_t llseek(int, loff_t, int);
@@ -114,6 +112,7 @@ __extern int optind, opterr, optopt;
 __extern int isatty(int);
 
 __extern int getpagesize(void);
+__extern int __getpageshift(void);
 
 /* Standard file descriptor numbers. */
 #define STDIN_FILENO	0

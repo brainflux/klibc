@@ -17,18 +17,21 @@
 
 __socketcall_common:
 	pushl	%ebx
+
 	movzbl	%al,%ebx	# The socketcall number is passed in in %al
 	leal	8(%esp),%ecx	# Argument pointer
 	movl	$__NR_socketcall,%eax
 	int	$0x80
+	
 	cmpl	$-4096,%eax	# Error return?
+	
 	popl	%ebx
+	
 	jb	1f
+	
 	negl	%eax
 	movl	%eax,errno
-	orl	$-1,%eax
-	xorl	%eax,%eax
-	decl	%eax		# Return = -1
+	orl	$-1,%eax	# Return -1
 1:
 	ret
 

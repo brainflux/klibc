@@ -12,8 +12,6 @@
 /* This is defined here as well as in <unistd.h> since old-style code
    would still include <fcntl.h> when using open(), and open() being
    a varadic function changes its calling convention on some architectures. */
-#ifndef __IN_OPEN_C
-__extern __cdecl int open(const char *, int, ...);
-#endif
+__extern int open(const char *, int, ...);
 
 #endif /* _FCNTL_H */

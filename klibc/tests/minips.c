@@ -27,9 +27,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #include <asm/param.h>  /* HZ */
-#include <asm/page.h>   /* PAGE_SIZE */
 
 static int P_euid;
 static int P_pid;
@@ -68,16 +68,12 @@ static int thisarg;    /* index into ps_argv */
 static char *flagptr;  /* current location in ps_argv[thisarg] */
 
 
-#ifndef PAGE_SIZE
-#warning PAGE_SIZE not defined, assuming it is 4096
-#define PAGE_SIZE 4096
-#endif
-
 #ifndef HZ
 #warning HZ not defined, assuming it is 100
 #define HZ 100
 #endif
 
+int page_shift;			/* Page size as shift count */
 
 
 static void usage(void){
@@ -314,7 +310,7 @@ static int stat2proc(int pid) {
     );
 /*    fprintf(stderr, "stat2proc converted %d fields.\n",num); */
     P_vsize /= 1024;
-    P_rss *= (PAGE_SIZE/1024);
+    P_rss <<= page_shift-10;
     if(num < 30) return 0;
     if(P_pid != pid) return 0;
     return 1;
@@ -351,7 +347,7 @@ static void print_proc(void){
       "%03x %c %5d %5d %5d  - %3d %3d - "
       "%5ld %06x %s %s",
       (unsigned)P_flags&0x777, P_state, P_euid, P_pid, P_ppid,
-      (int)P_priority, (int)P_nice, P_vsize/(PAGE_SIZE/1024),
+      (int)P_priority, (int)P_nice, P_vsize >> (page_shift - 10),
       (unsigned)(P_wchan&0xffffff), tty, do_time(P_utime+P_stime)
     );
     break;
@@ -405,6 +401,9 @@ static void print_proc(void){
 
 int main(int argc, char *argv[]){
   arg_parse(argc, argv);
+
+  page_shift = __getpageshift();
+
 #if 0
   choose_dimensions();
 #endif

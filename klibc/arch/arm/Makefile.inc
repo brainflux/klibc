@@ -18,6 +18,7 @@ ARCHOBJS = \
 	libgcc/__udivdi3.o \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o \
+	libgcc/__udivmoddi4.o \
 	arch/arm/syscall.o
 
 ifeq ($(THUMB),y)
@@ -27,6 +28,17 @@ else
 ARCHOBJS += arch/arm/setjmp-arm.o
 endif
 
+arch/arm/sysstubs.a: arch/arm/sysstubs.pl
+	mkdir -p arch/arm/sysstubs
+	$(PERL) $< arch/arm/sysstubs
+	$(MAKE) $(patsubst %.S,%.o,$(wildcard arch/arm/sysstubs/*.S))
+	-rm -f $@
+	$(AR) cq $@ arch/arm/sysstubs/*.o
+	$(RANLIB) $@
+
+
 ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
 
 archclean:
+	-rm -rf arch/arm/sysstubs
+	-rm -f arch/arm/sysstubs.a

@@ -2,25 +2,23 @@
  * getpagesize.c
  */
 
+#include <klibc/compiler.h>
 #include <sys/syscall.h>
-#include <asm/page.h>
-
-/* Presumably there is a better way to do this... */
-#ifdef __ia64__
-# define __NR_getpagesize 1171
-#endif
-
-#ifdef __NR_getpagesize
-
-_syscall0(int,getpagesize);
-
-#else
+#include <unistd.h>
+#include <sys/sysinfo.h>
 
 int getpagesize(void)
 {
-  return PAGE_SIZE;
+  static int page_size;
+  struct sysinfo si;
+  int rv;
+
+  if ( __likely(page_size) )
+    return page_size;
+
+  rv = sysinfo(&si);
+  if ( rv == -1 )
+    return -1;
+
+  return (page_size = si.mem_unit);
 }
-
-#endif
-
-
