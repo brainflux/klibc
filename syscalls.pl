@@ -1,13 +1,35 @@
 #!/usr/bin/perl
+($arch) = @ARGV;
+
 while ( defined($line = <STDIN>) ) {
     chomp $line;
     $line =~ s/\s*\#.*$//;	# Strip comments and trailing blanks
 
-    if ( $line =~ /^\s*([^\(]+[^:A-Za-z0-9_])([A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
-	$type = $1;
-	$sname = $2;
-	$fname = $3;
-	$argv = $4;
+    if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([^\(\<\>]+[^:A-Za-z0-9_])([A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
+	$archs = $1;
+	$type = $2;
+	$sname = $3;
+	$fname = $4;
+	$argv = $5;
+
+	$doit = 1;
+	if ( $archs ne '' ) {
+	    die "$0: Internal error"
+		unless ( $archs =~ /^\<(|\!)([^\>\!]+)\>/ );
+	    $not = $1;
+	    $list = $2;
+
+	    $doit = ($not eq '') ? 0 : 1;
+
+	    @list = split(/,/, $list);
+	    foreach  $a ( @list ) {
+		if ( $a eq $arch ) {
+		    $doit = ($not eq '') ? 1 : 0;
+		    last;
+		}
+	    }
+	}
+	next if ( ! $doit );
 
 	$type =~ s/\s*$//;
 

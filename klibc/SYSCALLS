@@ -8,8 +8,7 @@
 #
 # Process-related syscalls
 #
-# Some platforms don't seem to have vfork()?
-# pid_t vfork()
+<!mips,mips64> pid_t vfork()
 pid_t getpid()
 int setpgid(pid_t, pid_t)
 pid_t getpgid(pid_t)
@@ -19,7 +18,7 @@ pid_t setsid()
 pid_t getsid(pid_t)
 pid_t wait4(pid_t, int *, int, struct rusage *)
 int execve(const char *, char * const *, char * const *)
-int nice(int)
+<!x86_64,ia64,alpha> int nice(int)
 
 #
 # User and group IDs
@@ -43,8 +42,8 @@ int setfsgid(gid_t)
 # Filesystem-related system calls
 #
 int mount(const char *, const char *, const char *, unsigned long, const void *)
-int umount(const char *)
-int umount2(const char *, int)
+<!alpha,ia64> int umount2(const char *, int)
+<alpha,ia64> int umount::umount2(const char *, int)
 int pivot_root(const char *, const char *)
 int sync()
 int statfs(const char *, struct statfs *)
@@ -105,13 +104,12 @@ int rt_sigaction(int, const struct sigaction *, struct sigaction *, size_t)
 int rt_sigsuspend(const sigset_t *, size_t)
 int rt_sigpending(sigset_t *, size_t)
 int pause()
-unsigned int alarm(unsigned int)
+<!alpha,ia64> unsigned int alarm(unsigned int)
 int rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t)
 
 #
 # Time-related system calls
 #
-time_t time(time_t *)
 clock_t times(struct tms *)
 int gettimeofday(struct timeval *, struct timezone *)
 int settimeofday(const struct timeval *, const struct timezone *)
