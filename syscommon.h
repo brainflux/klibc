@@ -11,6 +11,7 @@
 #include <sys/syscall.h>
 
 #include <poll.h>
+#include <sched.h>
 #include <sys/dirent.h>
 #include <sys/mman.h>
 #include <sys/module.h>
