@@ -24,6 +24,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  sigaction.o sigpending.o sigprocmask.o sigsuspend.o \
 	  brk.o sbrk.o malloc.o realloc.o calloc.o mmap.o \
 	  memcpy.o memcmp.o memset.o memccpy.o memmem.o memswap.o \
+	  memmove.o \
 	  strcat.o strchr.o strcmp.o strcpy.o strdup.o strlen.o \
 	  strncat.o strstr.o strncmp.o strncpy.o strrchr.o strspn.o \
 	  strsep.o strtok.o \
