@@ -11,6 +11,7 @@
 #include <sys/syscall.h>
 #include <sys/dirent.h>
 #include <sys/resource.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/times.h>

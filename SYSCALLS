@@ -112,6 +112,12 @@ int settimeofday(const struct timeval *, const struct timezone *)
 int nanosleep(const struct timespec *, struct timespec *)
 
 #
+# Memory
+#
+int munmap(void *, size_t)
+void * mremap(void *, size_t, size_t, unsigned long)
+
+#
 # System stuff
 #
 int uname(struct utsname *)

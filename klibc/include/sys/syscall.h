@@ -1,26 +1,19 @@
-/* libc/sys/linux/syscall.h - Linux system calls, common definitions */
+/*
+ * sys/syscall.h
+ *
+ * Generic system call interface macros
+ */
+#ifndef _SYS_SYSCALL_H
 
-/* Written 2000 by Werner Almesberger */
-
-
-#ifndef SYSCALL_H
-
-#include <sys/errno.h>
+#include <errno.h>
 #include <asm/unistd.h>
 
-
 /*
- * Note: several system calls are for SysV or BSD compatibility, or are
- * specific Linuxisms. Most of those system calls are not implemented in
- * this library.
+ * If we're compiling i386 in PIC mode, we need to treat %ebx
+ * specially.  Most of these are copied from the equivalent file in
+ * newlib and were written by Werner Almesberger.
  */
-
-
 #if defined(__PIC__) && defined(__i386__)
-
-/*
- * PIC uses %ebx, so we need to save it during system calls
- */
 
 #undef _syscall1
 #define _syscall1(type,name,type1,arg1) \
@@ -82,6 +75,20 @@ __syscall_return(type,__res); \
 }
 
 #undef _syscall6
+#define _syscall6(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4, \
+          type5,arg5,type6,arg6) \
+type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
+{ \
+long __res; \
+__asm__ volatile ("push %%ebx; pushl %%ebp; movl %2,%%ebx; " \
+                  "movl %%eax,%%ebp; movl %1,%%eax; int $0x80; " \
+                  "pop %%ebp ; pop %%ebx" \
+	: "=a" (__res) \
+	: "i" (__NR_##name),"m" ((long)(arg1)),"c" ((long)(arg2)), \
+	  "d" ((long)(arg3)),"S" ((long)(arg4)),"D" ((long)(arg5)), \
+	  "a" ((long)(arg6))); \
+__syscall_return(type,__res); \
+}
 
 #endif /* __PIC__ && __i386__ */
 
