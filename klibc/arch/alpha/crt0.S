@@ -19,3 +19,4 @@ _start:
 	jsr	$26, __libc_init
 	
 	.size	_start,.-_start
+	.end	_start
