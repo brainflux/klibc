@@ -10,7 +10,7 @@
 int main(int argc, char *argv[])
 {
 	int c, s, f;
-	char *p, *target;
+	char *p;
 	struct stat sb;
 
 	s = f = 0;
@@ -51,13 +51,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	target = malloc(PATH_MAX);
-	if (!target) {
-		perror("malloc");
-		return 1;
-	}
-
 	for (c = optind; c < argc - 1; c++) {
+		char target[PATH_MAX];
 
 		p = strrchr(argv[c], '/');
 		p++;
