@@ -2,48 +2,43 @@ SRCROOT  = ..
 include ../MCONFIG
 include ../MRULES
 
-MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
-CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall
-LIBS     = $(KLIBC) $(LIBGCC)
-PROGS    = chroot dd fstype mkdir mkfifo mount pivot_root umount true false
+MAKEDEPS     = -Wp,-MD,.$(subst /,-,$*).d
+CFLAGS       = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall
+LIBS         = $(KLIBC) $(LIBGCC)
+PROGS       := chroot dd fstype mkdir mkfifo mount pivot_root umount \
+	       true false sleep
+STATICPROGS := $(patsubst %,static/%,$(PROGS))
+SHAREDPROGS := $(patsubst %,shared/%,$(PROGS))
+LIBOBJS	     = file_mode.o
+LIBUTILS     = libutils.a
 
-all:	$(PROGS)
+all:	$(STATICPROGS) $(SHAREDPROGS)
 
-chroot:	chroot.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) chroot.o $(LIBS)
+static/%: %.o $(CRT0) $(LIBS) $(LIBUTILS)
+	mkdir -p static
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) $< $(LIBUTILS) $(LIBS)
+	$(STRIP) $@
 
-dd:	dd.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) dd.o $(LIBS)
+shared/%: %.o $(CRTSHARED) $(LIBSHARED) $(LIBUTILS)
+	mkdir -p shared
+	$(LD) $(LDFLAGS) -o $@ -e main $(CRTSHARED) $< $(LIBUTILS) \
+		-R $(LIBSHARED) $(LIBGCC)
+	$(STRIP) $@
 
-fstype:	fstype.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) fstype.o $(LIBS)
+# Programs that consist of more than one file
+mount.o: mount_main.o mount_opts.o
+	$(LD) -r -o $@ $^
 
-mkdir:	mkdir.o file_mode.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) mkdir.o file_mode.o $(LIBS)
-
-mkfifo:	mkfifo.o file_mode.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) mkfifo.o file_mode.o $(LIBS)
-
-mount:	mount.o mount_opts.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) mount.o mount_opts.o $(LIBS)
-
-pivot_root: pivot_root.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) pivot_root.o $(LIBS)
-
-umount: umount.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) umount.o $(LIBS)
-
-true: true.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) true.o $(LIBS)
-
-false: false.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) false.o $(LIBS)
+$(LIBUTILS): $(LIBOBJS)
+	-rm -f $@
+	$(AR) cq $@ $^
+	$(RANLIB) $@
 
 $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1
 
 clean:
-	$(RM) *.o $(PROGS) core .*.d
+	$(RM) *.o core $(PROGS) .*.d shared/* static/*
 
 spotless: clean
 	$(RM) *~

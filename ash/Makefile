@@ -37,8 +37,8 @@ $(PROG): $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $(PROG) $(CRT0) $(OBJS) $(LIBS)
 	$(STRIP) $(PROG)
 
-$(PROG).shared: $(OBJS) $(LIBS) $(KLIBSRC)/interp.o $(KLIBSRC)/libc.so
-	$(LD) $(LDFLAGS) -o $(PROG).shared -e main $(KLIBSRC)/interp.o $(OBJS) -R $(KLIBSRC)/libc.so $(LIBGCC)
+$(PROG).shared: $(OBJS) $(CRTSHARED) $(LIBSHARED) $(LIBGCC)
+	$(LD) $(LDFLAGS) -o $(PROG).shared -e main $(CRTSHARED) $(OBJS) -R $(LIBSHARED) $(LIBGCC)
 	$(STRIP) $(PROG).shared
 
 $(CRT0) $(LIBS):
