@@ -15,8 +15,9 @@ REQFLAGS = -nostdinc -iwithprefix include -I$(KLIBSRC) \
 LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib
+NM	= $(CROSS)nm
 PERL    = perl
-STRIP   = $(CROSS)strip -R .comment -R .note
+STRIP   = $(CROSS)strip --strip-all -R .comment -R .note
 
 HOST_CC      = gcc
 HOST_LDFLAGS = -s
