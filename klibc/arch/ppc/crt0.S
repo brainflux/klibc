@@ -9,7 +9,12 @@
 _start:
 	stwu	1,-16(1)
 	addi	3,1,16
-	li	4,0
+	/*
+	 * the SVR4abippc.pdf specifies r7 as a pointer to 
+	 * a termination function pointer.
+	 * It is unused on Linux.
+	 */
+	mr	4,7
 	bl	__libc_init
 	
 	.size _start,.-_start
