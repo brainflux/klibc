@@ -7,39 +7,22 @@
 #include <inttypes.h>
 #include <limits.h>
 
-#ifndef LONG_BIT
-#define LONG_BIT (CHAR_BIT*sizeof(long))
-#endif
-
-static inline void
-set_bit(unsigned long *bitmap, unsigned int bit)
-{
-  bitmap[bit/LONG_BIT] |= 1UL << (bit%LONG_BIT);
-}
-
-static inline int
-test_bit(unsigned long *bitmap, unsigned int bit)
-{
-  return (int)(bitmap[bit/LONG_BIT] >> (bit%LONG_BIT)) & 1;
-}
-
 static size_t
 strxspn(const char *s, const char *map, int parity)
 {
-  unsigned long matchmap[((1 << CHAR_BIT)+LONG_BIT-1)/LONG_BIT];
+  char matchmap[UCHAR_MAX+1];
   size_t n = 0;
 
   /* Create bitmap */
   memset(matchmap, 0, sizeof matchmap);
   while ( *map )
-    set_bit(matchmap, (unsigned char) *map++);
-
+    matchmap[(unsigned char) *map++] = 1;
+  
   /* Make sure the null character never matches */
-  if ( parity )
-    set_bit(matchmap, 0);
+  matchmap[0] = parity;
 
   /* Calculate span length */
-  while ( test_bit(matchmap, (unsigned char) *s++)^parity )
+  while ( matchmap[(unsigned char) *s++] ^ parity )
     n++;
 
   return n;
