@@ -3,7 +3,7 @@
 # Makefile configuration, without explicit rules
 #
 
-ARCH    = i386
+ARCH    = $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld

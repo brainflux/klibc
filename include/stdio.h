@@ -39,7 +39,7 @@ static __inline__ int fileno(FILE *__f)
 
 static __inline__ FILE * __create_file(int __fd)
 {
-  return (FILE *)__fd;
+  return (FILE *)(size_t)__fd;
 }
 
 __extern FILE *fopen(const char *, const char *);

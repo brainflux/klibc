@@ -12,7 +12,7 @@ int inet_aton(const char *str, struct in_addr *addr)
     uint32_t l;
   } a;
 
-  if ( sscanf("%hhu.%hhu.%hhu.%hhu", &a.b[0], &a.b[1], &a.b[2], &a.b[3]) == 4 ) {
+  if ( sscanf(str, "%hhu.%hhu.%hhu.%hhu", &a.b[0], &a.b[1], &a.b[2], &a.b[3]) == 4 ) {
     addr->s_addr = a.l;		/* Always in network byte order */
     return 1;
   } else {

@@ -7,7 +7,6 @@
 
 int pipe(int *fds)
 {
-  long sc_err;
   register long sc_0 __asm__("$0");
   register long sc_19 __asm__("$19");
   register long sc_20 __asm__("$20");
