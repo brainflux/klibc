@@ -28,4 +28,6 @@ struct sigaction {
 #define sa_handler      _u._sa_handler
 #define sa_sigaction    _u._sa_sigaction
 
+typedef int sig_atomic_t;
+
 #endif
