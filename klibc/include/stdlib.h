@@ -1,0 +1,39 @@
+/*
+ * stdlib.h
+ */
+
+#ifndef _STDLIB_H
+#define _STDLIB_H
+
+#include <extern.h>
+#include <stddef.h>
+
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
+
+__extern void _Exit(int);
+__extern __noreturn abort(void);
+static __inline__ int abs(int __n) {
+  return (__n < 0) ? -__n : __n;
+}
+__extern int atexit(void (*)(void));
+__extern int atoi(const char *);
+__extern long atol(const char *);
+__extern long long atoll(const char *);
+__extern void exit(int);
+__extern void free(void *);
+static __inline__ long labs(long __n) {
+  return (__n < 0L) ? -__n : __n;
+}
+
+static __inline__ long llabs(long __n) {
+  return (__n < 0LL) ? -__n : __n;
+}
+__extern void *malloc(size_t);
+__extern void *realloc(void *, size_t);
+__extern long strtol(const char *, char **, int);
+__extern long long strtoll(const char *, char **, int);
+__extern unsigned long strtoul(const char *, char **, int);
+__extern unsigned long long strtoull(const char *, char **, int);
+
+#endif /* _STDLIB_H */
