@@ -205,7 +205,7 @@ int netdev_init_if(struct netdev *dev)
 	if (netdev_gif_addr(&ifr, SIOCGIFADDR, &dev->ip_addr) == -1) {
 		perror("SIOCGIFADDR");
 		dev->ip_addr = 0;
-		dev->ip_broadcase = 0;
+		dev->ip_broadcast = 0;
 		dev->ip_netmask = 0;
 		return 0;
 	}
