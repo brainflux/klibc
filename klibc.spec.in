@@ -89,19 +89,23 @@ install -m 444 kinit/README %{buildroot}%{bindocdir}/README.kinit
 rm -rf $RPM_BUILD_ROOT
 
 #
-# Note: /usr/lib/klibc/lib/libc.so is technically a link library,
-# but put it in the main package to avoid the risk of version skew.
+# Note: libc.so and interp.o are technically -devel files, but
+# put them in this package until we can make really, really sure
+# the dependency system can avoid confusion.  (In fact, it would be
+# good to eventually get them out of here, so that multiple runtimes
+# can be installed should it be necessary.)
 #
 %files
 %defattr(-,root,root,-)
-%{klibcdir}/lib/*.so
 /lib/klibc-*.so
+%{klibcdir}/lib/*.so
+%{klibcdir}/lib/interp.o
 
 %files devel
 %defattr(-,root,root,-)
 %{klibcdir}/include
 %{klibcdir}/lib/*.a
-%{klibcdir}/lib/*.o
+%{klibcdir}/lib/crt0.o
 %{_bindir}/klcc
 %doc %{_mandir}/man1/*
 %doc %{libdocdir}/*
