@@ -29,6 +29,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  getenv.o setenv.o unsetenv.o getopt.o readdir.o \
 	  time.o fdatasync.o llseek.o select.o nice.o getpriority.o \
 	  qsort.o lrand48.o srand48.o seed48.o \
+	  socketcall.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
 	  inet/inet_ntop.o inet/inet_pton.o
 LIB     = libc.a
