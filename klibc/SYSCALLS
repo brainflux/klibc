@@ -95,12 +95,12 @@ int fdatasync(int)
 # Signal operations
 #
 int kill(pid_t, int)
-int sigaction(int, const struct sigaction *, struct sigaction *)
-int sigsuspend(const sigset_t *)
-int sigpending(sigset_t *)
+int rt_sigaction(int, const struct sigaction *, struct sigaction *, size_t)
+int rt_sigsuspend(const sigset_t *, size_t)
+int rt_sigpending(sigset_t *, size_t)
 int pause()
 unsigned int alarm(unsigned int)
-int sigprocmask(int, const sigset_t *, sigset_t *)
+int rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t)
 
 #
 # Time-related system calls
