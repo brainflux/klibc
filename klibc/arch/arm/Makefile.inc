@@ -17,7 +17,8 @@ ARCHOBJS = \
 	libgcc/__moddi3.o \
 	libgcc/__udivdi3.o \
 	libgcc/__umoddi3.o \
-	libgcc/__udivmoddi4.o
+	libgcc/__udivmoddi4.o \
+	arch/arm/syscall.o
 
 ifeq ($(THUMB),y)
 ARCHOBJS += arch/arm/setjmp-thumb.o

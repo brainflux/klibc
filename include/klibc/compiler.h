@@ -38,19 +38,56 @@
 # define __noreturn void
 #endif
 
-/* How to declare a "constant" function (a function in the
-   mathematical sense) */
+/* "const" function:
+
+     Many functions do not examine any values except their arguments,
+     and have no effects except the return value.  Basically this is
+     just slightly more strict class than the `pure' attribute above,
+     since function is not allowed to read global memory.
+
+     Note that a function that has pointer arguments and examines the
+     data pointed to must _not_ be declared `const'.  Likewise, a
+     function that calls a non-`const' function usually must not be
+     `const'.  It does not make sense for a `const' function to return
+     `void'.
+*/
 #ifdef __GNUC__
 # define __constfunc __attribute__((const))
 #else
 # define __constfunc
 #endif
+#undef __attribute_const__
+#define __attribute_const__ __constfunc
+
+/* "pure" function:
+
+     Many functions have no effects except the return value and their
+     return value depends only on the parameters and/or global
+     variables.  Such a function can be subject to common subexpression
+     elimination and loop optimization just as an arithmetic operator
+     would be.  These functions should be declared with the attribute
+     `pure'.
+*/
+#ifdef __GNUC__
+# define __purefunc __attribute__((pure))
+#else
+# define __purefunc
+#endif
+#undef __attribute_pure__
+#define __attribute_pure__ __purefunc
 
 /* Format attribute */
 #ifdef __GNUC__
 # define __formatfunc(t,f,a) __attribute__((format(t,f,a)))
 #else
 # define __formatfunc(t,f,a)
+#endif
+
+/* malloc() function (returns unaliased pointer) */
+#if defined(__GNUC__) && (__GNUC_MAJOR__ >= 3)
+# define __mallocfunc __attribute__((malloc))
+#else
+# define __mallocfunc
 #endif
 
 /* likely/unlikely */
@@ -67,40 +104,6 @@
 # define __unusedfunc	__attribute__((unused))
 #else
 # define __unusedfunc
-#endif
-
-/* "pure" function:
-
-     Many functions have no effects except the return value and their
-     return value depends only on the parameters and/or global
-     variables.  Such a function can be subject to common subexpression
-     elimination and loop optimization just as an arithmetic operator
-     would be.  These functions should be declared with the attribute
-     `pure'.
-*/
-#ifdef __GNUC__
-# define __attribute_pure__	__attribute__((pure))
-#else
-# define __attribute_pure__
-#endif
-
-/* "const" function:
-
-     Many functions do not examine any values except their arguments,
-     and have no effects except the return value.  Basically this is
-     just slightly more strict class than the `pure' attribute above,
-     since function is not allowed to read global memory.
-
-     Note that a function that has pointer arguments and examines the
-     data pointed to must _not_ be declared `const'.  Likewise, a
-     function that calls a non-`const' function usually must not be
-     `const'.  It does not make sense for a `const' function to return
-     `void'.
-*/
-#ifdef __GNUC__
-# define __attribute_const__	__attribute__((const))
-#else
-# define __attribute_const__
 #endif
 
 #endif

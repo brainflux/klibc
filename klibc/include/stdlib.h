@@ -36,15 +36,9 @@ static __inline__ long long llabs(long long __n) {
   return (__n < 0LL) ? -__n : __n;
 }
 
-#if defined(__GNUC__) && __GNUC_MAJOR__ >= 3
-# define __attribute_malloc __attribute__((malloc))
-#else
-# define __attribute_malloc
-#endif
-
-__extern __attribute_malloc void *malloc(size_t);
-__extern __attribute_malloc void *calloc(size_t, size_t);
-__extern void *realloc(void *, size_t);
+__extern __mallocfunc void *malloc(size_t);
+__extern __mallocfunc void *calloc(size_t, size_t);
+__extern __mallocfunc void *realloc(void *, size_t);
 __extern long strtol(const char *, char **, int);
 __extern long long strtoll(const char *, char **, int);
 __extern unsigned long strtoul(const char *, char **, int);
