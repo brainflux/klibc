@@ -17,7 +17,7 @@ DIVCFLAGS = $(REQFLAGS) \
 	-fcall-saved-7 -fcall-saved-8 -fcall-saved-15 -fcall-saved-16 \
 	-fcall-saved-17 -fcall-saved-18 -fcall-saved-19 -fcall-saved-20 \
 	-fcall-saved-21 -fcall-saved-22 -ffixed-23 -fcall-saved-24 \
-	-fcall-saved-25 -fcall-saved-27
+	-ffixed-25 -ffixed-27
 
 ARCHOBJS = \
 	arch/$(ARCH)/__divqu.o \
