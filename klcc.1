@@ -1,4 +1,4 @@
-.\" $Id: klcc.1,v 1.1 2005/03/01 22:56:58 hpa Exp $
+.\" $Id: klcc.1,v 1.2 2005/03/02 02:24:17 hpa Exp $
 .\" -----------------------------------------------------------------------
 .\"   
 .\"   Copyright 2005 H. Peter Anvin - All Rights Reserved
@@ -61,7 +61,9 @@ impossible.  Therefore, compile without
 or
 .B \-m
 option to use the default optimization level; this will generally
-result in the smallest binaries.
+result in the smallest binaries.  You may want to use
+.B \-s
+when linking, however.
 .PP
 Use the
 .B \-shared
