@@ -11,8 +11,11 @@
 
 int main(int argc, char * const *argv)
 {
-  const char *parser = getenv("GETOPTTEST");
+  const char *parser;
   int c;
+
+  parser = getenv("GETOPTTEST");
+  if ( !parser ) parser = "abzf:o:";
 
   do {
     c = getopt(argc, argv, parser);
