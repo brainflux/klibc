@@ -1,0 +1,35 @@
+Each architecture needs a crt0.S file.  The crt0.S assembly routine
+typically corresponds to the following pseudo-C code.  In addition,
+each architecture needs any support routines that gcc-generated code
+expects to find in the system library -- Alpha, for example, needs
+divide subroutines.
+
+
+extern char **environ;
+extern int main(int, char **, char **);
+extern __noreturn exit(int);
+
+__noreturn _start(void)
+{
+  intptr_t *argptr = __stack_pointer(); /* Usually -- e.g. SPARC is special */
+  int argc;
+  char **argv, **envp;
+
+#if STACK_GROWS_UP
+  argc = (int)*argptr--;
+  argv = (char **)argptr;
+  envp = argv-(argc+1);
+#else
+  argc = (int)*argptr++;
+  argv = (char **)argptr;
+  envp = argv+(argc+1);
+#endif
+
+  environ = envp;
+
+  exit(main(argc, argv, envp));
+}
+
+
+
+  
