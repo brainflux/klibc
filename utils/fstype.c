@@ -22,7 +22,7 @@
 #include <linux/cramfs_fs.h>
 #include <linux/minix_fs.h>
 #include <linux/ext2_fs.h>
-#include <linux/ext3_fs.h>
+#include "ext3_fs.h"
 
 /*
  * reiserfs_fs.h is too sick to include directly.
