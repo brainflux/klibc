@@ -13,7 +13,7 @@ struct _IO_dir {
   int fd;
   size_t bytes_left;
   struct dirent *next;
-  struct dirent buffer[4];	/* 4 times max dirent size */
+  struct dirent buffer[15];	/* 15 times max dirent size =~ 4K */
 };
 
 #include <dirent.h>
