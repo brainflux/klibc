@@ -68,7 +68,7 @@ $(LIB): __static_init.o $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/s
 	$(RANLIB) $(LIB)
 
 $(SOLIB): $(CRT0) __shared_init.o $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
-	$(LD) $(LDFLAGS) $(SHAREDFLAGS) -e _start -o $@ \
+	$(LD) $(LDFLAGS) $(SHAREDFLAGS) -o $@ \
 		$(CRT0) __shared_init.o $(LIBOBJS) $(ARCHOBJS) \
 	        syscalls/*.o socketcalls/*.o \
 		$(LIBGCC)
