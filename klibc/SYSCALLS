@@ -119,6 +119,7 @@ int nanosleep(const struct timespec *, struct timespec *)
 #
 # Memory
 #
+# void * brk::__brk(void *)
 int munmap(void *, size_t)
 void * mremap(void *, size_t, size_t, unsigned long)
 int msync(const void *, size_t, int)
@@ -134,4 +135,4 @@ int init_module(const char *, struct module *)
 void * create_module(const char *, size_t)
 int delete_module(const char *)
 int query_module(const char *, int, void *, size_t, size_t)
-
+int reboot::__reboot(int, int, int, void *)

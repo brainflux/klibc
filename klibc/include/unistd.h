@@ -89,4 +89,8 @@ __extern int sethostname(const char *, size_t);
 __extern int getdomainname(char *, size_t);
 __extern int setdomainname(const char *, size_t);
 
+__extern void *__brk(void *);
+__extern int brk(void *);
+__extern void *sbrk(ptrdiff_t);
+
 #endif /* _UNISTD_H */
