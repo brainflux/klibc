@@ -34,6 +34,7 @@ setjmp:
 	ret	zero,(ra),1
 
 	.size setjmp,.-setjmp
+	.end setjmp
 
 	.type	longjmp,@function
 	.ent	longjmp, 0
@@ -55,4 +56,6 @@ longjmp:
 	ret	zero,(ra),1
 
 	.size longjmp,.-longjmp
+	.end longjmp
+
 
