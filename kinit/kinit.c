@@ -1,3 +1,5 @@
+#include <sys/mount.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,11 +9,16 @@
 #include "ipconfig.h"
 
 static const char *progname;
+int mnt_procfs;
+int mnt_sysfs;
 
 #define NARG 64
 
 void dump_args(int argc, char *argv[])
 {
+	(void) argc;
+	(void) argv;
+
 #ifdef INI_DEBUG
 	int i;
 
@@ -80,6 +87,25 @@ static int split_cmdline(int *cmdc, char *cmdv[],
 	return *cmdc = v;
 }
 
+static int mount_sys_fs(char *check, char *fsname, char *fstype)
+{
+	struct stat st;
+
+	if (stat(check, &st) == 0) {
+		return 0;
+	}
+
+	mkdir(fsname, 0555);
+
+	if (mount("none", fsname, fstype, 0, 0) == -1) {
+		fprintf(stderr, "%s: could not mount %s as %s\n",
+			progname, fsname, fstype);
+		return -1;
+	}
+
+	return 1;
+}
+
 static char *get_kernel_cmdline(char *buf, int len)
 {
 	FILE *fp;
@@ -87,16 +113,22 @@ static char *get_kernel_cmdline(char *buf, int len)
 	if ((fp = fopen("/proc/cmdline", "r")) == NULL) {
 		fprintf(stderr, "%s: could not open kernel command line\n",
 			progname);
-	}
-	else if (fgets(buf, len, fp) == NULL) {
-		buf = NULL;
-	} else {
-		len = strlen(buf);
-		if (buf[len - 1] == '\n') {
-			buf[--len] = '\0';
-		}
+			buf = NULL;
+			goto bail;
 	}
 
+	if (fgets(buf, len, fp) == NULL) {
+		buf = NULL;
+		goto bail;
+	}
+
+	len = strlen(buf);
+
+	if (buf[len - 1] == '\n') {
+		buf[--len] = '\0';
+	}
+
+ bail:
 	if (fp) {
 		fclose(fp);
 	}
@@ -140,18 +172,33 @@ static void restore_cmdline(char *saved, int cmdc, char *cmdv[])
 int main(int argc, char *argv[])
 {
 	char *cmdv[NARG], *saved;
-	int cmdc;
 	char buf[1024];
 	char *cmdline;
+	int ret = 0;
+	int cmdc;
 
 	cmdc = NARG;
 	progname = argv[0];
 
-	if ((cmdline = get_kernel_cmdline(buf, sizeof(buf))) == NULL)
+	if ((mnt_procfs = mount_sys_fs("/proc/cmdline", "/proc", "proc")) == -1) {
+		ret = 1;
 		goto bail;
+	}
 
-	if (split_cmdline(&cmdc, cmdv, cmdline, argc, argv) == 0)
+	if ((mnt_sysfs = mount_sys_fs("/sys/bus", "/sys", "sysfs")) == -1) {
+		ret = 1;
 		goto bail;
+	}
+
+	if ((cmdline = get_kernel_cmdline(buf, sizeof(buf))) == NULL) {
+		ret = 1;
+		goto bail;
+	}
+
+	if (split_cmdline(&cmdc, cmdv, cmdline, argc, argv) == 0) {
+		ret = 1;
+		goto bail;
+	}
 
 	save_cmdline(&saved, cmdc, cmdv);
 
@@ -161,5 +208,11 @@ int main(int argc, char *argv[])
 	do_nfsroot(cmdc, cmdv);
 
  bail:
-	return 0;
+	if (mnt_procfs == 1)
+		umount2("/proc", 0);
+
+	if (mnt_sysfs == 1)
+		umount2("/sys", 0);
+
+	exit(ret);
 }

@@ -5,6 +5,9 @@
 extern void dump_args(int argc, char *argv[]);
 extern int do_nfsroot(int argc, char *argv[]);
 
+extern int mnt_procfs;
+extern int mnt_sysfs;
+
 #undef INI_DEBUG
 
 #undef DEBUG

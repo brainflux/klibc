@@ -140,19 +140,28 @@ int do_nfsroot(int argc, char *argv[])
 	dump_args(a, argv);
 
 	if ((ret = nfsmount_main(a, argv)) != 0) {
+		ret = -1;
 		goto done;
 	}
 
 	if (chdir(local) == -1) {
 		perror("chdir");
-		exit(1);
+		ret = -1;
+		goto done;
 	}
 
 #ifndef INI_DEBUG
 	if (pivot_root(".", "old_root") == -1) {
 		perror("pivot_root");
-		exit(1);
+		ret = -1;
+		goto done;
 	}
+
+	if (mnt_procfs == 1)
+		umount2("/proc", 0);
+
+	if (mnt_sysfs == 1)
+		umount2("/sys", 0);
 
 	if (kinit) {
 		char *s = strrchr(kinit, '/');
