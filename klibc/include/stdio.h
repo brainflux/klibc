@@ -70,6 +70,10 @@ __extern int fputc(int, FILE *);
 #define putc(c,f)  fputc((c),(f))
 #define putchar(c) fputc((c),stdout)
 
+__extern int    fgetc(FILE *);
+__extern char * fgets(char *, int, FILE *);
+#define getc(f) fgetc(f)
+
 __extern size_t _fread(void *, size_t, FILE *);
 __extern size_t _fwrite(const void *, size_t, FILE *);
 
