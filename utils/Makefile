@@ -6,7 +6,7 @@ MAKEDEPS     = -Wp,-MD,.$(subst /,-,$*).d
 CFLAGS       = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall
 LIBS         = $(KLIBC) $(LIBGCC)
 PROGS       := chroot dd fstype mkdir mkfifo mount pivot_root umount \
-	       true false sleep
+	       true false sleep ln
 STATICPROGS := $(patsubst %,static/%,$(PROGS))
 SHAREDPROGS := $(patsubst %,shared/%,$(PROGS))
 LIBOBJS	     = file_mode.o
