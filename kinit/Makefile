@@ -21,3 +21,6 @@ kinit: $(OBJS)
 
 clean:
 	-rm *.o kinit
+
+spotless: clean
+	-rm .*.d
