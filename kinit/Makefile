@@ -19,9 +19,11 @@ all: $(PROGS)
 
 kinit: $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
+	cp -f $@ $@.g
+	$(STRIP) $@
 
 clean:
-	-rm -f *.o kinit
+	-rm -f *.o *.g kinit
 
 spotless: clean
 	-rm -f .*.d *~

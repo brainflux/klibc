@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <alloca.h>
+#include <limits.h>
 
 #include "kinit.h"
 #include "ipconfig.h"
@@ -12,8 +14,6 @@
 static const char *progname = "kinit";
 int mnt_procfs;
 int mnt_sysfs;
-
-#define NARG 64
 
 void dump_args(int argc, char *argv[])
 {
@@ -65,27 +65,34 @@ static int split_cmdline(int *cmdc, char *cmdv[],
 {
 	char was_space = 1;
 	char *i = cmdline;
-	int vmax = *cmdc - 1;
+	int vmax = *cmdc;
 	int v = 1, a;
 
-	cmdv[0] = argv[0];
+	if ( cmdv )
+		cmdv[0] = argv[0];
 
 	while (i && *i && v < vmax) {
 		if ((*i == ' ' || *i == '\t') && !was_space) {
-			*i = '\0';
+			if ( cmdv )
+				*i = '\0';
 			was_space = 1;
 		} else if (was_space) {
-			cmdv[v++] = i;
+			if ( cmdv )
+				cmdv[v] = i;
+			v++;
 			was_space = 0;
 		}
 		i++;
 	}
 
 	for (a = 1; a < argc && v < vmax; a++) {
-		cmdv[v++] = argv[a];
+		if ( cmdv )
+			cmdv[v] = argv[a];
+		v++;
 	}
 
-	cmdv[v] = NULL;
+	if ( cmdv )
+		cmdv[v] = NULL;
 
 	return *cmdc = v;
 }
@@ -213,7 +220,7 @@ static void check_path(const char *path)
 
 int main(int argc, char *argv[])
 {
-	char *cmdv[NARG], *saved;
+	char **cmdv, *saved;
 	char *kinit = NULL;
 	char buf[1024];
 	char *cmdline;
@@ -232,8 +239,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	cmdc = NARG;
-
 	if ((mnt_procfs = mount_sys_fs("/proc/cmdline", "/proc", "proc")) == -1) {
 		ret = 1;
 		goto bail;
@@ -248,6 +253,10 @@ int main(int argc, char *argv[])
 		ret = 1;
 		goto bail;
 	}
+
+	cmdc = INT_MAX;
+	cmdv = (char **) alloca(sizeof(char *) *
+	       (split_cmdline(&cmdc, NULL, cmdline, argc, argv+1)));
 
 	if (split_cmdline(&cmdc, cmdv, cmdline, argc, argv) == 0) {
 		ret = 1;

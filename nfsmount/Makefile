@@ -17,7 +17,7 @@ static/nfsmount: $(OBJS) $(CRT0) $(LIBS)
 	cp -f $@ static.g
 	$(STRIP) $@
 
-shared/nfsmount: $(OBJS) $(CRT0) $(LIBS)
+shared/nfsmount: $(OBJS) $(CRT0) $(LIBSHARED) $(LIBGCC)
 	mkdir -p shared shared.g
 	$(LD) $(LDFLAGS) -o $@ $(EMAIN) $(CRTSHARED) $(OBJS) \
 		-R $(LIBSHARED) $(LIBGCC)
