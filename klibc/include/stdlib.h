@@ -54,4 +54,28 @@ __extern int unsetenv(const char *);
 
 __extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
+
+__extern long mrand48(unsigned short *);
+__extern long jrand48(void);
+__extern long nrand48(unsigned short *);
+__extern long lrand48(void);
+__extern unsigned short *seed48(const unsigned short *);
+__extern void srand48(long);
+
+#define RAND_MAX 0x7fffffff
+static __inline__ int rand(void) {
+  return (int)lrand48();
+}
+static __inline__ void srand(unsigned int __s) {
+  srand48(__s);
+}
+static __inline__ long random(void)
+{
+  return lrand48();
+}
+static __inline__ void srandom(unsigned int __s)
+{
+  srand48(__s);
+}
+
 #endif /* _STDLIB_H */
