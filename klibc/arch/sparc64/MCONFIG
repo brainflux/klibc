@@ -7,5 +7,7 @@
 # accordingly.
 #
 
-OPTFLAGS = -Os -fomit-frame-pointer
+OPTFLAGS = -m64 -mptr64 -Os -fomit-frame-pointer
 BITSIZE  = 64
+
+LDFLAGS  = -m elf64_sparc

@@ -11,7 +11,7 @@
 
 #ifdef __NR_fork
 
-#ifdef __sparc__
+#ifdef _syscall0_forkish
 _syscall0_forkish(pid_t,fork);
 #else
 _syscall0(pid_t,fork);

@@ -67,7 +67,7 @@ _start:
 ! or without an imposed bias.
 
 	andcc	%sp, 1, %g5
-	bz,a	.LNoBias
+	bz,a .LNoBias
 	 nop
 	mov	2047, %g5
 .LNoBias:
@@ -90,8 +90,8 @@ _start:
 	add	%o0, 1, %o2
 	sll	%o2, 2, %o2
 #else /* TARGET_PTR_SIZE == 64 */
-	ld	[%g5 + 0x80], %o0	! argc.lo
-	add	%sp, 0x88, %o1		! argv
+	ldx	[%g5 + 0x80], %o0	! argc.lo
+	add	%g5, 0x88, %o1		! argv
 	add	%o0, 1, %o2
 	sll	%o2, 3, %o2
 #endif
