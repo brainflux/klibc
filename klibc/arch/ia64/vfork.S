@@ -38,4 +38,4 @@ vfork:
 	;; 
 (p7)	mov	r8=-1
 	br.ret.sptk.many b0
-	.endp
+	.endp vfork
