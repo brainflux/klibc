@@ -1,50 +1,11 @@
 /*
- * strspn, strcspn
+ * strspn
  */
 
-#include <string.h>
-#include <stddef.h>
-#include <inttypes.h>
-#include <limits.h>
-
-static size_t
-strxspn(const char *s, const char *map, int parity)
-{
-  char matchmap[UCHAR_MAX+1];
-  size_t n = 0;
-
-  /* Create bitmap */
-  memset(matchmap, 0, sizeof matchmap);
-  while ( *map )
-    matchmap[(unsigned char) *map++] = 1;
-  
-  /* Make sure the null character never matches */
-  matchmap[0] = parity;
-
-  /* Calculate span length */
-  while ( matchmap[(unsigned char) *s++] ^ parity )
-    n++;
-
-  return n;
-}
+#include "strxspn.h"
 
 size_t
 strspn(const char *s, const char *accept)
 {
-  return strxspn(s, accept, 0);
+  return __strxspn(s, accept, 0);
 }
-
-size_t
-strcspn(const char *s, const char *reject)
-{
-  return strxspn(s, reject, 1);
-}
-
-char *
-strpbrk(const char *s, const char *accept)
-{
-  const char *ss = s+strxspn(s, accept, 1);
-  
-  return *ss ? (char *)ss : NULL;
-}
-
