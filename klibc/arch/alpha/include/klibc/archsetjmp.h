@@ -16,6 +16,15 @@ struct __jmp_buf {
   unsigned long __ra;
   unsigned long __gp;
   unsigned long __sp;
+  
+  unsigned long __f2;
+  unsigned long __f3;
+  unsigned long __f4;
+  unsigned long __f5;
+  unsigned long __f6;
+  unsigned long __f7;
+  unsigned long __f8;
+  unsigned long __f9;
 };
 
 /* Must be an array so it will decay to a pointer when a function is called */
