@@ -1,31 +1,67 @@
 BOOTP/DHCP client for klibc
 ---------------------------
 
-Notes:
+Usage:
 
-1. This client is able to configure multiple interfaces if required:
+ipconfig [-c proto] [-d interface] [-n] [-p port] [-t timeout] [interface ...]
 
-	ipconfig -d eth0 -d eth1
+-c proto	Use PROTO as the configuration protocol for all
+		interfaces, unless overridden by specific interfaces.
+-d interface	Either the name of an interface, or a long spec.
+-n		Do nothing - just print the configuration that would
+		be performed.
+-p port		Send bootp/dhcp broadcasts from PORT, to PORT - 1.
+-t timeout	Give up on all unconfigured interfaces after TIMEOUT secs.
 
-   It will wait for all listed interfaces to complete bootp/dhcp
-   configuration.
+You can configure multiple interfaces by passing multiple interface
+specs on the command line.  If you're autoconfiguring any, ipconfig
+will wait until either all have been configured, or the timeout
+passes.
 
-2. We should have a timeout parameter:
+PROTO can be one of the following, which selects the autoconfiguration
+protocol to use:
 
-	ipconfig -t 30
+not specified	use all protocols (the default)
+dhcp		use bootp and dhcp
+bootp		use bootp only
+rarp		use rarp (not currently supported)
+none		no autoconfiguration - either static config, or none at all
 
-   so we can optionally bound the time we allow for the configuration
-   to complete.
+An interface spec can be either short form, which is just the name of
+an interface (eth0 or whatever), or long form.  The long form consists
+of up to six elements, separated by colons:
 
-3. We should let the user specify the configuration protocol
-   (maybe per-interface?)  The code internally supports per-interface.
+addr:server:gateway:netmask:interface:proto
 
-4. Static IP configuration.
+addr		the local IP address
+server		the server's IP address (doubles as DNS server)
+gateway		default gateway
+netmask		netmask
+interface	name of the interface
+proto		the autoconfig protocol to use, as outlined above
 
-5. Command line arguments.  Maybe we should accept an ip= string on the
-   command line to remain compatible with the kernel?
+IP addresses and netmasks must be either absent (defaulting to zero)
+or presented in dotted-quad notation.
 
-6. The code in main.c is yucky imho.  Needs cleaning.
+An interface spec can be prefixed with either "ip=", "nfsaddrs=", both
+of which are ignored.  These (along with the ugliness of the long
+form) are present for compatibility with the in-kernel ipconfig code
+from 2.4 and earlier kernels.
+
+Here are a few examples of valid ipconfig command lines.
+
+Try to configure eth0 using bootp for up to 30 seconds:
+    ipconfig -t 30 -c bootp eth0
+
+Configure eth0 and eth1 using dhcp or bootp, and eth2 statically:
+    ipconfig -c any eth0 eth1 192.168.1.1::::eth2:none
 
 --
-Russell King (22/10/2002)
+
+From Russell's original README, and still true:
+
+The code in main.c is yucky imho.  Needs cleaning.
+
+--
+Russell King (2002/10/22)
+Bryan O'Sullivan (2003/04/29)

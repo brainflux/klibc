@@ -12,13 +12,18 @@
 #include <net/if_ether.h>
 #include <net/if_packet.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 
+#include "ipconfig.h"
 #include "netdev.h"
 #include "packet.h"
 
 static int pkt_fd;
+
+__u16 local_port = LOCAL_PORT;
+__u16 remote_port = REMOTE_PORT;
 
 int packet_open(void)
 {
@@ -83,12 +88,18 @@ static struct header ipudp_hdrs = {
 		.daddr		= INADDR_BROADCAST,
 	},
 	.udp = {
-		.source		= __constant_htons(68),
-		.dest		= __constant_htons(67),
+		.source		= __constant_htons(LOCAL_PORT),
+		.dest		= __constant_htons(REMOTE_PORT),
 		.len		= 0,
 		.check		= 0,
 	},
 };
+
+static char *ntoa(__u32 addr)
+{
+	struct in_addr in = { addr };
+	return inet_ntoa(in);
+}
 
 /*
  * Send a packet.  The options are listed in iov[1...iov_len].
@@ -107,6 +118,17 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 		.msg_flags	= 0
 	};
 	int i, len = 0;
+
+	if (local_port != LOCAL_PORT) {
+		ipudp_hdrs.udp.source = htons(local_port);
+		ipudp_hdrs.udp.dest = htons(remote_port);
+	}
+	
+	DEBUG(("\n   udp src %d dst %d", ntohs(ipudp_hdrs.udp.source),
+	       ntohs(ipudp_hdrs.udp.dest)));
+
+	DEBUG(("\n   ip src %s ", ntoa(ipudp_hdrs.ip.saddr)));
+	DEBUG(("dst %s ", ntoa(ipudp_hdrs.ip.daddr)));
 
 	/*
 	 * Glue in the ip+udp header iovec
@@ -132,6 +154,8 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 
 	ipudp_hdrs.udp.len      = htons(len - sizeof(struct iphdr));
 
+	DEBUG(("\n   bytes %d\n", len));
+	
 	return sendmsg(pkt_fd, &msg, 0);
 }
 
@@ -160,9 +184,18 @@ int packet_peek(int *ifindex)
 	return 0;
 
  discard_pkt:
-	recvfrom(pkt_fd, &iph, sizeof(struct iphdr),
-		 0, (struct sockaddr *)&sll, &sllen);
+	packet_discard();
 	return 0;
+}
+
+void packet_discard(void)
+{
+	struct iphdr iph;
+	struct sockaddr_ll sll;
+	socklen_t sllen = sizeof(sll);
+	
+	recvfrom(pkt_fd, &iph, sizeof(iph), 0,
+		 (struct sockaddr *) &sll, &sllen);
 }
 
 /*
@@ -207,15 +240,24 @@ int packet_recv(struct iovec *iov, int iov_len)
 	if (ret == -1)
 		goto free_pkt;
 
+	DEBUG(("<- bytes %d ", ret));
+
 	if (ip_checksum((__u16 *)ip, ip->ihl) != 0)
 		goto free_pkt;
+
+	DEBUG(("\n   ip src %s ", ntoa(ip->saddr)));
+	DEBUG(("dst %s ", ntoa(ip->daddr)));
 
 	if (ntohs(ip->tot_len) > ret || ip->protocol != IPPROTO_UDP)
 		goto free_pkt;
 
 	ret -= 4 * ip->ihl;
 
-	if (udp->source != htons(67) || udp->dest != htons(68))
+	DEBUG(("\n   udp src %d dst %d ", ntohs(udp->source),
+	       ntohs(udp->dest)));
+	
+	if (udp->source != htons(remote_port) ||
+	    udp->dest != htons(local_port))
 		goto free_pkt;
 
 	if (ntohs(udp->len) > ret)
@@ -232,6 +274,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 	return 0;
 
  discard_pkt:
-	recvfrom(pkt_fd, &iph, sizeof(struct iphdr), 0, NULL, NULL);
+	DEBUG(("discarded\n"));
+	packet_discard();
 	return 0;
 }

@@ -100,13 +100,13 @@ crt0.o: arch/$(ARCH)/crt0.o
 syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 	rm -rf syscalls
 	mkdir syscalls
-	$(PERL) syscalls.pl $(ARCH) < SYSCALLS
+	$(PERL) syscalls.pl $(ARCH) SYSCALLS
 	touch $@
 
 socketcalls.dir: SOCKETCALLS socketcalls.pl socketcommon.h
 	rm -rf socketcalls
 	mkdir socketcalls
-	$(PERL) socketcalls.pl $(ARCH) < SOCKETCALLS
+	$(PERL) socketcalls.pl $(ARCH) SOCKETCALLS
 	touch $@
 
 %/static.obj: %.dir

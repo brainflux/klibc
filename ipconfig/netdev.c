@@ -202,7 +202,8 @@ int netdev_init_if(struct netdev *dev)
 	/*
 	 * Try to get the current interface information.
 	 */
-	if (netdev_gif_addr(&ifr, SIOCGIFADDR, &dev->ip_addr) == -1) {
+	if (dev->ip_addr == INADDR_NONE &&
+	    netdev_gif_addr(&ifr, SIOCGIFADDR, &dev->ip_addr) == -1) {
 		perror("SIOCGIFADDR");
 		dev->ip_addr = 0;
 		dev->ip_broadcast = 0;
@@ -210,12 +211,14 @@ int netdev_init_if(struct netdev *dev)
 		return 0;
 	}
 
-	if (netdev_gif_addr(&ifr, SIOCGIFBRDADDR, &dev->ip_broadcast) == -1) {
+	if (dev->ip_broadcast == INADDR_NONE &&
+	    netdev_gif_addr(&ifr, SIOCGIFBRDADDR, &dev->ip_broadcast) == -1) {
 		perror("SIOCGIFBRDADDR");
 		dev->ip_broadcast = 0;
 	}
 
-	if (netdev_gif_addr(&ifr, SIOCGIFNETMASK, &dev->ip_netmask) == -1) {
+	if (dev->ip_netmask == INADDR_NONE &&
+	    netdev_gif_addr(&ifr, SIOCGIFNETMASK, &dev->ip_netmask) == -1) {
 		perror("SIOCGIFNETMASK");
 		dev->ip_netmask = 0;
 	}

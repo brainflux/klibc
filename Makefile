@@ -1,4 +1,4 @@
-SUBDIRS = klibc ash utils gzip
+SUBDIRS = klibc ash utils gzip ipconfig
 
 all:
 

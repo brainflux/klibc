@@ -1,14 +1,16 @@
 /*
  * ipconfig/dhcp_proto.c
  *
- * DHCP RFC2132
+ * DHCP RFC 2131 and 2132
  */
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <netinet/in.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 
+#include "ipconfig.h"
 #include "netdev.h"
 #include "bootp_packet.h"
 #include "bootp_proto.h"
@@ -97,14 +99,17 @@ dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
 		ret = bootp_parse(dev, hdr, exts, extlen);
 		if (ret == 1 && serverid != INADDR_NONE)
 			dev->serverid = serverid;
+		DEBUG(("\n   dhcp offer\n"));
 		break;
 
 	case DHCPACK:
 		ret = bootp_parse(dev, hdr, exts, extlen);
+		DEBUG(("\n   dhcp ack\n"));
 		break;
 
 	case DHCPNAK:
 		ret = 2;
+		DEBUG(("\n   dhcp nak\n"));
 		break;
 	}
 	return ret;
@@ -127,6 +132,8 @@ static int dhcp_recv(struct netdev *dev)
 	ret = packet_recv(iov, 3);
 	if (ret <= 0)
 		return ret;
+
+	DEBUG(("\n   dhcp xid %04x ", dev->bootp.xid));
 
 	if (ret < sizeof(struct bootp_hdr) ||
 	    bootp.op != BOOTP_REPLY ||		/* RFC951 7.5 */
@@ -157,6 +164,9 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec, int len)
 	vec[1].iov_base = &bootp;
 	vec[1].iov_len = sizeof(struct bootp_hdr);
 
+	DEBUG(("xid %04x secs %d ",
+	       bootp.xid, ntohs(bootp.secs)));
+
 	return packet_send(dev, vec, len);
 }
 
@@ -168,6 +178,8 @@ int dhcp_send_discover(struct netdev *dev)
 	dev->ip_addr = INADDR_ANY;
 	dev->ip_gateway = INADDR_ANY;
 
+	DEBUG(("-> dhcp discover "));
+	
 	return dhcp_send(dev, dhcp_discover_iov, 5);
 }
 
@@ -186,6 +198,8 @@ int dhcp_send_request(struct netdev *dev)
 {
 	memcpy(&dhcp_request_hdr[SERVER_IP_OFF], &dev->serverid, 4);
 	memcpy(&dhcp_request_hdr[REQ_IP_OFF], &dev->ip_addr, 4);
+
+	DEBUG(("-> dhcp request "));
 
 	return dhcp_send(dev, dhcp_request_iov, 5);
 }

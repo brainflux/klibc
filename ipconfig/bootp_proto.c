@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
+#include "ipconfig.h"
 #include "netdev.h"
 #include "bootp_packet.h"
 #include "bootp_proto.h"
@@ -50,6 +51,9 @@ int bootp_send_request(struct netdev *dev)
 	bootp.ciaddr = dev->ip_addr;
 	bootp.secs   = htons(time(NULL) - dev->open_time);
 	memcpy(bootp.chaddr, dev->hwaddr, 16);
+
+	DEBUG(("-> bootp xid 0x%08x secs 0x%08x ",
+	       bootp.xid, ntohs(bootp.secs)));
 
 	return packet_send(dev, iov, 2);
 }
@@ -186,11 +190,11 @@ int bootp_init_if(struct netdev *dev)
 	 * We can't do DHCP nor BOOTP if this device
 	 * doesn't support broadcast.
 	 */
-	if (dev->mtu < 364 || (flags & IFF_BROADCAST) == 0)
+	if (dev->mtu < 364 || (flags & IFF_BROADCAST) == 0) {
+		dev->caps &= ~(CAP_BOOTP | CAP_DHCP);
 		return 0;
-
-	dev->caps |= CAP_BOOTP | CAP_DHCP;
-
+	}
+	
 	/*
 	 * Get a random XID
 	 */

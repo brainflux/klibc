@@ -2,12 +2,14 @@
  * ipconfig/main.c
  */
 #include <poll.h>
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 #include <arpa/inet.h>
 
+#include "ipconfig.h"
 #include "netdev.h"
 #include "bootp_packet.h"
 #include "bootp_proto.h"
@@ -15,6 +17,10 @@
 #include "packet.h"
 
 static const char *progname;
+static char do_not_config;
+static unsigned int default_caps = CAP_DHCP | CAP_BOOTP | CAP_RARP;
+static int loop_timeout = -1;
+static int configured;
 
 struct state {
 	int		state;
@@ -57,6 +63,9 @@ static void print_device_config(struct netdev *dev)
 
 static void configure_device(struct netdev *dev)
 {
+	if (do_not_config)
+		return;
+	
 	if (netdev_setaddress(dev))
 		printf("IP-Config: failed to set addresses on %s\n", dev->name);
 	if (netdev_setdefaultroute(dev))
@@ -118,8 +127,19 @@ static void postprocess_device(struct netdev *dev)
 	}
 }
 
-static void process_receive_event(struct state *s, time_t now)
+static void complete_device(struct netdev *dev)
 {
+	postprocess_device(dev);
+	configure_device(dev);
+	dump_device_config(dev);
+	print_device_config(dev);
+	++configured;
+}
+
+static int process_receive_event(struct state *s, time_t now)
+{
+	int handled = 1;
+	
 	switch (s->state) {
 	case DEVST_BOOTP:
 		s->restart_state = DEVST_BOOTP;
@@ -129,6 +149,7 @@ static void process_receive_event(struct state *s, time_t now)
 			break;
 		case 1:
 			s->state = DEVST_COMPLETE;
+			DEBUG(("\n   bootp reply\n"));
 			break;
 		}
 		break;
@@ -164,17 +185,19 @@ static void process_receive_event(struct state *s, time_t now)
 
 	switch (s->state) {
 	case DEVST_COMPLETE:
-		postprocess_device(s->dev);
-		configure_device(s->dev);
-		dump_device_config(s->dev);
-		print_device_config(s->dev);
+		complete_device(s->dev);
 		break;
 
 	case DEVST_ERROR:
 		/* error occurred, try again in 10 seconds */
 		s->expire = now + 10;
+	default:
+		DEBUG(("\n"));
+		handled = 0;
 		break;
 	}
+
+	return handled;
 }
 
 static void process_timeout_event(struct state *s, time_t now)
@@ -231,20 +254,23 @@ static void process_timeout_event(struct state *s, time_t now)
 
 static struct state *slist;
 
-static void do_pkt_recv(int pkt_fd, time_t now)
+static int do_pkt_recv(int pkt_fd, time_t now)
 {
 	int ifindex, ret;
 	struct state *s;
 
 	ret = packet_peek(&ifindex);
 	if (ret < 0)
-		return;
+		goto bail;
 
 	for (s = slist; s; s = s->next)
 		if (s->dev->ifindex == ifindex) {
-			process_receive_event(s, now);
+			ret |= process_receive_event(s, now);
 			break;
 		}
+
+ bail:
+	return ret;
 }
 
 static int loop(void)
@@ -254,7 +280,8 @@ static int loop(void)
 	struct state *s;
 	int pkt_fd;
 	int nr = 0;
-	time_t now;
+	struct timeval now, prev;
+	time_t start;
 
 	pkt_fd = packet_open();
 	if (pkt_fd == -1) {
@@ -265,10 +292,13 @@ static int loop(void)
 	fds[0].fd = pkt_fd;
 	fds[0].events = POLLRDNORM;
 
-	now = time(NULL);
+	gettimeofday(&now, NULL);
+	start = now.tv_sec;
 	while (1) {
 		int timeout = 60;
 		int pending = 0;
+		int timeout_ms;
+		int x;
 
 		for (s = slist; s; s = s->next) {
 			if (s->state == DEVST_COMPLETE)
@@ -276,26 +306,52 @@ static int loop(void)
 
 			pending++;
 
-			if (s->expire - now <= 0)
-				process_timeout_event(s, now);
+			if (s->expire - now.tv_sec <= 0)
+				process_timeout_event(s, now.tv_sec);
 
-			if (timeout > s->expire - now)
-				timeout = s->expire - now;
+			if (timeout > s->expire - now.tv_sec)
+				timeout = s->expire - now.tv_sec;
 		}
 
 		if (pending == 0)
 			break;
 
-		if (timeout < 0)
-			timeout = 0;
+		timeout_ms = timeout * 1000;
+		
+		for (x = 0; x < 2; x++) {
+			int delta_ms;
+			
+			if (timeout_ms <= 0)
+				timeout_ms = 100;
 
-		nr = poll(fds, NR_FDS, timeout * 1000);
-		now = time(NULL);
+			nr = poll(fds, NR_FDS, timeout_ms);
+			prev = now;
+			gettimeofday(&now, NULL);
+			
+			if ((fds[0].revents & POLLRDNORM)) {
+				nr = do_pkt_recv(pkt_fd, now.tv_sec);
+				if (nr == 1)
+					break;
+				else if (nr == 0)
+					packet_discard();
+			}
 
-		if (fds[0].revents & POLLRDNORM)
-			do_pkt_recv(pkt_fd, now);
+			if (loop_timeout >= 0 &&
+			    now.tv_sec - start >= loop_timeout) {
+				printf("IP-Config: no response after %d "
+				       "secs - giving up\n", loop_timeout);
+				goto bail;
+			}
+
+			delta_ms = (now.tv_sec - prev.tv_sec) * 1000;
+			delta_ms += (now.tv_usec - prev.tv_usec) / 1000;
+
+			DEBUG(("Delta: %d ms\n", delta_ms));
+			
+			timeout_ms -= delta_ms;
+		}
 	}
-
+ bail:
 	packet_close();
 
 	return 0;
@@ -330,7 +386,101 @@ static int add_one_dev(struct netdev *dev)
 	return 0;
 }
 
-static void add_device(const char *devname)
+static void parse_addr(__u32 *addr, const char *ip)
+{
+	struct in_addr in;
+	if (inet_aton(ip, &in) == 0) {
+		fprintf(stderr, "%s: can't parse IP address '%s'\n",
+			progname, ip);
+		exit(1);
+	}
+	*addr = in.s_addr;
+}
+
+static unsigned int parse_proto(const char *ip)
+{
+	unsigned int caps = 0;
+	
+	if (*ip == '\0' || strcmp(ip, "on") == 0 || strcmp(ip, "any") == 0)
+		caps = CAP_BOOTP | CAP_DHCP | CAP_RARP;
+	else if (strcmp(ip, "dhcp") == 0)
+		caps = CAP_BOOTP | CAP_DHCP;
+	else if (strcmp(ip, "bootp") == 0)
+		caps = CAP_BOOTP;
+	else if (strcmp(ip, "rarp") == 0)
+		caps = CAP_RARP;
+	else if (strcmp(ip, "none") == 0 || strcmp(ip, "static") == 0)
+		goto bail;
+	else {
+		fprintf(stderr, "%s: invalid protocol '%s'\n",
+			progname, ip);
+		exit(1);
+	}
+ bail:
+	return caps;
+}
+
+static void parse_device(struct netdev *dev, const char *ip)
+{
+	char *cp;
+	int i, opt;
+	
+	if (strncmp(ip, "ip=", 3) == 0) {
+		ip += 3;
+	}
+	else if (strncmp(ip, "nfsaddrs=", 9) == 0) {
+		ip += 9;
+	}
+
+	if (strchr(ip, ':') == NULL) {
+		dev->name = ip;
+		goto done;
+	}
+	
+	for (i = opt = 0; ip && *ip; ip = cp, opt++) {
+		if ((cp = strchr(ip, ':'))) {
+			*cp++ = '\0';
+		}
+		if (*ip == '\0')
+			continue;
+		DEBUG(("IP-Config: opt #%d: '%s'\n", opt, ip));
+		switch (opt) {
+		case 0:
+			parse_addr(&dev->ip_addr, ip);
+			break;
+		case 1:
+			parse_addr(&dev->ip_server, ip);
+			break;
+		case 2:
+			parse_addr(&dev->ip_gateway, ip);
+			break;
+		case 3:
+			parse_addr(&dev->ip_netmask, ip);
+			break;
+		case 4:
+			strncpy(dev->hostname, ip, SYS_NMLN - 1);
+			dev->hostname[SYS_NMLN - 1] = '\0';
+			break;
+		case 5:
+			dev->name = ip;
+			break;
+		case 6:
+			dev->caps = parse_proto(ip);
+			break;
+		default:
+			fprintf(stderr, "%s: too many options for %s\n",
+				progname, dev->name);
+			exit(1);
+		}
+	}
+ done:
+	if (dev->name == NULL || dev->name[0] == '\0') {
+		fprintf(stderr, "%s: no device name given\n", progname);
+		exit(1);
+	}
+}
+
+static void add_device(const char *info)
 {
 	struct netdev *dev;
 	int i;
@@ -342,14 +492,14 @@ static void add_device(const char *devname)
 	}
 
 	memset(dev, 0, sizeof(struct netdev));
-
-	dev->name = devname;
+	dev->caps = default_caps;
+	parse_device(dev, info);
 
 	if (netdev_init_if(dev) == -1)
-		return;
+		goto bail;
 
 	if (bootp_init_if(dev) == -1)
-		return;
+		goto bail;
 
 	printf("IP-Config: %s hardware address", dev->name);
 	for (i = 0; i < dev->hwlen; i++)
@@ -359,26 +509,85 @@ static void add_device(const char *devname)
 		dev->caps & CAP_BOOTP ? " BOOTP" : "",
 		dev->caps & CAP_RARP  ? " RARP"  : "");
 
-	if (dev->caps && netdev_up(dev) == 0)
-		add_one_dev(dev);
+	if (netdev_up(dev) == 0) {
+		if (dev->caps) {
+			add_one_dev(dev);
+		} else {
+			complete_device(dev);
+			goto bail;
+		}
+	}
+	return;
+ bail:
+	free(dev);
+}
+
+static void check_autoconfig(void)
+{
+	int ndev = 0, nauto = 0;
+	struct state *s;
+	
+	for (s = slist; s; s = s->next) {
+		ndev++;
+		if (s->dev->caps)
+			nauto++;
+	}
+
+	if (ndev == 0) {
+		if (configured == 0) {
+			fprintf(stderr, "%s: no devices to configure\n",
+				progname);
+			exit(1);
+		}
+		exit(0);
+	}
 }
 
 int main(int argc, char *argv[])
 {
-	int c;
+	struct timeval now;
+	int c, port;
 
+	progname = argv[0];
+	
+	gettimeofday(&now, NULL);
+	srand48(now.tv_usec ^ (now.tv_sec << 24));
+	
 	do {
-		c = getopt(argc, argv, "td:");
+		c = getopt(argc, argv, "c:d:np:t:");
 		if (c == EOF)
 			break;
 
 		switch (c) {
+		case 'c':
+			default_caps = parse_proto(optarg);
+			break;
+		case 'p':
+			port = atoi(optarg);
+			if (port <= 0 || port > USHRT_MAX) {
+				fprintf(stderr,
+					"%s: invalid port number %d\n",
+					progname, port);
+				exit(1);
+			}
+			local_port = port;
+			remote_port = local_port - 1;
+			break;
 		case 't':
+			loop_timeout = atoi(optarg);
+			if (loop_timeout < 0) {
+				fprintf(stderr,
+					"%s: invalid timeout %d\n",
+					progname, loop_timeout);
+				exit(1);
+			}
+			break;
+		case 'n':
+			do_not_config = 1;
 			break;
 		case 'd':
 			add_device(optarg);
 			break;
-
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
@@ -386,6 +595,16 @@ int main(int argc, char *argv[])
 		}
 	} while (1);
 
+	for (c = optind; c < argc; c++) {
+		add_device(argv[c]);
+	}
+	
+	check_autoconfig();
+	
+	if (local_port != LOCAL_PORT) {
+		printf("IP-Config: binding source port to %d, "
+		       "dest to %d\n", local_port, remote_port);
+	}
 	loop();
 
 	return 0;

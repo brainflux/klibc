@@ -1,11 +1,17 @@
 #!/usr/bin/perl
-($arch) = @ARGV;
+($arch, $file) = @ARGV;
 
-while ( defined($line = <STDIN>) ) {
+if (!open(FILE, "< $file")) {
+    print STDERR "$file: $!\n";
+    exit(1);
+}
+
+while ( defined($line = <FILE>) ) {
     chomp $line;
     $line =~ s/\s*\#.*$//;	# Strip comments and trailing blanks
+    next unless $line;
 
-    if ( $line =~ /^\s*([^\(]+)\s+([^\s\(]+)\s*\(([^\(]*)\)\s*$/ ) {
+    if ( $line =~ /^\s*(.*)\s+([_a-zA-Z][_a-zA-Z0-9]+)\s*\((.*)\)$/ ) {
 	$type = $1;
 	$name = $2;
 	$argv = $3;
@@ -58,5 +64,8 @@ while ( defined($line = <STDIN>) ) {
 	    print OUT "\n#endif\n";
 	}
 	close(OUT);
+    } else {
+	print STDERR "$file:$.: Could not parse input\n";
+	exit(1);
     }
 }
