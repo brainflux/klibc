@@ -37,7 +37,7 @@ typedef int sig_atomic_t;
 
 /* If we don't have any real-time signals available to userspace,
    hide them all */
-#if SIGRTMAX < SIGRTMIN
+#if SIGRTMAX <= SIGRTMIN
 # undef SIGRTMIN
 # undef SIGRTMAX
 #endif
