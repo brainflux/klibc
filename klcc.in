@@ -115,10 +115,16 @@ while ( defined($a = shift(@ARGV)) ) {
 	# Not an option.  Must be a filename then.
 	push(@files, $a);
 	$flang{$a} = $lang || filename2lang($a);
+    } elsif ( $a =~ /^(-print|-dump|--help)/ ) {
+	# -print and -dump share prefixes with some other options,
+	# so put this test early!
+	# Pseudo-operations; just pass to gcc and don't do anything else
+	push(@ccopt, $a);
+	$operation = 'c' if ( $operation eq '' );
     } elsif ( $a =~ /^-Wl,(.*)$/ ) {
 	# -Wl used to pass options to the linker
 	push(@ldopt, split(/,/, $1));
-    } elsif ( $a =~ /^-([fmwWQdO]|std=|ansi|pedantic)/ ) {
+    } elsif ( $a =~ /^-([fmwWQdO]|std=|ansi|pedantic|M[GPD]|MMD)/ ) {
 	# Options to gcc
 	push(@ccopt, $a);
     } elsif ( $a =~ /^-([DUI]|M[FQT])(.*)$/ ) {
@@ -129,7 +135,10 @@ while ( defined($a = shift(@ARGV)) ) {
     } elsif ( $a eq '-include' ) {
 	# Options to gcc which always take a disjoint argument
 	push(@ccopt, $a, shift(@ARGV));
-    } elsif ( $a =~ /^-(g|pg)/ || $a eq '-p' ) {
+    } elsif ( $a eq '-M' || $a eq '-MM' ) {
+	# These options force preprocessing
+	$operation = 'E';
+    } elsif ( $a =~ /^-[gp]/ || $a eq '-p' ) {
 	# Debugging options to gcc
 	push(@ccopt, $a);
 	$debugging = 1;
@@ -164,10 +173,6 @@ while ( defined($a = shift(@ARGV)) ) {
 	} else {
 	    die "$0: unknown option: $a\n";
 	}
-    } elsif ( $a =~ /^(-print|-dump|--help)/ ) {
-	# Pseudo-operations; just pass to gcc and don't do anything else
-	push(@ccopt, $a);
-	$operation = 'c' if ( $operation eq '' );
     } else {
 	die "$0: unknown option: $a\n";
     }
