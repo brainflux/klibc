@@ -1,16 +1,20 @@
 # -*- perl -*-
 
 # klibc install directory
-$KLIBC = '/home/hpa/klibc/klibc/klibc';
+$KLIBC = '/home/hpa/klibc/i386/klibc';
 
 # Default options for gcc, ld, and strip
-@ccopt = ('-mregparm=3', '-DREGPARM=3');
-@ldopt = ();
+@ccopt = ('-m32', '-mregparm=3', '-DREGPARM=3');
+@ldopt = ('-m', 'elf_i386');
 @stripopt = ('--strip-all', '-R', '.comment', '-R', '.note');
 
 # Options necessary for proper include
 @includes = ('-nostdinc', '-iwithprefix', 'include', '-D', '__KLIBC__',
-	     "-I${KLIBC}/include");
+	     "-I${KLIBC}/include/arch/i386",
+	     "-I${KLIBC}/include/bits32",
+	     "-I${KLIBC}/include",
+	     "-I${KLIBC}/linux/include",
+	     "-I${KLIBC}/linux/include2");
 
 # Default optimization options (for compiles without -g)
 @optopt = ('-march=i386', '-Os', '-falign-functions=0', '-falign-jumps=0',
@@ -21,10 +25,10 @@ $CC = '/usr/bin/gcc'; 		# The gcc to use
 $LD = '/usr/bin/ld';  		# The ld to use
 $STRIP = '/usr/bin/strip';	# The strip to use
 
-@staticopt = ("$KLIBC/crt0.o");		# Static options to ld
-@staticlib = ("$KLIBC/libc.a");
+@staticopt = ("$KLIBC/klibc/crt0.o");		# Static options to ld
+@staticlib = ("$KLIBC/klibc/libc.a");
 @sharedopt = ('-e', 'main');
-@sharedlib = ('-R', "$KLIBC/libc.so");
+@sharedlib = ('-R', "$KLIBC/klibc/libc.so");
 
 
 # Returns the language (-x option string) for a specific extension.
@@ -83,6 +87,12 @@ sub syserr($) {
     return $e >> 8;
 }
 
+# Run a program; printing out the command line if $verbose is set
+sub mysystem(@) {
+    print STDERR join(' ', @_), "\n" if ( $verbose );
+    return system(@_);
+}
+
 #
 # Begin parsing options.
 #
@@ -137,7 +147,7 @@ while ( defined($a = shift(@ARGV)) ) {
     } elsif ( $a eq '-o' ) {
 	$output = shift(@ARGV);
     } elsif ( $a =~ /^-print/ ) {
-	push(@@ccopt, $a);
+	push(@ccopt, $a);
 	$operation = 'c' if ( $operation eq '' );
     } else {
 	die "$0: unknown option: $a\n";
@@ -153,25 +163,25 @@ if ( $debugging ) {
 if ( $operation ne '' ) {
     # Just run gcc with the appropriate options
     @outopt = ('-o', $output) if ( defined($output) );
-    $rv = system($CC, @ccopt, @outopt, files_with_lang(\@files, \%flang));
+    $rv = mysystem($CC, @ccopt, @outopt, files_with_lang(\@files, \%flang));
 } else {
     @outopt = ('-o', $output || 'a.out');
 
-    for $f in ( @files ) {
+    foreach $f ( @files ) {
 	@objs = ();
 	@rmobjs = ();
 	if ( $flang{$f} eq 'obj' ) {
 	    push(@objs, $f);
 	} else {
 	    $fo = $f;
-	    $fo =~ s/\.[^/.]+$/\.o/;
+	    $fo =~ s/\.[^\/.]+$/\.o/;
 
 	    die if ( $f eq $fo ); # safety check
 
 	    push(@objs, $fo);
 	    push(@rmobjs, $fo) unless ( $save_temps );
 
-	    $rv = system($CC, @ccopt, '-c', '-o', $fo, $f);
+	    $rv = mysystem($CC, @ccopt, '-c', '-o', $fo, $f);
 
 	    if ( $rv ) {
 		unlink(@rmobjs);
@@ -181,12 +191,16 @@ if ( $operation ne '' ) {
     }
 
     if ( $shared ) {
-	$rv = system($LD, @ldopt, @sharedopt, @outopt, @objs, @sharedlib);
+	$rv = mysystem($LD, @ldopt, @sharedopt, @outopt, @objs, @sharedlib);
     } else {
-	$rv = system($LD, @ldopt, @staticopt, @outopt, @objs, @staticlib);
+	$rv = mysystem($LD, @ldopt, @staticopt, @outopt, @objs, @staticlib);
     }
 
     unlink(@rmobjs);
+
+    if ( $strip && !$rv ) {
+	$rv = mysystem($STRIP, @stripopt, $output);
+    }
 }
 
 exit syserr($rv);
