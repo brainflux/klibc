@@ -4,7 +4,8 @@ CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
 OPTFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 \
 	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
-CFLAGS  = -nostdinc -iwithprefix include -I. -I./include -I./linux/include -Wall -g $(OPTFLAGS)
+CFLAGS  = -nostdinc -iwithprefix include -I. -I./include \
+	  -I./linux/include -Wall -g $(OPTFLAGS)
 LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib
@@ -29,7 +30,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  strcmp.o strcpy.o strdup.o strlen.o strncat.o strstr.o \
 	  strncmp.o strncpy.o strrchr.o strspn.o strsep.o strtok.o \
 	  gethostname.o getdomainname.o getcwd.o seteuid.o setegid.o \
-	  getenv.o setenv.o unsetenv.o getopt.o \
+	  getenv.o setenv.o unsetenv.o getopt.o readdir.o \
 	  time.o fdatasync.o
 LIB     = libc.a
 

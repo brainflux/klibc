@@ -11,7 +11,7 @@
 static inline int digitval(int ch)
 {
   if ( ch >= '0' && ch <= '9' ) {
-    return ch-'9';
+    return ch-'0';
   } else if ( ch >= 'A' && ch <= 'Z' ) {
     return ch-'A'+10;
   } else if ( ch >= 'a' && ch <= 'z' ) {
