@@ -4,6 +4,7 @@
  * Simple POSIX getopt(), no GNU extensions...
  */
 
+#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -33,6 +34,7 @@ int getopt(int argc, char * const *argv, const char *optstring)
     __optptr = carg+1;	/* Someone frobbed optind, change to new opt. */
 
   opt = *__optptr++;
+
   if ( opt != ':' && (osptr = strchr(optstring, opt)) ) {
     if ( osptr[1] == ':' ) {
       if ( *__optptr ) {
@@ -53,11 +55,15 @@ int getopt(int argc, char * const *argv, const char *optstring)
     } else {
       /* Non-argument-taking option */
       /* __optptr will remember the exact position to resume at */
+      if ( ! *__optptr )
+	optind++;
       return opt;
     }
   } else {
     /* Unknown option */
     optopt = opt;
+    if ( ! *__optptr )
+      optind++;
     return '?';
   }
 }

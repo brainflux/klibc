@@ -2,15 +2,14 @@ ARCH    = i386
 CC	= gcc
 LD      = ld
 OPTFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 \
-	   -malign-functions=0 -malign-jumps=0 -malign-loops=0 \
-	   -fexpensive-optimizations
+	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
 CFLAGS  = -I. -I./include -I./linux/include -Wall -g $(OPTFLAGS)
 LDFLAGS =
 AR      = ar
 RANLIB  = ranlib
 PERL    = perl
 
-TESTS   = testvsnp hello minihello microhello getenvtest
+TESTS   = testvsnp hello minihello microhello getenvtest getopttest
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -65,7 +64,7 @@ all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
 
 # Kill implicit rule
-% : %.o
+.o:
 
 % : %.o $(LIB) $(CRT0)
 	$(LD) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
@@ -81,6 +80,8 @@ minihello: minihello.o $(LIB) $(CRT0)
 microhello: microhello.o $(LIB) $(CRT0)
 
 getenvtest: getenvtest.o $(LIB) $(CRT0)
+
+getopttest: getopttest.o $(LIB) $(CRT0)
 
 $(LIB): $(LIBOBJS) syscalls.dir socketcalls.dir
 	rm -f $(LIB)
