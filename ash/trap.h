@@ -41,18 +41,9 @@
 
 extern int pendingsigs;
 
-#ifdef __STDC__
 void clear_traps(void);
-int setsignal(int);
+__sighandler_t setsignal(int);
 void ignoresig(int);
 void dotrap(void);
 void setinteractive(int);
 void exitshell(int);
-#else
-void clear_traps();
-int setsignal();
-void ignoresig();
-void dotrap();
-void setinteractive();
-void exitshell();
-#endif
