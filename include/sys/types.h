@@ -5,6 +5,7 @@
 #ifndef _SYS_TYPES_H
 #define _SYS_TYPES_H
 
+#include <klibc/compiler.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -87,6 +88,13 @@ typedef uint8_t			u_int8_t;
 typedef uint16_t		u_int16_t;
 typedef uint32_t 		u_int32_t;
 typedef uint64_t		u_int64_t;
+
+typedef uint16_t __bitwise	__le16;
+typedef uint16_t __bitwise	__be16;
+typedef uint32_t __bitwise	__le32;
+typedef uint32_t __bitwise	__be32;
+typedef uint64_t __bitwise	__le64;
+typedef uint64_t __bitwise	__be64;
 
 /*
  * Some apps want this in <sys/types.h>

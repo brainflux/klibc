@@ -7,8 +7,6 @@
 #ifndef _KLIBC_COMPILER_H
 #define _KLIBC_COMPILER_H
 
-#define __user
-
 /* Specific calling conventions */
 /* __cdecl is used when we want varadic and non-varadic functions to have
    the same binary calling convention. */
@@ -106,6 +104,16 @@
 # define __unusedfunc	__attribute__((unused))
 #else
 # define __unusedfunc
+#endif
+
+/* It's all user space... */
+#define __user
+
+/* The bitwise attribute: disallow arithmetric operations */
+#ifdef __CHECKER__ /* sparse only */
+# define __bitwise	__attribute__((bitwise))
+#else
+# define __bitwise
 #endif
 
 #endif
