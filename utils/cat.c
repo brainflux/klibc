@@ -32,11 +32,20 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __COPYRIGHT
+#define __COPYRIGHT(arg)
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
+
 #if HAVE_NBTOOL_CONFIG_H
 #include "nbtool_config.h"
 #endif
 
+#ifndef __KLIBC__
 #include <sys/cdefs.h>
+#endif
 #if !defined(lint)
 __COPYRIGHT(
 "@(#) Copyright (c) 1989, 1993\n\
@@ -52,10 +61,14 @@ __RCSID("$NetBSD: cat.c,v 1.43 2004/01/04 03:31:28 jschauma Exp $");
 #include <sys/stat.h>
 
 #include <ctype.h>
+#ifndef __KLIBC__
 #include <err.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
+#ifndef __KLIBC__
 #include <locale.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,8 +90,10 @@ main(int argc, char *argv[])
 	int ch;
 	struct flock stdout_lock;
 
+#ifndef __KLIBC__
 	setprogname(argv[0]);
 	(void)setlocale(LC_ALL, "");
+#endif
 
 	while ((ch = getopt(argc, argv, "beflnstuv")) != -1)
 		switch (ch) {
@@ -104,7 +119,9 @@ main(int argc, char *argv[])
 			tflag = vflag = 1;	/* -t implies -v */
 			break;
 		case 'u':
+#ifndef __KLIBC__
 			setbuf(stdout, NULL);
+#endif
 			break;
 		case 'v':
 			vflag = 1;
@@ -124,7 +141,10 @@ main(int argc, char *argv[])
 		stdout_lock.l_type = F_WRLCK;
 		stdout_lock.l_whence = SEEK_SET;
 		if (fcntl(STDOUT_FILENO, F_SETLKW, &stdout_lock) == -1)
-			err(EXIT_FAILURE, "stdout");
+		{
+			perror("fcntl");
+			exit(1);
+		}
 	}
 
 	if (bflag || eflag || nflag || sflag || tflag || vflag)
@@ -132,7 +152,10 @@ main(int argc, char *argv[])
 	else
 		raw_args(argv);
 	if (fclose(stdout))
-		err(1, "stdout");
+	{
+		perror("fclose");
+		exit(1);
+	}
 	exit(rval);
 	/* NOTREACHED */
 }
@@ -150,7 +173,7 @@ cook_args(char **argv)
 				fp = stdin;
 			else if ((fp = fopen(*argv,
 			    fflag ? "rf" : "r")) == NULL) {
-				warn("%s", *argv);
+				perror("fopen");
 				rval = 1;
 				++argv;
 				continue;
@@ -167,6 +190,7 @@ void
 cook_buf(FILE *fp)
 {
 	int ch, gobble, line, prev;
+	int stdout_err = 0;
 
 	line = gobble = 0;
 	for (prev = '\n'; (ch = getc(fp)) != EOF; prev = ch) {
@@ -180,21 +204,24 @@ cook_buf(FILE *fp)
 				}
 				if (nflag) {
 					if (!bflag) {
-						(void)fprintf(stdout,
-						    "%6d\t", ++line);
-						if (ferror(stdout))
+						if (fprintf(stdout,
+						    "%6d\t", ++line) < 0) {
+							stdout_err++;
 							break;
+						}
 					} else if (eflag) {
-						(void)fprintf(stdout,
-						    "%6s\t", "");
-						if (ferror(stdout))
+						if (fprintf(stdout,
+						    "%6s\t", "") < 0) {
+							stdout_err++;
 							break;
+						}
 					}
 				}
 			} else if (nflag) {
-				(void)fprintf(stdout, "%6d\t", ++line);
-				if (ferror(stdout))
+				if (fprintf(stdout, "%6d\t", ++line) < 0) {
+					stdout_err++;
 					break;
+				}
 			}
 		}
 		gobble = 0;
@@ -212,7 +239,7 @@ cook_buf(FILE *fp)
 			if (!isascii(ch)) {
 				if (putchar('M') == EOF || putchar('-') == EOF)
 					break;
-				ch = toascii(ch);
+				ch = (ch) & 0x7f;
 			}
 			if (iscntrl(ch)) {
 				if (putchar('^') == EOF ||
@@ -225,13 +252,10 @@ cook_buf(FILE *fp)
 		if (putchar(ch) == EOF)
 			break;
 	}
-	if (ferror(fp)) {
-		warn("%s", filename);
+	if (stdout_err) {
+		perror(filename);
 		rval = 1;
-		clearerr(fp);
 	}
-	if (ferror(stdout))
-		err(1, "stdout");
 }
 
 void
@@ -257,13 +281,13 @@ raw_args(char **argv)
 				}
 				if (!S_ISREG(st.st_mode)) {
 					close(fd);
-					warnx("%s: not a regular file", *argv);
+					errno = EINVAL;
 					goto skipnomsg;
 				}
 			}
 			else if ((fd = open(*argv, O_RDONLY, 0)) < 0) {
 skip:
-				warn("%s", *argv);
+				perror(*argv);
 skipnomsg:
 				rval = 1;
 				++argv;
@@ -303,9 +327,12 @@ raw_cat(int rfd)
 	while ((nr = read(rfd, buf, bsize)) > 0)
 		for (off = 0; nr; nr -= nw, off += nw)
 			if ((nw = write(wfd, buf + off, (size_t)nr)) < 0)
-				err(1, "stdout");
+			{
+				perror("write");
+				exit(1);
+			}
 	if (nr < 0) {
-		warn("%s", filename);
+		fprintf(stderr,"%s: invalid length\n", filename);
 		rval = 1;
 	}
 }
