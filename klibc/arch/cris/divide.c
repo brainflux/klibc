@@ -2,34 +2,34 @@
 #include <signal.h>
 
 #if BITS == 64
-typedef uint64_t uint;
-typedef int64_t  sint;
+typedef uint64_t unum;
+typedef int64_t  snum;
 #else
-typedef uint32_t uint;
-typedef int32_t  sint;
+typedef uint32_t unum;
+typedef int32_t  snum;
 #endif
 
 #ifdef SIGNED
-typedef sint xint;
+typedef snum xnum;
 #else
-typedef uint xint;
+typedef unum xnum;
 #endif
 
 #ifdef __cris__
-static inline uint __attribute__((const)) dstep(uint rs, uint rd) {
+static inline unum __attribute__((const)) dstep(unum rs, unum rd) {
   asm("dstep %1,%0" : "+r" (rd) : "r" (rs));
   return rd;
 }
 
-static inline uint __attribute__((const)) lz(uint rs) {
-  uint rd;
+static inline unum __attribute__((const)) lz(unum rs) {
+  unum rd;
   asm("lz %1,%0" : "=r" (rd) : "r" (rs));
   return rd;
 }
 
 #else
 /* For testing */
-static inline uint __attribute__ ((const)) dstep(uint rs, uint rd) {
+static inline unum __attribute__ ((const)) dstep(unum rs, unum rd) {
   rd <<= 1;
   if ( rd >= rs )
     rd -= rs;
@@ -37,8 +37,8 @@ static inline uint __attribute__ ((const)) dstep(uint rs, uint rd) {
   return rd;
 }
 
-static inline uint __attribute__((const)) lz(uint rs) {
-  uint rd = 0;
+static inline unum __attribute__((const)) lz(unum rs) {
+  unum rd = 0;
   while ( rs >= 0x7fffffff ) {
     rd++;
     rs <<= 1;
@@ -48,11 +48,11 @@ static inline uint __attribute__((const)) lz(uint rs) {
 
 #endif
 
-xint NAME (uint num, uint den)
+xnum NAME (unum num, unum den)
 {
-  uint quot = 0, qbit = 1;
+  unum quot = 0, qbit = 1;
   int minus = 0;
-  xint v;
+  xnum v;
   
   if ( den == 0 ) {
     raise(SIGFPE);
@@ -60,17 +60,17 @@ xint NAME (uint num, uint den)
   }
 
 #if SIGNED
-  if ( (sint)(num^den) < 0 )
+  if ( (snum)(num^den) < 0 )
     minus = 1;
-  if ( (sint)num < 0 ) num = -num;
-  if ( (sint)den < 0 ) den = -den;
+  if ( (snum)num < 0 ) num = -num;
+  if ( (snum)den < 0 ) den = -den;
 #endif
 
   den--;
 
 
   /* Left-justify denominator and count shift */
-  while ( (sint)den >= 0 ) {
+  while ( (snum)den >= 0 ) {
     den <<= 1;
     qbit <<= 1;
   }
@@ -84,7 +84,7 @@ xint NAME (uint num, uint den)
     qbit >>= 1;
   }
 
-  v = (xint)(REM ? num : quot);
+  v = (xnum)(REM ? num : quot);
   if ( minus ) v = -v;
   return v;
 }

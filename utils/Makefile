@@ -22,7 +22,7 @@ static/%: %.o $(CRT0) $(LIBS) $(LIBUTILS)
 
 shared/%: %.o $(CRTSHARED) $(LIBSHARED) $(LIBUTILS)
 	mkdir -p shared shared.g
-	$(LD) $(LDFLAGS) -o $@ -e main $(CRTSHARED) $< $(LIBUTILS) \
+	$(LD) $(LDFLAGS) -o $@ $(EMAIN) $(CRTSHARED) $< $(LIBUTILS) \
 		-R $(LIBSHARED) $(LIBGCC)
 	cp -f $@ shared.g
 	$(STRIP) $@

@@ -15,7 +15,7 @@ BITSIZE  = 32
 # calls, and work on the memory models for this architecture
 # 224 MB - normal binaries start at 0
 # (lib?)gcc on cris seems to insist on producing .init and .fini sections
-SHAREDFLAGS     = -Wl,--section-start,.init=0x0e000100
+SHAREDFLAGS     = --section-start .init=0x0e000100
 
 # The CRIS compiler needs an -iprefix to find libgcc includes when
 # nostdinc is used. It also needs -mlinux to compile linux applications.
@@ -23,8 +23,7 @@ INCLUDE_PREFIX  = $(shell $(CC) -print-libgcc-file-name | sed -e s/libgcc.a//)
 ARCHREQFLAGS = -iprefix $(INCLUDE_PREFIX) -mlinux
 
 # How to tell the linker main() is the entrypoint
-EMAIN		:= -e _main
+EMAIN		:= -e main
 
-# Use gcc to link to get all the flags correct
-LD = cris-gcc
-LDFLAGS += -mlinux -nostdlib
+# Special flags needed for linking
+LDFLAGS 	+= -mcrislinux

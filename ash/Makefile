@@ -38,7 +38,7 @@ $(PROG): $(OBJS) $(LIBS) $(CRT0)
 	$(STRIP) $@
 
 $(PROG).shared: $(OBJS) $(CRTSHARED) $(LIBSHARED) $(LIBGCC)
-	$(LD) $(LDFLAGS) -o $(PROG).shared -e main $(CRTSHARED) $(OBJS) -R $(LIBSHARED) $(LIBGCC)
+	$(LD) $(LDFLAGS) -o $(PROG).shared $(EMAIN) $(CRTSHARED) $(OBJS) -R $(LIBSHARED) $(LIBGCC)
 	cp -f $@ $@.g
 	$(STRIP) $@
 

@@ -50,3 +50,6 @@ ERRLIST = 1
 # Include arch-specific rule fragments
 #
 include $(KLIBSRC)/arch/$(ARCH)/MCONFIG
+
+# How to tell the linker main() is the entrypoint
+EMAIN ?= -e main
