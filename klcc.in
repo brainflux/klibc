@@ -115,9 +115,16 @@ while ( defined($a = shift(@ARGV)) ) {
 	# Not an option.  Must be a filename then.
 	push(@files, $a);
 	$flang{$a} = $lang || filename2lang($a);
-    } elsif ( $a =~ /^(-print|-dump|--help)/ ) {
-	# -print and -dump share prefixes with some other options,
-	# so put this test early!
+    } elsif ( $a =~ /^-print-klibc-(.*)$/ ) {
+	# This test must precede -print
+	if ( defined($conf{$1}) ) {
+	    print ${$conf{$1}}, "\n";
+	    exit 0;
+	} else {
+	    die "$0: unknown option: $a\n";
+	}
+    } elsif ( $a =~ /^(-print|-dump|--help|--version)/ ) {
+	# These share prefixes with some other options, so put this test early!
 	# Pseudo-operations; just pass to gcc and don't do anything else
 	push(@ccopt, $a);
 	$operation = 'c' if ( $operation eq '' );
@@ -169,13 +176,6 @@ while ( defined($a = shift(@ARGV)) ) {
 	# Libraries
 	push(@libs, $a);
 	push(@libs, shift(@ARGV)) if ( $2 eq '' );
-    } elsif ( $a =~ /^-print-klibc-(.*)$/ ) {
-	if ( defined($conf{$1}) ) {
-	    print ${$conf{$1}}, "\n";
-	    exit 0;
-	} else {
-	    die "$0: unknown option: $a\n";
-	}
     } else {
 	die "$0: unknown option: $a\n";
     }
