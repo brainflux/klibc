@@ -185,6 +185,8 @@ int sysinfo(struct sysinfo *)
 ; Most architectures have the socket interfaces using regular
 ; system calls.
 ;
-#ifndef __i386__
+#ifdef __NR_socket
 #include "SOCKETCALLS.def"
+#else
+<!i386> long socketcall::__socketcall(int, const unsigned long *)
 #endif

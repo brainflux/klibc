@@ -41,9 +41,28 @@ while ( defined($line = <FILE>) ) {
 	    print OUT "\t.size ${name},.-${name}\n";
 	    close(OUT);
 	} else {
-	    # No socketcalls on this architecture
+	    open(OUT, '>', "socketcalls/${name}.c")
+		or die "$0: Cannot open socketcalls/${name}.c\n";
+
+	    print OUT "#include \"socketcommon.h\"\n";
+	    print OUT "\n";
+	    print OUT "#ifndef __NR_${name}\n\n";
+
+	    print OUT "extern long __socketcall(int, const unsigned long *);\n\n";
+
+	    print OUT "$type $name (", join(', ', @cargs), ")\n";
+	    print OUT "{\n";
+	    print OUT "    unsigned long args[$nargs];\n";
+	    for ( $i = 0 ; $i < $nargs ; $i++ ) {
+		print OUT "    args[$i] = (unsigned long)a$i;\n";
+	    }
+	    print OUT "    return ($type) __socketcall(SYS_\U${name}\E, args);\n";
+	    print OUT "}\n\n";
+
+	    print OUT "#endif\n";
+
+	    close(OUT);
 	}
-	close(OUT);
     } else {
 	print STDERR "$file:$.: Could not parse input\n";
 	exit(1);

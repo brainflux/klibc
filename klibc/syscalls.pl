@@ -36,7 +36,7 @@ if (!open(FILE, '<', $file)) {
 
 while ( defined($line = <FILE>) ) {
     chomp $line;
-    $line =~ s/\s*[\#;].*$//;	# Strip comments and trailing blanks
+    $line =~ s/\s*(|[\#;].*)$//; # Strip comments and trailing blanks
     next unless $line;
 
     if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([A-Za-z0-9_\*\s]+)\s+([A-Za-z0-9_,]+)(|\@[A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
@@ -94,7 +94,7 @@ while ( defined($line = <FILE>) ) {
 	print HAVESYS "#define _KLIBC_HAVE_SYSCALL_${fname} ${sname}\n";
 	make_sysstub($fname, $type, $sname, $stype, @args);
     } else {
-	print STDERR "$file:$.: Could not parse input: $line\n";
+	print STDERR "$file:$.: Could not parse input: \"$line\"\n";
 	exit(1);
     }
 }

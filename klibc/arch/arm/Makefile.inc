@@ -18,7 +18,6 @@ ARCHOBJS = \
 	libgcc/__udivdi3.o \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o \
-	libgcc/__udivmoddi4.o \
 	arch/arm/syscall.o
 
 ifeq ($(THUMB),y)

@@ -35,11 +35,11 @@ all:	$(PROG) $(PROG).shared
 
 $(PROG): $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $(PROG) $(CRT0) $(OBJS) $(LIBS)
-	$(STRIP) $(PROG)
+	# $(STRIP) $(PROG)
 
 $(PROG).shared: $(OBJS) $(CRTSHARED) $(LIBSHARED) $(LIBGCC)
 	$(LD) $(LDFLAGS) -o $(PROG).shared -e main $(CRTSHARED) $(OBJS) -R $(LIBSHARED) $(LIBGCC)
-	$(STRIP) $(PROG).shared
+	# $(STRIP) $(PROG).shared
 
 $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1
