@@ -10,6 +10,7 @@
 	.globl	__syscall_error
 __syscall_error:
 	addl	r2 = @ltoffx(errno),gp
+	;;
 	ld8.mov	r3 = [r2],errno
 	;;
 	st4	[r3] = r8
