@@ -195,10 +195,14 @@ type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
                   type4,arg4,type5,arg5,type6,arg6)          \
 type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
           type5 arg5, type6 arg6) {			     \
-	struct {					     \
-		type1 name1; type2 name2; type3 name3;	     \
-		type4 name4; type5 name5; type6 name6;	     \
-	} __arg = { arg1, arg2, arg3, arg4, arg5, arg6 };    \
+	unsigned long  __arg[6] = {			     \
+		(unsigned long) arg1, 			     \
+		(unsigned long) arg2, 			     \
+		(unsigned long) arg3, 			     \
+		(unsigned long) arg4, 			     \
+		(unsigned long) arg5,			     \
+		(unsigned long) arg6 			     \
+	};						     \
 	register void *__argp asm("2") = &__arg;	     \
 	long __res;					     \
 	__asm__ __volatile__ (               	             \
@@ -208,7 +212,7 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
                 : "i" (__NR_##name),                         \
                   "d" (__argp)				     \
 		: _svc_clobber);			     \
-	__syscall_return(type, __res)			     \
+	__syscall_return(type, __res);			     \
 }
 
 #endif /* _syscall6() missing */
@@ -224,10 +228,14 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
                   type4,arg4,type5,arg5,type6,arg6)          \
 type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
           type5 arg5, type6 arg6) {			     \
-	struct {					     \
-		type1 name1; type2 name2; type3 name3;	     \
-		type4 name4; type5 name5; type6 name6;	     \
-	} __arg = { arg1, arg2, arg3, arg4, arg5, arg6 };    \
+	unsigned long  __arg[6] = {			     \
+		(unsigned long) arg1, 			     \
+		(unsigned long) arg2, 			     \
+		(unsigned long) arg3, 			     \
+		(unsigned long) arg4, 			     \
+		(unsigned long) arg5,			     \
+		(unsigned long) arg6 			     \
+	};						     \
 	register void *__argp asm("2") = &__arg;	     \
 	long __res;					     \
 	__asm__ __volatile__ (               	             \
@@ -237,7 +245,7 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
                 : "i" (__NR_##name),                         \
                   "d" (__argp)				     \
 		: _svc_clobber);			     \
-	__syscall_return(type, __res)			     \
+	__syscall_return(type, __res);			     \
 }
 
 #endif /* _syscall6() missing */
