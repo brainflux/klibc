@@ -1,6 +1,7 @@
 #include <sys/mount.h>
 #include <sys/stat.h>
-#include <sys/types.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +9,7 @@
 #include "kinit.h"
 #include "ipconfig.h"
 
-static const char *progname;
+static const char *progname = "kinit";
 int mnt_procfs;
 int mnt_sysfs;
 
@@ -34,11 +35,13 @@ static int do_ipconfig(int argc, char *argv[])
 {
 	int i, a = 1;
 
-	argv[0] = "IP-Config";
+	argv[0] = (char *) "IP-Config";
 
 	DEBUG(("Running ipconfig\n"));
 
-	argv[a++] = "-n";
+#ifdef INI_DEBUG
+	argv[a++] = (char *) "-n";
+#endif
 
 	for (i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "ip=", 3) == 0 ||
@@ -87,7 +90,8 @@ static int split_cmdline(int *cmdc, char *cmdv[],
 	return *cmdc = v;
 }
 
-static int mount_sys_fs(char *check, char *fsname, char *fstype)
+static int mount_sys_fs(const char *check, const char *fsname, 
+			const char *fstype)
 {
 	struct stat st;
 
@@ -97,7 +101,7 @@ static int mount_sys_fs(char *check, char *fsname, char *fstype)
 
 	mkdir(fsname, 0555);
 
-	if (mount("none", fsname, fstype, 0, 0) == -1) {
+	if (mount("none", fsname, fstype, 0, NULL) == -1) {
 		fprintf(stderr, "%s: could not mount %s as %s\n",
 			progname, fsname, fstype);
 		return -1;
@@ -169,16 +173,66 @@ static void restore_cmdline(char *saved, int cmdc, char *cmdv[])
 	cmdv[cmdc] = NULL;
 }
 
+/* Was this argument passed? */
+char *get_arg(int argc, char *argv[], const char *name)
+{
+	int len = strlen(name);
+	char *ret = NULL;
+	int i;
+
+	for (i = 1; i < argc; i++) {
+		if (argv[i] && strncmp(argv[i], name, len) == 0 &&
+		    (argv[i][len] == '\0')) {
+			ret = argv[i] + len;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+static void check_path(const char *path)
+{
+	struct stat st;
+
+	if (stat(path, &st) == -1) {
+		if (errno != ENOENT) {
+			perror("stat");
+			exit(1);
+		}
+		if (mkdir(path, 0755) == -1) {
+			perror("mkdir");
+			exit(1);
+		}
+	}
+	else if (!S_ISDIR(st.st_mode)) {
+		fprintf(stderr, "NFS-Root: '%s' not a directory\n", path);
+		exit(1);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	char *cmdv[NARG], *saved;
+	char *kinit = NULL;
 	char buf[1024];
 	char *cmdline;
 	int ret = 0;
 	int cmdc;
+	int fd;
+	int i;
+
+	if ((fd = open("/dev/console", O_RDWR)) != -1) {
+		dup2(fd, STDIN_FILENO);
+		dup2(fd, STDOUT_FILENO);
+		dup2(fd, STDERR_FILENO);
+	
+		if (fd > STDERR_FILENO) {
+			close(fd);
+		}
+	}
 
 	cmdc = NARG;
-	progname = argv[0];
 
 	if ((mnt_procfs = mount_sys_fs("/proc/cmdline", "/proc", "proc")) == -1) {
 		ret = 1;
@@ -205,7 +259,47 @@ int main(int argc, char *argv[])
 	do_ipconfig(cmdc, cmdv);
 
 	restore_cmdline(saved, cmdc, cmdv);
-	do_nfsroot(cmdc, cmdv);
+	check_path("/root");
+	check_path("/old_root");
+	do_mounts(cmdc, cmdv);
+
+#ifndef INI_DEBUG
+	if (pivot_root(".", "old_root") == -1) {
+		perror("pivot_root");
+		ret = 2;
+		goto bail;
+	}
+
+	if (mnt_procfs == 1)
+		umount2("/proc", 0);
+
+	if (mnt_sysfs == 1)
+		umount2("/sys", 0);
+
+	for (i = 1; i < cmdc; i++) {
+		if (strncmp(cmdv[i], "kinit=", 6) == 0) {
+			kinit = cmdv[i] + 6;
+		}
+	}
+	
+	if (kinit) {
+		char *s = strrchr(kinit, '/');
+		if (s) {
+			s++;
+		}
+		execl(kinit, s, NULL);
+	}
+	execl("/sbin/init", "init", NULL);
+	execl("/etc/init", "init", NULL);
+	execl("/bin/init", "init", NULL);
+	execl("/bin/sh", "sh", NULL);
+
+	fprintf(stderr, "%s: I give up - there's nothing to run.\n", progname);
+	ret = 2;
+	goto done;
+#else
+	printf("%s: imagine pivot_root and exec\n", progname);
+#endif
 
  bail:
 	if (mnt_procfs == 1)
@@ -214,5 +308,6 @@ int main(int argc, char *argv[])
 	if (mnt_sysfs == 1)
 		umount2("/sys", 0);
 
+ done:
 	exit(ret);
 }

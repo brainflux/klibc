@@ -1,7 +1,5 @@
 #include <arpa/inet.h>
-#include <errno.h>
 #include <sys/mount.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,63 +28,22 @@ static char *sub_client(__u32 client, char *path, size_t len)
 	return path;
 }
 
-static void check_path(const char *path)
+int mount_nfs_root(int argc, char *argv[], int flags)
 {
-	struct stat st;
-
-	if (stat(path, &st) == -1) {
-		if (errno != ENOENT) {
-			perror("stat");
-			exit(1);
-		}
-		if (mkdir(path, 0755) == -1) {
-			perror("mkdir");
-			exit(1);
-		}
-	}
-	else if (!S_ISDIR(st.st_mode)) {
-		fprintf(stderr, "NFS-Root: '%s' not a directory\n", path);
-		exit(1);
-	}
-}
-
-int do_nfsroot(int argc, char *argv[])
-{
+	(void) flags; // FIXME - don't ignore this
+	
 	struct in_addr addr = { INADDR_NONE };
 	__u32 client = INADDR_NONE;
-	char *local = "/nfs_root";
 	const int len = 1024;
 	struct netdev *dev;
-	char *kinit = NULL;
 	char *path = NULL;
-	char do_nfs = 0;
 	char root[len];
 	char *x, *opts;
 	int ret = 0;
-	int i, a;
+	int a;
 
-	argv[0] = "NFS-Root";
-
-	DEBUG(("Running nfsroot\n"));
-
-	for (i = a = 1; i < argc; i++) {
-		if (strncmp(argv[i], "kinit=", 6) == 0) {
-			kinit = argv[i] + 6;
-		}
-		else if (strcmp(argv[i], "root=/dev/nfs") == 0) {
-			do_nfs = 1;
-		}
-		else if (strncmp(argv[i], "nfsroot=", 8) == 0) {
-			path = argv[i] + 8;
-		}
-	}
-
-	if (!do_nfs) {
-		goto done;
-	}
-
-	if (path == NULL) {
-		path = "/tftpboot/%s";
+	if ((path = get_arg(argc, argv, "nfsroot=")) == NULL) {
+		path = (char *) "/tftpboot/%s";
 	}
 
 	if (*path == '\0') {
@@ -94,15 +51,15 @@ int do_nfsroot(int argc, char *argv[])
 		exit(1);
 	}
 
+	a = 1;
+	
 	if ((opts = strchr(path, ',')) != NULL) {
 		*opts++ = '\0';
-		argv[a++] = "-o";
+		argv[a++] = (char *) "-o";
 		argv[a++] = opts;
 	}
 
 	for (dev = ifaces; dev; dev = dev->next) {
-		printf("cli: %08x\n", dev->ip_addr);
-
 		if (dev->ip_server != INADDR_NONE &&
 		    dev->ip_server != INADDR_ANY) {
 			addr.s_addr = dev->ip_server;
@@ -117,7 +74,7 @@ int do_nfsroot(int argc, char *argv[])
 
 	if ((x = strchr(path, ':')) == NULL) {
 		if (addr.s_addr == INADDR_NONE) {
-			fprintf(stderr, "Root-NFS: no server\n");
+			fprintf(stderr, "Root-NFS: no server defined\n");
 			exit(1);
 		}
 
@@ -129,12 +86,10 @@ int do_nfsroot(int argc, char *argv[])
 		argv[a++] = sub_client(client, root, len);
 	}
 
-	check_path(local);
-
 	DEBUG(("NFS-Root: mounting %s on %s with options '%s'\n",
 	       argv[a - 1], local, opts ? opts : "none"));
 
-	argv[a++] = local;
+	argv[a++] = (char *) "/root";
 	argv[a] = NULL;
 
 	dump_args(a, argv);
@@ -143,40 +98,6 @@ int do_nfsroot(int argc, char *argv[])
 		ret = -1;
 		goto done;
 	}
-
-	if (chdir(local) == -1) {
-		perror("chdir");
-		ret = -1;
-		goto done;
-	}
-
-#ifndef INI_DEBUG
-	if (pivot_root(".", "old_root") == -1) {
-		perror("pivot_root");
-		ret = -1;
-		goto done;
-	}
-
-	if (mnt_procfs == 1)
-		umount2("/proc", 0);
-
-	if (mnt_sysfs == 1)
-		umount2("/sys", 0);
-
-	if (kinit) {
-		char *s = strrchr(kinit, '/');
-		if (s) {
-			s++;
-		}
-		execl(kinit, s, NULL);
-	}
-	execl("/sbin/init", "init", NULL);
-	execl("/etc/init", "init", NULL);
-	execl("/bin/init", "init", NULL);
-	execl("/bin/sh", "sh", NULL);
-#else
-	printf("NFS-Root: imagine pivot_root and exec\n");
-#endif
 
 done:
 	return ret;
