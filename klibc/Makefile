@@ -2,10 +2,10 @@ ARCH    = i386
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
-OPTFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 \
+OPTFLAGS = -march=i386 -mcpu=i686 -Os -fomit-frame-pointer \
 	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
 CFLAGS  = -nostdinc -iwithprefix include -I. -I./include \
-	  -I./linux/include -Wall -g $(OPTFLAGS)
+	  -I./linux/include -Wall $(OPTFLAGS)
 LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib
@@ -19,7 +19,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
 	  strtoimax.o strtoumax.o \
-	  exitc.o exits.o atexit.o onexit.o \
+	  __main.o globals.o exitc.o exits.o atexit.o onexit.o \
 	  execl.o execle.o execv.o execvpe.o execvp.o execlp.o execlpe.o \
 	  fork.o wait.o wait3.o waitpid.o setpgrp.o \
 	  printf.o vprintf.o fprintf.o vfprintf.o \
@@ -99,10 +99,8 @@ $(SOLIB): $(SOOBJS) syscalls.dir
 		$(SOOBJS) syscalls/*.lo socketcalls/*.lo \
 	        $(LIBGCC)
 
-# This one *HAS* to be compiled without a frame pointer, regardless of
-# OPTFLAGS!
-crt0.o: crt0.c
-	$(CC) $(CFLAGS) -fomit-frame-pointer -c -o $@ $<
+crt0.S: arch/$(ARCH)/crt0.S
+	cp arch/$(ARCH)/crt0.S .
 
 syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 	rm -rf syscalls
