@@ -48,6 +48,7 @@ static char rcsid[] = "dirent.c,v 1.4 1993/08/01 18:58:21 mycroft Exp";
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #ifndef S_ISDIR				/* macro to test for directory file */
 #define	S_ISDIR(mode)		(((mode) & S_IFMT) == S_IFDIR)

@@ -54,6 +54,7 @@ static char rcsid[] = "redir.c,v 1.5 1993/08/01 18:58:01 mycroft Exp";
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <unistd.h>
 
 
 #define EMPTY -2		/* marks an unused slot in redirtab */

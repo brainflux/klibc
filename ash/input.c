@@ -52,6 +52,7 @@ static char rcsid[] = "input.c,v 1.4 1993/08/01 18:58:15 mycroft Exp";
 #include "output.h"
 #include "memalloc.h"
 #include "error.h"
+#include <unistd.h>
 
 #define EOF_NLEFT -99		/* value of parsenleft when EOF pushed back */
 

@@ -45,6 +45,7 @@ char copyright[] =
 static char rcsid[] = "main.c,v 1.4 1993/08/01 18:58:12 mycroft Exp";
 #endif /* not lint */
 
+#include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
 #include "shell.h"

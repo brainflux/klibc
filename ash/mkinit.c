@@ -60,6 +60,7 @@ static char rcsid[] = "mkinit.c,v 1.4 1993/08/01 18:58:09 mycroft Exp";
 #include <sys/cdefs.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 
 /*
