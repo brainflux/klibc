@@ -12,7 +12,7 @@
 # Options and libraries to pass to ld; shared versus static
 @staticopt = ("$INSTALLDIR/${CROSS}lib/crt0.o");
 @staticlib = ("$INSTALLDIR/${CROSS}lib/libc.a");
-@sharedopt = (@SHAREDFLAGS, @EMAIN, "$INSTALLDIR/${CROSS}lib/interp.o");
+@sharedopt = (@EMAIN, "$INSTALLDIR/${CROSS}lib/interp.o");
 @sharedlib = ('-R', "$INSTALLDIR/lib/${CROSS}libc.so");
 
 # Returns the language (-x option string) for a specific extension.
