@@ -35,6 +35,12 @@ typedef int sig_atomic_t;
 # define _NSIG NSIG
 #endif
 
+/* If we don't have any real-time signals available to userspace,
+   hide them all */
+#if SIGRTMAX < SIGRTMIN
+# undef SIGRTMIN
+# undef SIGRTMAX
+#endif
 
 __extern const char * const sys_siglist[];
 
