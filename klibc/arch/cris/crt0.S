@@ -21,8 +21,8 @@ _start:
 	
 	/* Set up a dummy stack frame to keep gcc from getting confused */
 	push	$r11
+	push	$r11
 	jump	__libc_init
-	  push	$r11
 
 	.size _start, .-_start
 

@@ -59,6 +59,8 @@ xnum NAME (unum num, unum den)
     return 0;			/* If signal ignored... */
   }
 
+  if (den == 1) return (xnum)(REM ? 0 : num);
+
 #if SIGNED
   if ( (snum)(num^den) < 0 )
     minus = 1;

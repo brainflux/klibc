@@ -17,8 +17,8 @@ __syscall_common:
 	move	[$sp+8],$srp
 	break	13
 
-	cmp.d	-4096,$r10
-	blt	1f
+	cmps.w	-4096,$r10
+	blo	1f
 	neg.d	$r10,$r11
 	move.d	$r11,[errno]
 	moveq	-1,$r10
