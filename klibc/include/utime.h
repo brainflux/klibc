@@ -6,9 +6,10 @@
 #define _UTIME_H
 
 #include <klibc/extern.h>
+#include <sys/types.h>
 #include <linux/utime.h>
 
-__extern int utime(char *, struct utimbuf *);
+__extern int utime(const char *, const struct utimbuf *);
 
 #endif /* _UTIME_H */
 
