@@ -5,12 +5,13 @@ while ( defined($line = <STDIN>) ) {
     chomp $line;
     $line =~ s/\s*\#.*$//;	# Strip comments and trailing blanks
 
-    if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([^\(\<\>]+[^:A-Za-z0-9_])([A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
+    if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([^\(\<\>]+[^:A-Za-z0-9_])([A-Za-z0-9_]+)(|\@[A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
 	$archs = $1;
-	$type = $2;
+	$type  = $2;
 	$sname = $3;
-	$fname = $4;
-	$argv = $5;
+	$stype = $4;
+	$fname = $5;
+	$argv  = $6;
 
 	$doit = 1;
 	if ( $archs ne '' ) {
@@ -33,6 +34,8 @@ while ( defined($line = <STDIN>) ) {
 
 	$type =~ s/\s*$//;
 
+	$stype =~ s/^\@/_/;
+
 	if ( $fname eq '' ) {
 	    $fname = $sname;
 	} else {
@@ -50,7 +53,7 @@ while ( defined($line = <STDIN>) ) {
 	    print OUT "#define __NR_${fname} __NR_${sname}\n\n";
 	}
 
-	print OUT "_syscall", scalar(@args), "(", $type, ',', $fname;
+	print OUT "_syscall", scalar(@args), $stype, "(", $type, ',', $fname;
 	$i = 0;
 	foreach $arg ( @args ) {
 	    print OUT ",", $arg, ",a",$i++;

@@ -92,6 +92,55 @@ __asm__ __volatile__ ("push %%ebx; pushl %%ebp; movl %2,%%ebx; " \
 __syscall_return(type,__res); \
 }
 
+#elif defined(__alpha__)
+
+/* Alpha has some bizarre Tru64-derived system calls which return two
+   different values in $0 and $20(!), respectively.  The standard
+   macros can't deal with these; even the ones that give the right
+   return value have the wrong clobbers. */
+
+#define _syscall_clobbers                                               \
+        "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8",                 \
+        "$22", "$23", "$24", "$25", "$27", "$28"                        \
+
+#define _syscall0_dual0(type, name)                                     \
+type name(void)                                                         \
+{                                                                       \
+        long _sc_ret, _sc_err;                                          \
+        {                                                               \
+                register long _sc_0 __asm__("$0");                      \
+                register long _sc_19 __asm__("$19");                    \
+                register long _sc_20 __asm__("$20");                    \
+                                                                        \
+                _sc_0 = __NR_##name;                                    \
+                __asm__("callsys"                                       \
+                        : "=r"(_sc_0), "=r"(_sc_19), "=r" (_sc_20)      \
+                        : "0"(_sc_0)                                    \
+                        : _syscall_clobbers);                           \
+                _sc_ret = _sc_0, _sc_err = _sc_19; (void)(_sc_20);      \
+        }                                                               \
+        _syscall_return(type);                                          \
+}
+
+#define _syscall0_dual1(type, name)                                     \
+type name(void)                                                         \
+{                                                                       \
+        long _sc_ret, _sc_err;                                          \
+        {                                                               \
+                register long _sc_0 __asm__("$0");                      \
+                register long _sc_19 __asm__("$19");                    \
+                register long _sc_20 __asm__("$20");                    \
+                                                                        \
+                _sc_0 = __NR_##name;                                    \
+                __asm__("callsys"                                       \
+                        : "=r"(_sc_0), "=r"(_sc_19), "=r" (_sc_20)      \
+                        : "0"(_sc_0)                                    \
+                        : _syscall_clobbers);                           \
+                _sc_ret = _sc_20, _sc_err = _sc_19; (void)(_sc_0);      \
+        }                                                               \
+        _syscall_return(type);                                          \
+}
+
 #elif defined(__powerpc__)
 
 /* PowerPC seems to lack _syscall6() in its headers */
