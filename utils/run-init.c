@@ -1,4 +1,4 @@
-#ident "$Id: run-init.c,v 1.2 2004/06/08 06:40:33 hpa Exp $"
+#ident "$Id: run-init.c,v 1.3 2004/06/08 20:24:42 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -29,7 +29,7 @@
 /*
  * run-init.c
  *
- * Usage: exec run-init /real-root /sbin/init "$@"
+ * Usage: exec run-init [-c /dev/console] /real-root /sbin/init "$@"
  *
  * This program should be called as the last thing in a shell script
  * acting as /init in an initramfs; it does the following:
@@ -37,6 +37,7 @@
  * - Delete all files in the initramfs;
  * - Remounts /real-root onto the root filesystem;
  * - Chroots;
+ * - Opens /dev/console;
  * - Spawns the specified init program (with arguments.)
  */
 
@@ -44,6 +45,7 @@
 #include <assert.h>
 #include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -146,42 +148,93 @@ static int nuke(const char *what)
   }
 }
 
+
+static void __attribute__((noreturn)) usage(void)
+{
+  fprintf(stderr, "Usage: exec %s [-c consoledev] /real-root /sbin/init [args]\n", program);
+  exit(1);
+}
+
+
 int main(int argc, char *argv[])
 {
+  struct stat   rst, cst, ist;
   struct statfs sfs;
+  int o;
+  int confd;
 
+  /* Command-line options and defaults */
+  const char *console = "/dev/console";
+  const char *realroot;
+  const char *init;
+  char **initargs;
+
+  /* First, parse the command line */
   program = argv[0];
 
-  if ( argc < 3 ) {
-    fprintf(stderr, "Usage: exec %s /real-root /sbin/init [args]\n", program);
-    exit(1);
+  while ( (o = getopt(argc, argv, "c:")) != -1 ) {
+    if ( o == 'c' ) {
+      console = optarg;
+    } else {
+      usage();
+    }
   }
 
-  /* Make sure we're in the root directory */
-  if ( chdir("/") )
-    die("cd /");
-    
-  /* Make sure we're on a ramfs - this avoids accidents */
-  if ( statfs(".", &sfs) )
+  if ( argc-optind < 2 )
+    usage();
+
+  realroot = argv[optind];
+  init     = argv[optind+1];
+  initargs = argv+optind+1;
+
+  /* First, change to the new root directory */
+  if ( chdir(argv[1]) )
+    die("chdir to new root");
+
+  /* This is a potentially highly destructive program.  Take some
+     extra precautions. */
+
+  /* Make sure the current directory is not on the same filesystem
+     as the root directory */
+  if ( stat("/", &rst) || stat(".", &cst) )
+    die("stat");
+
+  if ( rst.st_dev == cst.st_dev )
+    die("current directory on the same filesystem as the root");
+  
+  /* The initramfs should have /init */
+  if ( stat("/init", &ist) || !S_ISREG(ist.st_mode) )
+    die("can't find /init on initramfs");
+
+  /* Make sure we're on a ramfs */
+  if ( statfs("/", &sfs) )
     die("statfs /");
   if ( sfs.f_type != RAMFS_MAGIC && sfs.f_type != TMPFS_MAGIC )
     die("rootfs not a ramfs or tmpfs");
 
+  /* Okay, I think we should be safe... */
+
   /* Delete rootfs contents */
-  if ( nuke_dir(".") )
+  if ( nuke_dir("/") )
     die("nuking initramfs contents");
 
   /* Overmount the root */
-  if ( mount(argv[2], "/", NULL, MS_BIND, NULL) )
+  if ( mount(".", "/", NULL, MS_BIND, NULL) )
     die("overmounting root");
   
-  /* Chroot */
-  if ( chroot(".") )
+  /* chroot, chdir */
+  if ( chroot(".") || chdir("/") )
     die("chroot");
 
+  /* Open /dev/console */
+  if ( (confd = open(console, O_RDWR)) < 0 )
+    die("opening console");
+  dup2(confd, 0);
+  dup2(confd, 1);
+  dup2(confd, 2);
+  close(confd);
+
   /* Spawn init */
-  execv(argv[3], argv+3);
-
-  die(argv[3]);			/* Failed to spawn init */
+  execv(init, initargs);
+  die(init);			/* Failed to spawn init */
 }
-
