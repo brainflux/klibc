@@ -40,4 +40,4 @@ arch/$(ARCH)/urem.S: arch/$(ARCH)/divrem.m4
 	@chmod 444 $@
 
 archclean:
-	rm -f arch/$(ARCH)/?div.S arch/$(ARCH)/?rem.S arch/$(ARCH)/?mul.S 
+	rm -f arch/$(ARCH)/?div.S arch/$(ARCH)/?rem.S
