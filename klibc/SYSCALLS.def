@@ -15,8 +15,8 @@
 ;
 ; Process-related syscalls
 ;
-<?> pid_t clone::__clone(unsigned long, void *)
-<?!sparc> pid_t fork()
+<?!ia64> pid_t clone::__clone(unsigned long, void *)
+<?ia64> pid_t clone::__clone2(unsigned long, void *, void *)
 <sparc> pid_t fork@forkish()
 <!mips,mips64,sparc,ia64> pid_t vfork()
 <sparc> pid_t vfork@forkish()
