@@ -21,22 +21,25 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    prefix.
 
    IMPORTANT: if you're on a 64-bit machine with a 32-bit userland
-   (such as most sparc or mips machines), and you want to build the
-   32-bit version (usually, but not always smaller); you need to set
-   ARCH to the 32-bit architecture as well as set up the
-   linux/include/asm symlink to point to the 32-bit architecture.
+   (ia64, mips64, ppc64 sparc64, s390x or x86_64), and you want to
+   build the 32-bit version: you need to set ARCH to the 32-bit
+   architecture as well as set up the linux/include/asm symlink to
+   point to the 32-bit architecture.  Building the 32-bit architecture
+   usually (but not always) produces smaller binaries, and is likely
+   to be better tested.
 
    If you are on ARM, and want to build a thumb version of the library
    (this is supported), change OPTFLAGS in arch/arm/MCONFIG to build
    thumb code.
 
-   The following is the status of various architectures:
+   The following is the last known status of various architectures:
 
-   Known to work:	arm i386 sparc sparc64
-   Need crt0.S updates:	alpha ppc 
-   Missing setjmp:	s390 s390x ppc64
-   May or may not work:	x86_64
-   Need porting work:	cris ia64 m68k mips64 parisc sh
+   Known to work:	       arm i386
+   Works static, not shared:   mips s390 s390x sparc sparc64 arm-thumb
+   Need crt0.S updates:	       alpha ppc 
+   Missing setjmp:	       ppc64
+   May or may not work:	       x86_64
+   Need porting work:	       cris ia64 m68k mips64 parisc sh
 
    Note that even the "known to work" ones likely have bugs.  Please
    report them if you run into them.

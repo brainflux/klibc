@@ -53,12 +53,14 @@ skipspace(const char *p)
   return p;
 }
 
+#undef set_bit
 static inline void
 set_bit(unsigned long *bitmap, unsigned int bit)
 {
   bitmap[bit/LONG_BIT] |= 1UL << (bit%LONG_BIT);
 }
 
+#undef test_bit
 static inline int
 test_bit(unsigned long *bitmap, unsigned int bit)
 {
