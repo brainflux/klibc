@@ -1,18 +1,18 @@
 # -*- perl -*-
 
 # Standard includes
-@includes = ("-I${INSTALLDIR}/include/arch/${ARCH}",
-	     "-I${INSTALLDIR}/include/bits${BITSIZE}",
-	     "-I${INSTALLDIR}/include");
+@includes = ("-I${INSTALLDIR}/${CROSS}include/arch/${ARCH}",
+	     "-I${INSTALLDIR}/${CROSS}include/bits${BITSIZE}",
+	     "-I${INSTALLDIR}/${CROSS}include");
 
 # Default optimization options (for compiles without -g)
 @optopt =  @OPTFLAGS;
 @goptopt = ('-O');
 
-@staticopt = ("$INSTALLDIR/lib/crt0.o");  # Static options to ld
-@staticlib = ("$INSTALLDIR/lib/libc.a");
+@staticopt = ("$INSTALLDIR/${CROSS}lib/crt0.o");  # Static options to ld
+@staticlib = ("$INSTALLDIR/${CROSS}lib/libc.a");
 @sharedopt = @EMAIN;
-@sharedlib = ('-R', "$INSTALLDIR/lib/libc.so");
+@sharedlib = ('-R', "$INSTALLDIR/lib/${CROSS}libc.so");
 
 # Returns the language (-x option string) for a specific extension.
 sub filename2lang($) {

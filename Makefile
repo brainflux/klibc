@@ -16,8 +16,9 @@ rpm: klibc.spec
 $(CROSS)klibc.config: Makefile
 	rm -f $@
 	echo 'ARCH=$(ARCH)' >> $@
-	echo 'CC=$(CC)' >> $@
-	echo 'LD=$(LD)' >> $@
+	echo 'CROSS=$(CROSS)' >> $@
+	echo "CC=$(shell bash -c 'type -p $(CC)')" >> $@
+	echo "LD=$(shell bash -c 'type -p $(LD)')" >> $@
 	echo 'REQFLAGS=$(filter-out -I%,$(REQFLAGS))' >> $@
 	echo 'OPTFLAGS=$(OPTFLAGS)' >> $@
 	echo 'LDFLAGS=$(LDFLAGS)' >> $@
@@ -26,9 +27,9 @@ $(CROSS)klibc.config: Makefile
 	echo 'BITSIZE=$(BITSIZE)' >> $@
 	echo 'INSTALLDIR=$(INSTALLDIR)' >> $@
 
-$(CROSS)klcc: klcc.in $(CROSS)klibc.config makeklcc
-	$(PERL) makeklcc klcc.in $(CROSS)klibc.config \
-		$(shell sh -c 'type -p $(PERL)') > $@ || ( rm -f $@ ; exit 1 )
+$(CROSS)klcc: klcc.in $(CROSS)klibc.config makeklcc.pl
+	$(PERL) makeklcc.pl klcc.in $(CROSS)klibc.config \
+		$(shell bash -c 'type -p $(PERL)') > $@ || ( rm -f $@ ; exit 1 )
 	chmod a+x $@
 
 %: local-%
