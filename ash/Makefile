@@ -71,8 +71,6 @@ LIBS     = $(KLIBC) $(LIBGCC)
 
 HOST_CFLAGS  = -g -O -I. -DSHELL
 
-LDFLAGS =
-
 CLEANFILES =\
 	builtins.c builtins.h init.c \
 	nodes.c nodes.h signames.c token.h \

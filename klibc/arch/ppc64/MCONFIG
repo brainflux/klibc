@@ -7,10 +7,10 @@
 # accordingly.
 #
 
-CC      += -m64
-LD	+= -m elf64ppc
-OPTFLAGS = -Os -fomit-frame-pointer
-BITSIZE  = 64
+ARCHREQFLAGS = -m64 -mcall-aixdesc
+OPTFLAGS     = -Os -fomit-frame-pointer
+BITSIZE      = 64
+LDFLAGS      = -m elf64ppc
 
 # Extra linkflags when building the shared version of the library
 # This address needs to be reachable using normal inter-module
