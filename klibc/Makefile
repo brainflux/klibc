@@ -117,12 +117,12 @@ socketcalls.dir: SOCKETCALLS socketcalls.pl socketcommon.h
 	touch $@
 
 %/static.obj: %.dir
-	$(MAKE) objects-$(basename $(notdir $@)) DIR=$*
+	$(MAKE) objects-$(basename $(notdir $@)) DIR=$*/
 
-STATIC = $(addsuffix .o,$(basename $(wildcard $(DIR)/*.[cS])))
+STATIC = $(addsuffix .o,$(basename $(wildcard $(DIR)*.[cS])))
 
 objects-static: $(STATIC)
-	touch $(DIR)/static.obj
+	touch $(DIR)static.obj
 
 clean: archclean
 	find . -type f -a \( -name \*.[isoa] -o -name \*.l[iso] \) -print0 | xargs -0rt rm -f
@@ -139,6 +139,6 @@ spotless: clean
 bitsize:
 	@echo $(BITSIZE)
 
-ifneq ($(wildcard $(DIR)/.*.d),)
-include $(wildcard $(DIR)/.*.d)
+ifneq ($(wildcard $(DIR).*.d),)
+include $(wildcard $(DIR).*.d)
 endif
