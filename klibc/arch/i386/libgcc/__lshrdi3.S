@@ -1,8 +1,8 @@
-#
-# arch/i386/libgcc/__lshrdi3.S
-#
-# 64-bit shr
-#
+/*
+ * arch/i386/libgcc/__lshrdi3.S
+ *
+ * 64-bit shr
+ */
 	.text
 	.align 4
 	.globl __lshrdi3

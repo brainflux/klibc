@@ -1,8 +1,8 @@
-#
-# arch/i386/libgcc/__negdi2.S
-#
-# 64-bit negation
-#
+/*
+ * arch/i386/libgcc/__negdi2.S
+ *
+ * 64-bit negation
+ */
 	
 	.text
 	.align 4
