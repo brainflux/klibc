@@ -14,7 +14,7 @@ void *memcpy(void *dst, const void *src, size_t n)
 	       : "+c" (n), "+S" (p), "+D" (q) :: "edx");
 #else
   while ( n-- ) {
-    *p++ = *q++;
+    *q++ = *p++;
   }
 #endif
 
