@@ -42,6 +42,7 @@ LEAF(setjmp)
 	swc1	$f30,88(a0)
 	swc1	$f31,92(a0)
 	sw	t0,96(a0)
+	move	v0,zero
 	jr	ra
 	
 	END(setjmp)
@@ -73,6 +74,7 @@ LEAF(longjmp)
 	lwc1	$f30,88(a0)
 	lwc1	$f31,92(a0)
 	ctc1	t0,$31
+	move	v0,a1
 	jr	ra
 
 	END(longjmp)
