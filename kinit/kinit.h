@@ -10,6 +10,9 @@ extern char *get_arg(int argc, char *argv[], const char *name);
 extern int mnt_procfs;
 extern int mnt_sysfs;
 
+extern int init_argc;
+extern char **init_argv;
+
 #undef INI_DEBUG
 
 #undef DEBUG

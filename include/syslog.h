@@ -47,7 +47,7 @@
 #define LOG_FACMASK	01770
 #define LOG_FAC(x)	(((x) >> 3) & (LOG_FACMASK >> 3))
 
-/* openlog() flags - not used */
+/* openlog() flags; only LOG_PID and LOG_PERROR supported */
 #define        LOG_PID         0x01    /* include pid with message */
 #define        LOG_CONS        0x02    /* write to console on logger error */
 #define        LOG_ODELAY      0x04    /* delay connection until syslog() */

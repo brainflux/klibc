@@ -33,27 +33,31 @@ void dump_args(int argc, char *argv[])
 
 static int do_ipconfig(int argc, char *argv[])
 {
-	int i, a = 1;
+	int i, a = 0;
+	char **args = alloca((argc+1) * sizeof(char *));
 
-	argv[0] = (char *) "IP-Config";
+	if ( !args )
+		return -1;
+
+	args[a++] = (char *) "IP-Config";
 
 	DEBUG(("Running ipconfig\n"));
 
 #ifdef INI_DEBUG
-	argv[a++] = (char *) "-n";
+	args[a++] = (char *) "-n";
 #endif
 
 	for (i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "ip=", 3) == 0 ||
 		    strncmp(argv[i], "nfsaddrs=", 9) == 0) {
-			argv[a++] = argv[i];
+			args[a++] = argv[i];
 		}
 	}
 
 	if (a > 1) {
-		argv[a] = NULL;
-		dump_args(a, argv);
-		return ipconfig_main(a, argv);
+		args[a] = NULL;
+		dump_args(a, args);
+		return ipconfig_main(a, args);
 	}
 
 	return 0;
@@ -147,39 +151,6 @@ static char *get_kernel_cmdline(char *buf, int len)
 	return buf;
 }
 
-static void save_cmdline(char **saved, int cmdc, char *cmdv[])
-{
-	int i;
-	int len;
-	char *x;
-
-	for (i = len = 0; i < cmdc; i++)
-		len += strlen(cmdv[i]) + 1;
-
-	if ((x = *saved = malloc(len)) == NULL) {
-		perror("malloc");
-		exit(1);
-	}
-
-	for (i = 0; i < cmdc; i++) {
-		strcpy(x, cmdv[i]);
-		x += strlen(x) + 1;
-	}
-}
-
-static void restore_cmdline(char *saved, int cmdc, char *cmdv[])
-{
-	int i;
-
-	optind = 1;
-
-	for (i = 0; i < cmdc; i++) {
-		cmdv[i] = saved;
-		saved += strlen(saved) + 1;
-	}
-	cmdv[cmdc] = NULL;
-}
-
 /* Was this argument passed? */
 char *get_arg(int argc, char *argv[], const char *name)
 {
@@ -218,9 +189,13 @@ static void check_path(const char *path)
 	}
 }
 
+/* This is the argc and argv we pass to init */
+int init_argc;
+char **init_argv;
+
 int main(int argc, char *argv[])
 {
-	char **cmdv, *saved;
+	char **cmdv;
 	char *kinit = NULL;
 	char buf[1024];
 	char *cmdline;
@@ -228,6 +203,11 @@ int main(int argc, char *argv[])
 	int cmdc;
 	int fd;
 	int i;
+
+	/* Default parameters for anything init-like we execute */
+	init_argc = argc;
+	init_argv = alloca((argc+1)*sizeof(char *));
+	memcpy(init_argv, argv, (argc+1)*sizeof(char *));
 
 	if ((fd = open("/dev/console", O_RDWR)) != -1) {
 		dup2(fd, STDIN_FILENO);
@@ -263,11 +243,8 @@ int main(int argc, char *argv[])
 		goto bail;
 	}
 
-	save_cmdline(&saved, cmdc, cmdv);
-
 	do_ipconfig(cmdc, cmdv);
 
-	restore_cmdline(saved, cmdc, cmdv);
 	check_path("/root");
 	check_path("/old_root");
 	do_mounts(cmdc, cmdv);
@@ -296,12 +273,15 @@ int main(int argc, char *argv[])
 		if (s) {
 			s++;
 		}
-		execl(kinit, s, NULL);
+		init_argv[0] = kinit;
+		execv(kinit, init_argv);
 	}
-	execl("/sbin/init", "init", NULL);
-	execl("/etc/init", "init", NULL);
-	execl("/bin/init", "init", NULL);
-	execl("/bin/sh", "sh", NULL);
+	init_argv[0] = "init";
+	execv("/sbin/init", init_argv);
+	execv("/etc/init", init_argv);
+	execv("/bin/init", init_argv);
+	init_argv[0] = "sh";
+	execv("/bin/sh", init_argv);
 
 	fprintf(stderr, "%s: I give up - there's nothing to run.\n", progname);
 	ret = 2;

@@ -7,11 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <alloca.h>
 
+#include "do_mounts.h"
 #include "kinit.h"
 
 #define BUF_SZ		4096
-#define Root_NFS	0xff
 
 static const char *progname = "VFS";
 static const int do_devfs; // FIXME
@@ -79,6 +80,7 @@ fail:
  *         of partition - device number of disk plus the partition number
  *	5) /dev/<disk_name>p<decimal> - same as the above, that form is
  *	   used when disk name of partitioned disk ends on a digit.
+ *	6) an actual block device node in the initramfs filesystem
  *
  *	If name doesn't have fall into the categories above, we return 0.
  *	Driverfs is used to check if something is a disk name - it has
@@ -93,30 +95,34 @@ name_to_dev_t(const char *name)
 {
 	char *p;
 	dev_t res = 0;
-	char s[32];
+	char *s;
 	int part;
+	struct stat st;
+	int len;
 
-	if (strncmp(name, "/dev/", 5) != 0) {
+	if ( name[0] == '/' && !stat(name, &st) && S_ISBLK(st.st_mode) )
+		return st.st_rdev;
+	
+	if ( !strncmp(name, "/dev/", 5) ) {
 		res = (dev_t) strtoul(name, &p, 16);
 		if (*p)
-			goto fail;
-		goto done;
+			return 0;
+		return res;
 	}
 	name += 5;
-	res = Root_NFS;
 	if (strcmp(name, "nfs") == 0)
-		goto done;
+		return 0;
 
-	if (strlen(name) > 31)
-		goto fail;
-	strcpy(s, name);
+	len = strlen(name);
+	s = alloca(len+1);
+	memcpy(s, name, len+1);
 
 	for (p = s; *p; p++)
 		if (*p == '/')
 			*p = '.';
 	res = try_name(s, 0);
 	if (res)
-		goto done;
+		return res;
 
 	while (p > s && isdigit(p[-1]))
 		p--;
@@ -126,17 +132,16 @@ name_to_dev_t(const char *name)
 	*p = '\0';
 	res = try_name(s, part);
 	if (res)
-		goto done;
+		return res;
 
 	if (p < s + 2 || !isdigit(p[-2]) || p[-1] != 'p')
 		goto fail;
 	p[-1] = '\0';
 	res = try_name(s, part);
- done:
 	return res;
+
  fail:
-	res = (dev_t) 0;
-	goto done;
+	return (dev_t)0;
 }
 
 static int
@@ -256,8 +261,8 @@ get_fs_names(int argc, char *argv[], char *buf)
 
 /* mount the root filesystem from a block device */
 static int
-mount_block_root(int argc, char *argv[],
-		 dev_t root_dev, const char *root_dev_name, int flags)
+mount_block_root(int argc, char *argv[], dev_t root_dev,
+		 const char *root_dev_name, int flags)
 {
 	char fs_names[BUF_SZ];
 	const char *data;
