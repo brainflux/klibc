@@ -5,7 +5,7 @@ AR      = ar
 RANLIB  = ranlib
 
 TESTS   = testvsnp
-LIBOBJS = vsnprintf.o snprintf.o
+LIBOBJS = vsnprintf.o snprintf.o vsscanf.o
 LIB     = libmyc.a
 
 all: $(TESTS)
