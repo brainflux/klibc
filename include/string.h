@@ -27,6 +27,7 @@ __extern char *strdup(const char *);
 __extern char *strndup(const char *, size_t);
 __extern char *strerror(int);
 __extern size_t strlen(const char *);
+__extern size_t strnlen(const char *, size_t);
 __extern char *strncat(char *, const char *, size_t);
 __extern int strncmp(const char *, const char *, size_t);
 __extern char *strncpy(char *, const char *, size_t);

@@ -30,7 +30,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  memcpy.o memcmp.o memset.o memccpy.o memmem.o memswap.o \
 	  memmove.o \
 	  strcasecmp.o strncasecmp.o strndup.o strerror.o \
-	  strcat.o strchr.o strcmp.o strcpy.o strdup.o strlen.o \
+	  strcat.o strchr.o strcmp.o strcpy.o strdup.o strlen.o strnlen.o \
 	  strncat.o strstr.o strncmp.o strncpy.o strrchr.o strspn.o \
 	  strsep.o strtok.o \
 	  gethostname.o getdomainname.o getcwd.o \
