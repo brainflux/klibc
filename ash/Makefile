@@ -24,7 +24,7 @@ CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -DSHELL
 LIBS     = $(KLIBC) $(LIBGCC)
 STRIP    = $(CROSS)strip -R .comment -R .note
 
-HOST_CFLAGS  = -g -I. -DSHELL
+HOST_CFLAGS  = -g -O -I. -DSHELL
 
 CLEANFILES =\
 	builtins.c builtins.h init.c mkinit mknodes \
