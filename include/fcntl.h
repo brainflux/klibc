@@ -5,6 +5,7 @@
 #ifndef _FCNTL_H
 #define _FCNTL_H
 
+#include <klibc/extern.h>
 #include <klibc/compiler.h>
 #include <sys/types.h>
 #include <linux/fcntl.h>
