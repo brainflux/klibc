@@ -3,22 +3,35 @@ include MCONFIG
 COMMON_OBJS = main.o netdev.o packet.o
 DHCP_OBJS   = dhcp_proto.o
 BOOTP_OBJS  = bootp_proto.o
-PROG        = ipconfig
+PROGS       = ipconfig
+STATICPROGS := $(patsubst %,static/%,$(PROGS))
+SHAREDPROGS := $(patsubst %,shared/%,$(PROGS))
 LIB	    = libipconfig.a
 LIBS        = $(KLIBC) $(LIBGCC)
 
 OBJS := $(COMMON_OBJS) $(BOOTP_OBJS) $(DHCP_OBJS)
 
-all:	$(PROG) $(LIB)
+all:	$(STATICPROGS) $(SHAREDPROGS) $(LIB)
 
-ipconfig: $(OBJS) $(CRT0) $(LIBS)
+static/ipconfig: $(OBJS) $(CRT0) $(LIBS)
+	mkdir -p static static.g
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
+	cp -f $@ static.g
+	$(STRIP) $@
+
+shared/ipconfig: $(OBJS) $(CRT0) $(LIBSHARED) $(LIBGCC)
+	mkdir -p shared shared.g
+	$(LD) $(LDFLAGS) -o $@ $(EMAIN) $(CRTSHARED) $(OBJS) \
+		-R $(LIBSHARED) $(LIBGCC)
+	cp -f $@ shared.g
+	$(STRIP) $@
 
 $(LIB): $(OBJS)
 	$(AR) cru $(LIB) $(OBJS)
 
 clean:
 	$(RM) *.o $(PROG) $(LIB) core
+	$(RM) -r static static.g shared shared.g
 
 spotless: clean
 	$(RM) *~ .*.d
