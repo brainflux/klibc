@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <netinet/in6.h>
 
 __extern uint32_t inet_addr(const char *);
 __extern int inet_aton(const char *, struct in_addr *);

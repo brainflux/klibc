@@ -14,9 +14,9 @@ int inet_aton(const char *str, struct in_addr *addr)
 
   if ( sscanf("%hhu.%hhu.%hhu.%hhu", &a.b[0], &a.b[1], &a.b[2], &a.b[3]) == 4 ) {
     addr->s_addr = a.l;		/* Always in network byte order */
-    return 0;
+    return 1;
   } else {
-    return -1;
+    return 0;
   }
 }
 
