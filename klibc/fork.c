@@ -12,8 +12,6 @@
 
 #ifndef __NR_fork
 
-extern pid_t __clone(unsigned long flags, void * newsp);
-
 pid_t fork(void)
 {
   return __clone(SIGCHLD, 0);
