@@ -66,7 +66,7 @@ int setresuid32,setresuid::setresuid(int, uid_t, uid, uid_t)
 int mount(const char *, const char *, const char *, unsigned long, const void *)
 <!alpha,ia64> int umount2(const char *, int)
 <alpha,ia64> int umount::umount2(const char *, int)
-<!m68k> int pivot_root(const char *, const char *)
+<?> int pivot_root(const char *, const char *)
 int sync()
 #ifdef __NR_statfs64
 int statfs64::__statfs64(const char *, size_t, struct statfs *)
