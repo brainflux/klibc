@@ -3,7 +3,7 @@
 # ld turns into an PT_INTERP header.
 #
 
-        .section ".interp",""
+        .section ".interp","a"
         .ascii LIBDIR
 	.ascii "/klibc-"
         .ascii SOHASH
