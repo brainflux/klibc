@@ -12,6 +12,10 @@
 #include <string.h>
 #include <limits.h>
 
+#ifndef LONG_BIT
+#define LONG_BIT (CHAR_BIT*sizeof(long))
+#endif
+
 enum flags {
   FL_SPLAT  = 0x01,		/* Drop the value, do not assign */
   FL_INV    = 0x02,		/* Character-set with inverse */
@@ -35,11 +39,29 @@ enum ranks {
 #define SIZE_T_RANK	rank_long
 #define PTRDIFF_T_RANK	rank_long
 
+enum bail {
+  bail_none = 0,		/* No error condition */
+  bail_eof,			/* Hit EOF */
+  bail_err			/* Conversion mismatch */
+};
+
 static inline const char *
 skipspace(const char *p)
 {
   while ( isspace(*p) ) p++;
   return p;
+}
+
+static inline void
+set_bit(unsigned long *bitmap, unsigned int bit)
+{
+  bitmap[bit/LONG_BIT] |= 1UL << (bit%LONG_BIT);
+}
+
+static inline int
+test_bit(unsigned long *bitmap, unsigned int bit)
+{
+  return (int)(bitmap[bit/LONG_BIT] >> (bit%LONG_BIT)) & 1;
 }
 
 int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
@@ -58,13 +80,19 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
     st_normal,			/* Ground state */
     st_flags,			/* Special flags */
     st_width,			/* Field width */
-    st_modifiers		/* Length or conversion modifiers */
+    st_modifiers,		/* Length or conversion modifiers */
+    st_match_init,		/* Initial state of %[ sequence */
+    st_match,			/* Main state of %[ sequence */
+    st_match_range,		/* After - in a %[ sequence */
   } state = st_normal;
   char *sarg;			/* %s %c or %[ string argument */
   int slen;			/* String length */
-  int bail = 0;			/* Set to true if hopeless */
+  enum bail bail = bail_none;
   int sign, minus;
   int converted = 0;		/* Successful conversions */
+  unsigned long matchmap[((1 << CHAR_BIT)+(LONG_BIT-1))/LONG_BIT];
+  int matchinv;			/* Is match map inverted? */
+  unsigned char range_start;
 
   while ( (ch = *p++) && !bail ) {
     switch ( state ) {
@@ -78,7 +106,7 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	if ( *q == ch )
 	  q++;
 	else
-	  bail = 1;		/* Match failure */
+	  bail = bail_err;	/* Match failure */
       }
       break;
 
@@ -156,7 +184,7 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	      }
 	    }
 	    /* Failure */
-	    bail = 1;
+	    bail = bail_err;
 	    break;
 	  }
 	  /* else */
@@ -191,13 +219,17 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 
 	scan_int:
 	  q = skipspace(q);
+	  if ( !*q ) {
+	    bail = bail_eof;
+	    break;
+	  }
 	  minus = 0;
 	  if ( sign && width && *q == '-' ) {
 	    q++; width--; minus = 1;
 	  }
 	  val = strntoumax(q, &qq, base, width);
 	  if ( qq == q ) {
-	    bail = 1;
+	    bail = bail_err;
 	    break;
 	  }
 	  if (minus) {
@@ -237,40 +269,101 @@ int my_vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	case 'c':               /* Character */
           width = (flags & FL_WIDTH) ? width : 1; /* Default width == 1 */
           sarg = va_arg(ap, char *);
-          while ( width ) {
+          while ( width-- ) {
             if ( !*q ) {
-              bail = 1;
+              bail = bail_eof;
               break;
             }
             *sarg++ = *q++;
-            width--;
           }
           if ( !bail )
             converted++;
           break;
 
         case 's':               /* String */
-	  /* do stuff */
+	  {
+	    char *sp;
+	    sp = sarg = va_arg(ap, char *);
+	    while ( width-- && *q && !isspace(*q) ) {
+	      *sp++ = *q++;
+	    }
+	    if ( sarg != sp ) {
+	      *sp = '\0';	/* Terminate output */
+	      converted++;
+	    } else {
+	      bail = bail_eof;
+	    }
+	  }
 	  break;
 	  
 	case '[':		/* Character range */
-	  /* do stuff */
+	  sarg = va_arg(ap, char *);
+	  state = st_match_init;
+	  matchinv = 0;
+	  memset(matchmap, 0, sizeof matchmap);
 	  break;
 
 	case '%':		/* %% sequence */
 	  if ( *q == '%' )
 	    q++;
 	  else
-	    bail = 1;
+	    bail = bail_err;
 	  break;
 
-	default:		/* Anything else, including % */
-	  /* wtf? */
+	default:		/* Anything else */
+	  bail = bail_err;	/* Unknown sequence */
 	  break;
 	}
       }
+    
+    case st_match_init:		/* Initial state for %[ match */
+      if ( ch == '^' && !(flags & FL_INV) ) {
+	matchinv = 1;
+      } else {
+	set_bit(matchmap, (unsigned char)ch);
+	state = st_match;
+      }
+      break;
+      
+    case st_match:		/* Main state for %[ match */
+      if ( ch == ']' ) {
+	goto match_run;
+      } else if ( ch == '-' ) {
+	range_start = (unsigned char)ch;
+	state = st_match_range;
+      } else {
+	set_bit(matchmap, (unsigned char)ch);
+      }
+      break;
+      
+    case st_match_range:		/* %[ match after - */
+      if ( ch == ']' ) {
+	set_bit(matchmap, (unsigned char)'-'); /* - was last character */
+	goto match_run;
+      } else {
+	int i;
+	for ( i = range_start ; i < (unsigned char)ch ; i++ )
+	  set_bit(matchmap, i);
+	state = st_match;
+      }
+      break;
+
+    match_run:			/* Match expression finished */
+      qq = q;
+      while ( width && *q && test_bit(matchmap, (unsigned char)*q)^matchinv ) {
+	*sarg++ = *q++;
+      }
+      if ( q != qq ) {
+	converted++;
+      } else {
+	bail = *q ? bail_err : bail_eof;
+      }
+      break;
     }
   }
+
+  if ( bail == bail_eof && !converted )
+    converted = -1;		/* Return EOF (-1) */
 
   return converted;
 }
