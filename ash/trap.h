@@ -40,6 +40,7 @@ int trapcmd(int, char **);
 void clear_traps(int);
 long setsignal(int, int);
 void ignoresig(int, int);
+/* See definition for explanation of the __cdecl */
 __cdecl void onsig(int);
 void dotrap(void);
 void setinteractive(int);
