@@ -2,8 +2,8 @@ ARCH    = i386
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
-REQFLAGS = -nostdinc -iwithprefix include -I. -I./include \
-	  -I./arch/$(ARCH)/include -I./linux/include \
+REQFLAGS = -nostdinc -iwithprefix include -I. \
+	  -I./arch/$(ARCH)/include -I./include -I./linux/include \
 	  -Wall
 CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
 LDFLAGS =
