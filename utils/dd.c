@@ -509,6 +509,11 @@ int main(int argc, char *argv[])
 	 */
 	ret = dd(rd_fd, wr_fd, &stats);
 
+	if (close(rd_fd) == -1)
+		perror(OPT_IF->str ? OPT_IF->str : "stdin");
+	if (close(wr_fd) == -1)
+		perror(OPT_OF->str ? OPT_OF->str : "stdout");
+
 	fprintf(stderr, "%u+%u records in\n",
 		stats.in_full, stats.in_partial);
 	fprintf(stderr, "%u+%u records out\n",
