@@ -77,9 +77,7 @@ static void get_ports(__u32 server, const struct nfs_mount_data *data)
 
 static inline int pad_len(int len)
 {
-	if (len % 8)
-		return (len & 7) + 8;
-	return len;
+	return (len + 3) & ~3;
 }
 
 static inline void dump_params(__u32 server,
