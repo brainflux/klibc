@@ -1,4 +1,4 @@
-SUBDIRS = klibc ash ipconfig utils kinit gzip
+SUBDIRS = klibc ash ipconfig nfsmount utils kinit gzip
 
 all:
 
