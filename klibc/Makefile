@@ -7,7 +7,8 @@ RANLIB  = ranlib
 
 TESTS   = testvsnp
 LIBOBJS = vsnprintf.o snprintf.o vsscanf.o ctypes.o \
-	  strntoumax.o atoi.o atol.o atoll.o \
+	  strntoumax.o strntoimax.o \
+	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
 	  strtoimax.o strtoumax.o
 LIB     = libmyc.a
@@ -19,13 +20,22 @@ SONAME  = libmyc.so
 
 all: $(TESTS) $(LIB) $(SOLIB)
 
-.SUFFIXES: .c .o .a .so .lo
+.SUFFIXES: .c .o .a .so .lo .i .s .ls
 
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+.c.i:
+	$(CC) $(CFLAGS) -E -o $@ $<
+
+.c.s:
+	$(CC) $(CFLAGS) -S -o $@ $<
+
 .c.lo:
 	$(CC) $(CFLAGS) $(SOFLAGS) -c -o $@ $<
+
+.c.ls:
+	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
 
 testvsnp: testvsnp.o $(LIB)
 	$(CC) $(LDFLAGS) -o $@ testvsnp.o $(LIB)
@@ -39,7 +49,7 @@ $(SOLIB): $(SOOBJS)
 	$(LD) -shared -soname $(SONAME) -o $@ $(SOOBJS) `$(CC) --print-libgcc`
 
 clean:
-	rm -f $(TESTS) *.o *.lo *.a *.so
+	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls
 
 vsnprintf.o: vsnprintf.c
 

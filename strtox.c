@@ -5,10 +5,7 @@
  */
 
 #include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
-
-#include "strntoumax.h"
+#include <inttypes.h>
 
 TYPE NAME (const char *nptr, char **endptr, int base)
 {
