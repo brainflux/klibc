@@ -8,13 +8,18 @@
 char *strncat(char *dst, const char *src, size_t n)
 {
   char *q = strchr(dst, '\0');
+  const char *p = src;
+  char ch;
   size_t nn = q-dst;
 
   if ( __likely(nn <= n) )
-    n = nn;
+    n -= nn;
 
-  memcpy(q, src, n);
-  q[n] = '\0';
+  while (n--) {
+    *q++ = ch = *p++;
+    if ( !ch )
+      break;
+  }
 
   return dst;
 }

@@ -10,7 +10,8 @@ char *strncpy(char *dst, const char *src, size_t n)
   const char *p = src;
   char ch;
 
-  while ( n-- ) {
+  while (n) {
+    n--;
     *q++ = ch = *p++;
     if ( !ch )
       break;
