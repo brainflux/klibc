@@ -13,9 +13,17 @@
 #include <endian.h>		/* Must be included *before* <linux/in.h> */
 #include <linux/in.h>
 
-#define htons(x)	__cpu_to_be16(x)
-#define ntohs(x)	__be16_to_cpu(x)
-#define htonl(x)	__cpu_to_be32(x)
-#define ntohl(x)	__be32_to_cpu(x)
+#ifndef htons
+# define htons(x)	__cpu_to_be16(x)
+#endif
+#ifndef ntohs
+# define ntohs(x)	__be16_to_cpu(x)
+#endif
+#ifndef htonl
+# define htonl(x)	__cpu_to_be32(x)
+#endif
+#ifndef ntohl
+# define ntohl(x)	__be32_to_cpu(x)
+#endif
 
 #endif /* _NETINET_IN_H */

@@ -9,6 +9,8 @@
 # Blatantly copied and modified from i386 version by Mats Petersson, AMD.
 #
 
-OPTFLAGS = -Os -fomit-frame-pointer \
-	   -falign-functions=0 -falign-jumps=0 -falign-loops=0
-BITSIZE  = 64
+ARCHREQFLAGS = -m64
+OPTFLAGS     = -Os -fomit-frame-pointer -falign-functions=0 -falign-jumps=0 -falign-loops=0
+BITSIZE      = 64
+LDFLAGS      = -m elf64_x86_64
+

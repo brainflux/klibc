@@ -16,11 +16,11 @@ ARCHOBJS = \
 	arch/$(ARCH)/libgcc/__lshrdi3.o \
 	arch/$(ARCH)/libgcc/__muldi3.o \
 	arch/$(ARCH)/libgcc/__negdi2.o \
-	arch/$(ARCH)/libgcc/__divdi3.o \
-	arch/$(ARCH)/libgcc/__moddi3.o \
-	arch/$(ARCH)/libgcc/__udivdi3.o \
-	arch/$(ARCH)/libgcc/__umoddi3.o \
-	arch/$(ARCH)/libgcc/__udivmoddi4.o
+	libgcc/__divdi3.o \
+	libgcc/__moddi3.o \
+	libgcc/__udivdi3.o \
+	libgcc/__umoddi3.o \
+	libgcc/__udivmoddi4.o
 
 ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
 
