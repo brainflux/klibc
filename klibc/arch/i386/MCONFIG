@@ -7,7 +7,7 @@
 # accordingly.
 #
 
-OPTFLAGS = -march=i386 -mcpu=i686 -Os -fomit-frame-pointer \
+OPTFLAGS = -march=i386 -Os -fomit-frame-pointer \
 	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
 BITSIZE  = 32
 
