@@ -8,4 +8,8 @@ use Digest::MD5;
 $ctx = Digest::MD5->new;
 $ctx->addfile(*STDIN);
 
-print $ctx->b64digest, "\n";
+$hash = $ctx->b64digest;
+
+$hash =~ tr/\//_/;		# Slashes not wanted
+
+print $hash, "\n";
