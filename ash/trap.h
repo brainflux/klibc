@@ -40,7 +40,7 @@ int trapcmd(int, char **);
 void clear_traps(int);
 long setsignal(int, int);
 void ignoresig(int, int);
-void onsig(int);
+__cdecl void onsig(int);
 void dotrap(void);
 void setinteractive(int);
 void exitshell(int) __attribute__((__noreturn__));
