@@ -5,7 +5,7 @@
 #ifndef _TERMIOS_H
 #define _TERMIOS_H
 
-#include <extern.h>
+#include <klibc/extern.h>
 #include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -63,23 +63,23 @@ static __inline__ int tcsetpgrp(int __fd, pid_t __p)
 
 static __inline__ speed_t cfgetospeed(const struct termios *__s)
 {
-  return (speed_t)(__s->c_cflags & CBAUD);
+  return (speed_t)(__s->c_cflag & CBAUD);
 }
 
 static __inline__ speed_t cfgetispeed(const struct termios *__s)
 {
-  return (speed_t)(__s->c_cflags & CBAUD);
+  return (speed_t)(__s->c_cflag & CBAUD);
 }
 
 static __inline__ int cfsetospeed(struct termios *__s, speed_t __v)
 {
-  __s->c_cflags = (__s->c_cflags & ~CBAUD) | (__v & CBAUD);
+  __s->c_cflag = (__s->c_cflag & ~CBAUD) | (__v & CBAUD);
   return 0;
 }
 
 static __inline__ int cfsetispeed(struct termios *__s, speed_t __v)
 {
-  __s->c_cflags = (__s->c_cflags & ~CBAUD) | (__v & CBAUD);
+  __s->c_cflag = (__s->c_cflag & ~CBAUD) | (__v & CBAUD);
   return 0;
 }
 
