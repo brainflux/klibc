@@ -59,7 +59,7 @@ while ( defined($line = <FILE>) ) {
 	    open(OUT, '>', "socketcalls/${name}.c")
 		or die "$0: Cannot open socketcalls/${name}.c\n";
 
-	    print OUT "#include \"socketcommon.h\"\n";
+	    print OUT "#include \"../socketcommon.h\"\n";
 	    print OUT "\n";
 	    print OUT "#ifndef __NR_${name}\n\n";
 
