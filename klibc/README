@@ -35,7 +35,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    The following is the last known status of various architectures:
 
    alpha:	 Working static, shared untested
-   arm-thumb:	 Probably working
+   arm-thumb:	 Untested
    arm26:	 Not yet ported
    arm:		 Working
    cris:	 Untested
@@ -50,7 +50,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    ppc:		 Working
    s390:	 Working static, shared untested
    s390x:	 Working
-   sh:		 Needs sysstub.ph
+   sh:		 Untested
    sparc64:	 sigaction() fails in ash for unknown reason
    sparc:	 Working
    v850:	 Not yet ported
