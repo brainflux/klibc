@@ -435,7 +435,7 @@ varisset(name)
 	} else if (name == '@' || name == '*') {
 		if (*shellparam.p == NULL)
 			return 0;
-	} else if (name >= '1' || name <= '9') {
+	} else if (name >= '1' && name <= '9') {
 		int idx = name - '1';
 		ap = shellparam.p;
 		do {
