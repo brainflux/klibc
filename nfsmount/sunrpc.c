@@ -25,7 +25,7 @@ static int rpc_do_reply(struct client *clnt, struct rpc *rpc, size_t off)
 		goto bail;
 	}
 	else if (ret < sizeof(struct rpc_reply) - off) {
-		fprintf(stderr, "short read: %d < %d\n", ret,
+		fprintf(stderr, "short read: %d < %zu\n", ret,
 			sizeof(struct rpc_reply) - off);
 		goto bail;
 	}
@@ -71,7 +71,8 @@ static int rpc_call_tcp(struct client *clnt, struct rpc *rpc)
 		goto bail;
 	}
 	else if (ret < rpc->call_len) {
-		fprintf(stderr, "short write: %d < %d\n", ret, rpc->call_len);
+		fprintf(stderr, "short write: %d < %zu\n",
+			ret, rpc->call_len);
 		goto bail;
 	}
 
@@ -111,7 +112,7 @@ static int rpc_call_udp(struct client *clnt, struct rpc *rpc)
 			goto bail;
 		}
 		else if (ret < rpc->call_len) {
-			fprintf(stderr, "short write: %d < %d\n", ret,
+			fprintf(stderr, "short write: %d < %zu\n", ret,
 				rpc->call_len);
 			goto bail;
 		}
