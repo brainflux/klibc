@@ -55,8 +55,8 @@ local-install: $(CROSS)klcc
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
 	set -xe ; for d in linux asm asm-generic ; do \
 	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/include/$$d ; \
-	  cp -rfL $(KRNLSRC)/include/linux/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
-	  cp -rfL $(KRNLOBJ)/include/linux/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
+	  cp -rfL $(KRNLSRC)/include/$$d/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
+	  cp -rfL $(KRNLOBJ)/include/$$d/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
 	  [ ! -d $(KRNLOBJ)/include2/$$d ] || \
 	    cp -rfL $(KRNLOBJ)/include2/$$d/. $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
 	done
