@@ -516,16 +516,3 @@ xwrite(fd, buf, nbytes)
 		}
 	}
 }
-
-
-/*
- * Version of ioctl that retries after a signal is caught.
- */
-
-int
-xioctl(fd, request, arg) {
-	int i;
-
-	while ((i = ioctl(fd, request, arg)) == -1 && errno == EINTR);
-	return i;
-}

@@ -12,20 +12,14 @@ OBJ2 =	builtins.o cd.o dirent.o bltin/echo.o error.o eval.o exec.o expand.o \
 
 OBJS =	$(OBJ1) $(OBJ2)
 
-CC     = gcc
-LD     = ld ../klibc/crt0.o
-CFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 -DSHELL \
-	-nostdinc -iwithprefix include \
-	-I. -I../klibc/arch/i386/include -I../klibc/include/bits32 \
-	-I../klibc/include -I../klibc/linux/include
-LDFLAGS = 
-LIBS    = ../klibc/libc.a
-STRIP   = strip -R .comment -R .note
+KLIBSRC = ../klibc
+include ../MCONFIG
 
-HOST_CC      = gcc
+CFLAGS  = $(OPTFLAGS) $(REQFLAGS) -DSHELL
+LIBS    = $(KLIBC) $(LIBGCC)
+STRIP   = $(CROSS)strip -R .comment -R .note
+
 HOST_CFLAGS  = -g -I. -DSHELL
-HOST_LDFLAGS =
-HOST_LIBS    =
 
 CLEANFILES =\
 	builtins.c builtins.h init.c mkinit mknodes \

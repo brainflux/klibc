@@ -69,7 +69,6 @@ void flushall(void);
 void flushout(struct output *);
 void freestdout(void);
 int xwrite(int, char *, int);
-int xioctl(int, int, int);
 #else
 void outstr();
 void out1str();
