@@ -78,8 +78,8 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %{_libdir}/klibc/lib
-${_bindir}/klcc
-%doc ${_mandir}/man1/klcc.1
+%{_bindir}/klcc
+%doc %{_mandir}/man1/klcc.1
 /lib/klibc-*.so
 %docdir %{_docdir}
 
