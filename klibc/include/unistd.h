@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/select.h>
+#include <asm/page.h>
 
 __extern char **environ;
 __extern __noreturn _exit(int);
@@ -109,5 +110,10 @@ __extern int isatty(int);
 #define STDIN_FILENO	0
 #define STDOUT_FILENO	1
 #define STDERR_FILENO	2
+
+static inline int getpagesize(void)
+{
+  return PAGE_SIZE;
+}
 
 #endif /* _UNISTD_H */
