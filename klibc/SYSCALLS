@@ -36,6 +36,7 @@ int getgroups(int, gid_t *)
 int mount(const char *, const char *, const char *, unsigned long, const void *)
 int umount(const char *)
 int umount2(const char *, int)
+int pivot_root(const char *, const char *)
 
 #
 # Inode-related system calls
