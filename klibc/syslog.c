@@ -39,9 +39,14 @@ void syslog(int prio, const char *format, ...)
   va_list ap;
   char buf[BUFLEN];
   int rv, len;
+  int fd;
 
   if ( __syslog_fd == -1 )
     openlog(NULL, 0, 0);
+
+  fd = __syslog_fd;
+  if ( fd == -1 )
+    fd = 2;			/* Failed to open log, write to stderr */
 
   buf[0] = '<';
   buf[1] = LOG_PRI(prio)+'0';
@@ -59,5 +64,5 @@ void syslog(int prio, const char *format, ...)
   if ( len > BUFLEN-1 ) len = BUFLEN-1;
   buf[len] = '\n';
 
-  write(__syslog_fd, buf, len+1);
+  write(fd, buf, len+1);
 }
