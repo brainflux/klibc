@@ -6,6 +6,8 @@
  * "is child" flag in %o1
  *
  * Common system-call stub; %g1 already set to syscall number
+ *
+ * IS THIS CORRECT FOR SPARC64?
  */
 
 	.globl	__syscall_forkish
