@@ -23,9 +23,9 @@ static char *progname;
 
 static struct nfs_mount_data mount_data = {
 	.version = NFS_MOUNT_VERSION,
-	.flags = NFS_MOUNT_NONLM,
-	.rsize = 1024,
-	.wsize = 1024,
+	.flags = NFS_MOUNT_NONLM | NFS_MOUNT_VER3 | NFS_MOUNT_TCP,
+	.rsize = 8192,
+	.wsize = 8192,
 	.timeo = 7,
 	.retrans = 3,
 	.acregmin = 3,
