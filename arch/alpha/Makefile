@@ -6,7 +6,8 @@
 #
 
 # Special CFLAGS for the divide code
-DIVCFLAGS = $(CFLAGS) -O3 -fomit-frame-pointer -fcall-saved-1 -fcall-saved-2 \
+DIVCFLAGS = $(REQFLAGS) \
+	-O3 -fomit-frame-pointer -fcall-saved-1 -fcall-saved-2 \
 	-fcall-saved-3 -fcall-saved-4 -fcall-saved-5 -fcall-saved-6 \
 	-fcall-saved-7 -fcall-saved-8 -fcall-saved-22 -fcall-saved-23 \
 	-fcall-saved-24 -fcall-saved-25 -fcall-saved-27

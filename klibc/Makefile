@@ -4,8 +4,9 @@ CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
 OPTFLAGS = -march=i386 -mcpu=i686 -Os -fomit-frame-pointer \
 	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
-CFLAGS  = -nostdinc -iwithprefix include -I. -I./include \
-	  -I./linux/include -Wall $(OPTFLAGS)
+REQFLAGS = -nostdinc -iwithprefix include -I. -I./include \
+	  -I./linux/include -Wall
+CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
 LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib
