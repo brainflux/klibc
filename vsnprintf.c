@@ -21,6 +21,7 @@ enum flags {
   FL_UPPER  = 0x80		/* Upper case digits */
 };
 
+/* These may have to be adjusted on certain implementations */
 enum ranks {
   rank_char	= -2,
   rank_short	= -1,
@@ -269,7 +270,7 @@ int my_vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 	break;
       case 'L':
       case 'q':
-	rank = rank_longlong;	/* long double/long long */
+	rank += 2;
 	break;
       default:
 	/* Output modifiers - terminal sequences */
@@ -284,8 +285,9 @@ int my_vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 	  flags |= FL_UPPER;
 	  /* fall through */
 	case 'p':		/* Pointer */
-	  /* This assumes 8-bit bytes. */
-	  base = 16; prec = 2*sizeof(void *); flags |= FL_HASH;
+	  base = 16;
+	  prec = (CHAR_BIT*sizeof(void *)+3)/4;
+	  flags |= FL_HASH;
 	  val = (uintmax_t)(uintptr_t)va_arg(ap, void *);
 	  goto is_integer;
 
