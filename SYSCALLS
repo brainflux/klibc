@@ -118,6 +118,7 @@ int nanosleep(const struct timespec *, struct timespec *)
 #
 int munmap(void *, size_t)
 void * mremap(void *, size_t, size_t, unsigned long)
+int msync(const void *, size_t, int)
 
 #
 # System stuff
