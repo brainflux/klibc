@@ -7,7 +7,10 @@
 size_t strnlen(const char *s, size_t maxlen)
 {
   const char *ss = s;
-  while(*ss && (maxlen > 0)) {
+
+  /* Important: the maxlen test must precede the reference through ss;
+     since the byte beyond the maximum may segfault */
+  while ((maxlen > 0) && *ss) {
 	ss++;
 	maxlen--;
   }
