@@ -60,6 +60,7 @@ __extern int access(const char *, int);
 __extern int link(const char *, const char *);
 __extern int unlink(const char *);
 __extern int chdir(const char *);
+__extern int fchdir(int);
 __extern int chmod(const char *, mode_t);
 __extern int fchmod(int, mode_t);
 __extern int mkdir(const char *, mode_t);

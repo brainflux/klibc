@@ -5,18 +5,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <sys/dirent.h>
-#include <stdio.h>
 
-#define __IO_DIR_DEFINED
-struct _IO_dir {
-  int fd;
-  size_t bytes_left;
-  struct dirent *next;
-  /* Declaring this as an array of struct enforces correct alignment */
-  struct dirent buffer[15];	/* 15 times max dirent size =~ 4K */
-};
-
+#define __KLIBC_DIRENT_INTERNALS
 #include <dirent.h>
 
 DIR *opendir(const char *name)
@@ -26,9 +16,9 @@ DIR *opendir(const char *name)
   if ( !dp )
     return NULL;
 
-  dp->fd = open(name, O_DIRECTORY|O_RDONLY);
+  dp->__fd = open(name, O_DIRECTORY|O_RDONLY);
 
-  if ( dp->fd < 0 ) {
+  if ( dp->__fd < 0 ) {
     free(dp);
     return NULL;
   }
@@ -44,7 +34,7 @@ struct dirent *readdir(DIR *dir)
   int rv;
   
   if ( !dir->bytes_left ) {
-    rv = getdents(dir->fd, dir->buffer, sizeof(dir->buffer));
+    rv = getdents(dir->__fd, dir->buffer, sizeof(dir->buffer));
     if ( rv <= 0 )
       return NULL;
     dir->bytes_left = rv;
@@ -61,7 +51,7 @@ struct dirent *readdir(DIR *dir)
 int closedir(DIR *dir)
 {
   int rv;
-  rv = close(dir->fd);
+  rv = close(dir->__fd);
   free(dir);
   return rv;
 }
