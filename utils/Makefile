@@ -3,7 +3,7 @@ KLIBSRC = ../klibc
 include ../MCONFIG
 
 CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
-LIBS	= $(KLIBC)
+LIBS	= $(KLIBC) $(LIBGCC)
 PROGS   = mkdir mkfifo pivot_root
 
 all:	$(PROGS)

@@ -36,7 +36,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  inet/inet_ntop.o inet/inet_pton.o
 LIB     = libc.a
 
-all: tests $(CRT0) $(LIB) $(SOLIB)
+all: tests $(CRT0) $(LIB) #$(SOLIB)
 
 # Add any architecture-specific rules
 include arch/$(ARCH)/Makefile.inc
@@ -75,10 +75,10 @@ socketcalls.dir: SOCKETCALLS socketcalls.pl socketcommon.h
 	touch $@
 
 %/static.obj: %.dir
-	$(MAKE) objects-$(notdir $(@:.obj=)) DIR=$*
+	$(MAKE) objects-$(basename $(notdir $@)) DIR=$*
 
 %/shared.obj: %.dir
-	$(MAKE) objects-$(notdir $(@:.obj=)) DIR=$*
+	$(MAKE) objects-$(basename $(notdir $@)) DIR=$*
 
 STATIC = $(addsuffix .o,$(basename $(wildcard $(DIR)/*.[cS])))
 SHARED = $(addsuffix .lo,$(basename $(wildcard $(DIR)/*.[cS])))
