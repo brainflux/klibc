@@ -1,4 +1,4 @@
-#ident "$Id: run-init.c,v 1.6 2004/07/30 16:26:59 hpa Exp $"
+#ident "$Id: run-init.c,v 1.7 2004/10/17 20:30:50 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
   initargs = argv+optind+1;
 
   /* First, change to the new root directory */
-  if ( chdir(argv[1]) )
+  if ( chdir(realroot) )
     die("chdir to new root");
 
   /* This is a potentially highly destructive program.  Take some
