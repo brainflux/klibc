@@ -7,7 +7,7 @@
  *  FSSIZE - filesystem size (if known)
  *
  * We currently detect (in order):
- *  gzip, cramfs, romfs, minix, ext3, ext2, reiserfs
+ *  gzip, cramfs, romfs, xfs, minix, ext3, ext2, reiserfs
  *
  * MINIX, ext3 and Reiserfs bits are currently untested.
  */
@@ -24,6 +24,7 @@
 #define _LINUX_EXT2_FS_SB
 #include <linux/ext2_fs.h>
 #include "ext3_fs.h"
+#include "xfs_sb.h"
 
 /*
  * reiserfs_fs.h is too sick to include directly.
@@ -160,6 +161,19 @@ static int reiserfs_image(const unsigned char *buf, unsigned long *blocks)
 	return 0;
 }
 
+static int xfs_image(const unsigned char *buf, unsigned long *blocks)
+{
+	const struct xfs_sb *sb =
+		(const struct xfs_sb *)buf;
+
+	if (__be32_to_cpu(sb->sb_magicnum) == XFS_SB_MAGIC) {
+		*blocks = __be64_to_cpu(sb->sb_dblocks) *
+			  (__be32_to_cpu(sb->sb_blocksize) / BLOCK_SIZE);
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t		block;
 	const char	name[12];
@@ -170,6 +184,7 @@ static struct imagetype images[] = {
 	{ 0,	"gzip",		gzip_image	},
 	{ 0,	"cramfs",	cramfs_image	},
 	{ 0,	"romfs",	romfs_image	},
+	{ 0,	"xfs",		xfs_image	},
 	{ 1,	"minix",	minix_image	},
 	{ 1,	"ext3",		ext3_image	},
 	{ 1,	"ext2",		ext2_image	},
