@@ -20,6 +20,7 @@ static __inline__ int abs(int __n) {
   return (__n < 0) ? -__n : __n;
 }
 __extern int atexit(void (*)(void));
+__extern int on_exit(void (*)(int, void *), void *);
 __extern int atoi(const char *);
 __extern long atol(const char *);
 __extern long long atoll(const char *);

@@ -1,16 +1,17 @@
 CC	= gcc
 LD      = ld
-CFLAGS  = -I./include -Wall -g -O2 -fomit-frame-pointer -march=i386 -mcpu=i686
+CFLAGS  = -I./include -I./linux/include -Wall -g -O2 -fomit-frame-pointer -march=i386 -mcpu=i686
 LDFLAGS =
 AR      = ar
 RANLIB  = ranlib
 
-TESTS   = testvsnp
+TESTS   = 
 LIBOBJS = vsnprintf.o snprintf.o vsscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
 	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
-	  strtoimax.o strtoumax.o
+	  strtoimax.o strtoumax.o \
+	  _exit.o exit.o atexit.o onexit.o
 LIB     = libmyc.a
 
 SOFLAGS = -fPIC
@@ -18,7 +19,7 @@ SOOBJS  = $(patsubst %.o,%.lo,$(LIBOBJS))
 SOLIB   = libmyc.so
 SONAME  = libmyc.so
 
-all: $(TESTS) $(LIB) $(SOLIB)
+all: $(TESTS) crt0.o $(LIB) $(SOLIB)
 
 .SUFFIXES: .c .o .a .so .lo .i .s .ls
 
