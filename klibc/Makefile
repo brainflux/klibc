@@ -76,10 +76,12 @@ $(SOLIB): $(CRT0) __shared_init.o $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj soc
 	        syscalls/*.o socketcalls/*.o \
 		$(LIBGCC)
 
-$(SOLIB).hash: $(SOLIB) md5hash.pl
+sha1hash: sha1hash.c
+	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) -o $@ $<
+
+$(SOLIB).hash: $(SOLIB) sha1hash
 	$(NM) $(SOLIB) | \
-		egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
-		sort | $(PERL) md5hash.pl > $@
+		egrep '^[0-9a-fA-F]+ [ADRTW] ' | sort | ./sha1hash > $@
 
 $(SOHASH): $(SOLIB) $(SOLIB).hash
 	cp -f $(SOLIB) $@
@@ -121,6 +123,7 @@ clean: archclean
 	rm -f $(TESTS) tests/*.stripped
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
+	rm -f sha1hash
 
 spotless: clean
 	find . \( -name \*~ -o -name '.*.d' \) -not -type d -print0 | \
