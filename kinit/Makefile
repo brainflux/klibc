@@ -24,3 +24,7 @@ clean:
 
 spotless: clean
 	-rm .*.d
+
+ifneq ($(wildcard .*.d),)
+include $(wildcard .*.d)
+endif
