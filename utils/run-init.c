@@ -1,4 +1,4 @@
-#ident "$Id: run-init.c,v 1.4 2004/06/09 02:51:58 hpa Exp $"
+#ident "$Id: run-init.c,v 1.5 2004/07/30 16:24:11 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -75,7 +75,7 @@ static int nuke_dirent(int len, const char *dir, const char *name, dev_t me)
   xlen = snprintf(path, bytes, "%s/%s", dir, name);
   assert(xlen < bytes);
 
-  if ( stat(path, &st) )
+  if ( lstat(path, &st) )
     return ENOENT;		/* Return 0 since already gone? */
 
   if ( st.st_dev != me )
