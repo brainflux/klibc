@@ -157,6 +157,7 @@ clean: archclean
 	rm -f sha1hash errlist.c
 
 spotless: clean
+	rm -f include/klibc/havesyscall.h syscalls.nrs
 	find . \( -name \*~ -o -name '.*.d' \) -not -type d -print0 | \
 		xargs -0rt rm -f
 
