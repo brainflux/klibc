@@ -48,6 +48,3 @@ __syscall_common:
 	.word	errno
 
 #endif
-	
-	
-	
