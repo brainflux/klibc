@@ -9,12 +9,12 @@ this:
 
 a) In the source root directory (the directory above the one in which
    this file is found) create a symlink called "linux" pointing to a
-   reasonably recent Linux kernel tree (2.4 or 2.5 should be OK.)
+   reasonably recent Linux kernel tree (2.4 or 2.6 should be OK.)
    This tree must have the include/asm symlink set up for the
    architecture you're compiling for, and include/linux/autoconf.h
    must exist.  The easiest way to make sure of all of these is to do
    a "make config" or any of its variants on the kernel tree is
-   question, followed by a "make dep".
+   question, followed by a "make dep" (2.4) or "make prepare" (2.6).
 
 b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    the appropriate architecture, and set CROSS to your toolchain
