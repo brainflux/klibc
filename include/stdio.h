@@ -67,19 +67,19 @@ static __inline__ off_t ftell(FILE *__f)
 __extern int fputs(const char *, FILE *);
 __extern int puts(const char *);
 
-__extern size_t __fread(void *, size_t, FILE *);
-__extern size_t __fwrite(const void *, size_t, FILE *);
+__extern size_t _fread(void *, size_t, FILE *);
+__extern size_t _fwrite(const void *, size_t, FILE *);
 
 #ifndef __NO_FREAD_FWRITE_INLINES
-__extern __inline__ size_t
+static __inline__ size_t
 fread(void *__p, size_t __s, size_t __n, FILE *__f)
 {
-  return __fread(__p, __s*__n, __f)/__s;
+  return _fread(__p, __s*__n, __f)/__s;
 }
-__extern __inline__ size_t
+static  __inline__ size_t
 fwrite(void *__p, size_t __s, size_t __n, FILE *__f)
 {
-  return __fwrite(__p, __s*__n, __f)/__s;
+  return _fwrite(__p, __s*__n, __f)/__s;
 }
 #endif
 

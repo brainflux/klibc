@@ -22,5 +22,5 @@ int vfprintf(FILE *file, const char *format, va_list ap)
   if ( rv > BUFFER_SIZE-1 )
     rv = BUFFER_SIZE-1;
 
-  return __fwrite(buffer, rv, file);
+  return _fwrite(buffer, rv, file);
 }

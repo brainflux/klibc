@@ -4,6 +4,6 @@
 int main(void)
 {
   const char hello[] = "Hello, World!\n";
-  __fwrite(hello, sizeof hello-1, stdout);
+  _fwrite(hello, sizeof hello-1, stdout);
   return 0;
 }

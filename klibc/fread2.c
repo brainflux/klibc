@@ -9,5 +9,5 @@
 
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *f)
 {
-  return __fread(ptr, size*nmemb, f)/size;
+  return _fread(ptr, size*nmemb, f)/size;
 }
