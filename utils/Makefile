@@ -1,5 +1,4 @@
-KLIBSRC = ../klibc
-
+SRCROOT  = ..
 include ../MCONFIG
 
 MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d

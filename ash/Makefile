@@ -12,7 +12,7 @@ OBJ2 =	builtins.o cd.o dirent.o bltin/echo.o error.o eval.o exec.o expand.o \
 
 OBJS =	$(OBJ1) $(OBJ2)
 
-KLIBSRC = ../klibc
+SRCROOT  = ..
 include ../MCONFIG
 
 MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d

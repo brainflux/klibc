@@ -3,8 +3,7 @@
 # Makefile configuration, without explicit rules
 #
 
-KLIBSRC = .
-
+SRCROOT = ..
 include ../MCONFIG
 
 WARNFLAGS = -W -Wall -Wpointer-arith -Wwrite-strings -Wstrict-prototypes -Winline

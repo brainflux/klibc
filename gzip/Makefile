@@ -16,12 +16,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# $Id: Makefile,v 1.3 2002/08/21 08:38:07 rmk Exp $
+# $Id: Makefile,v 1.4 2002/08/23 21:06:05 hpa Exp $
 
 #### Start of system configuration section. ####
 
-KLIBSRC = ../klibc
-
+SRCROOT = ..
 include ../MCONFIG
 include MCONFIG
 

@@ -7,11 +7,12 @@ ARCH    = $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
+KLIBSRC = $(SRCROOT)/klibc
 REQFLAGS = -nostdinc -iwithprefix include -I$(KLIBSRC) \
 	  -I$(KLIBSRC)/arch/$(ARCH)/include \
 	  -I$(KLIBSRC)/include/bits$(BITSIZE) \
 	  -DBITSIZE=$(BITSIZE) -I$(KLIBSRC)/include \
-	  -I$(KLIBSRC)/linux/include
+	  -I$(SRCROOT)/linux/include
 LDFLAGS =
 AR      = $(CROSS)ar
 RANLIB  = $(CROSS)ranlib

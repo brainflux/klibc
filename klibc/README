@@ -7,13 +7,14 @@ work in progress, and a lot of things are still missing.
 The build procedure is not very polished yet, but it should work like
 this:
 
-a) Create a symlink called "linux" pointing to a reasonably recent
-   Linux kernel tree (2.4 or 2.5 should be OK.)  This tree must have
-   the include/asm symlink set up for the architecture you're
-   compiling for, and include/linux/autoconf.h must exist.  The
-   easiest way to make sure of all of these is to do a "make config"
-   or any of its variants on the kernel tree is question, followed by
-   a "make dep".
+a) In the source root directory (the directory above the one in which
+   this file is found) create a symlink called "linux" pointing to a
+   reasonably recent Linux kernel tree (2.4 or 2.5 should be OK.)
+   This tree must have the include/asm symlink set up for the
+   architecture you're compiling for, and include/linux/autoconf.h
+   must exist.  The easiest way to make sure of all of these is to do
+   a "make config" or any of its variants on the kernel tree is
+   question, followed by a "make dep".
 
 b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    the appropriate architecture, and set CROSS to your toolchain
@@ -31,7 +32,8 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
 
    The following is the status of various architectures:
 
-   Known to work:	arm alpha i386 ppc sparc sparc64
+   Known to work:	arm i386 sparc sparc64
+   Need crt0.S updates:	alpha ppc 
    Missing setjmp:	s390 s390x ppc64
    May or may not work:	x86_64
    Need porting work:	cris ia64 m68k mips64 parisc sh
