@@ -75,8 +75,6 @@ __extern char *getcwd(char *, size_t);
 
 __extern int sync(void);
 
-__extern ssize_t read(int, void *, size_t);
-__extern ssize_t write(int, const void *, size_t);
 /* Also in <fcntl.h> */
 #ifndef _KLIBC_IN_OPEN_C
 __extern int open(const char *, int, ...);
@@ -87,6 +85,12 @@ __extern off_t lseek(int, off_t, int);
 static __inline__ off_t llseek(int __f, off_t __o, int __w) {
   return lseek(__f, __o, __w);
 }
+
+__extern ssize_t read(int, void *, size_t);
+__extern ssize_t write(int, const void *, size_t);
+__extern ssize_t pread(int, void *, size_t, off_t);
+__extern ssize_t pwrite(int, void *, size_t, off_t);
+
 __extern int dup(int);
 __extern int dup2(int, int);
 __extern int fcntl(int, int, long);

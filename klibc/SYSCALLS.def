@@ -131,7 +131,7 @@ int readv(int, const struct iovec *, int)
 int writev(int, const struct iovec *, int)
 int ftruncate64,ftruncate::ftruncate(int, off_t)
 ssize_t pread64,pread::pread(int, void *, size_t, off_t)
-ssize_t pwrite64,pread::pread(int, void *, size_t, off_t)
+ssize_t pwrite64,pwrite::pwrite(int, void *, size_t, off_t)
 
 ;
 ; Signal operations
