@@ -20,7 +20,7 @@
 #endif
 
 #ifdef __i386__
-# define __socketcall __extern __asmlinkage
+# define __socketcall __extern __cdecl
 #else
 # define __socketcall __extern
 #endif

@@ -7,12 +7,12 @@
 #ifndef _KLIBC_COMPILER_H
 #define _KLIBC_COMPILER_H
 
-/* How to declare a function that is called/callable from assembly */
+/* Specific calling conventions */
 #ifdef __i386__
 # ifdef __GNUC__
-#  define __asmlinkage __attribute__((cdecl))
+#  define __cdecl __attribute__((cdecl,regparm(0)))
 # else
-#  define __asmlinkage __cdecl
+  /* Most other C compilers have __cdecl as a keyword */
 # endif
 #endif
 
