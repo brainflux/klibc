@@ -24,8 +24,7 @@
 #include <linux/romfs_fs.h>
 #include <linux/cramfs_fs.h>
 #include <linux/minix_fs.h>
-#define _LINUX_EXT2_FS_SB
-#include <linux/ext2_fs.h>
+#include "ext2_fs.h"
 #include "ext3_fs.h"
 #include "xfs_sb.h"
 
