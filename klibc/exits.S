@@ -40,6 +40,7 @@ _exit:
 	movl $__NR_exit,%eax
 #endif
 	int $0x80
+	hlt
 	.size _exit,.-exit
 
 #elif defined(__x86_64__)
