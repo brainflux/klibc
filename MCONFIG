@@ -26,7 +26,7 @@ HOST_LIBS    =
 
 CRT0    = $(KLIBSRC)/crt0.o
 KLIBC   = $(KLIBSRC)/libc.a
-LIBGCC  = # $(shell $(CC) --print-libgcc)
+LIBGCC  = $(shell $(CC) --print-libgcc)
 
 #
 # Include arch-specific rule fragments
