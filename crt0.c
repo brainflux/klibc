@@ -32,6 +32,10 @@ register uintptr_t *params asm("%r15");
 register uintptr_t *params asm("$sp");
 #elif defined(__arm__)
 register uintptr_t *params asm("sp");
+#elif defined(__sh__)
+register uintptr_t *params asm("r15");
+#elif defined(__h8300__)
+register uintptr_t *params asm("sp");
 #else
 #error "Need crt0.c port for this architecture!"
 #endif
