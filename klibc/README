@@ -51,7 +51,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    s390:	 Working static, shared untested
    s390x:	 Working
    sh:		 Untested
-   sparc64:	 sigaction() fails in ash for unknown reason
+   sparc64:	 Untested
    sparc:	 Working
    v850:	 Not yet ported
    x86-64:	 Working
