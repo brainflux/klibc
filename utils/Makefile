@@ -27,7 +27,7 @@ shared/%: %.o $(CRTSHARED) $(LIBSHARED) $(LIBUTILS)
 
 # Programs that consist of more than one file
 mount.o: mount_main.o mount_opts.o
-	$(LD) -r -o $@ $^
+	$(LD) $(LDFLAGS) -r -o $@ $^
 
 $(LIBUTILS): $(LIBOBJS)
 	-rm -f $@
