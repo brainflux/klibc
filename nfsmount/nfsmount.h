@@ -16,6 +16,8 @@ enum nfs_proto {
 	v3,
 };
 
+/* masked with NFS_MOUNT_FLAGMASK before mount() call */
+#define NFS_MOUNT_KLIBC_RONLY	0x00010000U
 /*
  * Note for gcc 3.2.2:
  *

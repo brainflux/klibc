@@ -75,6 +75,8 @@ static struct bool_opts {
 	{ "udp",	~NFS_MOUNT_TCP,		0 },
 	{ "tcp",	~NFS_MOUNT_TCP,		NFS_MOUNT_TCP },
 	{ "broken_suid",~NFS_MOUNT_BROKEN_SUID,	NFS_MOUNT_BROKEN_SUID },
+	{ "ro",		~NFS_MOUNT_KLIBC_RONLY, NFS_MOUNT_KLIBC_RONLY },
+	{ "rw",		~NFS_MOUNT_KLIBC_RONLY,	0 },
 	{ NULL,		0,			0 }
 };
 

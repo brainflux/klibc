@@ -247,6 +247,7 @@ int nfs_mount(const char *pathname, const char *hostname,
 	char mounted = 0;
 	int sock = -1;
 	int ret = 0;
+	int mountflags;
 
 	get_ports(server, data);
 
@@ -298,7 +299,9 @@ int nfs_mount(const char *pathname, const char *hostname,
 
 	data->fd = sock;
 
-	ret = mount(pathname, path, "nfs", 0, data);
+	mountflags = (data->flags & NFS_MOUNT_KLIBC_RONLY) ? MS_RDONLY : 0;
+	data->flags = data->flags & NFS_MOUNT_FLAGMASK;
+	ret = mount(pathname, path, "nfs", mountflags, data);
 
 	if (ret == -1) {
 		perror("mount");
