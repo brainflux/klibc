@@ -16,13 +16,13 @@
 	.ent	__syscall_dual1, 0
 	.globl	__syscall_dual1
 __syscall_dual1:
+	.frame	sp,0,ra,0
 	callsys
 	mov	v0, a4
-	ldgp	gp, 0(pv)
 	beq	a3, 1f
 	lda	a1, errno
 	lda	v0, -1(zero)
-	std	a3, 0(a1)
+	stl	a3, 0(a1)
 1:
 	ret	zero,(ra),1
 
