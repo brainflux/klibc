@@ -1,4 +1,4 @@
-#ident "$Id: run-init.c,v 1.1 2004/06/08 06:39:44 hpa Exp $"
+#ident "$Id: run-init.c,v 1.2 2004/06/08 06:40:33 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -145,9 +145,6 @@ static int nuke(const char *what)
     return 0;
   }
 }
-
-#define RAMFS_MAGIC	0x858458f6
-#define TMPFS_MAGIC	0x01021994
 
 int main(int argc, char *argv[])
 {
