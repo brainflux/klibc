@@ -13,44 +13,35 @@
 
 static __u32 mount_port;
 
-struct mount_call_2
+struct mount_call
 {
 	struct rpc_call rpc;
 	__u32 path_len;
 	char path[0];
 };
 
-
 #define NFS_MAXFHSIZE 64
 
 struct nfs_fh
 {
-	__u16 size;
+	__u32 size;
 	char data[NFS_MAXFHSIZE];
 } __attribute__((packed));
 
-struct foo
-{
-	struct rpc_reply reply;
-	__u32 status;
-};
-
-
-struct mount_reply_2
+struct mount_reply
 {
 	struct rpc_reply reply;
 	__u32 status;
 	struct nfs_fh fh;
 } __attribute__((packed));
 
-#define MNT_REPLY_2_MINSIZE (sizeof(struct mount_reply_2) - \
-			     sizeof(struct nfs_fh))
+#define MNT_REPLY_MINSIZE (sizeof(struct rpc_reply) + sizeof(__u32))
 
 static void get_ports(__u32 server, const struct nfs_mount_data *data)
 {
 	__u32 nfs_ver, mount_ver;
 	__u32 proto;
-	
+
 	if (data->flags & NFS_MOUNT_VER3) {
 		nfs_ver = NFS3_VERSION;
 		mount_ver = NFS_MNT3_VERSION;
@@ -97,7 +88,7 @@ static inline void dump_params(__u32 server,
 {
 #ifdef NFS_DEBUG
 	struct in_addr addr = { server };
-	
+
 	printf("NFS params:\n");
 	printf("  server = %s, path = \"%s\", ", inet_ntoa(addr), path);
 	printf("version = %d, proto = %s\n",
@@ -123,12 +114,12 @@ static inline void dump_fh(const char *data, int len)
 #ifdef NFS_DEBUG
 	int i = 0;
 	int max = len - (len % 8);
-	
+
 	printf("Root file handle: %d bytes\n", NFS2_FHSIZE);
 
 	while (i < max) {
 		int j;
-		
+
 		printf("  %4d:  ", i);
 		for (j = 0; j < 4; j++) {
 			printf("%02x %02x %02x %02x  ",
@@ -141,62 +132,30 @@ static inline void dump_fh(const char *data, int len)
 #endif
 }
 
-static inline void dump_fh2(const struct nfs_fh *fh)
-{
-#ifdef NFS_DEBUG
-	dump_fh((const char *) fh, NFS2_FHSIZE);
-#endif
-}
+static struct mount_reply mnt_reply;
 
-static inline void dump_fh3(const struct nfs_fh *fh)
+static int mount_call(__u32 proc, __u32 version,
+		      const char *path,
+		      struct client *clnt)
 {
-#ifdef NFS_DEBUG
-	dump_fh(fh->data, ntohs(fh->size));
-#endif
-}
-
-static void nfs_umount_v2(struct nfs_mount_data *data)
-{
-}
-
-static int nfs_mount_v2(__u32 server, const char *path,
-			struct nfs_mount_data *data)
-{
-	struct mount_call_2 *mnt_call = NULL;
-	struct mount_reply_2 mnt_reply;
-	struct client *clnt = NULL;
+	struct mount_call *mnt_call = NULL;
 	size_t path_len, call_len;
-	char mounted = 0;
 	struct rpc rpc;
 	int ret = 0;
 
-	get_ports(server, data);
-	
-	dump_params(server, path, data);
-	
-	if (data->flags & NFS_MOUNT_TCP) {
-		clnt = tcp_client(server, mount_port, CLI_RESVPORT);
-	} else {
-		clnt = udp_client(server, mount_port, CLI_RESVPORT);
-	}
-
-	if (clnt == NULL) {
-		goto bail;
-	}
-
 	path_len = strlen(path);
 	call_len = sizeof(*mnt_call) + pad_len(path_len);
-	
+
 	if ((mnt_call = malloc(call_len)) == NULL) {
 		perror("malloc");
 		goto bail;
 	}
-	
+
 	memset(mnt_call, 0, sizeof(*mnt_call));
 
 	mnt_call->rpc.program = __constant_htonl(NFS_MNT_PROGRAM);
-	mnt_call->rpc.prog_vers = __constant_htonl(NFS_MNT_VERSION);
-	mnt_call->rpc.proc = __constant_htonl(MNTPROC_MNT);
+	mnt_call->rpc.prog_vers = __constant_htonl(version);
+	mnt_call->rpc.proc = __constant_htonl(proc);
 	mnt_call->path_len = htonl(path_len);
 	memcpy(mnt_call->path, path, path_len);
 
@@ -208,60 +167,84 @@ static int nfs_mount_v2(__u32 server, const char *path,
 	if (rpc_call(clnt, &rpc) < 0)
 		goto bail;
 
-	if (rpc.reply_len < MNT_REPLY_2_MINSIZE) {
+	if (rpc.reply_len < MNT_REPLY_MINSIZE) {
 		fprintf(stderr, "incomplete reply: %d < %d\n",
-			rpc.reply_len, MNT_REPLY_2_MINSIZE);
+			rpc.reply_len, MNT_REPLY_MINSIZE);
 		goto bail;
 	}
-	
+
 	if (mnt_reply.status != 0) {
-		fprintf(stderr, "mount failed: %d\n",
+		fprintf(stderr, "mount call failed: %d\n",
 			ntohl(mnt_reply.status));
 		goto bail;
 	}
-	
-	dump_fh2(&mnt_reply.fh);
-
-	data->root.size = NFS_FHSIZE;
-	memcpy(data->root.data, &mnt_reply.fh, NFS_FHSIZE);
-	memcpy(data->old_root.data, &mnt_reply.fh, NFS_FHSIZE);
-
-	mounted = 1;
 
 	goto done;
 
  bail:
-	if (mounted) {
-		nfs_umount_v2(data);
-	}
 	ret = -1;
-	
+
  done:
 	if (mnt_call) {
 		free(mnt_call);
-	}
-	
-	if (clnt) {
-		client_free(clnt);
 	}
 
 	return ret;
 }
 
-void nfs_umount_v3(struct nfs_mount_data *data)
+static int mount_v2(const char *path,
+		    struct nfs_mount_data *data,
+		    struct client *clnt)
 {
+	int ret = mount_call(MNTPROC_MNT, NFS_MNT_VERSION, path, clnt);
+
+	if (ret == 0) {
+		dump_fh((const char *) &mnt_reply.fh, NFS2_FHSIZE);
+
+		data->root.size = NFS_FHSIZE;
+		memcpy(data->root.data, &mnt_reply.fh, NFS_FHSIZE);
+		memcpy(data->old_root.data, &mnt_reply.fh, NFS_FHSIZE);
+	}
+
+	return ret;
 }
 
-int nfs_mount_v3(__u32 server, const char *path,
-		 struct nfs_mount_data *data)
+static inline int umount_v2(const char *path, struct client *clnt)
 {
-	return -1;
+	return mount_call(MNTPROC_UMNT, NFS_MNT_VERSION, path, clnt);
+}
+
+static int mount_v3(const char *path,
+		    struct nfs_mount_data *data,
+		    struct client *clnt)
+{
+	int ret = mount_call(MNTPROC_MNT, NFS_MNT3_VERSION, path, clnt);
+
+	if (ret == 0) {
+		size_t fhsize = ntohl(mnt_reply.fh.size);
+
+		dump_fh((const char *) &mnt_reply.fh.data, fhsize);
+
+		memset(data->old_root.data, 0, NFS_FHSIZE);
+		memset(&data->root, 0, sizeof(data->root));
+		data->root.size = fhsize;
+		memcpy(&data->root.data, mnt_reply.fh.data, fhsize);
+		data->flags |= NFS_MOUNT_VER3;
+	}
+
+	return ret;
+}
+
+static inline int umount_v3(const char *path, struct client *clnt)
+{
+	return mount_call(MNTPROC_UMNT, NFS_MNT3_VERSION, path, clnt);
 }
 
 int nfs_mount(__u32 server, const char *rem_path, const char *path,
 	     struct nfs_mount_data *data)
 {
 	struct in_addr wibble = { server };
+	struct client *clnt = NULL;
 	struct sockaddr_in addr;
 	char *pathname = NULL;
 	char mounted = 0;
@@ -269,7 +252,7 @@ int nfs_mount(__u32 server, const char *rem_path, const char *path,
 	int sock = -1;
 	int path_len;
 	int ret = 0;
-	
+
 	hostname = inet_ntoa(wibble);
 	path_len = strlen(hostname) + strlen(rem_path) + 2;
 	pathname = malloc(path_len);
@@ -278,13 +261,27 @@ int nfs_mount(__u32 server, const char *rem_path, const char *path,
 		perror("malloc");
 		goto bail;
 	}
-	
+
 	snprintf(pathname, path_len, "%s:%s", hostname, rem_path);
-	
-	if (data->flags & NFS_MOUNT_VER3) {
-		ret = nfs_mount_v3(server, rem_path, data);
+
+	get_ports(server, data);
+
+	dump_params(server, path, data);
+
+	if (data->flags & NFS_MOUNT_TCP) {
+		clnt = tcp_client(server, mount_port, CLI_RESVPORT);
 	} else {
-		ret = nfs_mount_v2(server, rem_path, data);
+		clnt = udp_client(server, mount_port, CLI_RESVPORT);
+	}
+
+	if (clnt == NULL) {
+		goto bail;
+	}
+
+	if (data->flags & NFS_MOUNT_VER3) {
+		ret = mount_v3(rem_path, data, clnt);
+	} else {
+		ret = mount_v2(rem_path, data, clnt);
 	}
 
 	if (ret == -1) {
@@ -302,19 +299,19 @@ int nfs_mount(__u32 server, const char *rem_path, const char *path,
 		perror("socket");
 		goto bail;
 	}
-	
+
 	if (bindresvport(sock, 0) == -1) {
 		perror("bindresvport");
 		goto bail;
 	}
-	
+
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = server;
 	addr.sin_port = htons(nfs_port);
 	memcpy(&data->addr, &addr, sizeof(data->addr));
 
 	strncpy(data->hostname, hostname, sizeof(data->hostname));
-	
+
 	data->fd = sock;
 
 	ret = mount(pathname, path, "nfs", 0, data);
@@ -323,31 +320,35 @@ int nfs_mount(__u32 server, const char *rem_path, const char *path,
 		perror("mount");
 		goto bail;
 	}
-	
+
 	DEBUG(("Mounted %s on %s\n", pathname, path));
-	
+
 	goto done;
-	
+
  bail:
 	if (mounted) {
 		if (data->flags & NFS_MOUNT_VER3) {
-			nfs_umount_v3(data);
+			umount_v3(path, clnt);
 		} else {
-			nfs_umount_v2(data);
+			umount_v2(path, clnt);
 		}
 	}
 
 	ret = -1;
 
  done:
+	if (clnt) {
+		client_free(clnt);
+	}
+
 	if (pathname) {
 		free(pathname);
 	}
-	
+
 	if (sock != -1) {
 		close(sock);
 	}
-	
+
 	return ret;
 }
 

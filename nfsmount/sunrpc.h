@@ -20,11 +20,16 @@
 
 #define REPLY_OK	0
 
-struct rpc_header 
+struct rpc_udp_header
 {
-	__u32 frag_hdr;
 	__u32 xid;
 	__u32 msg_type;
+};
+
+struct rpc_header
+{
+	__u32 frag_hdr;
+	struct rpc_udp_header udp;
 };
 
 struct rpc_call

@@ -21,7 +21,7 @@ enum nfs_proto {
  * If you're turning on debugging, make sure you get rid of -Os from
  * the gcc command line, or else ipconfig will fail to link.
  */
-#define NFS_DEBUG
+#undef NFS_DEBUG
 
 #ifdef NFS_DEBUG
 #define DEBUG(x) printf x

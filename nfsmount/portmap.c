@@ -34,18 +34,21 @@ __u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
 	struct rpc rpc;
 	__u32 port = 0;
 
-	if ((clnt = tcp_client(server, RPC_PMAP_PORT, 0)) == NULL)
-		goto bail;
-	
+	if ((clnt = tcp_client(server, RPC_PMAP_PORT, 0)) == NULL) {
+		if ((clnt = udp_client(server, RPC_PMAP_PORT, 0)) == NULL) {
+			goto bail;
+		}
+	}
+
 	call.program = htonl(program);
 	call.version = htonl(version);
 	call.proto = htonl(proto);
-	
+
 	rpc.call = (struct rpc_call *) &call;
 	rpc.call_len = sizeof(call);
 	rpc.reply = (struct rpc_reply *) &reply;
 	rpc.reply_len = sizeof(reply);
-	
+
 	if (rpc_call(clnt, &rpc) < 0)
 		goto bail;
 
@@ -61,8 +64,9 @@ __u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
 	DEBUG(("Port for %d/%d[%s]: %d\n", program, version,
 	       proto == IPPROTO_TCP ? "tcp" : "udp", port));
 
-	if (clnt)
+	if (clnt) {
 		client_free(clnt);
-	
+	}
+
 	return port;
 }

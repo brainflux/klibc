@@ -90,7 +90,7 @@ static int parse_int(const char *val, const char *ctx)
 static void parse_opts(char *opts)
 {
 	char *cp, *val;
-	
+
 	while ((cp = strsep(&opts, ",")) != NULL) {
 		if (*cp == '\0')
 			continue;
@@ -160,13 +160,13 @@ int main(int argc, char *argv[])
 int nfsmount_main(int argc, char *argv[])
 {
 	struct timeval now;
+	__u32 server = 0;
 	char *rem_path;
-	__u32 server;
 	char *path;
 	int c;
 
 	progname = argv[0];
-	
+
 	gettimeofday(&now, NULL);
 	srand48(now.tv_usec ^ (now.tv_sec << 24));
 
@@ -185,23 +185,28 @@ int nfsmount_main(int argc, char *argv[])
 		}
 	}
 
+	if (server == 0) {
+		fprintf(stderr, "%s: need a server\n", progname);
+		exit(1);
+	}
+
 	if (optind == argc) {
 		fprintf(stderr, "%s: need a path\n", progname);
 		exit(1);
 	}
-	
+
 	rem_path = argv[optind];
-	
+
 	if (optind <= argc - 2) {
 		path = argv[optind + 1];
 	} else {
 		path = "/nfs_root";
 	}
-	
+
 	check_path(path);
-	
+
 	if (nfs_mount(server, rem_path, path, &mount_data) != 0)
 		return 1;
-	
+
 	return 0;
 }
