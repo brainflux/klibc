@@ -89,19 +89,13 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
 
 			switch (opt) {
 			case 1:	/* subnet mask */
-				if (len > 4)
-					len = 4;
-				memcpy(&dev->ip_netmask, ext, len);
+				memcpy(&dev->ip_netmask, ext, len > 4 ? 4 : len);
 				break;
 			case 3: /* default gateway */
-				if (len > 4)
-					len = 4;
-				memcpy(&dev->ip_gateway, ext, len);
+				memcpy(&dev->ip_gateway, ext, len > 4 ? 4 : len);
 				break;
 			case 6:	/* DNS server */
-				if (len > 8)
-					len = 8;
-				memcpy(&dev->ip_nameserver, ext, len);
+				memcpy(&dev->ip_nameserver, ext, len > 8 ? 8 : len);
 				break;
 			case 12: /* host name */
 				if (len > sizeof(dev->hostname) - 1)
@@ -126,9 +120,7 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
 					dev->mtu = (ext[0] << 8) + ext[1];
 				break;
 			case 28: /* broadcast addr */
-				if (len > 4)
-					len = 4;
-				memcpy(&dev->ip_broadcast, ext, len);
+				memcpy(&dev->ip_broadcast, ext, len > 4 ? 4 : len);
 				break;
 			case 40: /* NIS domain name */
 				if (len > sizeof(dev->nisdomainname) - 1)
