@@ -111,11 +111,13 @@ crt0.o: arch/$(ARCH)/crt0.o
 SYSCALLS.i: SYSCALLS.def
 	$(CC) $(CFLAGS) -D__ASSEMBLY__ -ansi -x assembler-with-cpp -E -o $@ $<
 
-syscalls.dir: SYSCALLS.i syscalls.pl arch/$(ARCH)/sysstub.ph syscommon.h \
-	../linux/include/asm/unistd.h
+syscalls.nrs: ../linux/include/asm/unistd.h
+	$(CC) $(CFLAGS) -Wp,-dM -x c -E -o $@ $<
+
+syscalls.dir: SYSCALLS.i syscalls.pl arch/$(ARCH)/sysstub.ph syscommon.h syscalls.nrs
 	rm -rf syscalls
 	mkdir syscalls
-	$(PERL) syscalls.pl SYSCALLS.i $(ARCH) $(BITSIZE) ../linux/include/asm/unistd.h
+	$(PERL) syscalls.pl SYSCALLS.i $(ARCH) $(BITSIZE) syscalls.nrs
 	touch $@
 
 include/klibc/havesyscall.h: syscalls.dir

@@ -39,7 +39,7 @@ LIBSHARED = $(KLIBSRC)/libc.so
 # THIS MUST BE AN ABSOLUTE PATH WITH NO FINAL SLASH.
 # Leave this empty to make it the root.
 #
-SHLIBDIR = /lib
+SHLIBDIR = /home/hpa/klibc/klibc/klibc
 
 #
 # Include arch-specific rule fragments
