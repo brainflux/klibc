@@ -28,13 +28,16 @@ exit:
 	.globl _exit
 	.type _exit,@function
 _exit:
+#ifdef REGPARM
+	movl %eax,%ebx
+#else
+	popl %ebx
+	popl %ebx
+#endif
 #if __NR_exit == 1
-	popl %ebx
 	xorl %eax,%eax
-	popl %ebx
 	incl %eax
 #else
-	movl 4(%esp),%ebx
 	movl $__NR_exit,%eax
 #endif
 	int $0x80

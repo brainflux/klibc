@@ -7,6 +7,15 @@
 #ifndef _KLIBC_COMPILER_H
 #define _KLIBC_COMPILER_H
 
+/* How to declare a function that is called/callable from assembly */
+#ifdef __i386__
+# ifdef __GNUC__
+#  define __asmlinkage __attribute__((cdecl))
+# else
+#  define __asmlinkage __cdecl
+# endif
+#endif
+
 /* How to declare a function that *must* be inlined */
 #ifdef __GNUC__
 # if __GNUC_MAJOR__ >= 3
