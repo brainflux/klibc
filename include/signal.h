@@ -9,7 +9,7 @@
 #include <string.h>		/* For memset() */
 #include <limits.h>		/* For LONG_BIT */
 #include <sys/types.h>
-#include <linux/signal.h>
+#include <asm/signal.h>
 
 /* Some architectures don't define these */
 #ifndef SA_RESETHAND

@@ -21,7 +21,7 @@ typedef ptrdiff_t ssize_t;
 #define _LINUX_TYPES_H		
 
 typedef __kernel_fd_set		fd_set;
-typedef __kernel_dev_t		dev_t;
+typedef uint32_t		dev_t;
 typedef __kernel_ino_t		ino_t;
 typedef __kernel_mode_t		mode_t;
 typedef __kernel_nlink_t	nlink_t;

@@ -7,7 +7,7 @@
 
 #include <klibc/extern.h>
 #include <sys/types.h>
-#include <linux/mman.h>
+#include <asm/mman.h>
 #include <asm/page.h>		/* For PAGE_SIZE */
 
 #define MAP_FAILED ((void *)-1)
