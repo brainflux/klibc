@@ -21,9 +21,9 @@
 
 #define cpu_to_be32(x) __cpu_to_be32(x)	/* Needed by romfs_fs.h */
 
-#include <linux/romfs_fs.h>
-#include <linux/cramfs_fs.h>
-#include <linux/minix_fs.h>
+#include "romfs_fs.h"
+#include "cramfs_fs.h"
+#include "minix_fs.h"
 #include "ext2_fs.h"
 #include "ext3_fs.h"
 #include "xfs_sb.h"
