@@ -30,10 +30,17 @@ static __inline__ long labs(long __n) {
   return (__n < 0L) ? -__n : __n;
 }
 
-static __inline__ long llabs(long __n) {
+static __inline__ long long llabs(long long __n) {
   return (__n < 0LL) ? -__n : __n;
 }
-__extern void *malloc(size_t);
+
+#if defined(__GNUC__) && __GNUC_MAJOR__ >= 3
+# define __attribute_malloc __attribute__((malloc))
+#else
+# define __attribute_malloc
+#endif
+
+__extern __attribute_malloc void *malloc(size_t);
 __extern void *realloc(void *, size_t);
 __extern long strtol(const char *, char **, int);
 __extern long long strtoll(const char *, char **, int);

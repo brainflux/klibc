@@ -64,7 +64,7 @@ test_bit(unsigned long *bitmap, unsigned int bit)
   return (int)(bitmap[bit/LONG_BIT] >> (bit%LONG_BIT)) & 1;
 }
 
-int vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
+int vsscanf(const char *buffer, const char *format, va_list ap)
 {
   const char *p = format;
   char ch;
@@ -228,6 +228,7 @@ int vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	    bail = bail_err;
 	    break;
 	  }
+	  q = qq;
 	  converted++;
 	  /* fall through */
 
@@ -305,6 +306,7 @@ int vsscanf(const char *buffer, size_t n, const char *format, va_list ap)
 	  break;
 	}
       }
+      break;
     
     case st_match_init:		/* Initial state for %[ match */
       if ( ch == '^' && !(flags & FL_INV) ) {

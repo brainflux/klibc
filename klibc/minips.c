@@ -369,7 +369,7 @@ static void print_proc(void){
     break;
   case 'u'|0x80:
     printf(
-      "%5d %5d    -    - %5ld %4ld %s %c   -   %s",
+      "%5d %5d    -    - %5ld %5ld %s %c   -   %s",
       P_euid, P_pid, P_vsize, P_rss, tty, P_state,
       do_time(P_utime+P_stime)
     );
@@ -415,7 +415,7 @@ int main(int argc, char *argv[]){
     case 'l':      head = "  F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN    TTY       TIME CMD"; break;
     case 'f':      head = "  UID   PID  PPID  C STIME   TTY       TIME CMD"; break;
     case 'j':      head = "  PID  PGID   SID TTY         TIME CMD"; break;
-    case 'u'|0x80: head = "  UID   PID %CPU %MEM   VSZ  RSS   TTY   S START     TIME COMMAND"; break;
+    case 'u'|0x80: head = "  UID   PID %CPU %MEM   VSZ   RSS   TTY   S START     TIME COMMAND"; break;
     case 'v'|0x80: head = "  PID   TTY   S     TIME  MAJFL TRS DRS   RSS %MEM COMMAND"; break;
     case 'j'|0x80: head = " PPID   PID  PGID   SID   TTY   TPGID S   UID     TIME COMMAND"; break;
     case 'l'|0x80: head = "  F   UID   PID  PPID PRI  NI   VSZ  RSS WCHAN  S   TTY       TIME COMMAND"; break;

@@ -12,7 +12,7 @@ RANLIB  = $(CROSS)ranlib
 PERL    = perl
 
 TESTS   = testvsnp hello minihello microhello getenvtest \
-	  getopttest malloctest
+	  getopttest malloctest minips
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o sscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -67,10 +67,7 @@ all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 .c.ls:
 	$(CC) $(CFLAGS) $(SOFLAGS) -S -o $@ $<
 
-# Kill implicit rule
-.o:
-
-% : %.o $(LIB) $(CRT0)
+% : %.o
 	$(LD) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
 	cp $@ $@.stripped
 	$(STRIP) $@.stripped
@@ -89,6 +86,8 @@ getopttest: getopttest.o $(LIB) $(CRT0)
 
 malloctest: malloctest.o $(LIB) $(CRT0)
 
+minips: minips.o $(LIB) $(CRT0)
+
 $(LIB): $(LIBOBJS) syscalls.dir socketcalls.dir
 	rm -f $(LIB)
 	$(AR) cq $(LIB) $(LIBOBJS) syscalls/*.o socketcalls/*.o
@@ -98,6 +97,11 @@ $(SOLIB): $(SOOBJS) syscalls.dir
 	$(LD) -shared -soname $(SONAME) -o $@ \
 		$(SOOBJS) syscalls/*.lo socketcalls/*.lo \
 	        $(LIBGCC)
+
+# This one *HAS* to be compiled without a frame pointer, regardless of
+# OPTFLAGS!
+crt0.o: crt0.c
+	$(CC) $(CFLAGS) -fomit-frame-pointer -c -o $@ $<
 
 syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 	rm -rf syscalls
