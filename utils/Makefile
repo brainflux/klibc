@@ -40,7 +40,7 @@ $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1
 
 clean:
-	$(RM) *.o core $(PROGS) .*.d
+	$(RM) *.o core $(LIBUTILS) $(PROGS) .*.d
 	$(RM) -rf static static.g shared shared.g
 
 spotless: clean
