@@ -61,6 +61,9 @@ int execvpe(const char *file, const char * const *argv, char * const *envp)
     path[totallen] = '\0';
     
     execve(path, argv, envp);
+    if ( errno == E2BIG || errno == ENOEXEC ||
+	 errno == ENOMEM || errno == ETXTBSY )
+      break;			/* Report this as an error, no more search */
     
     searchpath = esp+1;
   } while ( esp );
