@@ -12,18 +12,20 @@ a) Create a symlink called "linux" pointing to a reasonably recent
    the include/asm symlink set up for the architecture you're
    compiling for, and include/linux/autoconf.h must exist.
 
-b) Create a symlink in the include directory called "bitsize" pointing
-   either to the "bits32" or the "bits64" directory, depending on the
-   architecture you're compiling for.
+b) Change ARCH in the main Makefile to match your architecture.
+   If you're cross-compiling, set CROSS to your toolchain prefix.
 
-c) Change ARCH and OPTFLAGS in the main Makefile to match your
-   architecture.  If you're cross-compiling, set CROSS to your
-   toolchain prefix.
+c) Type "make" and pray...
 
-d) Type "make" and pray...
-
-e) Try the "hello", "minihello" and "testvsnp" programs... they should
-   run.
+d) Try the test programs:
+       microhello
+       minihello
+       hello
+       testvsnp
+       getenvtest
+       getopttest
+       malloctest
+       minips
 
 Contact me at <hpa@zytor.com> for more info.
 
