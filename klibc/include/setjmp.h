@@ -38,7 +38,7 @@ __must_inline int sigsetjump(sigjmp_buf __e, int __savesigs)
 
 __must_inline __noreturn siglongjmp(sigjmp_buf __e, int __rv)
 {
-  sigprocmask(SIG_SETMASK, &__e->sigs, NULL);
+  sigprocmask(SIG_SETMASK, &__e->__sigs, NULL);
   longjmp(__e->__jmpbuf, __rv);
 }
 

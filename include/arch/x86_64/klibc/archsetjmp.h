@@ -5,7 +5,7 @@
 #ifndef _KLIBC_ARCHSETJMP_H
 #define _KLIBC_ARCHSETJMP_H
 
-typedef struct __jmp_buf {
+struct __jmp_buf {
   unsigned long __rbx;
   unsigned long __rsp;
   unsigned long __rbp;

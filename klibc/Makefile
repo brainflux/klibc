@@ -28,7 +28,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  strsep.o strtok.o \
 	  gethostname.o getdomainname.o getcwd.o seteuid.o setegid.o \
 	  getenv.o setenv.o unsetenv.o getopt.o readdir.o \
-	  syslog.o closelog.o pty.o \
+	  syslog.o closelog.o pty.o isatty.o \
 	  time.o fdatasync.o llseek.o select.o nice.o getpriority.o \
 	  qsort.o lrand48.o srand48.o seed48.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
