@@ -7,8 +7,9 @@ RANLIB  = ranlib
 
 TESTS   = testvsnp
 LIBOBJS = vsnprintf.o snprintf.o vsscanf.o ctypes.o \
-	  strntoumax.o atoi.o atol.o strtol.o strtoll.o \
-	  strtoul.o strtoull.o strtoimax.o strtoumax.o
+	  strntoumax.o atoi.o atol.o atoll.o \
+	  strtol.o strtoll.o strtoul.o strtoull.o \
+	  strtoimax.o strtoumax.o
 LIB     = libmyc.a
 
 SOFLAGS = -fPIC
