@@ -13,5 +13,6 @@ __extern void *mmap(void *, size_t, int, int, int, off_t);
 __extern int munmap(void *, size_t);
 __extern void *mremap(void *, size_t, size_t, unsigned long);
 __extern int msync(const void *, size_t, int);
+__extern int mprotect(const void *, size_t, int);
 
 #endif /* _SYS_MMAN_H */
