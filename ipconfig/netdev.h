@@ -19,7 +19,7 @@ struct netdev {
 
 	struct {				/* BOOTP/DHCP info	*/
 		int	fd;
-		__u16	xid;
+		__u32	xid;
 		__u32	gateway;		/* BOOTP/DHCP gateway	*/
 	} bootp;
 

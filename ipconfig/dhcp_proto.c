@@ -133,7 +133,7 @@ static int dhcp_recv(struct netdev *dev)
 	if (ret <= 0)
 		return ret;
 
-	DEBUG(("\n   dhcp xid %04x ", dev->bootp.xid));
+	DEBUG(("\n   dhcp xid %08x ", dev->bootp.xid));
 
 	if (ret < sizeof(struct bootp_hdr) ||
 	    bootp.op != BOOTP_REPLY ||		/* RFC951 7.5 */
@@ -164,7 +164,7 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec, int len)
 	vec[1].iov_base = &bootp;
 	vec[1].iov_len = sizeof(struct bootp_hdr);
 
-	DEBUG(("xid %04x secs %d ",
+	DEBUG(("xid %08x secs %d ",
 	       bootp.xid, ntohs(bootp.secs)));
 
 	return packet_send(dev, vec, len);
