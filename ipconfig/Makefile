@@ -18,9 +18,9 @@ $(LIB): $(OBJS)
 	$(AR) cru $(LIB) $(OBJS)
 
 clean:
-	$(RM) *.o $(PROGS) core
+	$(RM) *.o $(PROG) $(LIB) core
 
-spotless:
+spotless: clean
 	$(RM) *~ .*.d
 
 ifneq ($(wildcard .*.d),)

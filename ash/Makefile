@@ -12,6 +12,9 @@ OBJ2 =	builtins.o cd.o dirent.o bltin/echo.o error.o eval.o exec.o expand.o \
 
 OBJS =	$(OBJ1) $(OBJ2)
 
+OBJ_NODES = cd.o eval.o exec.o expand.o jobs.o main.o nodes.o options.o parser.o redir.o show.o trap.o var.o
+
+
 SRCROOT  = ..
 include ../MCONFIG
 
@@ -35,7 +38,7 @@ $(PROG): $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $(PROG) $(CRT0) $(OBJS) $(LIBS)
 	$(STRIP) $(PROG)
 
-$(PROG).shared: $(OBJS) $(LIBS)
+$(PROG).shared: $(OBJS) $(LIBS) $(KLIBSRC)/interp.o $(KLIBSRC)/libc.so
 	$(LD) $(LDFLAGS) -o $(PROG).shared -e main $(KLIBSRC)/interp.o $(OBJS) -R $(KLIBSRC)/libc.so $(LIBGCC)
 	$(STRIP) $(PROG).shared
 
@@ -63,6 +66,8 @@ init.c: mkinit $(SRCS)
 mkinit: mkinit.c
 	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) mkinit.c -o $@ $(HOST_LIBS)
 
+$(OBJ_NODES): nodes.h
+
 nodes.h: mknodes nodetypes nodes.c.pat
 	./mknodes nodetypes nodes.c.pat
 
@@ -73,7 +78,7 @@ mknodes: mknodes.c
 	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) mknodes.c -o $@ $(HOST_LIBS)
 
 clean:
-	rm -f core $(CLEANFILES) $(PROG) $(OBJS) .*.d
+	rm -f core $(CLEANFILES) $(PROG) $(PROG).shared $(OBJS) .*.d
 
 spotless: clean
 	find . -name \*~ -not -type d -print0 | xargs -0rt rm -f

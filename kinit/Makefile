@@ -16,14 +16,14 @@ OBJS	= kinit.o do_mounts.o nfsroot.o
 
 all: $(PROGS)
 
-kinit: $(OBJS)
+kinit: $(OBJS) $(LIBS) $(CRT0)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
 
 clean:
 	-rm -f *.o kinit
 
 spotless: clean
-	-rm -f .*.d
+	-rm -f .*.d *~
 
 ifneq ($(wildcard .*.d),)
 include $(wildcard .*.d)
