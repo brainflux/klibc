@@ -7,6 +7,7 @@
 !
 
 #include <machine/asm.h>
+#include <machine/trap.h>
 
 !
 ! The jmp_buf contains the following entries:
@@ -22,23 +23,16 @@ ENTRY(setjmp)
 	 clr	%o0		!  ...0
 
 ENTRY(longjmp)
-	mov	%o0,%g6		! Save desired frame in a global register
-	mov	%o1,%g1		! Save return value in a global register
-	ld	[%g6+4],%g7	! Get callers frame
-1:
-	cmp	%fp,%g7		! Desired frame?
-	bl,a	1b		! Below...
-	 restore		!  pop the frame and loop
-	bne,a	.L_botch	! If there...
-	 ld	[%g6+0],%o2	!  fetch return %sp
+	sub	%sp, 64, %sp	! set up a local stack frame
+0:
+	t	ST_FLUSHWIN	! flush register windows out to memory
+	!
+	! We restore the saved stack pointer to %fp, then issue
+	! a restore instruction which will reload the register
+	! window from the stack.
+	!
+        ld      [%o0+4], %o7    /* restore return pc */
+        ld      [%o0+0], %fp    /* and stack pointer */
 
-	cmp	%o2,%sp		! %sp must not decrease
-	bl,a	.L_botch
-	 mov	%o2,%sp		! If ok, put in place
-
-	ld	[%g6+8],%o3	! Fetch return pc
-	jmp	%o3 + 8		! success; return %g1
-	 mov	%g1,%o0
-
-.L_botch:
-	unimp 0			! Botched longjmp
+        retl                    ! success, return %g6
+         restore        %o1, 0, %o0
