@@ -19,7 +19,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  execl.o execle.o execv.o execvpe.o execvp.o execlp.o execlpe.o \
 	  fork.o wait.o wait3.o waitpid.o setpgrp.o \
 	  printf.o vprintf.o fprintf.o vfprintf.o perror.o \
-	  fopen.o fread.o fread2.o fwrite.o fwrite2.o fputs.o puts.o \
+	  fopen.o fread.o fread2.o fwrite.o fwrite2.o fputc.o fputs.o puts.o \
 	  sleep.o usleep.o raise.o abort.o assert.o alarm.o pause.o \
 	  signal.o siglist.o siglongjmp.o \
 	  sigaction.o sigpending.o sigprocmask.o sigsuspend.o \
@@ -77,11 +77,11 @@ $(SOLIB).hash: $(SOLIB) md5hash.pl
 	$(NM) $(SOLIB) | \
 		egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
 		sort | $(PERL) md5hash.pl > $@
-	ln -s $(SOLIB) klibc-`cat $@`.so
 
 $(SOHASH): $(SOLIB) $(SOLIB).hash
 	cp -f $(SOLIB) $@
 	$(STRIP) $@
+	rm -f klibc-??????????????????????.so
 	ln -f $@ klibc-`cat $(SOLIB).hash`.so
 
 interp.o: interp.S $(SOLIB).hash

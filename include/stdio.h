@@ -66,6 +66,9 @@ static __inline__ off_t ftell(FILE *__f)
 
 __extern int fputs(const char *, FILE *);
 __extern int puts(const char *);
+__extern int fputc(int, FILE *);
+#define putc(c,f)  fputc((c),(f))
+#define putchar(c) fputc((c),stdout)
 
 __extern size_t _fread(void *, size_t, FILE *);
 __extern size_t _fwrite(const void *, size_t, FILE *);
