@@ -5,14 +5,13 @@
 # linker can do its job properly.
 #
 # The full description of a line is:
-# [<[!]arch,...>] type sysname[@systype][::funcname](args)
+# [<[!]arch,...>] type [sysname[@systype]::]funcname(args)
 #
 
 #
 # Process-related syscalls
 #
-<!mips,mips64,sparc> pid_t vfork()
-<sparc> pid_t vfork@forkish()
+<!mips,mips64> pid_t vfork()
 <!alpha> pid_t getpid()
 <alpha> pid_t getxpid@dual0::getpid()
 int setpgid(pid_t, pid_t)
