@@ -424,10 +424,25 @@ static void sigint_handler(int sig)
 	siglongjmp(jmp, -sig);
 }
 
+static int dd(int rd_fd, int wr_fd, struct stats *stats)
+{
+	int ret;
+
+	ret = sigsetjmp(jmp, 1);
+	if (ret == 0) {
+		signal(SIGINT, sigint_handler);
+		ret = do_dd(rd_fd, wr_fd, stats);
+	}
+
+	signal(SIGINT, SIG_DFL);
+	return ret;
+}
+
 int main(int argc, char *argv[])
 {
 	struct stats stats;
-	int rd_fd = 0, wr_fd = 1, ret;
+	int ret;
+	int rd_fd = 0, wr_fd = 1;
 
 	progname = argv[0];
 
@@ -489,22 +504,10 @@ int main(int argc, char *argv[])
 
 	memset(&stats, 0, sizeof(stats));
 
-	ret = sigsetjmp(jmp, 1);
-	if (ret == 0) {
-		signal(SIGINT, sigint_handler);
-
-		/*
-		 * GCC complains about rd_fd and wr_fd.  However,
-		 * since we're only calling this if we didn't
-		 * siglongjmp, it should be safe.
-		 */
-		ret = do_dd(rd_fd, wr_fd, &stats);
-	}
-
 	/*
-	 * Just in case we get a SIGINT after we return.
+	 * Do the real work
 	 */
-	signal(SIGINT, SIG_DFL);
+	ret = dd(rd_fd, wr_fd, &stats);
 
 	fprintf(stderr, "%u+%u records in\n",
 		stats.in_full, stats.in_partial);
