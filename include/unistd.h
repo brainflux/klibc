@@ -81,7 +81,10 @@ __extern ssize_t write(int, const void *, size_t);
 __extern int open(const char *, int, ...);
 __extern int close(int);
 __extern off_t lseek(int, off_t, int);
-__extern loff_t llseek(int, loff_t, int);
+/* off_t is 64 bits now even on 32-bit platforms; see llseek.c */
+static __inline__ off_t llseek(int __f, off_t __o, int __w) {
+  return lseek(__f, __o, __w);
+}
 __extern int dup(int);
 __extern int dup2(int, int);
 __extern int fcntl(int, int, long);

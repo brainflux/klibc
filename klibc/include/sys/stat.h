@@ -7,8 +7,16 @@
 
 #include <klibc/extern.h>
 #include <sys/types.h>
-#include <asm/stat.h>
+#include <sys/time.h>		/* For struct timespec */
+#include <klibc/archstat.h>
 #include <linux/stat.h>
+
+#ifdef _STATBUF_ST_NSEC
+  /* struct stat has struct timespec instead of time_t */
+# define st_atime  st_atim.tv_sec
+# define st_mtime  st_mtim.tv_sec
+# define st_ctime  st_ctim.tv_sec
+#endif
 
 __extern int stat(const char *, struct stat *);
 __extern int fstat(int, struct stat *);

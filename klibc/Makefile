@@ -19,7 +19,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  execl.o execle.o execv.o execvpe.o execvp.o execlp.o execlpe.o \
 	  fork.o wait.o wait3.o waitpid.o system.o setpgrp.o getpgrp.o \
 	  printf.o vprintf.o fprintf.o vfprintf.o perror.o \
-	  fopen.o fread.o fread2.o fgetc.o fgets.o \
+	  open.o fopen.o fread.o fread2.o fgetc.o fgets.o \
 	  fwrite.o fwrite2.o fputc.o fputs.o puts.o \
 	  sleep.o usleep.o raise.o abort.o assert.o alarm.o pause.o \
 	  __signal.o sysv_signal.o bsd_signal.o siglist.o siglongjmp.o \
