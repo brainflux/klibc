@@ -17,7 +17,8 @@ b) Create a symlink in the include directory called "bitsize" pointing
    architecture you're compiling for.
 
 c) Change ARCH and OPTFLAGS in the main Makefile to match your
-   architecture.
+   architecture.  If you're cross-compiling, set CROSS to your
+   toolchain prefix.
 
 d) Type "make" and pray...
 
