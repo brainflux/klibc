@@ -8,6 +8,34 @@ char **environ;
 
 extern int main(int argc, char **argv, char **envp);
 
+#if defined(__i386__)
+register uintptr_t *params asm("%esp");
+#elif defined(__x86_64__)
+register uintptr_t *params asm("%rsp");
+#elif defined(__sparc64__)
+register uintptr_t sp asm("%sp");
+#define BIAS 2047
+#define params ((uintptr_t *)(sp+BIAS) + 16)
+#elif defined(__sparc__) && !defined(__sparc64__)
+register uintptr_t *sp asm("%sp");
+#define params (sp+16)
+#elif defined(__mips__) || defined(__mips64__)
+register uintptr_t *params asm("$sp");
+#elif defined(__powerpc__)
+register uintptr_t *params asm("r9");
+#elif defined(__hppa__)
+# define STACK_GROWS_UP
+register uintptr_t *params asm("%r25");
+#elif defined(__s390__)
+register uintptr_t *params asm("%r15");
+#elif defined(__alpha__)
+register uintptr_t *params asm("$sp");
+#elif defined(__arm__)
+register uintptr_t *params asm("sp");
+#else
+#error "Need crt0.c port for this architecture!"
+#endif
+
 void _start(void)
 {
   /*
@@ -19,34 +47,6 @@ void _start(void)
 
   int argc;
   char **argv;
-
-#if defined(__i386__)
-  register uintptr_t *params asm("%esp");
-#elif defined(__x86_64__)
-  register uintptr_t *params asm("%rsp");
-#elif defined(__sparc64__)
-  register uintptr_t sp asm("%sp");
-#define BIAS 2047
-  uintptr_t *params = (uintptr_t *)(sp+BIAS) + 16;
-#elif defined(__sparc__) && !defined(__sparc64__)
-  register uintptr_t *sp asm("%sp");
-  uintptr_t *params = sp+16;	/* SPARC needs a window save area */
-#elif defined(__mips__) || defined(__mips64__)
-  register uintptr_t *params asm("$sp");
-#elif defined(__powerpc__)
-  register uintptr_t *params asm("r9");
-#elif defined(__hppa__)
-# define STACK_GROWS_UP
-  register uintptr_t *params asm("%r25");
-#elif defined(__s390__)
-  register uintptr_t *params asm("%r15");
-#elif defined(__alpha__)
-  register uintptr_t *params asm("$sp");
-#elif defined(__arm__)
-  register uintptr_t *params asm("sp");
-#else
-#error "Need crt0.c port for this architecture!"
-#endif
 
   /* These seem to be standard for all the ELF ABIs... */
 #ifdef STACK_GROWS_UP
