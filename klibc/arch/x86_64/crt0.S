@@ -1,12 +1,11 @@
 #
 # arch/x86_64/crt0.S
 #
-# void _start(void)
-# {
-#    /* Divine up argc, argv, and envp */
-#    environ = envp;
-#    exit(main(argc, argv, envp));
-# } 
+# Does arch-specific initialization and invokes __libc_init
+# with the appropriate arguments.
+#
+# See __static_init.c or __shared_init.c for the expected
+# arguments.
 #
 
 	.text
@@ -14,12 +13,10 @@
 	.type _start,@function
 	.globl _start
 _start:
-	movq (%rsp),%rdi
-	leaq 8(%rsp),%rsi
-	leaq 8(%rsi,%rdi,8),%rdx
-	movq %rdx,environ
-	call main
-	movq %rdi,%rax
-	call exit
-	
+	movq %rsp,%rdi			# Offset of the ELF data structure
+	movq %rdx,%rsi			# The atexit() pointer (if any)
+	call __libc_init
+	# We should never get here...
+	hlt
+		
 	.size _start,.-_start
