@@ -9,9 +9,9 @@
 
 	.section ".text","ax"
 	.balign	4
-	.globl	___syscall_common
-	.type	___syscall_common,@function
-___syscall_common:
+	.globl	__syscall_common
+	.type	__syscall_common,@function
+__syscall_common:
 	push	$srp
 	move	[$sp+4],$mof
 	move	[$sp+8],$srp
@@ -19,11 +19,12 @@ ___syscall_common:
 
 	cmp.d	-4096,$r10
 	blt	1f
-	  neg.d	$r10,$r11
-	move.d	$r11,[_errno]
+	neg.d	$r10,$r11
+	move.d	$r11,[errno]
 	moveq	-1,$r10
 1:
-	jump	[sp+]
-	  nop
+	pop	$srp
+	ret
+	nop
 
-	.size	___syscall_common,.-___syscall_common
+	.size	__syscall_common,.-__syscall_common

@@ -10,9 +10,9 @@
 
 	.text
 	.balign 4
-	.type	__start,@function
-	.globl	__start
-__start:
+	.type	_start,@function
+	.globl	_start
+_start:
 	/* Save the address of the ELF argument array */
 	move.d	$sp,$r10	/* Address of ELF arguments */
 
@@ -21,8 +21,8 @@ __start:
 	
 	/* Set up a dummy stack frame to keep gcc from getting confused */
 	push	$r11
-	jump	___libc_init
+	jump	__libc_init
 	  push	$r11
 
-	.size __start, .-__start
+	.size _start, .-_start
 
