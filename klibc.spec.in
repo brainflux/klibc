@@ -10,7 +10,8 @@ Group: Development/Libraries
 URL: http://www.zytor.com/klibc
 Source: /dev/null
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Packager: Bryan O'Sullivan <bos@serpentine.com>
+BuildRequires: kernel-source
+Packager: H. Peter Anvin <hpa@zytor.com>
 Prefix: /usr
 Vendor: Starving Linux Artists
 
@@ -43,14 +44,9 @@ full-function counterparts.  They are intended for inclusion in
 initramfs images and embedded systems.
 
 %prep
-if [ ! -L linux ]; then
-    echo "*** You must have a symlink named linux to build klibc" 1>&2
-    exit 1
-fi
-if [ ! -f linux/include/asm/page.h ]; then
-    echo "*** You need to 'make prepare' in the linux tree before building klibc" 1>&2
-    exit 1
-fi
+cp -al /usr/src/linux-`rpm -q kernel-source | cut -c- -f3-` ./linux
+make -C linux defconfig ARCH=%{_target_cpu}
+make -C linux prepare ARCH=%{_target_cpu}
 mkdir -p %{buildroot} %{_rpmdir}
 
 %build
@@ -146,5 +142,8 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/share/doc/%{name}-utils-%{version}
 
 %changelog
+* Tue Jul 6 2004 H. Peter Anvin <hpa@zytor.com>
+- Update to use kernel-source RPM for the kernel symlink.
+
 * Sat Nov 29 2003 Bryan O'Sullivan <bos@serpentine.com> - 
 - Initial build.
