@@ -7,4 +7,11 @@
 # accordingly.
 #
 
+ARCHOBJS = \
+	arch/$(ARCH)/pipe.o \
+	arch/$(ARCH)/vfork.o
+
+ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
+
+
 archclean:
