@@ -4,7 +4,7 @@ include ../MCONFIG
 MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
 CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall
 LIBS     = $(KLIBC) $(LIBGCC)
-PROGS    = chroot dd fstype mkdir mkfifo mount pivot_root umount
+PROGS    = chroot dd fstype mkdir mkfifo mount pivot_root umount true false
 
 all:	$(PROGS)
 
@@ -31,6 +31,12 @@ pivot_root: pivot_root.o $(CRT0) $(LIBS)
 
 umount: umount.o $(CRT0) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) umount.o $(LIBS)
+
+true: true.o $(CRT0) $(LIBS)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) true.o $(LIBS)
+
+false: false.o $(CRT0) $(LIBS)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) false.o $(LIBS)
 
 $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1
