@@ -95,4 +95,6 @@ __extern int vsnprintf(char *, size_t n, const char *, va_list);
 __extern int sscanf(const char *, const char *, ...);
 __extern int vsscanf(const char *, const char *, va_list);
 
+__extern void perror(const char *);
+
 #endif /* _STDIO_H */
