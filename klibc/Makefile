@@ -43,8 +43,8 @@ include arch/$(ARCH)/Makefile.inc
 tests: $(TESTS)
 
 tests/% : tests/%.c $(LIB) $(CRT0)
-	$(CC) $(CFLAGS) -c -o $*.o $<
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) $*.o $(LIB) $(LIBGCC)
+	$(CC) $(CFLAGS) -c -o tests/$*.o $<
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) tests/$*.o $(LIB) $(LIBGCC)
 	cp $@ $@.stripped
 	$(STRIP) $@.stripped
 
