@@ -77,8 +77,8 @@ __extern int sync(void);
 
 __extern ssize_t read(int, void *, size_t);
 __extern ssize_t write(int, const void *, size_t);
-#ifndef __IN_SYS_COMMON
-__extern int open(const char *, int, ...);
+#ifndef __IN_OPEN_C
+__extern __cdecl int open(const char *, int, ...);
 #endif
 __extern int close(int);
 __extern off_t lseek(int, off_t, int);

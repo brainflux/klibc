@@ -91,7 +91,6 @@ int lchown(const char *, uid_t, gid_t)
 #
 ssize_t read(int, void *, size_t)
 ssize_t write(int, const void *, size_t)
-int open(const char *, int, mode_t)
 int close(int)
 off_t lseek(int, off_t, int)
 int dup(int)
