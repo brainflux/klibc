@@ -8,8 +8,8 @@
 #
 # Process-related syscalls
 #
-pid_t fork()
-pid_t vfork()
+# Some platforms don't seem to have vfork()?
+# pid_t vfork()
 pid_t getpid()
 int setpgid(pid_t, pid_t)
 pid_t getpgid(pid_t)
