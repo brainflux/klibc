@@ -14,9 +14,11 @@ b) Create a symlink in the include directory called "bitsize" pointing
    either to the "bits32" or the "bits64" directory, depending on the
    architecture you're compiling for.
 
-c) Type "make" and pray...
+c) Change OPTFLAGS in the main Makefile to match your architecture.
 
-d) Try the "hello", "minihello" and "testvsnp" programs... they should
+d) Type "make" and pray...
+
+e) Try the "hello", "minihello" and "testvsnp" programs... they should
    run.
 
 Contact me at <hpa@zytor.com> for more info.

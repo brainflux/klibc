@@ -1,6 +1,9 @@
 CC	= gcc
 LD      = ld
-CFLAGS  = -I. -I./include -I./linux/include -Wall -g -Os -fomit-frame-pointer -march=i386 -mcpu=i686
+OPTFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 \
+	   -malign-functions=0 -malign-jumps=0 -malign-loops=0 \
+	   -fexpensive-optimizations
+CFLAGS  = -I. -I./include -I./linux/include -Wall -g $(OPTFLAGS)
 LDFLAGS =
 AR      = ar
 RANLIB  = ranlib
