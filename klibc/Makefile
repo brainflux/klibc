@@ -1,5 +1,5 @@
 CC	= gcc
-CFLAGS  = -g -O2 -march=i386 -mcpu=i686
+CFLAGS  = -I./include -g -O2 -march=i386 -mcpu=i686
 LDFLAGS =
 AR      = ar
 RANLIB  = ranlib
