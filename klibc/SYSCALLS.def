@@ -15,6 +15,7 @@
 ;
 ; Process-related syscalls
 ;
+<!i386,x86_64> void _exit,exit::_exit(int)
 <?!ia64> pid_t clone::__clone(unsigned long, void *)
 <?ia64> pid_t clone::__clone2(unsigned long, void *, void *)
 <?!sparc> pid_t fork()
@@ -126,7 +127,8 @@ int close(int)
 int dup(int)
 int dup2(int, int)
 <i386> int fcntl64@varadic::fcntl(int, int, unsigned long)
-<!i386> int fcntl64,fcntl::fcntl(int, int, unsigned long)
+<ppc64> int fcntl(int, int, unsigned long)
+<!i386,ppc64> int fcntl64,fcntl::fcntl(int, int, unsigned long)
 int ioctl(int, int, void *)
 int flock(int, int)
 int _newselect,select::select(int, fd_set *, fd_set *, fd_set *, struct timeval *)
