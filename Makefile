@@ -53,12 +53,13 @@ local-install: $(CROSS)klcc
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/include
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)lib
 	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
-	cp -rfL $(KRNLSRC)/include/.  $(INSTALLROOT)$(INSTALLDIR)/include/.
-	cp -rfL $(KRNLOBJ)/include/.  $(INSTALLROOT)$(INSTALLDIR)/include/.
-	[ ! -d $(KRNLOBJ)/include2 ] || \
-	  cp -rfL $(KRNLOBJ)/include2/. $(INSTALLROOT)$(INSTALLDIR)/include/.
-	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/include/asm-*
-	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/include/config
+	set -e ; for d in linux asm asm-generic ; do \
+	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/include/$$d ; \
+	  cp -rfL $(KRNLSRC)/include/linux/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
+	  cp -rfL $(KRNLOBJ)/include/linux/.  $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ; \
+	  [ ! -d $(KRNLOBJ)/include2/$$d ] || \
+	    cp -rfL $(KRNLOBJ)/include2/$$d/. $(INSTALLROOT)$(INSTALLDIR)/include/$$d/. ;
+	done
 	cp -rf include/. $(INSTALLROOT)$(INSTALLDIR)/include/.
 	$(INSTALL_DATA) klcc.1 $(INSTALLROOT)$(mandir)/man1/$(CROSS)klcc.1
 	$(INSTALL_EXEC) $(CROSS)klcc $(INSTALLROOT)$(bindir)
