@@ -17,7 +17,6 @@ pid_t getppid()
 pid_t getpgrp()
 pid_t setsid()
 pid_t getsid(pid_t)
-pid_t waitpid(pid_t, int *, int)
 pid_t wait4(pid_t, int *, int, struct rusage *)
 int execve(const char *, char * const *, char * const *)
 
@@ -96,7 +95,6 @@ int fdatasync(int)
 # Signal operations
 #
 int kill(pid_t, int)
-__sighandler_t signal(int, __sighandler_t)
 int sigaction(int, const struct sigaction *, struct sigaction *)
 int sigsuspend(const sigset_t *)
 int sigpending(sigset_t *)

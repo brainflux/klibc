@@ -14,11 +14,10 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
 	  strtoimax.o strtoumax.o \
 	  _exit.o exit.o atexit.o onexit.o \
-	  execl.o execv.o wait.o wait3.o setpgrp.o \
+	  execl.o execv.o wait.o wait3.o waitpid.o setpgrp.o \
 	  printf.o vprintf.o xread.o xwrite.o fputs.o \
-	  sleep.o usleep.o \
+	  sleep.o usleep.o signal.o raise.o abort.o assert.o \
 	  brk.o malloc.o free.o realloc.o calloc.o \
-	  raise.o abort.o assert.o \
 	  memcpy.o memset.o memccpy.o \
 	  strcat.o strchr.o strcmp.o strcpy.o strdup.o strlen.o strncat.o \
 	  strncmp.o strncpy.o strrchr.o strspn.o strsep.o strtok.o \
