@@ -129,6 +129,8 @@ static __inline__ int __getpageshift(void) {
   return __page_shift;
 }
 
+__extern int daemon(int, int);
+
 /* Standard file descriptor numbers. */
 #define STDIN_FILENO	0
 #define STDOUT_FILENO	1
