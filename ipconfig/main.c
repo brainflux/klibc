@@ -474,6 +474,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 		switch (opt) {
 		case 0:
 			parse_addr(&dev->ip_addr, ip);
+			dev->caps = 0;
 			break;
 		case 1:
 			parse_addr(&dev->ip_server, ip);
@@ -608,14 +609,16 @@ static int add_all_devices(struct netdev *template)
 		}
 		p[i] = '\0';
 		flags = strtoul(p, NULL, 0);
-		/* Heuristic for if this is a reasonable boot interface.  This is the same
+		/* Heuristic for if this is a reasonable boot interface.
+		   This is the same
 		   logic the in-kernel ipconfig uses... */
 		if ( !(flags & IFF_LOOPBACK) &&
 		     (flags & (IFF_BROADCAST|IFF_POINTOPOINT)) )
-			continue;
-		if ((dev = add_device(de->d_name)) == NULL)
-			continue;
-		bringup_one_dev(template, dev);
+		{
+			if ( !(dev = add_device(de->d_name)) )
+				continue;
+			bringup_one_dev(template, dev);
+		}
 	}
 	closedir(d);
 	return 1;
