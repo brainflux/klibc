@@ -93,4 +93,8 @@ __extern void *__brk(void *);
 __extern int brk(void *);
 __extern void *sbrk(ptrdiff_t);
 
+__extern int getopt(int, char * const *, const char *);
+__extern char *optarg;
+__extern int optind, opterr, optopt;
+
 #endif /* _UNISTD_H */
