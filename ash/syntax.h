@@ -36,7 +36,7 @@
 #define DQSYNTAX (dqsyntax + SYNBASE)
 #define SQSYNTAX (sqsyntax + SYNBASE)
 
-#define is_digit(c)	((unsigned)((c) - '0') <= 9)
+#define is_digit(c)	((unsigned char)((c) - '0') <= 9)
 #define is_alpha(c)	((is_type+SYNBASE)[c] & (ISUPPER|ISLOWER))
 #define is_name(c)	((is_type+SYNBASE)[c] & (ISUPPER|ISLOWER|ISUNDER))
 #define is_in_name(c)	((is_type+SYNBASE)[c] & (ISUPPER|ISLOWER|ISUNDER|ISDIGIT))

@@ -6,8 +6,8 @@
 #define _SYS_STAT_H
 
 #include <klibc/extern.h>
-#include <asm/stat.h>
 #include <sys/types.h>
+#include <asm/stat.h>
 #include <linux/stat.h>
 
 __extern int stat(const char *, struct stat *);

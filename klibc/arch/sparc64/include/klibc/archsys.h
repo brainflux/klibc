@@ -7,34 +7,151 @@
 #ifndef _KLIBC_ARCHSYS_H
 #define _KLIBC_ARCHSYS_H
 
-/* SPARC64 seems to lack _syscall6() in its headers */
+/* The Linux 2.5.31 SPARC64 syscall macros are just plain broken */
 
-#ifndef _syscall6
+#undef _syscall0
+#undef _syscall1
+#undef _syscall2
+#undef _syscall3
+#undef _syscall4
+#undef _syscall5
+#undef _syscall6
+
+#define _syscall0(type,name) \
+type name (void) \
+{ \
+  register unsigned long __g1 __asm__ ("g1") = __NR_##name; \
+  register unsigned long __ret __asm__("o0"); \
+  __asm__ __volatile__ ("t 0x6d\n\t" \
+      "bcs,a %%xcc, 1f\n\t" \
+      " st %0,%1\n\t" \
+      "1:" \
+      "movcs %%xcc,-1,%0\n" \
+      : "=&r" (__ret), "+m" (errno) \
+      : "r" (__g1) \
+      : "cc"); \
+  return (type) __ret; \
+}
+
+#define _syscall1(type,name,type1,arg1) \
+type name (type1 arg1) \
+{ \
+  register unsigned long __g1 __asm__ ("g1") = __NR_##name; \
+  register unsigned long __ret __asm__("o0"); \
+  type1 __o0 = (arg1); \
+  __asm__ __volatile__ ("t 0x6d\n\t" \
+      "bcs,a %%xcc, 1f\n\t" \
+      " st %0,%1\n\t" \
+      "1:" \
+      "movcs %%xcc,-1,%0\n" \
+      : "=&r" (__ret), "+m" (errno) \
+      : "0" (__o0), "r" (__g1) \
+      : "cc"); \
+  return (type) __ret; \
+}
+
+#define _syscall2(type,name,type1,arg1,type2,arg2) \
+type name (type1 arg1,type2 arg2) \
+{ \
+  register unsigned long __g1 __asm__ ("g1") = __NR_##name; \
+  register unsigned long __ret __asm__("o0"); \
+  type1 __o0 = (arg1); \
+  register type2 __o1 __asm__ ("o1") = (arg2); \
+  __asm__ __volatile__ ("t 0x6d\n\t" \
+      "bcs,a %%xcc, 1f\n\t" \
+      " st %0,%1\n\t" \
+      "1:" \
+      "movcs %%xcc,-1,%0\n" \
+      : "=&r" (__ret), "+m" (errno) \
+      : "0" (__o0), "r" (__o1), "r" (__g1) \
+      : "cc"); \
+  return (type) __ret; \
+}
+
+#define _syscall3(type,name,type1,arg1,type2,arg2,type3,arg3) \
+type name (type1 arg1,type2 arg2,type3 arg3) \
+{ \
+  register unsigned long __g1 __asm__ ("g1") = __NR_##name; \
+  register unsigned long __ret __asm__("o0"); \
+  type1 __o0 = (arg1); \
+  register type2 __o1 __asm__ ("o1") = (arg2); \
+  register type3 __o2 __asm__ ("o2") = (arg3); \
+  __asm__ __volatile__ ("t 0x6d\n\t" \
+      "bcs,a %%xcc, 1f\n\t" \
+      " st %0,%1\n\t" \
+      "1:" \
+      "movcs %%xcc,-1,%0\n" \
+      : "=&r" (__ret), "+m" (errno) \
+      : "0" (__o0), "r" (__o1), "r" (__o2), "r" (__g1) \
+      : "cc"); \
+  return (type) __ret; \
+}
+
+#define _syscall4(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4) \
+type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4) \
+{ \
+  register unsigned long __g1 __asm__ ("g1") = __NR_##name; \
+  register unsigned long __ret __asm__("o0"); \
+  type1 __o0 = (arg1); \
+  register type2 __o1 __asm__ ("o1") = (arg2); \
+  register type3 __o2 __asm__ ("o2") = (arg3); \
+  register type4 __o3 __asm__ ("o3") = (arg4); \
+  __asm__ __volatile__ ("t 0x6d\n\t" \
+      "bcs,a %%xcc, 1f\n\t" \
+      " st %0,%1\n\t" \
+      "1:" \
+      "movcs %%xcc,-1,%0\n" \
+      : "=&r" (__ret), "+m" (errno) \
+      : "0" (__o0), "r" (__o1), "r" (__o2), "r" (__o3), "r" (__g1) \
+      : "cc"); \
+  return (type) __ret; \
+}
+
+#define _syscall5(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4,\
+  type5,arg5) \
+type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5) \
+{ \
+  register unsigned long __g1 __asm__ ("g1") = __NR_##name; \
+  register unsigned long __ret __asm__("o0"); \
+  type1 __o0 = (arg1); \
+  register type2 __o1 __asm__ ("o1") = (arg2); \
+  register type3 __o2 __asm__ ("o2") = (arg3); \
+  register type4 __o3 __asm__ ("o3") = (arg4); \
+  register type5 __o4 __asm__ ("o4") = (arg5); \
+  __asm__ __volatile__ ("t 0x6d\n\t" \
+      "bcs,a %%xcc, 1f\n\t" \
+      " st %0,%1\n\t" \
+      "1:" \
+      "movcs %%xcc,-1,%0\n" \
+      : "=&r" (__ret), "+m" (errno) \
+      : "0" (__o0), "r" (__o1), "r" (__o2), "r" (__o3), "r" (__o4), \
+        "r" (__g1) \
+      : "cc"); \
+  return (type) __ret; \
+}
 
 #define _syscall6(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4, \
   type5,arg5,type6,arg6) \
 type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
 { \
-long __res; \
-register long __g1 __asm__ ("g1") = __NR_##name; \
-register long __o0 __asm__ ("o0") = (long)(arg1); \
-register long __o1 __asm__ ("o1") = (long)(arg2); \
-register long __o2 __asm__ ("o2") = (long)(arg3); \
-register long __o3 __asm__ ("o3") = (long)(arg4); \
-register long __o4 __asm__ ("o4") = (long)(arg5); \
-register long __o5 __asm__ ("o5") = (long)(arg6); \
-__asm__ __volatile__ ("t 0x6d\n\t" \
-      "sub %%g0, %%o0, %0\n\t" \
-      "movcc %%xcc, %%o0, %0\n\t" \
-      : "=r" (__res), "=&r" (__o0) \
-      : "1" (__o0), "r" (__o1), "r" (__o2), "r" (__o3), "r" (__o4), "r" (__o5), "r" (__g1) \
+  register unsigned long __g1 __asm__ ("g1") = __NR_##name; \
+  register unsigned long __ret __asm__("o0"); \
+  type1 __o0 = (arg1); \
+  register type2 __o1 __asm__ ("o1") = (arg2); \
+  register type3 __o2 __asm__ ("o2") = (arg3); \
+  register type4 __o3 __asm__ ("o3") = (arg4); \
+  register type5 __o4 __asm__ ("o4") = (arg5); \
+  register type6 __o5 __asm__ ("o5") = (arg6); \
+  __asm__ __volatile__ ("t 0x6d\n\t" \
+      "bcs,a %%xcc, 1f\n\t" \
+      " st %0,%1\n\t" \
+      "1:" \
+      "movcs %%xcc,-1,%0\n" \
+      : "=&r" (__ret), "+m" (errno) \
+      : "0" (__o0), "r" (__o1), "r" (__o2), "r" (__o3), "r" (__o4), \
+        "r" (__o5), "r" (__g1) \
       : "cc"); \
-if (__res>=0) \
-return (type) __res; \
-errno = -__res; \
-return (type)-1; \
+  return (type) __ret; \
 }
-
-#endif /* _syscall6 missing */
 
 #endif /* _KLIBC_ARCHSYS_H */

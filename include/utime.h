@@ -10,4 +10,5 @@
 
 __extern int utime(char *, struct utimbuf *);
 
-#endif _UTIME_H
+#endif /* _UTIME_H */
+
