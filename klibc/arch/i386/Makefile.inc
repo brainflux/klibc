@@ -24,6 +24,4 @@ ARCHOBJS = \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o
 
-ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
-
 archclean:
