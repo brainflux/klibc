@@ -62,7 +62,7 @@ __ctype_inline int iscntrl(int __c)
 
 __ctype_inline int isdigit(int __c)
 {
-  return __ctypes[__c+1] & __ctype_digit;
+  return ((unsigned)__c - '0') <= 9;
 }
 
 __ctype_inline int isgraph(int __c)
