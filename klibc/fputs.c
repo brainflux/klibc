@@ -8,9 +8,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <xio.h>
 
 int fputs(const char *s, FILE *file)
 {
-  return __xwrite((int)file, s, strlen(s));
+  return __fwrite(s, strlen(s), file);
 }

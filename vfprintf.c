@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <xio.h>
 
 #define BUFFER_SIZE	32768
 
@@ -23,5 +22,5 @@ int vfprintf(FILE *file, const char *format, va_list ap)
   if ( rv > BUFFER_SIZE-1 )
     rv = BUFFER_SIZE-1;
 
-  return __xwrite((int)file, buffer, rv);
+  return __fwrite(buffer, rv, file);
 }

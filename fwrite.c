@@ -1,24 +1,24 @@
 /*
- * xwrite.c
+ * fwrite.c
  */
 
 #include <errno.h>
 #include <unistd.h>
-#include <xio.h>
+#include <stdio.h>
 
-ssize_t __xwrite(int fd, const void *buf, size_t count)
+size_t __fwrite(const void *buf, size_t count, FILE *f)
 {
-  ssize_t bytes = 0;
+  size_t bytes = 0;
   ssize_t rv;
   const char *p = buf;
 
   while ( count ) {
-    rv = write(fd, p, count);
+    rv = write((int)f, p, count);
     if ( rv == -1 ) {
       if ( errno == EINTR )
 	continue;
       else
-	return bytes ? bytes : -1;
+	break;
     } else if ( rv == 0 ) {
       break;
     }

@@ -1,19 +1,19 @@
 /*
- * xread.c
+ * fread.c
  */
 
 #include <errno.h>
 #include <unistd.h>
-#include <xio.h>
+#include <stdio.h>
 
-ssize_t __xread(int fd, void *buf, size_t count)
+size_t __fread(void *buf, size_t count, FILE *f)
 {
-  ssize_t bytes = 0;
+  size_t bytes = 0;
   ssize_t rv;
   char *p = buf;
 
   while ( count ) {
-    rv = read(fd, p, count);
+    rv = read((int)f, p, count);
     if ( rv == -1 ) {
       if ( errno == EINTR )
 	continue;

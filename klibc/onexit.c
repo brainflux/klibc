@@ -3,6 +3,7 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
 #include "atexit.h"
 
 extern __noreturn (*__exit_handler)(int);
