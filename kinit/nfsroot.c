@@ -37,39 +37,45 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 	const int len = 1024;
 	struct netdev *dev;
 	char *path = NULL;
+	char *dev_bootpath = NULL;
 	char root[len];
 	char *x, *opts;
 	int ret = 0;
 	int a;
 
-	if ((path = get_arg(argc, argv, "nfsroot=")) == NULL) {
-		path = (char *) "/tftpboot/%s";
-	}
-
-	if (*path == '\0') {
-		fprintf(stderr, "Root-NFS: no path\n");
-		exit(1);
-	}
-
 	a = 1;
 	
-	if ((opts = strchr(path, ',')) != NULL) {
-		*opts++ = '\0';
-		argv[a++] = (char *) "-o";
-		argv[a++] = opts;
-	}
-
 	for (dev = ifaces; dev; dev = dev->next) {
 		if (dev->ip_server != INADDR_NONE &&
 		    dev->ip_server != INADDR_ANY) {
 			addr.s_addr = dev->ip_server;
 			client = dev->ip_addr;
+			dev_bootpath = dev->bootpath;
 			break;
 		}
 		if (dev->ip_addr != INADDR_NONE &&
 		    dev->ip_addr != INADDR_ANY) {
 			client = dev->ip_addr;
 		}
+	}
+
+	/*
+	 * if the "nfsroot" option is set then it overrides
+	 * bootpath supplied by the boot server.
+	 */
+	if ((path = get_arg(argc, argv, "nfsroot=")) == NULL ) {
+		if ((path = dev_bootpath) == NULL || path[0] == '\0')
+			/* no path - set a default */
+			path = (char *) "/tftpboot/%s";
+	} else if (dev_bootpath && dev_bootpath[0] != '\0')
+		fprintf(stderr,
+			"nsfroot=%s overrides boot server bootpath %s\n",
+			path, dev_bootpath);
+
+	if ((opts = strchr(path, ',')) != NULL) {
+		*opts++ = '\0';
+		argv[a++] = (char *) "-o";
+		argv[a++] = opts;
 	}
 
 	if ((x = strchr(path, ':')) == NULL) {
