@@ -1,11 +1,4 @@
-/* libc/sys/linux/crt0.c - Run-time initialization */
-
-/* FIXME: This should be rewritten in assembler and
-          placed in a subdirectory specific to a platform.
-          There should also be calls to run constructors. */
-
-/* Written 2000 by Werner Almesberger */
-
+/* crt0.c - Run-time initialization */
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -31,7 +24,11 @@ void _start(void)
   register uintptr_t *params asm("%esp");
 #elif defined(__x86_64__)
   register uintptr_t *params asm("%rsp");
-#elif defined(__sparc__)
+#elif defined(__sparc64__)
+  register uintptr_t sp asm("%sp");
+#define BIAS 2047
+  uintptr_t *params = (uintptr_t *)(sp+BIAS) + 16;
+#elif defined(__sparc__) && !defined(__sparc64__)
   register uintptr_t *sp asm("%sp");
   uintptr_t *params = sp+16;	/* SPARC needs a window save area */
 #elif defined(__mips__) || defined(__mips64__)
