@@ -1,5 +1,5 @@
 /*
- * arch/sparc64/syscall.S
+ * arch/sparc64/sysfork.S
  *
  * The fork and vfork system calls are special on sparc[64]:
  * they return the "other process" pid in %o0 and the
