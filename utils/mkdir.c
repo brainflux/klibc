@@ -32,7 +32,7 @@ static int make_one_dir(char *dir, mode_t mode)
 		if (p_flag && errno == EEXIST &&
 		    stat(dir, &stbuf) == 0 &&
 		    S_ISDIR(stbuf.st_mode))
-			return 0;
+			return 1;
 		errno = err;
 		fprintf(stderr, "%s: ", progname);
 		perror(dir);
@@ -43,6 +43,8 @@ static int make_one_dir(char *dir, mode_t mode)
 
 static int make_dir(char *dir)
 {
+	int ret;
+
 	if (p_flag) {
 		char *s, *p;
 
@@ -54,17 +56,22 @@ static int make_dir(char *dir)
 		 */
 		s = dir;
 		while ((p = strchr(s, '/')) != NULL) {
-			*p = '\0';
-
 			/*
-			 * Make the intermediary directory.  POSIX
-			 * says that these directories are created
-			 * with umask,u+wx
+			 * Ignore the leading /
 			 */
-			if (make_one_dir(dir, subdir_mode) == -1)
-				return -1;
+			if (p != dir) {
+				*p = '\0';
 
-			*p = '/';
+				/*
+				 * Make the intermediary directory.  POSIX
+				 * says that these directories are created
+				 * with umask,u+wx
+				 */
+				if (make_one_dir(dir, subdir_mode) == -1)
+					return -1;
+
+				*p = '/';
+			}
 			s = p + 1;
 		}
 	}
@@ -74,18 +81,19 @@ static int make_dir(char *dir)
 	 * target already exists if -p was not specified.
 	 * This is created with the asked for mode & ~umask
 	 */
-	if (make_one_dir(dir, leaf_mode))
+	ret = make_one_dir(dir, leaf_mode);
+	if (ret == -1)
 		return -1;
 
 	/*
 	 * We might not set all the permission bits.  Do that
-	 * here.
+	 * here (but only if we did create it.)
 	 */
-	if (chmod(dir, leaf_mode) == -1) {
+	if (ret == 0 && chmod(dir, leaf_mode) == -1) {
 		int err_save = errno;
 
 		/*
-		 * We failed, remove the directory we created.
+		 * We failed, remove the directory we created
 		 */
 		rmdir(dir);
 		errno = err_save;
@@ -98,7 +106,7 @@ static int make_dir(char *dir)
 
 int main(int argc, char *argv[])
 {
-	int c, ret;
+	int c, ret = 0;
 	mode_t saved_umask;
 
 	progname = argv[0];

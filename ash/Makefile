@@ -1,12 +1,12 @@
 PROG=	sh
 SRCS=	builtins.c cd.c dirent.c bltin/echo.c error.c eval.c exec.c expand.c \
-	input.c jobs.c mail.c main.c memalloc.c miscbltin.c \
+	input.c jobs.c main.c memalloc.c miscbltin.c \
 	mystring.c nodes.c options.c parser.c redir.c show.c \
 	syntax.c trap.c output.c var.c bltin/test.c
 
 OBJ1 =	init.o
 OBJ2 =	builtins.o cd.o dirent.o bltin/echo.o error.o eval.o exec.o expand.o \
-	input.o jobs.o mail.o main.o memalloc.o miscbltin.o \
+	input.o jobs.o main.o memalloc.o miscbltin.o \
 	mystring.o nodes.o options.o parser.o redir.o show.o \
 	syntax.o trap.o output.o var.o bltin/test.o
 

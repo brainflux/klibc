@@ -29,7 +29,7 @@ static int make_fifo(char *dir)
 
 int main(int argc, char *argv[])
 {
-	int c, ret;
+	int c, ret = 0;
 	mode_t saved_umask;
 
 	progname = argv[0];

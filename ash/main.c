@@ -49,7 +49,6 @@ static char rcsid[] = "main.c,v 1.4 1993/08/01 18:58:12 mycroft Exp";
 #include <fcntl.h>
 #include "shell.h"
 #include "main.h"
-#include "mail.h"
 #include "options.h"
 #include "output.h"
 #include "parser.h"
@@ -198,7 +197,6 @@ cmdloop(top) {
 		if (iflag && top) {
 			inter++;
 			showjobs(1);
-			chkmail(0);
 			flushout(&output);
 		}
 		n = parsecmd(inter);

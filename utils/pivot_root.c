@@ -3,7 +3,7 @@
 /* Written 2000 by Werner Almesberger */
 
 #include <stdio.h>
-#include <unistd.h>
+#include <sys/mount.h>
 
 int main(int argc,const char **argv)
 {

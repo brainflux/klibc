@@ -51,7 +51,6 @@ static char rcsid[] = "var.c,v 1.4 1993/08/01 18:57:58 mycroft Exp";
 #include "exec.h"
 #include "syntax.h"
 #include "options.h"
-#include "mail.h"
 #include "var.h"
 #include "memalloc.h"
 #include "error.h"
@@ -236,8 +235,6 @@ setvareq(s, flags)
 			vp->flags &=~ (VTEXTFIXED|VSTACK|VUNSET);
 			vp->flags |= flags;
 			vp->text = s;
-			if (iflag && (vp == &vmpath || (vp == &vmail && ! mpathset())))
-				chkmail(1);
 			INTON;
 			return;
 		}

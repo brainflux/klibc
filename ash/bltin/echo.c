@@ -66,7 +66,10 @@ main(argc, argv)  char **argv; {
 		if (equal(p, "-n")) {
 			nflag++;
 			ap++;
-		} else if (equal(p, "-e")) {
+		}
+	}
+	if ((p = *ap) != NULL) {
+		if (equal(p, "-e")) {
 #ifndef eflag
 			eflag++;
 #endif
