@@ -21,4 +21,4 @@ BITSIZE  = 32
 # This address needs to be reachable using normal inter-module
 # calls, and work on the memory models for this architecture
 # 96 MB - normal binaries start at 128 MB
-SHAREDFLAGS	= -Ttext 0x06000000
+SHAREDFLAGS	= -Ttext 0x06000200
