@@ -59,7 +59,8 @@ HOST_LIBS    =
 # Static library paths
 CRT0      = $(KLIBOBJ)/crt0.o
 KLIBC     = $(KLIBOBJ)/libc.a
-LIBGCC    = $(shell $(CC) --print-libgcc)
+# Don't use libgcc for now, to see if anything breaks...
+LIBGCC    = # $(shell $(CC) --print-libgcc)
 
 # Shared library paths
 CRTSHARED = $(KLIBOBJ)/interp.o
