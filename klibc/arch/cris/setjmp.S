@@ -11,28 +11,26 @@
 #	return address
 #
 
-	.set noreorder
-	
 	.text
-	.align 4
-	.globl setjmp
-	.type setjmp, @function
-setjmp:
-	movem	$r8,[$r10+]		# Save $r8..$r0 at $r10..
+	.balign 4
+	.globl	_setjmp
+	.type	_setjmp, @function
+_setjmp:
+	movem	$r8,[$r10+]		/* Save $r8..$r0 at $r10... */
 	move.d	$sp,[$r10+]
 	ret
 	  move	$srp,[$r10+]
 
-	.size setjmp,.-setjmp
+	.size _setjmp,.-_setjmp
 
 	.text
-	.align 4
-	.globl longjmp
-	.type longjmp, @function
-longjmp:
-	movem	[$r10+],$r8		# Load $r8..$r0 from $r10..
+	.balign 4
+	.globl	_longjmp
+	.type	_longjmp, @function
+_longjmp:
+	movem	[$r10+],$r8		/* Load $r8..$r0 from $r10... */
 	move.d	[$r10+],$sp
 	jump	[$r10+]
 	  move.d $r11,$r10
 	
-	.size longjmp,.-longjmp
+	.size _longjmp,.-_longjmp

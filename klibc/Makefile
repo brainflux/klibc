@@ -71,7 +71,7 @@ tests/% : tests/%.o $(LIB) $(CRT0)
 	$(STRIP) $@.stripped
 
 tests/%.shared : tests/%.o interp.o $(SOLIB)
-	$(LD) $(LDFLAGS) -o $@ -e main interp.o tests/$*.o -R $(SOLIB) $(LIBGCC)
+	$(LD) $(LDFLAGS) -o $@ $(EMAIN) interp.o tests/$*.o -R $(SOLIB) $(LIBGCC)
 	cp $@ $@.stripped
 	$(STRIP) $@.stripped
 

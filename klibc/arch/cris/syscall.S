@@ -7,26 +7,23 @@
  * to save $srp around the system call.
  */
 
-	.set noreorder
-
-	.text
-	.subsection ".syscall"
-	.align	4
-	.globl	__syscall_common
-	.type	__syscall_common,@function
-__syscall_common:
+	.section ".text","ax"
+	.balign	4
+	.globl	___syscall_common
+	.type	___syscall_common,@function
+___syscall_common:
 	push	$srp
-	move.d	[$sp+4],$mof
-	move.d	[$sp+8],$srp
+	move	[$sp+4],$mof
+	move	[$sp+8],$srp
 	break	13
 
-	cmpq.d	-4096,$r10
+	cmp.d	-4096,$r10
 	blt	1f
 	  neg.d	$r10,$r11
-	move.d	$r11,[errno]
-	moveq.d	-1,$r10
+	move.d	$r11,[_errno]
+	moveq	-1,$r10
 1:
 	jump	[sp+]
 	  nop
 
-	.size	__syscall_common,.-__syscall_common
+	.size	___syscall_common,.-___syscall_common

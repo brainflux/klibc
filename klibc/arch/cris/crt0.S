@@ -8,22 +8,21 @@
 # arguments.
 #
 
-	.set noreorder
-		
 	.text
 	.balign 4
-	.type	_start,@function
-	.globl	_start
-_start:
-	# Set up a dummy stack frame to keep gcc from getting confused
-	push	$p8		# p8 == 0
-	push	$p8		# p8 == 0
+	.type	__start,@function
+	.globl	__start
+__start:
+	/* Save the address of the ELF argument array */
+	move.d	$sp,$r10	/* Address of ELF arguments */
+
+	/* atexit() function (assume null) */
+	moveq	0,$r11
 	
-	# Save the address of the ELF argument array
-	move.d	$sp,$r10	# Address of ELF arguments
+	/* Set up a dummy stack frame to keep gcc from getting confused */
+	push	$r11
+	jump	___libc_init
+	  push	$r11
 
-	jump	__libc_init
-	  moveq.d	0,$r11	# atexit() function [assume null]
-
-	.size _start, .-_start
+	.size __start, .-__start
 
