@@ -70,17 +70,15 @@ _start:
 	bnz,a	.LHaveBias
 	mov	2047, %g5
 .LHaveBias:
-	add	%sp, %g5, %sp
+	add	%sp, %g5, %g5
 
 #if TARGET_PTR_SIZE == 32
-	! FIXME: We apparently assume here that there is no reserved word.
-	! This is probably correct, but try to verify it.
-	ld	[%sp + 0x80], %o0	! argc
-	add	%sp, 0x84, %o1		! argv
+	ld	[%g5 + 0x40], %o0	! argc
+	add	%g5, 0x44, %o1		! argv
 	add	%o0, 1, %o2
 	sll	%o2, 2, %o2
 #else /* TARGET_PTR_SIZE == 64 */
-	ld	[%sp + 0x8c], %o0	! argc.lo
+	ld	[%g5 + 0x88], %o0	! argc.lo
 	add	%sp, 0x90, %o1		! argv
 	add	%o0, 1, %o2
 	sll	%o2, 3, %o2
@@ -94,23 +92,12 @@ _start:
 	stx	%o2, [%o3 + %g4]
 #endif
 
-! Restore any stack bias before we call main() ...
-
-	sub	%sp, %g5, %sp
-
 	call	main
-
-! FIXME: Not sure if this is needed anymore.
-#if TARGET_PTR_SIZE == 32
-	sub	%sp, 0x20, %sp		! room to push args
-#else /* TARGET_PTR_SIZE == 64 */
-	sub	%sp, 0x30, %sp		! room to push args
-#endif
-
+	nop
+	
 	call	exit
 	nop
 
 ! If all the above methods fail to terminate the program, try an illegal insn.
 ! If that does not work, the o/s is hosed more than we are.
-
-	WORD (0)
+	.long 0

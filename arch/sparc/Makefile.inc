@@ -16,28 +16,28 @@ ARCHOBJS = \
 	arch/$(ARCH)/umul.o
 
 arch/$(ARCH)/sdiv.S: arch/$(ARCH)/divrem.m4
-        @echo 'building $@ from $^'
-        @(echo "define(NAME,\`.div')define(OP,\`div')define(S,\`true')"; \
-         cat $^) | m4 > $@
-        @chmod 444 $@
+	@echo 'building $@ from $^'
+	@(echo "define(NAME,\`.div')define(OP,\`div')define(S,\`true')"; \
+	 cat $^) | m4 > $@
+	@chmod 444 $@
 
 arch/$(ARCH)/udiv.S: arch/$(ARCH)/divrem.m4
-        @echo 'building $@ from $^'
-        @(echo "define(NAME,\`.udiv')define(OP,\`div')define(S,\`false')"; \
-         cat $^) | m4 > $@
-        @chmod 444 $@
+	@echo 'building $@ from $^'
+	@(echo "define(NAME,\`.udiv')define(OP,\`div')define(S,\`false')"; \
+	 cat $^) | m4 > $@
+	@chmod 444 $@
 
 arch/$(ARCH)/srem.S: arch/$(ARCH)/divrem.m4
-        @echo 'building $@ from $^'
-        @(echo "define(NAME,\`.rem')define(OP,\`rem')define(S,\`true')"; \
-         cat $^) | m4 > $@
-        @chmod 444 $@
+	@echo 'building $@ from $^'
+	@(echo "define(NAME,\`.rem')define(OP,\`rem')define(S,\`true')"; \
+	 cat $^) | m4 > $@
+	@chmod 444 $@
 
 arch/$(ARCH)/urem.S: arch/$(ARCH)/divrem.m4
-        @echo 'building $@ from $^'
-        @(echo "define(NAME,\`.urem')define(OP,\`rem')define(S,\`false')"; \
-         cat $^) | m4 > $@
-        @chmod 444 $@
+	@echo 'building $@ from $^'
+	@(echo "define(NAME,\`.urem')define(OP,\`rem')define(S,\`false')"; \
+	 cat $^) | m4 > $@
+	@chmod 444 $@
 
 archclean:
 	rm -f arch/$(ARCH)/?div.S arch/$(ARCH)/?rem.S arch/$(ARCH)/?mul.S 
