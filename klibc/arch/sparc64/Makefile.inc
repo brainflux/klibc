@@ -7,4 +7,7 @@
 # accordingly.
 #
 
+OPTFLAGS = -Os -fomit-frame-pointer -m64 -mptr64
+LDFLAGS  = -m elf64_sparc
+
 archclean:

@@ -54,7 +54,7 @@ $(LIB): $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
 	$(RANLIB) $(LIB)
 
 $(SOLIB): $(SOOBJS) $(ARCHSOOBJS) syscalls/shared.obj socketcalls/shared.obj
-	$(LD) -shared -soname $(SONAME) -o $@ \
+	$(LD) $(LDFLAGS) -shared -soname $(SONAME) -o $@ \
 		$(SOOBJS) $(ARCHSOOBJS) syscalls/*.lo socketcalls/*.lo \
 	        $(LIBGCC)
 
