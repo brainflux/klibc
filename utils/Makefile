@@ -17,8 +17,8 @@ mkdir:	mkdir.o file_mode.o $(CRT0) $(LIBS)
 mkfifo:	mkfifo.o file_mode.o $(CRT0) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) mkfifo.o file_mode.o $(LIBS)
 
-mount:	mount.o $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) mount.o $(LIBS)
+mount:	mount.o mount_opts.o $(CRT0) $(LIBS)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) mount.o mount_opts.o $(LIBS)
 
 pivot_root: pivot_root.o $(CRT0) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) pivot_root.o $(LIBS)
