@@ -9,7 +9,7 @@
 #	sp
 #	s8
 #	ra
-#	f20..f30
+#	f20..f31
 #	fcr31
 #
 
@@ -27,6 +27,8 @@ LEAF(setjmp)
 	sw	gp, 32(a0)
 	sw	sp, 36(a0)
 	sw	s8, 40(a0)
+	sw	ra, 44(a0)
+	cfc1	t0,$31
 	swc1	$f20,48(a0)
 	swc1	$f21,52(a0)
 	swc1	$f22,56(a0)
@@ -38,14 +40,13 @@ LEAF(setjmp)
 	swc1	$f28,80(a0)
 	swc1	$f29,84(a0)
 	swc1	$f30,88(a0)
-	swc1	$fcr31,92(a0)
+	swc1	$f31,92(a0)
 	jr	ra
-	 sw	ra, 44(a0)
+	  sw	t0,96(a0)
 	
 	END(setjmp)
 
 LEAF(longjmp)
-	lw	ra, 44(a0)	# Give time to settle...
 	lw	s0,  0(a0)
 	lw	s1,  4(a0)
 	lw	s2,  8(a0)
@@ -57,6 +58,8 @@ LEAF(longjmp)
 	lw	gp, 32(a0)
 	lw	sp, 36(a0)
 	lw	s8, 40(a0)
+	lw	ra, 44(a0)
+	lw	t0, 96(a0)
 	lwc1	$f20,48(a0)
 	lwc1	$f21,52(a0)
 	lwc1	$f22,56(a0)
@@ -68,9 +71,9 @@ LEAF(longjmp)
 	lwc1	$f28,80(a0)
 	lwc1	$f29,84(a0)
 	lwc1	$f30,88(a0)
-	lwc1	$fcr31,92(a0)
+	lwc1	$f31,92(a0)
 	jr	ra
-	 move	a1, v0
+	 ctc1	t0,$31
 
 	END(longjmp)
 	
