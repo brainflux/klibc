@@ -15,12 +15,14 @@
  */
 #if defined(__PIC__) && defined(__i386__)
 
+/* _syscall0() is the same as non-PIC */
+
 #undef _syscall1
 #define _syscall1(type,name,type1,arg1) \
 type name(type1 arg1) \
 { \
 long __res; \
-__asm__ volatile ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
+__asm__ __volatile__ ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"r" ((long)(arg1))); \
 __syscall_return(type,__res); \
@@ -31,7 +33,7 @@ __syscall_return(type,__res); \
 type name(type1 arg1,type2 arg2) \
 { \
 long __res; \
-__asm__ volatile ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
+__asm__ __volatile__ ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"r" ((long)(arg1)),"c" ((long)(arg2))); \
 __syscall_return(type,__res); \
@@ -42,7 +44,7 @@ __syscall_return(type,__res); \
 type name(type1 arg1,type2 arg2,type3 arg3) \
 { \
 long __res; \
-__asm__ volatile ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
+__asm__ __volatile__ ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"r" ((long)(arg1)),"c" ((long)(arg2)), \
 		"d" ((long)(arg3))); \
@@ -54,7 +56,7 @@ __syscall_return(type,__res); \
 type name (type1 arg1, type2 arg2, type3 arg3, type4 arg4) \
 { \
 long __res; \
-__asm__ volatile ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
+__asm__ __volatile__ ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"r" ((long)(arg1)),"c" ((long)(arg2)), \
 	  "d" ((long)(arg3)),"S" ((long)(arg4))); \
@@ -67,7 +69,7 @@ __syscall_return(type,__res); \
 type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5) \
 { \
 long __res; \
-__asm__ volatile ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
+__asm__ __volatile__ ("push %%ebx; movl %2,%%ebx; int $0x80; pop %%ebx" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"m" ((long)(arg1)),"c" ((long)(arg2)), \
 	  "d" ((long)(arg3)),"S" ((long)(arg4)),"D" ((long)(arg5))); \
@@ -80,9 +82,9 @@ __syscall_return(type,__res); \
 type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
 { \
 long __res; \
-__asm__ volatile ("push %%ebx; pushl %%ebp; movl %2,%%ebx; " \
-                  "movl %%eax,%%ebp; movl %1,%%eax; int $0x80; " \
-                  "pop %%ebp ; pop %%ebx" \
+__asm__ __volatile__ ("push %%ebx; pushl %%ebp; movl %2,%%ebx; " \
+                      "movl %%eax,%%ebp; movl %1,%%eax; int $0x80; " \
+                      "pop %%ebp ; pop %%ebx" \
 	: "=a" (__res) \
 	: "i" (__NR_##name),"m" ((long)(arg1)),"c" ((long)(arg2)), \
 	  "d" ((long)(arg3)),"S" ((long)(arg4)),"D" ((long)(arg5)), \
@@ -135,7 +137,36 @@ type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
         __syscall_return (type);                                        \
 }
 
-#endif
+#endif /* _syscall6() missing */
+
+#elif defined(__s390__)
+
+/* S/390 only has five syscall parameters, and uses a structure for
+   6-argument syscalls. */
+
+#ifndef _syscall6
+
+#define _syscall6(type,name,type1,arg1,type2,arg2,type3,arg3,\
+                  type4,arg4,type5,arg5,type6,arg6)          \
+type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
+          type5 arg5, type6 arg6) {			     \
+	struct {					     \
+		type1 name1; type2 name2; type3 name3;	     \
+		type4 name4; type5 name5; type6 name6;	     \
+	} __arg = { arg1, arg2, arg3, arg4, arg5, arg6 };    \
+	register void *__argp asm("2") = &__arg;	     \
+	long __res;					     \
+	__asm__ __volatile__ (               	             \
+                "    svc %b1\n"                              \
+                "    lr  %0,2"                               \
+                : "=d" (__res)                               \
+                : "i" (__NR_##name),                         \
+                  "d" (__argp)				     \
+		: _svc_clobber);			     \
+	__syscall_return(type, __res)			     \
+}
+
+#endif /* _syscall6() missing */
 
 #endif
 
