@@ -329,34 +329,12 @@ clearredir() {
 
 int
 copyfd(from, to) {
-#ifdef F_DUPFD
 	int newfd;
 
-	newfd = fcntl(from, F_DUPFD, to);
+	newfd = dup2(from, to);
 	if (newfd < 0 && errno == EMFILE)
 		return EMPTY;
 	return newfd;
-#else
-	char toclose[32];
-	int i;
-	int newfd;
-	int e;
-
-	for (i = 0 ; i < to ; i++)
-		toclose[i] = 0;
-	INTOFF;
-	while ((newfd = dup(from)) >= 0 && newfd < to)
-		toclose[newfd] = 1;
-	e = errno;
-	for (i = 0 ; i < to ; i++) {
-		if (toclose[i])
-			close(i);
-	}
-	INTON;
-	if (newfd < 0 && e == EMFILE)
-		return EMPTY;
-	return newfd;
-#endif
 }
 
 /* Return true if fd 0 has already been redirected at least once.  */
