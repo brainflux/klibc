@@ -45,6 +45,8 @@ initramfs images and embedded systems.
 cp -as /usr/src/linux-`rpm -q kernel-source | cut -d- -f3-` ./linux
 make -C linux defconfig ARCH=%{_target_cpu}
 make -C linux prepare ARCH=%{_target_cpu}
+# Deal with braindamage in RedHat's kernel-source RPM
+( cd linux/include/linux && rm -f config.h && ln -s autoconf.h config.h )
 mkdir -p %{buildroot}
 
 %build
