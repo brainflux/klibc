@@ -14,7 +14,7 @@ char *strsep(char **stringp, const char *delim)
 
   e = strpbrk(s, delim);
   if (e)
-    *e = '\0';
+    *e++ = '\0';
 
   *stringp = e;
   return s;
