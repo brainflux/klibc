@@ -1,0 +1,5 @@
+To build the klibc version of SYSLINUX, extract the SYSLINUX
+distribution into this directory (so it creates a directory called
+syslinux-<version> inside this directory), and type "make".
+
+SYSLINUX version 2.10-pre6 or later is required.
