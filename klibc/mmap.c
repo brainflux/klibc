@@ -8,7 +8,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <asm/page.h>		/* For PAGE_SHIFT */
-#include <klibc/havesyscall.h>
 
 #if defined(__sparc__)
 # define MMAP2_SHIFT	12	/* Fixed by syscall definition */
@@ -22,7 +21,7 @@
  * Set in SYSCALLS whether or not we should use an unadorned mmap() system
  * call (typical on 64-bit architectures).
  */
-#ifndef HAVE_SYSCALL_MMAP
+#if (BITSIZE == 32 && defined(__NR_mmap2)) || (BITSIZE == 64 && !defined(__NR_mmap))
 
 /* This architecture uses mmap2(). The Linux mmap2() system call takes
    a page offset as the offset argument.  We need to make sure we have
