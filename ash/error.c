@@ -1,6 +1,8 @@
+/*	$NetBSD: error.c,v 1.31 2003/08/07 09:05:30 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -34,27 +32,37 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
 #ifndef lint
-/*static char sccsid[] = "from: @(#)error.c	5.1 (Berkeley) 3/7/91";*/
-static char rcsid[] = "error.c,v 1.5 1993/09/05 17:32:05 mycroft Exp";
+#if 0
+static char sccsid[] = "@(#)error.c	8.2 (Berkeley) 5/4/95";
+#else
+__RCSID("$NetBSD: error.c,v 1.31 2003/08/07 09:05:30 agc Exp $");
+#endif
 #endif /* not lint */
 
 /*
  * Errors and exceptions.
  */
 
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "shell.h"
 #include "main.h"
 #include "options.h"
 #include "output.h"
 #include "error.h"
-#include <signal.h>
-#ifdef __STDC__
-#include "stdarg.h"
-#else
-#include <varargs.h>	
-#endif
-#include <errno.h>
+#include "show.h"
 
 
 /*
@@ -68,6 +76,9 @@ volatile int intpending;
 char *commandname;
 
 
+static void exverror(int, const char *, va_list)
+    __attribute__((__noreturn__));
+
 /*
  * Called to raise an exception.  Since C doesn't include exceptions, we
  * just do a longjmp to the exception handler.  The type of exception is
@@ -75,7 +86,8 @@ char *commandname;
  */
 
 void
-exraise(e) {
+exraise(int e)
+{
 	if (handler == NULL)
 		abort();
 	exception = e;
@@ -94,71 +106,179 @@ exraise(e) {
  */
 
 void
-onint() {
+onint(void)
+{
+	sigset_t nsigset;
+
 	if (suppressint) {
-		intpending++;
+		intpending = 1;
 		return;
 	}
 	intpending = 0;
+	sigemptyset(&nsigset);
+	sigprocmask(SIG_SETMASK, &nsigset, NULL);
 	if (rootshell && iflag)
 		exraise(EXINT);
-	else
-		_exit(128 + SIGINT);
+	else {
+		bsd_signal(SIGINT, SIG_DFL);
+		raise(SIGINT);
+	}
+	/* NOTREACHED */
 }
 
-
-
-void
-error2(a, b)
-	char *a, *b;
-	{
-	error("%s: %s", a, b);
+static void
+exvwarning(int sv_errno, const char *msg, va_list ap)
+{
+	/* Partially emulate line buffered output so that:
+	 *	printf '%d\n' 1 a 2
+	 * and
+	 *	printf '%d %d %d\n' 1 a 2
+	 * both generate sensible text when stdout and stderr are merged.
+	 */
+	if (output.nextc != output.buf && output.nextc[-1] == '\n')
+		flushout(&output);
+	if (commandname)
+		outfmt(&errout, "%s: ", commandname);
+	if (msg != NULL) {
+		doformat(&errout, msg, ap);
+		if (sv_errno >= 0)
+			outfmt(&errout, ": ");
+	}
+	if (sv_errno >= 0)
+		outfmt(&errout, "%s", strerror(sv_errno));
+	out2c('\n');
+	flushout(&errout);
 }
-
 
 /*
- * Error is called to raise the error exception.  If the first argument
+ * Exverror is called to raise the error exception.  If the second argument
  * is not NULL then error prints an error message using printf style
  * formatting.  It then raises the error exception.
  */
-
-#ifdef __STDC__
-void
-error(char *msg, ...) {
-#else
-void
-error(va_alist)
-	va_dcl
-	{
-	char *msg;
-#endif
-	va_list ap;
-
+static void
+exverror(int cond, const char *msg, va_list ap)
+{
 	CLEAR_PENDING_INT;
 	INTOFF;
-#ifdef __STDC__
-	va_start(ap, msg);
-#else
-	va_start(ap);
-	msg = va_arg(ap, char *);
-#endif
+
 #ifdef DEBUG
-	if (msg)
-		TRACE(("error(\"%s\") pid=%d\n", msg, getpid()));
-	else
-		TRACE(("error(NULL) pid=%d\n", getpid()));
-#endif
 	if (msg) {
-		if (commandname)
-			outfmt(&errout, "%s: ", commandname);
-		doformat(&errout, msg, ap);
-		out2c('\n');
-	}
-	va_end(ap);
+		TRACE(("exverror(%d, \"", cond));
+		TRACEV((msg, ap));
+		TRACE(("\") pid=%d\n", getpid()));
+	} else
+		TRACE(("exverror(%d, NULL) pid=%d\n", cond, getpid()));
+#endif
+	if (msg)
+		exvwarning(-1, msg, ap);
+
 	flushall();
-	exraise(EXERROR);
+	exraise(cond);
+	/* NOTREACHED */
 }
 
+
+void
+error(const char *msg, ...)
+{
+	va_list ap;
+
+	va_start(ap, msg);
+	exverror(EXERROR, msg, ap);
+	/* NOTREACHED */
+	va_end(ap);
+}
+
+
+void
+exerror(int cond, const char *msg, ...)
+{
+	va_list ap;
+
+	va_start(ap, msg);
+	exverror(cond, msg, ap);
+	/* NOTREACHED */
+	va_end(ap);
+}
+
+/*
+ * error/warning routines for external builtins
+ */
+
+void
+sh_exit(int rval)
+{
+	exerrno = rval & 255;
+	exraise(EXEXEC);
+}
+
+void
+sh_err(int status, const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	exvwarning(errno, fmt, ap);
+	va_end(ap);
+	sh_exit(status);
+}
+
+void
+sh_verr(int status, const char *fmt, va_list ap)
+{
+	exvwarning(errno, fmt, ap);
+	sh_exit(status);
+}
+
+void
+sh_errx(int status, const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	exvwarning(-1, fmt, ap);
+	va_end(ap);
+	sh_exit(status);
+}
+
+void
+sh_verrx(int status, const char *fmt, va_list ap)
+{
+	exvwarning(-1, fmt, ap);
+	sh_exit(status);
+}
+
+void
+sh_warn(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	exvwarning(errno, fmt, ap);
+	va_end(ap);
+}
+
+void
+sh_vwarn(const char *fmt, va_list ap)
+{
+	exvwarning(errno, fmt, ap);
+}
+
+void
+sh_warnx(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	exvwarning(-1, fmt, ap);
+	va_end(ap);
+}
+
+void
+sh_vwarnx(const char *fmt, va_list ap)
+{
+	exvwarning(-1, fmt, ap);
+}
 
 
 /*
@@ -168,62 +288,65 @@ error(va_alist)
 struct errname {
 	short errcode;		/* error number */
 	short action;		/* operation which encountered the error */
-	char *msg;		/* text describing the error */
+	const char *msg;	/* text describing the error */
 };
 
 
 #define ALL (E_OPEN|E_CREAT|E_EXEC)
 
 STATIC const struct errname errormsg[] = {
-	EINTR, ALL,		"interrupted",
-	EACCES, ALL,		"permission denied",
-	EIO, ALL,		"I/O error",
-	ENOENT, E_OPEN,		"no such file",
-	ENOENT, E_CREAT,	"directory nonexistent",
-	ENOENT, E_EXEC,		"not found",
-	ENOTDIR, E_OPEN,	"no such file",
-	ENOTDIR, E_CREAT,	"directory nonexistent",
-	ENOTDIR, E_EXEC,	"not found",
-	EISDIR, ALL,		"is a directory",
-/*    EMFILE, ALL,		"too many open files", */
-	ENFILE, ALL,		"file table overflow",
-	ENOSPC, ALL,		"file system full",
+	{ EINTR,	ALL,	"interrupted" },
+	{ EACCES,	ALL,	"permission denied" },
+	{ EIO,		ALL,	"I/O error" },
+	{ EEXIST,	ALL,	"file exists" },
+	{ ENOENT,	E_OPEN,	"no such file" },
+	{ ENOENT,	E_CREAT,"directory nonexistent" },
+	{ ENOENT,	E_EXEC,	"not found" },
+	{ ENOTDIR,	E_OPEN,	"no such file" },
+	{ ENOTDIR,	E_CREAT,"directory nonexistent" },
+	{ ENOTDIR,	E_EXEC,	"not found" },
+	{ EISDIR,	ALL,	"is a directory" },
+#ifdef EMFILE
+	{ EMFILE,	ALL,	"too many open files" },
+#endif
+	{ ENFILE,	ALL,	"file table overflow" },
+	{ ENOSPC,	ALL,	"file system full" },
 #ifdef EDQUOT
-	EDQUOT, ALL,		"disk quota exceeded",
+	{ EDQUOT,	ALL,	"disk quota exceeded" },
 #endif
 #ifdef ENOSR
-	ENOSR, ALL,		"no streams resources",
+	{ ENOSR,	ALL,	"no streams resources" },
 #endif
-	ENXIO, ALL,		"no such device or address",
-	EROFS, ALL,		"read-only file system",
-	ETXTBSY, ALL,		"text busy",
-#ifdef SYSV
-	EAGAIN, E_EXEC,		"not enough memory",
+	{ ENXIO,	ALL,	"no such device or address" },
+	{ EROFS,	ALL,	"read-only file system" },
+	{ ETXTBSY,	ALL,	"text busy" },
+#ifdef EAGAIN
+	{ EAGAIN,	E_EXEC,	"not enough memory" },
 #endif
-	ENOMEM, ALL,		"not enough memory",
+	{ ENOMEM,	ALL,	"not enough memory" },
 #ifdef ENOLINK
-	ENOLINK, ALL,		"remote access failed",
+	{ ENOLINK,	ALL,	"remote access failed" },
 #endif
 #ifdef EMULTIHOP
-	EMULTIHOP, ALL,		"remote access failed",
+	{ EMULTIHOP,	ALL,	"remote access failed" },
 #endif
 #ifdef ECOMM
-	ECOMM, ALL,		"remote access failed",
+	{ ECOMM,	ALL,	"remote access failed" },
 #endif
 #ifdef ESTALE
-	ESTALE, ALL,		"remote access failed",
+	{ ESTALE,	ALL,	"remote access failed" },
 #endif
 #ifdef ETIMEDOUT
-	ETIMEDOUT, ALL,		"remote access failed",
+	{ ETIMEDOUT,	ALL,	"remote access failed" },
 #endif
 #ifdef ELOOP
-	ELOOP, ALL,		"symbolic link loop",
+	{ ELOOP,	ALL,	"symbolic link loop" },
 #endif
-	E2BIG, E_EXEC,		"argument list too long",
+	{ E2BIG,	E_EXEC,	"argument list too long" },
 #ifdef ELIBACC
-	ELIBACC, E_EXEC,	"shared library missing",
+	{ ELIBACC,	E_EXEC,	"shared library missing" },
 #endif
-	0, 0,			NULL
+	{ 0,		0,	NULL },
 };
 
 
@@ -233,8 +356,9 @@ STATIC const struct errname errormsg[] = {
  * Action describes the operation that got the error.
  */
 
-char *
-errmsg(e, action) {
+const char *
+errmsg(int e, int action)
+{
 	struct errname const *ep;
 	static char buf[12];
 

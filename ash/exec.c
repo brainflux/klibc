@@ -1,6 +1,8 @@
+/*	$NetBSD: exec.c,v 1.37 2003/08/07 09:05:31 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -34,10 +32,28 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
 #ifndef lint
-/*static char sccsid[] = "from: @(#)exec.c	5.2 (Berkeley) 3/13/91";*/
-static char rcsid[] = "exec.c,v 1.5 1993/08/01 18:58:17 mycroft Exp";
+#if 0
+static char sccsid[] = "@(#)exec.c	8.4 (Berkeley) 6/8/95";
+#else
+__RCSID("$NetBSD: exec.c,v 1.37 2003/08/07 09:05:31 agc Exp $");
+#endif
 #endif /* not lint */
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /*
  * When commands are first encountered, they are entered in a hash table.
@@ -65,16 +81,18 @@ static char rcsid[] = "exec.c,v 1.5 1993/08/01 18:58:17 mycroft Exp";
 #include "error.h"
 #include "init.h"
 #include "mystring.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
-#ifdef  BSD
-#undef BSD      /* temporary, already defined in <sys/param.h> */
-#include <sys/param.h>
-#include <unistd.h>
-#endif
+#include "show.h"
+#include "jobs.h"
+#include "alias.h"
 
+#ifdef __KLIBC__
+/* Values for the second argument to access.
+   These may be OR'd together.  */
+#define	R_OK	4		/* Test for read permission.  */
+#define	W_OK	2		/* Test for write permission.  */
+#define	X_OK	1		/* Test for execute permission.  */
+#define	F_OK	0		/* Test for existence.  */
+#endif
 
 #define CMDTABLESIZE 31		/* should be prime */
 #define ARB 1			/* actual size determined at run time */
@@ -92,25 +110,18 @@ struct tblentry {
 
 STATIC struct tblentry *cmdtable[CMDTABLESIZE];
 STATIC int builtinloc = -1;		/* index in path of %builtin, or -1 */
+int exerrno = 0;			/* Last exec error */
 
 
-#ifdef __STDC__
-STATIC void tryexec(char *, char **, char **);
+STATIC void tryexec(char *, char **, char **, int);
 STATIC void execinterp(char **, char **);
-STATIC void printentry(struct tblentry *);
+STATIC void printentry(struct tblentry *, int);
 STATIC void clearcmdentry(int);
-STATIC struct tblentry *cmdlookup(char *, int);
+STATIC struct tblentry *cmdlookup(const char *, int);
 STATIC void delete_cmd_entry(void);
-#else
-STATIC void tryexec();
-STATIC void execinterp();
-STATIC void printentry();
-STATIC void clearcmdentry();
-STATIC struct tblentry *cmdlookup();
-STATIC void delete_cmd_entry();
-#endif
 
 
+extern char *const parsekwd[];
 
 /*
  * Exec a program.  Never returns.  If you change this routine, you may
@@ -118,39 +129,52 @@ STATIC void delete_cmd_entry();
  */
 
 void
-shellexec(argv, envp, path, index)
-	char **argv, **envp;
-	char *path;
-	{
+shellexec(char **argv, char **envp, const char *path, int idx, int vforked)
+{
 	char *cmdname;
 	int e;
 
 	if (strchr(argv[0], '/') != NULL) {
-		tryexec(argv[0], argv, envp);
+		tryexec(argv[0], argv, envp, vforked);
 		e = errno;
 	} else {
 		e = ENOENT;
 		while ((cmdname = padvance(&path, argv[0])) != NULL) {
-			if (--index < 0 && pathopt == NULL) {
-				tryexec(cmdname, argv, envp);
+			if (--idx < 0 && pathopt == NULL) {
+				tryexec(cmdname, argv, envp, vforked);
 				if (errno != ENOENT && errno != ENOTDIR)
 					e = errno;
 			}
 			stunalloc(cmdname);
 		}
 	}
-	error2(argv[0], errmsg(e, E_EXEC));
+
+	/* Map to POSIX errors */
+	switch (e) {
+	case EACCES:
+		exerrno = 126;
+		break;
+	case ENOENT:
+		exerrno = 127;
+		break;
+	default:
+		exerrno = 2;
+		break;
+	}
+	TRACE(("shellexec failed for %s, errno %d, vforked %d, suppressint %d\n",
+		argv[0], e, vforked, suppressint ));
+	exerror(EXEXEC, "%s: %s", argv[0], errmsg(e, E_EXEC));
+	/* NOTREACHED */
 }
 
 
 STATIC void
-tryexec(cmd, argv, envp)
-	char *cmd;
-	char **argv;
-	char **envp;
-	{
+tryexec(char *cmd, char **argv, char **envp, int vforked)
+{
 	int e;
+#ifndef BSD
 	char *p;
+#endif
 
 #ifdef SYSV
 	do {
@@ -161,10 +185,17 @@ tryexec(cmd, argv, envp)
 #endif
 	e = errno;
 	if (e == ENOEXEC) {
+		if (vforked) {
+			/* We are currently vfork(2)ed, so raise an
+			 * exception, and evalcommand will try again
+			 * with a normal fork(2).
+			 */
+			exraise(EXSHELLPROC);
+		}
 		initshellproc();
 		setinputfile(cmd, 0);
 		commandname = arg0 = savestr(argv[0]);
-#ifndef BSD
+#if !defined(BSD) && !defined(__linux__)
 		pgetc(); pungetc();		/* fill up input buffer */
 		p = parsenextc;
 		if (parsenleft > 2 && p[0] == '#' && p[1] == '!') {
@@ -174,13 +205,12 @@ tryexec(cmd, argv, envp)
 #endif
 		setparam(argv + 1);
 		exraise(EXSHELLPROC);
-		/*NOTREACHED*/
 	}
 	errno = e;
 }
 
 
-#ifndef BSD
+#if !defined(BSD) && !defined(__linux__)
 /*
  * Execute an interpreter introduced by "#!", for systems where this
  * feature has not been built into the kernel.  If the interpreter is
@@ -194,9 +224,8 @@ tryexec(cmd, argv, envp)
 #define NEWARGS 5
 
 STATIC void
-execinterp(argv, envp)
-	char **argv, **envp;
-	{
+execinterp(char **argv, char **envp)
+{
 	int n;
 	char *inp;
 	char *outp;
@@ -254,6 +283,7 @@ break2:;
 	ap = argv;
 	while (*ap2++ = *ap++);
 	shellexec(new, envp, pathval(), 0);
+	/* NOTREACHED */
 }
 #endif
 
@@ -269,15 +299,14 @@ break2:;
  * NULL.
  */
 
-char *pathopt;
+const char *pathopt;
 
 char *
-padvance(path, name)
-	char **path;
-	char *name;
-	{
-	register char *p, *q;
-	char *start;
+padvance(const char **path, const char *name)
+{
+	const char *p;
+	char *q;
+	const char *start;
 	int len;
 
 	if (*path == NULL)
@@ -289,7 +318,7 @@ padvance(path, name)
 		growstackblock();
 	q = stackblock();
 	if (p != start) {
-		bcopy(start, q, p - start);
+		memcpy(q, start, p - start);
 		q += p - start;
 		*q++ = '/';
 	}
@@ -311,7 +340,9 @@ padvance(path, name)
 /*** Command hashing code ***/
 
 
-hashcmd(argc, argv)  char **argv; {
+int
+hashcmd(int argc, char **argv)
+{
 	struct tblentry **pp;
 	struct tblentry *cmdp;
 	int c;
@@ -319,14 +350,6 @@ hashcmd(argc, argv)  char **argv; {
 	struct cmdentry entry;
 	char *name;
 
-	if (argc <= 1) {
-		for (pp = cmdtable ; pp < &cmdtable[CMDTABLESIZE] ; pp++) {
-			for (cmdp = *pp ; cmdp ; cmdp = cmdp->next) {
-				printentry(cmdp);
-			}
-		}
-		return 0;
-	}
 	verbose = 0;
 	while ((c = nextopt("rv")) != '\0') {
 		if (c == 'r') {
@@ -335,16 +358,25 @@ hashcmd(argc, argv)  char **argv; {
 			verbose++;
 		}
 	}
+	if (*argptr == NULL) {
+		for (pp = cmdtable ; pp < &cmdtable[CMDTABLESIZE] ; pp++) {
+			for (cmdp = *pp ; cmdp ; cmdp = cmdp->next) {
+				if (verbose || cmdp->cmdtype == CMDNORMAL)
+					printentry(cmdp, verbose);
+			}
+		}
+		return 0;
+	}
 	while ((name = *argptr) != NULL) {
 		if ((cmdp = cmdlookup(name, 0)) != NULL
 		 && (cmdp->cmdtype == CMDNORMAL
-		     || cmdp->cmdtype == CMDBUILTIN && builtinloc >= 0))
+		     || (cmdp->cmdtype == CMDBUILTIN && builtinloc >= 0)))
 			delete_cmd_entry();
-		find_command(name, &entry, 1);
+		find_command(name, &entry, DO_ERR, pathval());
 		if (verbose) {
 			if (entry.cmdtype != CMDUNKNOWN) {	/* if no error msg */
 				cmdp = cmdlookup(name, 0);
-				printentry(cmdp);
+				printentry(cmdp, verbose);
 			}
 			flushall();
 		}
@@ -355,29 +387,42 @@ hashcmd(argc, argv)  char **argv; {
 
 
 STATIC void
-printentry(cmdp)
-	struct tblentry *cmdp;
-	{
-	int index;
-	char *path;
+printentry(struct tblentry *cmdp, int verbose)
+{
+	int idx;
+	const char *path;
 	char *name;
 
-	if (cmdp->cmdtype == CMDNORMAL) {
-		index = cmdp->param.index;
+	switch (cmdp->cmdtype) {
+	case CMDNORMAL:
+		idx = cmdp->param.index;
 		path = pathval();
 		do {
 			name = padvance(&path, cmdp->cmdname);
 			stunalloc(name);
-		} while (--index >= 0);
+		} while (--idx >= 0);
 		out1str(name);
-	} else if (cmdp->cmdtype == CMDBUILTIN) {
+		break;
+	case CMDSPLBLTIN:
+		out1fmt("special builtin %s", cmdp->cmdname);
+		break;
+	case CMDBUILTIN:
 		out1fmt("builtin %s", cmdp->cmdname);
-	} else if (cmdp->cmdtype == CMDFUNCTION) {
+		break;
+	case CMDFUNCTION:
 		out1fmt("function %s", cmdp->cmdname);
-#ifdef DEBUG
-	} else {
-		error("internal error: cmdtype %d", cmdp->cmdtype);
-#endif
+		if (verbose) {
+			struct procstat ps;
+			INTOFF;
+			commandtext(&ps, cmdp->param.func);
+			INTON;
+			out1str("() { ");
+			out1str(ps.cmd);
+			out1str("; }");
+		}
+		break;
+	default:
+		error("internal error: %s cmdtype %d", cmdp->cmdname, cmdp->cmdtype);
 	}
 	if (cmdp->rehash)
 		out1c('*');
@@ -392,39 +437,78 @@ printentry(cmdp)
  */
 
 void
-find_command(name, entry, printerr)
-	char *name;
-	struct cmdentry *entry;
-	{
-	struct tblentry *cmdp;
-	int index;
+find_command(char *name, struct cmdentry *entry, int act, const char *path)
+{
+	struct tblentry *cmdp, loc_cmd;
+	int idx;
 	int prev;
-	char *path;
 	char *fullname;
 	struct stat statb;
 	int e;
-	int i;
+	int (*bltin)(int,char **);
 
-	/* If name contains a slash, don't use the hash table */
+	/* If name contains a slash, don't use PATH or hash table */
 	if (strchr(name, '/') != NULL) {
+		if (act & DO_ABS) {
+			while (stat(name, &statb) < 0) {
+#ifdef SYSV
+				if (errno == EINTR)
+					continue;
+#endif
+				if (errno != ENOENT && errno != ENOTDIR)
+					e = errno;
+				entry->cmdtype = CMDUNKNOWN;
+				entry->u.index = -1;
+				return;
+			}
+			entry->cmdtype = CMDNORMAL;
+			entry->u.index = -1;
+			return;
+		}
 		entry->cmdtype = CMDNORMAL;
 		entry->u.index = 0;
 		return;
 	}
 
-	/* If name is in the table, and not invalidated by cd, we're done */
-	if ((cmdp = cmdlookup(name, 0)) != NULL && cmdp->rehash == 0)
-		goto success;
+	if (path != pathval())
+		act |= DO_ALTPATH;
+
+	if (act & DO_ALTPATH && strstr(path, "%builtin") != NULL)
+		act |= DO_ALTBLTIN;
+
+	/* If name is in the table, check answer will be ok */
+	if ((cmdp = cmdlookup(name, 0)) != NULL) {
+		do {
+			switch (cmdp->cmdtype) {
+			case CMDNORMAL:
+				if (act & DO_ALTPATH) {
+					cmdp = NULL;
+					continue;
+				}
+				break;
+			case CMDFUNCTION:
+				if (act & DO_NOFUNC) {
+					cmdp = NULL;
+					continue;
+				}
+				break;
+			case CMDBUILTIN:
+				if ((act & DO_ALTBLTIN) || builtinloc >= 0) {
+					cmdp = NULL;
+					continue;
+				}
+				break;
+			}
+			/* if not invalidated by cd, we're done */
+			if (cmdp->rehash == 0)
+				goto success;
+		} while (0);
+	}
 
 	/* If %builtin not in path, check for builtin next */
-	if (builtinloc < 0 && (i = find_builtin(name)) >= 0) {
-		INTOFF;
-		cmdp = cmdlookup(name, 1);
-		cmdp->cmdtype = CMDBUILTIN;
-		cmdp->param.index = i;
-		INTON;
-		goto success;
-	}
+	if ((act & DO_ALTPATH ? !(act & DO_ALTBLTIN) : builtinloc < 0) &&
+	    (bltin = find_builtin(name)) != 0)
+		goto builtin_success;
 
 	/* We have to search path. */
 	prev = -1;		/* where to start */
@@ -435,32 +519,27 @@ find_command(name, entry, printerr)
 			prev = cmdp->param.index;
 	}
 
-	path = pathval();
 	e = ENOENT;
-	index = -1;
+	idx = -1;
 loop:
 	while ((fullname = padvance(&path, name)) != NULL) {
 		stunalloc(fullname);
-		index++;
+		idx++;
 		if (pathopt) {
 			if (prefix("builtin", pathopt)) {
-				if ((i = find_builtin(name)) < 0)
+				if ((bltin = find_builtin(name)) == 0)
 					goto loop;
-				INTOFF;
-				cmdp = cmdlookup(name, 1);
-				cmdp->cmdtype = CMDBUILTIN;
-				cmdp->param.index = i;
-				INTON;
-				goto success;
+				goto builtin_success;
 			} else if (prefix("func", pathopt)) {
 				/* handled below */
 			} else {
-				goto loop;	/* ignore unimplemented options */
+				/* ignore unimplemented options */
+				goto loop;
 			}
 		}
 		/* if rehash, don't redo absolute path names */
-		if (fullname[0] == '/' && index <= prev) {
-			if (index < prev)
+		if (fullname[0] == '/' && idx <= prev) {
+			if (idx < prev)
 				goto loop;
 			TRACE(("searchexec \"%s\": no change\n", name));
 			goto success;
@@ -475,52 +554,42 @@ loop:
 			goto loop;
 		}
 		e = EACCES;	/* if we fail, this will be the error */
-		if ((statb.st_mode & S_IFMT) != S_IFREG)
+		if (!S_ISREG(statb.st_mode))
 			goto loop;
 		if (pathopt) {		/* this is a %func directory */
+			if (act & DO_NOFUNC)
+				goto loop;
 			stalloc(strlen(fullname) + 1);
 			readcmdfile(fullname);
-			if ((cmdp = cmdlookup(name, 0)) == NULL || cmdp->cmdtype != CMDFUNCTION)
+			if ((cmdp = cmdlookup(name, 0)) == NULL ||
+			    cmdp->cmdtype != CMDFUNCTION)
 				error("%s not defined in %s", name, fullname);
 			stunalloc(fullname);
 			goto success;
 		}
-		if (geteuid() == 0) {
-			if ((statb.st_mode & 0111) == 0)
-				goto loop;
-		} else if (statb.st_uid == geteuid()) {
+#ifdef notdef
+		/* XXX this code stops root executing stuff, and is buggy
+		   if you need a group from the group list. */
+		if (statb.st_uid == geteuid()) {
 			if ((statb.st_mode & 0100) == 0)
 				goto loop;
 		} else if (statb.st_gid == getegid()) {
 			if ((statb.st_mode & 010) == 0)
 				goto loop;
 		} else {
-			if ((statb.st_mode & 01) == 0) {
-#ifdef  BSD
-				if ((statb.st_mode & 010) == 0)
-					goto loop;
-				/* Are you in this group too? */
-				{
-					int group_list[NGROUPS];
-					int ngroups, i;
-
-					ngroups = getgroups(NGROUPS, group_list);
-					for (i = 0; i < ngroups; i++)
-						if (statb.st_gid == group_list[i])
-							goto Found;
-				}
-#endif
+			if ((statb.st_mode & 01) == 0)
 				goto loop;
-			}
 		}
-#ifdef  BSD
-	Found:
 #endif
 		TRACE(("searchexec \"%s\" returns \"%s\"\n", name, fullname));
 		INTOFF;
-		cmdp = cmdlookup(name, 1);
+		if (act & DO_ALTPATH) {
+			stalloc(strlen(fullname) + 1);
+			cmdp = &loc_cmd;
+		} else
+			cmdp = cmdlookup(name, 1);
 		cmdp->cmdtype = CMDNORMAL;
-		cmdp->param.index = index;
+		cmdp->param.index = idx;
 		INTON;
 		goto success;
 	}
@@ -528,11 +597,23 @@ loop:
 	/* We failed.  If there was an entry for this command, delete it */
 	if (cmdp)
 		delete_cmd_entry();
-	if (printerr)
+	if (act & DO_ERR)
 		outfmt(out2, "%s: %s\n", name, errmsg(e, E_EXEC));
 	entry->cmdtype = CMDUNKNOWN;
 	return;
 
+builtin_success:
+	INTOFF;
+	if (act & DO_ALTPATH)
+		cmdp = &loc_cmd;
+	else
+		cmdp = cmdlookup(name, 1);
+	if (cmdp->cmdtype == CMDFUNCTION)
+		/* DO_NOFUNC must have been set */
+		cmdp = &loc_cmd;
+	cmdp->cmdtype = CMDBUILTIN;
+	cmdp->param.bltin = bltin;
+	INTON;
 success:
 	cmdp->rehash = 0;
 	entry->cmdtype = cmdp->cmdtype;
@@ -546,16 +627,49 @@ success:
  */
 
 int
-find_builtin(name)
+(*find_builtin(name))(int, char **)
 	char *name;
-	{
-	const register struct builtincmd *bp;
+{
+	const struct builtincmd *bp;
 
 	for (bp = builtincmd ; bp->name ; bp++) {
 		if (*bp->name == *name && equal(bp->name, name))
-			return bp->code;
+			return bp->builtin;
 	}
-	return -1;
+	return 0;
+}
+
+int
+(*find_splbltin(name))(int, char **)
+	char *name;
+{
+	const struct builtincmd *bp;
+
+	for (bp = splbltincmd ; bp->name ; bp++) {
+		if (*bp->name == *name && equal(bp->name, name))
+			return bp->builtin;
+	}
+	return 0;
+}
+
+/*
+ * At shell startup put special builtins into hash table.
+ * ensures they are executed first (see posix).
+ * We stop functions being added with the same name
+ * (as they are impossible to call)
+ */
+
+void
+hash_special_builtins(void)
+{
+	const struct builtincmd *bp;
+	struct tblentry *cmdp;
+
+	for (bp = splbltincmd ; bp->name ; bp++) {
+		cmdp = cmdlookup(bp->name, 1);
+		cmdp->cmdtype = CMDSPLBLTIN;
+		cmdp->param.bltin = bp->builtin;
+	}
 }
 
 
@@ -566,14 +680,15 @@ find_builtin(name)
  */
 
 void
-hashcd() {
+hashcd(void)
+{
 	struct tblentry **pp;
 	struct tblentry *cmdp;
 
 	for (pp = cmdtable ; pp < &cmdtable[CMDTABLESIZE] ; pp++) {
 		for (cmdp = *pp ; cmdp ; cmdp = cmdp->next) {
 			if (cmdp->cmdtype == CMDNORMAL
-			 || cmdp->cmdtype == CMDBUILTIN && builtinloc >= 0)
+			 || (cmdp->cmdtype == CMDBUILTIN && builtinloc >= 0))
 				cmdp->rehash = 1;
 		}
 	}
@@ -582,39 +697,39 @@ hashcd() {
 
 
 /*
+ * Fix command hash table when PATH changed.
  * Called before PATH is changed.  The argument is the new value of PATH;
- * pathval() still returns the old value at this point.  Called with
- * interrupts off.
+ * pathval() still returns the old value at this point.
+ * Called with interrupts off.
  */
 
 void
-changepath(newval)
-	char *newval;
-	{
-	char *old, *new;
-	int index;
+changepath(const char *newval)
+{
+	const char *old, *new;
+	int idx;
 	int firstchange;
 	int bltin;
 
 	old = pathval();
 	new = newval;
 	firstchange = 9999;	/* assume no change */
-	index = 0;
+	idx = 0;
 	bltin = -1;
 	for (;;) {
 		if (*old != *new) {
-			firstchange = index;
-			if (*old == '\0' && *new == ':'
-			 || *old == ':' && *new == '\0')
+			firstchange = idx;
+			if ((*old == '\0' && *new == ':')
+			 || (*old == ':' && *new == '\0'))
 				firstchange++;
 			old = new;	/* ignore subsequent differences */
 		}
 		if (*new == '\0')
 			break;
 		if (*new == '%' && bltin < 0 && prefix("builtin", new + 1))
-			bltin = index;
+			bltin = idx;
 		if (*new == ':') {
-			index++;
+			idx++;
 		}
 		new++, old++;
 	}
@@ -633,7 +748,8 @@ changepath(newval)
  */
 
 STATIC void
-clearcmdentry(firstchange) {
+clearcmdentry(int firstchange)
+{
 	struct tblentry **tblp;
 	struct tblentry **pp;
 	struct tblentry *cmdp;
@@ -642,8 +758,10 @@ clearcmdentry(firstchange) {
 	for (tblp = cmdtable ; tblp < &cmdtable[CMDTABLESIZE] ; tblp++) {
 		pp = tblp;
 		while ((cmdp = *pp) != NULL) {
-			if (cmdp->cmdtype == CMDNORMAL && cmdp->param.index >= firstchange
-			 || cmdp->cmdtype == CMDBUILTIN && builtinloc >= firstchange) {
+			if ((cmdp->cmdtype == CMDNORMAL &&
+			     cmdp->param.index >= firstchange)
+			 || (cmdp->cmdtype == CMDBUILTIN &&
+			     builtinloc >= firstchange)) {
 				*pp = cmdp->next;
 				ckfree(cmdp);
 			} else {
@@ -660,7 +778,12 @@ clearcmdentry(firstchange) {
  */
 
 #ifdef mkinit
-MKINIT void deletefuncs();
+MKINIT void deletefuncs(void);
+MKINIT void hash_special_builtins(void);
+
+INIT {
+	hash_special_builtins();
+}
 
 SHELLPROC {
 	deletefuncs();
@@ -668,7 +791,8 @@ SHELLPROC {
 #endif
 
 void
-deletefuncs() {
+deletefuncs(void)
+{
 	struct tblentry **tblp;
 	struct tblentry **pp;
 	struct tblentry *cmdp;
@@ -703,11 +827,10 @@ struct tblentry **lastcmdentry;
 
 
 STATIC struct tblentry *
-cmdlookup(name, add)
-	char *name;
-	{
+cmdlookup(const char *name, int add)
+{
 	int hashval;
-	register char *p;
+	const char *p;
 	struct tblentry *cmdp;
 	struct tblentry **pp;
 
@@ -736,13 +859,13 @@ cmdlookup(name, add)
 	return cmdp;
 }
 
-
 /*
  * Delete the command entry returned on the last lookup.
  */
 
 STATIC void
-delete_cmd_entry() {
+delete_cmd_entry(void)
+{
 	struct tblentry *cmdp;
 
 	INTOFF;
@@ -756,10 +879,8 @@ delete_cmd_entry() {
 
 #ifdef notdef
 void
-getcmdentry(name, entry)
-	char *name;
-	struct cmdentry *entry; 
-	{
+getcmdentry(char *name, struct cmdentry *entry)
+{
 	struct tblentry *cmdp = cmdlookup(name, 0);
 
 	if (cmdp) {
@@ -775,23 +896,23 @@ getcmdentry(name, entry)
 
 /*
  * Add a new command entry, replacing any existing command entry for
- * the same name.
+ * the same name - except special builtins.
  */
 
-void
-addcmdentry(name, entry)
-	char *name;
-	struct cmdentry *entry;
-	{
+STATIC void
+addcmdentry(char *name, struct cmdentry *entry)
+{
 	struct tblentry *cmdp;
 
 	INTOFF;
 	cmdp = cmdlookup(name, 1);
-	if (cmdp->cmdtype == CMDFUNCTION) {
-		freefunc(cmdp->param.func);
+	if (cmdp->cmdtype != CMDSPLBLTIN) {
+		if (cmdp->cmdtype == CMDFUNCTION) {
+			freefunc(cmdp->param.func);
+		}
+		cmdp->cmdtype = entry->cmdtype;
+		cmdp->param = entry->u;
 	}
-	cmdp->cmdtype = entry->cmdtype;
-	cmdp->param = entry->u;
 	INTON;
 }
 
@@ -801,10 +922,8 @@ addcmdentry(name, entry)
  */
 
 void
-defun(name, func)
-	char *name;
-	union node *func;
-	{
+defun(char *name, union node *func)
+{
 	struct cmdentry entry;
 
 	INTOFF;
@@ -819,14 +938,143 @@ defun(name, func)
  * Delete a function if it exists.
  */
 
-void
-unsetfunc(name)
-	char *name;
-	{
+int
+unsetfunc(char *name)
+{
 	struct tblentry *cmdp;
 
-	if ((cmdp = cmdlookup(name, 0)) != NULL && cmdp->cmdtype == CMDFUNCTION) {
+	if ((cmdp = cmdlookup(name, 0)) != NULL &&
+	    cmdp->cmdtype == CMDFUNCTION) {
 		freefunc(cmdp->param.func);
 		delete_cmd_entry();
+		return (0);
 	}
+	return (1);
+}
+
+/*
+ * Locate and print what a word is...
+ * also used for 'command -[v|V]'
+ */
+
+int
+typecmd(int argc, char **argv)
+{
+	struct cmdentry entry;
+	struct tblentry *cmdp;
+	char * const *pp;
+	struct alias *ap;
+	int err = 0;
+	char *arg;
+	int c;
+	int V_flag = 0;
+	int v_flag = 0;
+	int p_flag = 0;
+
+	while ((c = nextopt("vVp")) != 0) {
+		switch (c) {
+		case 'v': v_flag = 1; break;
+		case 'V': V_flag = 1; break;
+		case 'p': p_flag = 1; break;
+		}
+	}
+
+	if (p_flag && (v_flag || V_flag))
+		error("cannot specify -p with -v or -V");
+
+	while ((arg = *argptr++)) {
+		if (!v_flag)
+			out1str(arg);
+		/* First look at the keywords */
+		for (pp = parsekwd; *pp; pp++)
+			if (**pp == *arg && equal(*pp, arg))
+				break;
+
+		if (*pp) {
+			if (v_flag)
+				err = 1;
+			else
+				out1str(" is a shell keyword\n");
+			continue;
+		}
+
+		/* Then look at the aliases */
+#ifdef KLIBC_SH_ALIAS
+		if ((ap = lookupalias(arg, 1)) != NULL) {
+			if (!v_flag)
+				out1fmt(" is an alias for \n");
+			out1fmt("%s\n", ap->val);
+			continue;
+		}
+#endif
+
+		/* Then check if it is a tracked alias */
+		if ((cmdp = cmdlookup(arg, 0)) != NULL) {
+			entry.cmdtype = cmdp->cmdtype;
+			entry.u = cmdp->param;
+		} else {
+			/* Finally use brute force */
+			find_command(arg, &entry, DO_ABS, pathval());
+		}
+
+		switch (entry.cmdtype) {
+		case CMDNORMAL: {
+			if (strchr(arg, '/') == NULL) {
+				const char *path = pathval();
+				char *name;
+				int j = entry.u.index;
+				do {
+					name = padvance(&path, arg);
+					stunalloc(name);
+				} while (--j >= 0);
+#ifdef KLIBC_SH_ALIAS
+				if (!v_flag)
+					out1fmt(" is%s ",
+					    cmdp ? " a tracked alias for" : "");
+#endif
+				out1fmt("%s\n", name);
+			} else {
+				if (access(arg, X_OK) == 0) {
+					if (!v_flag)
+						out1fmt(" is ");
+					out1fmt("%s\n", arg);
+				} else {
+					if (!v_flag)
+						out1fmt(": %s\n",
+						    strerror(errno));
+					else
+						err = 126;
+				}
+			}
+ 			break;
+		}
+		case CMDFUNCTION:
+			if (!v_flag)
+				out1str(" is a shell function\n");
+			else
+				out1fmt("%s\n", arg);
+			break;
+
+		case CMDBUILTIN:
+			if (!v_flag)
+				out1str(" is a shell builtin\n");
+			else
+				out1fmt("%s\n", arg);
+			break;
+
+		case CMDSPLBLTIN:
+			if (!v_flag)
+				out1str(" is a special shell builtin\n");
+			else
+				out1fmt("%s\n", arg);
+			break;
+
+		default:
+			if (!v_flag)
+				out1str(": not found\n");
+			err = 127;
+			break;
+		}
+	}
+	return err;
 }

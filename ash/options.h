@@ -1,6 +1,8 @@
+/*	$NetBSD: options.h,v 1.17 2003/08/07 09:05:36 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,40 +31,85 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)options.h	5.1 (Berkeley) 3/7/91
- *	options.h,v 1.4 1993/08/01 18:58:39 mycroft Exp
+ *	@(#)options.h	8.2 (Berkeley) 5/4/95
  */
 
 struct shparam {
-	int nparam;	/* number of positional parameters (without $0) */
-	char malloc;	/* true if parameter list dynamicly allocated */
+	int nparam;		/* # of positional parameters (without $0) */
+	unsigned char malloc;	/* if parameter list dynamically allocated */
+	unsigned char reset;	/* if getopts has been reset */
 	char **p;		/* parameter list */
-	char **optnext;	/* next parameter to be processed by getopts */
-	char *optptr;	/* used by getopts */
+	char **optnext;		/* next parameter to be processed by getopts */
+	char *optptr;		/* used by getopts */
 };
 
 
+struct optent {
+	const char *name;		/* for set -o <name> */
+	const char letter;		/* set [+/-]<letter> and $- */
+	const char opt_set;		/* mutually exclusive option set */
+	char val;			/* value of <letter>flag */
+};
 
-#define eflag optval[0]
-#define fflag optval[1]
-#define Iflag optval[2]
-#define iflag optval[3]
-#define jflag optval[4]
-#define nflag optval[5]
-#define sflag optval[6]
-#define xflag optval[7]
-#define zflag optval[8]
-#define vflag optval[9]
-#define uflag optval[10]
-
-#define NOPTS	11
+/* Those marked [U] are required by posix, but have no effect! */
 
 #ifdef DEFINE_OPTIONS
-const char optchar[NOPTS+1] = "efIijnsxzvu";       /* shell flags */
-char optval[NOPTS+1];           /* values of option flags */
+#define DEF_OPTS(name, letter, opt_set) {name, letter, opt_set, 0},
+struct optent optlist[] = {
 #else
-extern const char optchar[NOPTS+1];
-extern char optval[NOPTS+1];
+#define DEF_OPTS(name, letter, opt_set)
+#endif
+#define DEF_OPT(name,letter) DEF_OPTS(name, letter, 0)
+
+DEF_OPT( "errexit",	'e' )	/* exit on error */
+#define eflag optlist[0].val
+DEF_OPT( "noglob",	'f' )	/* no pathname expansion */
+#define fflag optlist[1].val
+DEF_OPT( "ignoreeof",	'I' )	/* do not exit on EOF */
+#define Iflag optlist[2].val
+DEF_OPT( "interactive",'i' )	/* interactive shell */
+#define iflag optlist[3].val
+DEF_OPT( "monitor",	'm' )	/* job control */
+#define mflag optlist[4].val
+DEF_OPT( "noexec",	'n' )	/* [U] do not exec commands */
+#define nflag optlist[5].val
+DEF_OPT( "stdin",	's' )	/* read from stdin */
+#define sflag optlist[6].val
+DEF_OPT( "xtrace",	'x' )	/* trace after expansion */
+#define xflag optlist[7].val
+DEF_OPT( "verbose",	'v' )	/* trace read input */
+#define vflag optlist[8].val
+DEF_OPTS( "vi",		'V', 'V' )	/* vi style editing */
+#define Vflag optlist[9].val
+DEF_OPTS( "emacs",	'E', 'V' )	/* emacs style editing */
+#define	Eflag optlist[10].val
+DEF_OPT( "noclobber",	'C' )	/* do not overwrite files with > */
+#define	Cflag optlist[11].val
+DEF_OPT( "allexport",	'a' )	/* export all variables */
+#define	aflag optlist[12].val
+DEF_OPT( "notify",	'b' )	/* [U] report completion of background jobs */
+#define	bflag optlist[13].val
+DEF_OPT( "nounset",	'u' )	/* error expansion of unset variables */
+#define	uflag optlist[14].val
+DEF_OPT( "quietprofile", 'q' )
+#define	qflag optlist[15].val
+DEF_OPT( "nolog",	0 )	/* [U] no functon defs in command history */
+#define	nolog optlist[16].val
+DEF_OPT( "cdprint",	0 )	/* always print result of cd */
+#define	cdprint optlist[17].val
+#ifdef DEBUG
+DEF_OPT( "debug",	0 )	/* enable debug prints */
+#define	debug optlist[18].val
+#endif
+
+#ifdef DEFINE_OPTIONS
+	{ 0, 0, 0, 0 },
+};
+#define NOPTS (sizeof optlist / sizeof optlist[0] - 1)
+int sizeof_optlist = sizeof optlist;
+#else
+extern struct optent optlist[];
+extern int sizeof_optlist;
 #endif
 
 
@@ -74,18 +117,15 @@ extern char *minusc;		/* argument to -c option */
 extern char *arg0;		/* $0 */
 extern struct shparam shellparam;  /* $@ */
 extern char **argptr;		/* argument list for builtin commands */
-extern char *optarg;		/* set by nextopt */
+extern char *optionarg;		/* set by nextopt */
 extern char *optptr;		/* used by nextopt */
 
-
-#ifdef __STDC__
 void procargs(int, char **);
+void optschanged(void);
 void setparam(char **);
-void freeparam(struct shparam *);
-int nextopt(char *);
-#else
-void procargs();
-void setparam();
-void freeparam();
-int nextopt();
-#endif
+void freeparam(volatile struct shparam *);
+int shiftcmd(int, char **);
+int setcmd(int, char **);
+int getoptscmd(int, char **);
+int nextopt(const char *);
+void getoptsreset(const char *);

@@ -1,6 +1,8 @@
+/*	$NetBSD: redir.h,v 1.15 2003/08/07 09:05:37 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,25 +31,18 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)redir.h	5.1 (Berkeley) 3/7/91
- *	redir.h,v 1.5 1993/08/01 18:58:36 mycroft Exp
+ *	@(#)redir.h	8.2 (Berkeley) 5/4/95
  */
 
 /* flags passed to redirect */
 #define REDIR_PUSH 01		/* save previous values of file descriptors */
 #define REDIR_BACKQ 02		/* save the command output in memory */
+#define REDIR_VFORK 04		/* running under vfork(2), be careful */
 
-#ifdef __STDC__
 union node;
 void redirect(union node *, int);
 void popredir(void);
-void clearredir(void);
-int copyfd(int, int);
 int fd0_redirected_p(void);
-#else
-void redirect();
-void popredir();
-void clearredir();
-int copyfd();
-int fd0_redirected_p();
-#endif
+void clearredir(int);
+int copyfd(int, int);
+

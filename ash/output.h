@@ -1,6 +1,8 @@
+/*	$NetBSD: output.h,v 1.17 2003/08/07 09:05:36 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,11 +31,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)output.h	5.1 (Berkeley) 3/7/91
- *	output.h,v 1.4 1993/08/01 18:58:38 mycroft Exp
+ *	@(#)output.h	8.2 (Berkeley) 5/4/95
  */
 
 #ifndef OUTPUT_INCL
+
+#include <stdarg.h>
 
 struct output {
 	char *nextc;
@@ -54,37 +53,27 @@ extern struct output memout;
 extern struct output *out1;
 extern struct output *out2;
 
-
-#ifdef __STDC__
-void outstr(const char *, struct output *);
+void open_mem(char *, int, struct output *);
 void out1str(const char *);
 void out2str(const char *);
-void outfmt(struct output *, char *, ...);
-void out1fmt(char *, ...);
-void fmtstr(char *, int, char *, ...);
-/* void doformat(struct output *, char *, va_list); */
-void doformat();
+void outstr(const char *, struct output *);
 void emptyoutbuf(struct output *);
 void flushall(void);
 void flushout(struct output *);
 void freestdout(void);
-int xwrite(int, char *, int);
-#else
-void outstr();
-void out1str();
-void out2str();
-void outfmt();
-void out1fmt();
-void fmtstr();
-/* void doformat(); */
-void doformat();
-void emptyoutbuf();
-void flushall();
-void flushout();
-void freestdout();
-int xwrite();
-int xioctl();
+void outfmt(struct output *, const char *, ...)
+    __attribute__((__format__(__printf__,2,3)));
+void out1fmt(const char *, ...)
+    __attribute__((__format__(__printf__,1,2)));
+#ifndef __linux__
+void dprintf(const char *, ...)
+    __attribute__((__format__(__printf__,1,2)));
 #endif
+void fmtstr(char *, size_t, const char *, ...)
+    __attribute__((__format__(__printf__,3,4)));
+void doformat(struct output *, const char *, va_list);
+int xwrite(int, char *, int);
+int xioctl(int, unsigned long, char *);
 
 #define outc(c, file)	(--(file)->nleft < 0? (emptyoutbuf(file), *(file)->nextc++ = (c)) : (*(file)->nextc++ = (c)))
 #define out1c(c)	outc(c, out1);

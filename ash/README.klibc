@@ -1,1 +1,4 @@
-This is a very old version of ash 0.2 ported to klibc.
+This is a version from ash pulled from NetBSD in mid-2004 and reduced
+in size somewhat, by removing mainly interactive features like job
+control.
+

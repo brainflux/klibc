@@ -1,6 +1,8 @@
+/*	$NetBSD: eval.h,v 1.14 2003/08/07 09:05:31 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,12 +31,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)eval.h	5.2 (Berkeley) 4/12/91
- *	eval.h,v 1.4 1993/08/01 18:58:31 mycroft Exp
+ *	@(#)eval.h	8.2 (Berkeley) 5/4/95
  */
 
 extern char *commandname;	/* currently executing command */
 extern int exitstatus;		/* exit status of last command */
+extern int back_exitstatus;	/* exit status of backquoted command */
 extern struct strlist *cmdenviron;  /* environment for builtin command */
 
 
@@ -49,18 +47,18 @@ struct backcmd {		/* result of evalbackcmd */
 	struct job *jp;		/* job structure for command */
 };
 
-
-#ifdef __STDC__
-void evalstring(char *);
+void evalstring(char *, int);
 union node;	/* BLETCH for ansi C */
 void evaltree(union node *, int);
 void evalbackcmd(union node *, struct backcmd *);
-#else
-void evalstring();
-void evaltree();
-void evalbackcmd();
-#endif
 
 /* in_function returns nonzero if we are currently evaluating a function */
 #define in_function()	funcnest
 extern int funcnest;
+extern int evalskip;
+
+/* reasons for skipping commands (see comment on breakcmd routine) */
+#define SKIPBREAK	1
+#define SKIPCONT	2
+#define SKIPFUNC	3
+#define SKIPFILE	4

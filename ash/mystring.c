@@ -1,6 +1,8 @@
+/*	$NetBSD: mystring.c,v 1.16 2003/08/07 09:05:35 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -34,9 +32,18 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
 #ifndef lint
-/*static char sccsid[] = "from: @(#)mystring.c	5.1 (Berkeley) 3/7/91";*/
-static char rcsid[] = "mystring.c,v 1.4 1993/08/01 18:58:05 mycroft Exp";
+#if 0
+static char sccsid[] = "@(#)mystring.c	8.2 (Berkeley) 5/4/95";
+#else
+__RCSID("$NetBSD: mystring.c,v 1.16 2003/08/07 09:05:35 agc Exp $");
+#endif
 #endif /* not lint */
 
 /*
@@ -45,12 +52,11 @@ static char rcsid[] = "mystring.c,v 1.4 1993/08/01 18:58:05 mycroft Exp";
  *	equal(s1, s2)		Return true if strings are equal.
  *	scopy(from, to)		Copy a string.
  *	scopyn(from, to, n)	Like scopy, but checks for overflow.
- *	strchr(s, c)		Find first occurance of c in s.
- *	bcopy(from, to, n)	Copy a block of memory.
  *	number(s)		Convert a string of digits to an integer.
  *	is_number(s)		Return true if s is a string of digits.
  */
 
+#include <stdlib.h>
 #include "shell.h"
 #include "syntax.h"
 #include "error.h"
@@ -58,6 +64,14 @@ static char rcsid[] = "mystring.c,v 1.4 1993/08/01 18:58:05 mycroft Exp";
 
 
 char nullstr[1];		/* zero length string */
+
+/*
+ * equal - #defined in mystring.h
+ */
+
+/*
+ * scopy - #defined in mystring.h
+ */
 
 
 /*
@@ -67,11 +81,8 @@ char nullstr[1];		/* zero length string */
  */
 
 void
-scopyn(from, to, size)
-	register char const *from;
-	register char *to;
-	register int size;
-	{
+scopyn(const char *from, char *to, int size)
+{
 
 	while (--size > 0) {
 		if ((*to++ = *from++) == '\0')
@@ -82,58 +93,12 @@ scopyn(from, to, size)
 
 
 /*
- * strchr - find first occurrence of a character in a string.
- */
-
-#ifndef SYS5
-char *
-mystrchr(s, charwanted)
-	char const *s;
-	register char charwanted;
-	{
-	register char const *scan;
-
-	/*
-	 * The odd placement of the two tests is so NUL is findable.
-	 */
-	for (scan = s ; *scan != charwanted ; )	/* ++ moved down for opt. */
-		if (*scan++ == '\0')
-			return NULL;
-	return (char *)scan;
-}
-#endif
-
-
-
-/*
- * bcopy - copy bytes
- *
- * This routine was derived from code by Henry Spencer.
- */
-
-void
-mybcopy(src, dst, length)
-	pointer dst;
-	const pointer src;
-	register int length;
-	{
-	register char *d = dst;
-	register char *s = src;
-
-	while (--length >= 0)
-		*d++ = *s++;
-}
-
-
-/*
  * prefix -- see if pfx is a prefix of string.
  */
 
 int
-prefix(pfx, string)
-	register char const *pfx;
-	register char const *string;
-	{
+prefix(const char *pfx, const char *string)
+{
 	while (*pfx) {
 		if (*pfx++ != *string++)
 			return 0;
@@ -148,12 +113,11 @@ prefix(pfx, string)
  */
 
 int
-number(s)
-	const char *s;
-	{
+number(const char *s)
+{
 
 	if (! is_number(s))
-		error2("Illegal number", (char *)s);
+		error("Illegal number: %s", s);
 	return atoi(s);
 }
 
@@ -164,9 +128,8 @@ number(s)
  */
 
 int
-is_number(p)
-	register const char *p;
-	{
+is_number(const char *p)
+{
 	do {
 		if (! is_digit(*p))
 			return 0;

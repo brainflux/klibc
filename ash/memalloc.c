@@ -1,6 +1,8 @@
+/*	$NetBSD: memalloc.c,v 1.28 2003/08/07 09:05:34 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -34,10 +32,22 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
 #ifndef lint
-/*static char sccsid[] = "from: @(#)memalloc.c	5.2 (Berkeley) 3/13/91";*/
-static char rcsid[] = "memalloc.c,v 1.4 1993/08/01 18:58:10 mycroft Exp";
+#if 0
+static char sccsid[] = "@(#)memalloc.c	8.3 (Berkeley) 5/4/95";
+#else
+__RCSID("$NetBSD: memalloc.c,v 1.28 2003/08/07 09:05:34 agc Exp $");
+#endif
 #endif /* not lint */
+
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "shell.h"
 #include "output.h"
@@ -51,11 +61,12 @@ static char rcsid[] = "memalloc.c,v 1.4 1993/08/01 18:58:10 mycroft Exp";
  */
 
 pointer
-ckmalloc(nbytes) {
-	register pointer p;
-	pointer malloc();
+ckmalloc(int nbytes)
+{
+	pointer p;
 
-	if ((p = malloc(nbytes)) == NULL)
+	p = malloc(nbytes);
+	if (p == NULL)
 		error("Out of space");
 	return p;
 }
@@ -66,12 +77,10 @@ ckmalloc(nbytes) {
  */
 
 pointer
-ckrealloc(p, nbytes)
-	register pointer p;
-	{
-	pointer realloc();
-
-	if ((p = realloc(p, nbytes)) == NULL)
+ckrealloc(pointer p, int nbytes)
+{
+	p = realloc(p, nbytes);
+	if (p == NULL)
 		error("Out of space");
 	return p;
 }
@@ -82,10 +91,9 @@ ckrealloc(p, nbytes)
  */
 
 char *
-savestr(s)
-	char *s;
-	{
-	register char *p;
+savestr(const char *s)
+{
+	char *p;
 
 	p = ckmalloc(strlen(s) + 1);
 	scopy(s, p);
@@ -98,12 +106,11 @@ savestr(s)
  * to make this more efficient, and also to avoid all sorts of exception
  * handling code to handle interrupts in the middle of a parse.
  *
- * The size 504 was chosen because the Ultrix malloc handles that size
+ * The size was chosen because the klibc malloc handles that size
  * well.
  */
 
-#define MINSIZE 504		/* minimum size of a block */
-
+#define MINSIZE (65536-5*sizeof(void *))	/* minimum size of a block */
 
 struct stack_block {
 	struct stack_block *prev;
@@ -112,18 +119,18 @@ struct stack_block {
 
 struct stack_block stackbase;
 struct stack_block *stackp = &stackbase;
+struct stackmark *markp;
 char *stacknxt = stackbase.space;
 int stacknleft = MINSIZE;
 int sstrnleft;
 int herefd = -1;
 
-
-
 pointer
-stalloc(nbytes) {
-	register char *p;
+stalloc(int nbytes)
+{
+	char *p;
 
-	nbytes = ALIGN(nbytes);
+	nbytes = SHELL_ALIGN(nbytes);
 	if (nbytes > stacknleft) {
 		int blocksize;
 		struct stack_block *sp;
@@ -147,9 +154,8 @@ stalloc(nbytes) {
 
 
 void
-stunalloc(p)
-	pointer p;
-	{
+stunalloc(pointer p)
+{
 	if (p == NULL) {		/*DEBUG */
 		write(2, "stunalloc\n", 10);
 		abort();
@@ -161,22 +167,23 @@ stunalloc(p)
 
 
 void
-setstackmark(mark)
-	struct stackmark *mark;
-	{
+setstackmark(struct stackmark *mark)
+{
 	mark->stackp = stackp;
 	mark->stacknxt = stacknxt;
 	mark->stacknleft = stacknleft;
+	mark->marknext = markp;
+	markp = mark;
 }
 
 
 void
-popstackmark(mark)
-	struct stackmark *mark;
-	{
+popstackmark(struct stackmark *mark)
+{
 	struct stack_block *sp;
 
 	INTOFF;
+	markp = mark->marknext;
 	while (stackp != mark->stackp) {
 		sp = stackp;
 		stackp = sp->prev;
@@ -199,44 +206,59 @@ popstackmark(mark)
  */
 
 void
-growstackblock() {
-	char *p;
-	int newlen = stacknleft * 2 + 100;
-	char *oldspace = stacknxt;
-	int oldlen = stacknleft;
-	struct stack_block *sp;
+growstackblock(void)
+{
+	int newlen = SHELL_ALIGN(stacknleft * 2 + 100);
 
 	if (stacknxt == stackp->space && stackp != &stackbase) {
+		struct stack_block *oldstackp;
+		struct stackmark *xmark;
+		struct stack_block *sp;
+
 		INTOFF;
+		oldstackp = stackp;
 		sp = stackp;
 		stackp = sp->prev;
-		sp = ckrealloc((pointer)sp, sizeof(struct stack_block) - MINSIZE + newlen);
+		sp = ckrealloc((pointer)sp,
+		    sizeof(struct stack_block) - MINSIZE + newlen);
 		sp->prev = stackp;
 		stackp = sp;
 		stacknxt = sp->space;
 		stacknleft = newlen;
+
+		/*
+		 * Stack marks pointing to the start of the old block
+		 * must be relocated to point to the new block 
+		 */
+		xmark = markp;
+		while (xmark != NULL && xmark->stackp == oldstackp) {
+			xmark->stackp = stackp;
+			xmark->stacknxt = stacknxt;
+			xmark->stacknleft = stacknleft;
+			xmark = xmark->marknext;
+		}
 		INTON;
 	} else {
-		p = stalloc(newlen);
-		bcopy(oldspace, p, oldlen);
+		char *oldspace = stacknxt;
+		int oldlen = stacknleft;
+		char *p = stalloc(newlen);
+
+		(void)memcpy(p, oldspace, oldlen);
 		stacknxt = p;			/* free the space */
 		stacknleft += newlen;		/* we just allocated */
 	}
 }
 
-
-
 void
-grabstackblock(len) {
-	len = ALIGN(len);
+grabstackblock(int len)
+{
+	len = SHELL_ALIGN(len);
 	stacknxt += len;
 	stacknleft -= len;
 }
 
-
-
 /*
- * The following routines are somewhat easier to use that the above.
+ * The following routines are somewhat easier to use than the above.
  * The user declares a variable of type STACKSTR, which may be declared
  * to be a register.  The macro STARTSTACKSTR initializes things.  Then
  * the user uses the macro STPUTC to add characters to the string.  In
@@ -253,9 +275,9 @@ grabstackblock(len) {
  * is space for at least one character.
  */
 
-
 char *
-growstackstr() {
+growstackstr(void)
+{
 	int len = stackblocksize();
 	if (herefd >= 0 && len >= 1024) {
 		xwrite(herefd, stackblock(), len);
@@ -267,27 +289,24 @@ growstackstr() {
 	return stackblock() + len;
 }
 
-
 /*
  * Called from CHECKSTRSPACE.
  */
 
 char *
-makestrspace() {
+makestrspace(void)
+{
 	int len = stackblocksize() - sstrnleft;
 	growstackblock();
 	sstrnleft = stackblocksize() - len;
 	return stackblock() + len;
 }
 
-
-
 void
-ungrabstackstr(s, p)
-	char *s;
-	char *p;
-	{
+ungrabstackstr(char *s, char *p)
+{
 	stacknleft += stacknxt - s;
 	stacknxt = s;
 	sstrnleft = stacknleft - (p - s);
+
 }

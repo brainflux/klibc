@@ -1,6 +1,8 @@
+/*	$NetBSD: show.c,v 1.26 2003/11/14 10:46:13 dsl Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -34,38 +32,56 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
 #ifndef lint
-/*static char sccsid[] = "from: @(#)show.c	5.2 (Berkeley) 4/12/91";*/
-static char rcsid[] = "show.c,v 1.4 1993/08/01 18:58:00 mycroft Exp";
+#if 0
+static char sccsid[] = "@(#)show.c	8.3 (Berkeley) 5/4/95";
+#else
+__RCSID("$NetBSD: show.c,v 1.26 2003/11/14 10:46:13 dsl Exp $");
+#endif
 #endif /* not lint */
 
 #include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+
 #include "shell.h"
 #include "parser.h"
 #include "nodes.h"
 #include "mystring.h"
+#include "show.h"
+#include "options.h"
 
 
 #ifdef DEBUG
-static shtree(), shcmd(), sharg(), indent();
+static void shtree(union node *, int, char *, FILE*);
+static void shcmd(union node *, FILE *);
+static void sharg(union node *, FILE *);
+static void indent(int, char *, FILE *);
+static void trstring(char *);
 
 
-showtree(n)
-	union node *n;
-	{
+void
+showtree(union node *n)
+{
 	trputs("showtree called\n");
 	shtree(n, 1, NULL, stdout);
 }
 
 
-static
-shtree(n, ind, pfx, fp)
-	union node *n;
-	char *pfx;
-	FILE *fp;
-	{
+static void
+shtree(union node *n, int ind, char *pfx, FILE *fp)
+{
 	struct nodelist *lp;
-	char *s;
+	const char *s;
+
+	if (n == NULL)
+		return;
 
 	indent(ind, pfx, fp);
 	switch(n->type) {
@@ -109,14 +125,12 @@ binop:
 
 
 
-static
-shcmd(cmd, fp)
-	union node *cmd;
-	FILE *fp;
-	{
+static void
+shcmd(union node *cmd, FILE *fp)
+{
 	union node *np;
 	int first;
-	char *s;
+	const char *s;
 	int dftfd;
 
 	first = 1;
@@ -131,10 +145,13 @@ shcmd(cmd, fp)
 			putchar(' ');
 		switch (np->nfile.type) {
 			case NTO:	s = ">";  dftfd = 1; break;
+			case NCLOBBER:	s = ">|"; dftfd = 1; break;
 			case NAPPEND:	s = ">>"; dftfd = 1; break;
 			case NTOFD:	s = ">&"; dftfd = 1; break;
 			case NFROM:	s = "<";  dftfd = 0; break;
 			case NFROMFD:	s = "<&"; dftfd = 0; break;
+			case NFROMTO:	s = "<>"; dftfd = 0; break;
+			default:  	s = "*error*"; dftfd = 0; break;
 		}
 		if (np->nfile.fd != dftfd)
 			fprintf(fp, "%d", np->nfile.fd);
@@ -150,18 +167,15 @@ shcmd(cmd, fp)
 
 
 
-static
-sharg(arg, fp)
-	union node *arg;
-	FILE *fp;
-	{
+static void
+sharg(union node *arg, FILE *fp)
+{
 	char *p;
 	struct nodelist *bqlist;
 	int subtype;
 
 	if (arg->type != NARG) {
 		printf("<node type %d>\n", arg->type);
-		fflush(stdout);
 		abort();
 	}
 	bqlist = arg->narg.backquote;
@@ -174,10 +188,15 @@ sharg(arg, fp)
 			putc('$', fp);
 			putc('{', fp);
 			subtype = *++p;
+			if (subtype == VSLENGTH)
+				putc('#', fp);
+
 			while (*p != '=')
 				putc(*p++, fp);
+
 			if (subtype & VSNUL)
 				putc(':', fp);
+
 			switch (subtype & VSTYPE) {
 			case VSNORMAL:
 				putc('}', fp);
@@ -193,6 +212,22 @@ sharg(arg, fp)
 				break;
 			case VSASSIGN:
 				putc('=', fp);
+				break;
+			case VSTRIMLEFT:
+				putc('#', fp);
+				break;
+			case VSTRIMLEFTMAX:
+				putc('#', fp);
+				putc('#', fp);
+				break;
+			case VSTRIMRIGHT:
+				putc('%', fp);
+				break;
+			case VSTRIMRIGHTMAX:
+				putc('%', fp);
+				putc('%', fp);
+				break;
+			case VSLENGTH:
 				break;
 			default:
 				printf("<subtype %d>", subtype);
@@ -216,11 +251,9 @@ sharg(arg, fp)
 }
 
 
-static
-indent(amount, pfx, fp)
-	char *pfx;
-	FILE *fp;
-	{
+static void
+indent(int amount, char *pfx, FILE *fp)
+{
 	int i;
 
 	for (i = 0 ; i < amount ; i++) {
@@ -240,58 +273,59 @@ indent(amount, pfx, fp)
 
 FILE *tracefile;
 
-#if DEBUG == 2
-int debug = 1;
-#else
-int debug = 0;
-#endif
 
-
-trputc(c) {
 #ifdef DEBUG
-	if (tracefile == NULL)
+void
+trputc(int c)
+{
+	if (debug != 1)
 		return;
 	putc(c, tracefile);
-	if (c == '\n')
-		fflush(tracefile);
-#endif
 }
+#endif
 
-
-trace(fmt, a1, a2, a3, a4, a5, a6, a7, a8)
-	char *fmt;
-	{
+void
+trace(const char *fmt, ...)
+{
 #ifdef DEBUG
-	if (tracefile == NULL)
+	va_list va;
+
+	if (debug != 1)
 		return;
-	fprintf(tracefile, fmt, a1, a2, a3, a4, a5, a6, a7, a8);
-	if (strchr(fmt, '\n'))
-		fflush(tracefile);
+	va_start(va, fmt);
+	(void) vfprintf(tracefile, fmt, va);
+	va_end(va);
+#endif
+}
+
+void
+tracev(const char *fmt, va_list va)
+{
+#ifdef DEBUG
+	if (debug != 1)
+		return;
+	(void) vfprintf(tracefile, fmt, va);
 #endif
 }
 
 
-trputs(s)
-	char *s;
-	{
 #ifdef DEBUG
-	if (tracefile == NULL)
+void
+trputs(const char *s)
+{
+	if (debug != 1)
 		return;
 	fputs(s, tracefile);
-	if (strchr(s, '\n'))
-		fflush(tracefile);
-#endif
 }
 
 
-trstring(s)
-	char *s;
-	{
-	register char *p;
+static void
+trstring(char *s)
+{
+	char *p;
 	char c;
 
-#ifdef DEBUG
-	if (tracefile == NULL)
+	if (debug != 1)
 		return;
 	putc('"', tracefile);
 	for (p = s ; *p ; p++) {
@@ -322,15 +356,15 @@ backslash:	  putc('\\', tracefile);
 		}
 	}
 	putc('"', tracefile);
-#endif
 }
+#endif
 
 
-trargs(ap)
-	char **ap;
-	{
+void
+trargs(char **ap)
+{
 #ifdef DEBUG
-	if (tracefile == NULL)
+	if (debug != 1)
 		return;
 	while (*ap) {
 		trstring(*ap++);
@@ -339,37 +373,58 @@ trargs(ap)
 		else
 			putc('\n', tracefile);
 	}
-	fflush(tracefile);
 #endif
 }
 
 
-opentrace() {
-	char s[100];
-	char *p;
-	char *getenv();
-	int flags;
-
 #ifdef DEBUG
-	if (!debug)
+void
+opentrace(void)
+{
+	char s[100];
+#ifdef O_APPEND
+	int flags;
+#endif
+
+	if (debug != 1) {
+		if (tracefile)
+			fflush(tracefile);
+		/* leave open because libedit might be using it */
 		return;
-	if ((p = getenv("HOME")) == NULL) {
-		if (getuid() == 0)
-			p = "/";
-		else
-			p = "/tmp";
 	}
-	scopy(p, s);
-	strcat(s, "/trace");
-	if ((tracefile = fopen(s, "a")) == NULL) {
-		fprintf(stderr, "Can't open %s\n", s);
-		return;
+#ifdef not_this_way
+	{
+		char *p;
+		if ((p = getenv("HOME")) == NULL) {
+			if (geteuid() == 0)
+				p = "/";
+			else
+				p = "/tmp";
+		}
+		scopy(p, s);
+		strcat(s, "/trace");
+	}
+#else
+	scopy("./trace", s);
+#endif /* not_this_way */
+	if (tracefile) {
+		if (!freopen(s, "a", tracefile)) {
+			fprintf(stderr, "Can't re-open %s\n", s);
+			debug = 0;
+			return;
+		}
+	} else {
+		if ((tracefile = fopen(s, "a")) == NULL) {
+			fprintf(stderr, "Can't open %s\n", s);
+			debug = 0;
+			return;
+		}
 	}
 #ifdef O_APPEND
 	if ((flags = fcntl(fileno(tracefile), F_GETFL, 0)) >= 0)
 		fcntl(fileno(tracefile), F_SETFL, flags | O_APPEND);
 #endif
+	setlinebuf(tracefile);
 	fputs("\nTracing started.\n", tracefile);
-	fflush(tracefile);
-#endif
 }
+#endif /* DEBUG */

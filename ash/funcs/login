@@ -1,5 +1,6 @@
-# Copyright (c) 1991 The Regents of the University of California.
-# All rights reserved.
+#	$NetBSD: login,v 1.7 1995/05/11 21:31:11 christos Exp $
+# Copyright (c) 1991, 1993
+#	The Regents of the University of California.  All rights reserved.
 #
 # This code is derived from software contributed to Berkeley by
 # Kenneth Almquist.
@@ -32,9 +33,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-#	@(#)login	5.1 (Berkeley) 3/7/91
-#
-#	/b/source/CVS/src/bin/sh/funcs/login,v 1.3 1993/03/23 00:29:51 cgd Exp
+#	@(#)login	8.2 (Berkeley) 5/4/95
 
 # replaces the login builtin in the BSD shell
 login () exec login "$@"

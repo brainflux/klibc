@@ -1,6 +1,8 @@
+/*	$NetBSD: bltin.h,v 1.11 2003/08/07 09:05:40 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,8 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)bltin.h	5.1 (Berkeley) 3/7/91
- *	bltin.h,v 1.4 1993/08/01 18:58:44 mycroft Exp
+ *	@(#)bltin.h	8.1 (Berkeley) 5/31/93
  */
 
 /*
@@ -47,15 +44,38 @@
 #include "../mystring.h"
 #ifdef SHELL
 #include "../output.h"
+#include "../error.h"
+#undef stdout
+#undef stderr
+#undef putc
+#undef putchar
+#undef fileno
 #define stdout out1
 #define stderr out2
 #define printf out1fmt
 #define putc(c, file)	outc(c, file)
 #define putchar(c)	out1c(c)
+#define FILE struct output
 #define fprintf outfmt
 #define fputs outstr
 #define fflush flushout
+#define fileno(f) ((f)->fd)
 #define INITARGS(argv)
+#define	err sh_err
+#define	verr sh_verr
+#define	errx sh_errx
+#define	verrx sh_verrx
+#define	warn sh_warn
+#define	vwarn sh_vwarn
+#define	warnx sh_warnx
+#define	vwarnx sh_vwarnx
+#define exit sh_exit
+#define setprogname(s)
+#define getprogname() commandname
+#define setlocate(l,s) 0
+
+#define getenv(p) bltinlookup((p),0)
+
 #else
 #undef NULL
 #include <stdio.h>
@@ -63,13 +83,12 @@
 #define INITARGS(argv)	if ((commandname = argv[0]) == NULL) {fputs("Argc is zero\n", stderr); exit(2);} else
 #endif
 
-#ifdef __STDC__
 pointer stalloc(int);
-void error(char *, ...);
-#else
-pointer stalloc();
-void error();
-#endif
+void error(const char *, ...);
+void sh_warnx(const char *, ...);
+void sh_exit(int) __attribute__((__noreturn__));
+
+int echocmd(int, char **);
 
 
-extern char *commandname;
+extern const char *commandname;

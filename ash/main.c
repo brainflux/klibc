@@ -1,6 +1,8 @@
+/*	$NetBSD: main.c,v 1.48 2003/09/14 12:09:29 jmmv Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -34,37 +32,59 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
+#ifndef __COPYRIGHT
+#define __COPYRIGHT(arg)
+#endif
 #ifndef lint
-char copyright[] =
-"@(#) Copyright (c) 1991 The Regents of the University of California.\n\
- All rights reserved.\n";
+__COPYRIGHT("@(#) Copyright (c) 1991, 1993\n\
+	The Regents of the University of California.  All rights reserved.\n");
 #endif /* not lint */
 
 #ifndef lint
-/*static char sccsid[] = "from: @(#)main.c	5.2 (Berkeley) 3/13/91";*/
-static char rcsid[] = "main.c,v 1.4 1993/08/01 18:58:12 mycroft Exp";
+#if 0
+static char sccsid[] = "@(#)main.c	8.7 (Berkeley) 7/19/95";
+#else
+__RCSID("$NetBSD: main.c,v 1.48 2003/09/14 12:09:29 jmmv Exp $");
+#endif
 #endif /* not lint */
 
-#include <unistd.h>
+#include <errno.h>
+#include <stdio.h>
 #include <signal.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
 #include <fcntl.h>
+
+
 #include "shell.h"
 #include "main.h"
+#include "mail.h"
 #include "options.h"
 #include "output.h"
 #include "parser.h"
 #include "nodes.h"
+#include "expand.h"
 #include "eval.h"
 #include "jobs.h"
 #include "input.h"
 #include "trap.h"
-#if ATTY
 #include "var.h"
-#endif
+#include "show.h"
 #include "memalloc.h"
 #include "error.h"
 #include "init.h"
 #include "mystring.h"
+#include "exec.h"
+#include "cd.h"
 
 #define PROFILE 0
 
@@ -72,20 +92,14 @@ int rootpid;
 int rootshell;
 STATIC union node *curcmd;
 STATIC union node *prevcmd;
-extern int errno;
 #if PROFILE
 short profile_buf[16384];
 extern int etext();
 #endif
 
-#ifdef __STDC__
-STATIC void read_profile(char *);
-char *getenv(char *);
-#else
-STATIC void read_profile();
-char *getenv();
-#endif
-
+STATIC void read_profile(const char *);
+STATIC char *find_dot_file(char *);
+int main(int, char **);
 
 /*
  * Main routine.  We initialize things, parse the arguments, execute
@@ -95,18 +109,21 @@ char *getenv();
  * is used to figure out how far we had gotten.
  */
 
-main(argc, argv)  char **argv; {
+int
+main(int argc, char **argv)
+{
 	struct jmploc jmploc;
 	struct stackmark smark;
 	volatile int state;
 	char *shinit;
 
+#ifdef HAVE_LOCALE_H
+	setlocale(LC_ALL, "");
+#endif
+
 #if PROFILE
 	monitor(4, etext, profile_buf, sizeof profile_buf, 50);
 #endif
-#ifdef linux
-	bsd_signal(SIGCHLD,SIG_DFL);
-#endif /* linux */
 	state = 0;
 	if (setjmp(jmploc.loc)) {
 		/*
@@ -114,20 +131,36 @@ main(argc, argv)  char **argv; {
 		 * exception EXSHELLPROC to clean up before executing
 		 * the shell procedure.
 		 */
-		if (exception == EXSHELLPROC) {
+		switch (exception) {
+		case EXSHELLPROC:
 			rootpid = getpid();
 			rootshell = 1;
 			minusc = NULL;
 			state = 3;
-		} else if (state == 0 || iflag == 0 || ! rootshell)
-			exitshell(2);
+			break;
+
+		case EXEXEC:
+			exitstatus = exerrno;
+			break;
+
+		case EXERROR:
+			exitstatus = 2;
+			break;
+
+		default:
+			break;
+		}
+
+		if (exception != EXSHELLPROC) {
+			if (state == 0 || iflag == 0 || ! rootshell)
+				exitshell(exitstatus);
+		}
 		reset();
-#if ATTY
 		if (exception == EXINT
-		 && (! attyset() || equal(termval(), "emacs"))) {
-#else
-		if (exception == EXINT) {
+#if ATTY
+		 && (! attyset() || equal(termval(), "emacs"))
 #endif
+		 ) {
 			out2c('\n');
 			flushout(&errout);
 		}
@@ -137,11 +170,16 @@ main(argc, argv)  char **argv; {
 			goto state1;
 		else if (state == 2)
 			goto state2;
-		else
+		else if (state == 3)
 			goto state3;
+		else
+			goto state4;
 	}
 	handler = &jmploc;
 #ifdef DEBUG
+#if DEBUG == 2
+	debug = 1;
+#endif
 	opentrace();
 	trputs("Shell args:  ");  trargs(argv);
 #endif
@@ -156,23 +194,44 @@ main(argc, argv)  char **argv; {
 state1:
 		state = 2;
 		read_profile(".profile");
-	} else if ((sflag || minusc) && (shinit = getenv("SHINIT")) != NULL) {
-		state = 2;
-		evalstring(shinit);
 	}
 state2:
 	state = 3;
-	if (minusc) {
-		evalstring(minusc);
+	if (getuid() == geteuid() && getgid() == getegid()) {
+		if ((shinit = lookupvar("ENV")) != NULL && *shinit != '\0') {
+			state = 3;
+			read_profile(shinit);
+		}
 	}
-	if (sflag || minusc == NULL) {
 state3:
+	state = 4;
+	if (sflag == 0 || minusc) {
+		static int sigs[] =  {
+		    SIGINT, SIGQUIT, SIGHUP, 
+#ifdef SIGTSTP
+		    SIGTSTP,
+#endif
+		    SIGPIPE
+		};
+#define SIGSSIZE (sizeof(sigs)/sizeof(sigs[0]))
+		int i;
+
+		for (i = 0; i < SIGSSIZE; i++)
+		    setsignal(sigs[i], 0);
+	}
+
+	if (minusc)
+		evalstring(minusc, 0);
+
+	if (sflag || minusc == NULL) {
+state4:	/* XXX ??? - why isn't this before the "if" statement */
 		cmdloop(1);
 	}
 #if PROFILE
 	monitor(0);
 #endif
 	exitshell(exitstatus);
+	/* NOTREACHED */
 }
 
 
@@ -182,51 +241,51 @@ state3:
  */
 
 void
-cmdloop(top) {
+cmdloop(int top)
+{
 	union node *n;
 	struct stackmark smark;
 	int inter;
-	int numeof;
+	int numeof = 0;
 
 	TRACE(("cmdloop(%d) called\n", top));
 	setstackmark(&smark);
-	numeof = 0;
 	for (;;) {
 		if (pendingsigs)
 			dotrap();
 		inter = 0;
 		if (iflag && top) {
-			inter++;
-			showjobs(1);
-			flushout(&output);
+			inter = 1;
+			showjobs(out2, SHOW_CHANGED);
+#ifdef KLIBC_SH_MAIL
+			chkmail(0);
+#endif
+			flushout(&errout);
 		}
 		n = parsecmd(inter);
-#ifdef DEBUG
-		/* showtree(n); */
-#endif
+		/* showtree(n); DEBUG */
 		if (n == NEOF) {
-			if (Iflag == 0 || numeof >= 50)
+			if (!top || numeof >= 50)
 				break;
-			out2str("\nUse \"exit\" to leave shell.\n");
+			if (!stoppedjobs()) {
+				if (!Iflag)
+					break;
+				out2str("\nUse \"exit\" to leave shell.\n");
+			}
 			numeof++;
 		} else if (n != NULL && nflag == 0) {
-			if (inter) {
-				INTOFF;
-				if (prevcmd)
-					freefunc(prevcmd);
-				prevcmd = curcmd;
-				curcmd = copyfunc(n);
-				INTON;
-			}
+			job_warning = (job_warning == 2) ? 1 : 0;
+			numeof = 0;
 			evaltree(n, 0);
-#ifdef notdef
-			if (exitstatus)				      /*DEBUG*/
-				outfmt(&errout, "Exit status 0x%X\n", exitstatus);
-#endif
 		}
 		popstackmark(&smark);
+		setstackmark(&smark);
+		if (evalskip == SKIPFILE) {
+			evalskip = 0;
+			break;
+		}
 	}
-	popstackmark(&smark);		/* unnecessary */
+	popstackmark(&smark);
 }
 
 
@@ -236,10 +295,11 @@ cmdloop(top) {
  */
 
 STATIC void
-read_profile(name)
-	char *name;
-	{
+read_profile(const char *name)
+{
 	int fd;
+	int xflag_set = 0;
+	int vflag_set = 0;
 
 	INTOFF;
 	if ((fd = open(name, O_RDONLY)) >= 0)
@@ -247,7 +307,20 @@ read_profile(name)
 	INTON;
 	if (fd < 0)
 		return;
+	/* -q turns off -x and -v just when executing init files */
+	if (qflag)  {
+	    if (xflag)
+		    xflag = 0, xflag_set = 1;
+	    if (vflag)
+		    vflag = 0, vflag_set = 1;
+	}
 	cmdloop(0);
+	if (qflag)  {
+	    if (xflag_set)
+		    xflag = 1;
+	    if (vflag_set)
+		    vflag = 1;
+	}
 	popfile();
 }
 
@@ -258,9 +331,8 @@ read_profile(name)
  */
 
 void
-readcmdfile(name)
-	char *name;
-	{
+readcmdfile(char *name)
+{
 	int fd;
 
 	INTOFF;
@@ -276,49 +348,66 @@ readcmdfile(name)
 
 
 /*
- * Take commands from a file.  To be compatable we should do a path
- * search for the file, but a path search doesn't make any sense.
+ * Take commands from a file.  To be compatible we should do a path
+ * search for the file, which is necessary to find sub-commands.
  */
 
-dotcmd(argc, argv)  char **argv; {
+
+STATIC char *
+find_dot_file(char *basename)
+{
+	char *fullname;
+	const char *path = pathval();
+	struct stat statb;
+
+	/* don't try this for absolute or relative paths */
+	if (strchr(basename, '/'))
+		return basename;
+
+	while ((fullname = padvance(&path, basename)) != NULL) {
+		if ((stat(fullname, &statb) == 0) && S_ISREG(statb.st_mode)) {
+			/*
+			 * Don't bother freeing here, since it will
+			 * be freed by the caller.
+			 */
+			return fullname;
+		}
+		stunalloc(fullname);
+	}
+
+	/* not found in the PATH */
+	error("%s: not found", basename);
+	/* NOTREACHED */
+}
+
+int
+dotcmd(int argc, char **argv)
+{
 	exitstatus = 0;
+
 	if (argc >= 2) {		/* That's what SVR2 does */
-		setinputfile(argv[1], 1);
-		commandname = argv[1];
+		char *fullname;
+		struct stackmark smark;
+
+		setstackmark(&smark);
+		fullname = find_dot_file(argv[1]);
+		setinputfile(fullname, 1);
+		commandname = fullname;
 		cmdloop(0);
 		popfile();
+		popstackmark(&smark);
 	}
 	return exitstatus;
 }
 
 
-exitcmd(argc, argv)  char **argv; {
+int
+exitcmd(int argc, char **argv)
+{
+	if (stoppedjobs())
+		return 0;
 	if (argc > 1)
 		exitstatus = number(argv[1]);
 	exitshell(exitstatus);
+	/* NOTREACHED */
 }
-
-
-lccmd(argc, argv)  char **argv; {
-	if (argc > 1) {
-		defun(argv[1], prevcmd);
-		return 0;
-	} else {
-		INTOFF;
-		freefunc(curcmd);
-		curcmd = prevcmd;
-		prevcmd = NULL;
-		INTON;
-		evaltree(curcmd, 0);
-		return exitstatus;
-	}
-}
-
-
-
-#ifdef notdef
-/*
- * Should never be called.
- */
-#endif
-

@@ -1,6 +1,8 @@
+/*	$NetBSD: miscbltin.c,v 1.34 2004/04/19 01:36:32 lukem Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -34,29 +32,44 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
+#ifndef __RCSID
+#define __RCSID(arg)
+#endif
 #ifndef lint
-/*static char sccsid[] = "from: @(#)miscbltin.c	5.2 (Berkeley) 3/13/91";*/
-static char rcsid[] = "miscbltin.c,v 1.5 1993/08/01 18:57:56 mycroft Exp";
+#if 0
+static char sccsid[] = "@(#)miscbltin.c	8.4 (Berkeley) 5/4/95";
+#else
+__RCSID("$NetBSD: miscbltin.c,v 1.34 2004/04/19 01:36:32 lukem Exp $");
+#endif
 #endif /* not lint */
 
 /*
  * Miscelaneous builtins.
  */
 
-#include <sys/types.h>
+#include <sys/types.h>		/* quad_t */
+#include <sys/param.h>		/* BSD4_4 */
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
+
 #include "shell.h"
 #include "options.h"
 #include "var.h"
 #include "output.h"
 #include "memalloc.h"
 #include "error.h"
+#include "miscbltin.h"
 #include "mystring.h"
 
-#undef eflag
-
-extern char **argptr;		/* argument list for builtin command */
+#undef rflag
 
 
 /*
@@ -66,11 +79,13 @@ extern char **argptr;		/* argument list for builtin command */
  * This uses unbuffered input, which may be avoidable in some cases.
  */
 
-readcmd(argc, argv)  char **argv; {
+int
+readcmd(int argc, char **argv)
+{
 	char **ap;
 	int backslash;
 	char c;
-	int eflag;
+	int rflag;
 	char *prompt;
 	char *ifs;
 	char *p;
@@ -78,19 +93,19 @@ readcmd(argc, argv)  char **argv; {
 	int status;
 	int i;
 
-	eflag = 0;
+	rflag = 0;
 	prompt = NULL;
-	while ((i = nextopt("ep:")) != '\0') {
+	while ((i = nextopt("p:r")) != '\0') {
 		if (i == 'p')
-			prompt = optarg;
+			prompt = optionarg;
 		else
-			eflag = 1;
+			rflag = 1;
 	}
 	if (prompt && isatty(0)) {
 		out2str(prompt);
 		flushall();
 	}
-	if ((ap = argptr) == NULL)
+	if (*(ap = argptr) == NULL)
 		error("arg count");
 	if ((ifs = bltinlookup("IFS", 1)) == NULL)
 		ifs = nullstr;
@@ -111,7 +126,7 @@ readcmd(argc, argv)  char **argv; {
 				STPUTC(c, p);
 			continue;
 		}
-		if (eflag && c == '\\') {
+		if (!rflag && c == '\\') {
 			backslash++;
 			continue;
 		}
@@ -138,6 +153,9 @@ readcmd(argc, argv)  char **argv; {
 		}
 	}
 	STACKSTRNUL(p);
+	/* Remove trailing blanks */
+	while (stackblock() <= --p && strchr(ifs, *p) != NULL)
+		*p = '\0';
 	setvar(*ap, stackblock(), 0);
 	while (*++ap != NULL)
 		setvar(*ap, nullstr, 0);
@@ -146,9 +164,9 @@ readcmd(argc, argv)  char **argv; {
 
 
 
-umaskcmd(argc, argv)  char **argv; {
-	extern void *setmode();
-	extern mode_t getmode();
+int
+umaskcmd(int argc, char **argv)
+{
 	char *ap;
 	int mask;
 	int i;
@@ -199,7 +217,7 @@ umaskcmd(argc, argv)  char **argv; {
 			out1fmt("%.4o\n", mask);
 		}
 	} else {
-		if (isdigit(*ap)) {
+		if (isdigit((unsigned char)*ap)) {
 			mask = 0;
 			do {
 				if (*ap >= '8' || *ap < '0')
@@ -208,17 +226,189 @@ umaskcmd(argc, argv)  char **argv; {
 			} while (*++ap != '\0');
 			umask(mask);
 		} else {
-#ifndef __linux__
-			void *set; 
-			if ((set = setmode (ap)) == 0)
-#endif
-					error("Illegal number: %s", ap);
+#ifdef _HAVE_SETMODE
+			void *set;
 
-#ifndef __linux__
-			mask = getmode (set, ~mask & 0777);
+			INTOFF;
+			if ((set = setmode(ap)) != 0) {
+				mask = getmode(set, ~mask & 0777);
+				ckfree(set);
+			}
+			INTON;
+			if (!set)
+#endif
+				error("Illegal mode: %s", ap);
+#ifdef _HAVE_SETMODE
 			umask(~mask & 0777);
 #endif
 		}
 	}
 	return 0;
 }
+
+#ifndef __KLIBC__
+/*
+ * ulimit builtin
+ *
+ * This code, originally by Doug Gwyn, Doug Kingston, Eric Gisin, and
+ * Michael Rendell was ripped from pdksh 5.0.8 and hacked for use with
+ * ash by J.T. Conklin.
+ *
+ * Public domain.
+ */
+
+struct limits {
+	const char *name;
+	int	cmd;
+	int	factor;	/* multiply by to get rlim_{cur,max} values */
+	char	option;
+};
+
+static const struct limits limits[] = {
+#ifdef RLIMIT_CPU
+	{ "time(seconds)",		RLIMIT_CPU,	   1, 't' },
+#endif
+#ifdef RLIMIT_FSIZE
+	{ "file(blocks)",		RLIMIT_FSIZE,	 512, 'f' },
+#endif
+#ifdef RLIMIT_DATA
+	{ "data(kbytes)",		RLIMIT_DATA,	1024, 'd' },
+#endif
+#ifdef RLIMIT_STACK
+	{ "stack(kbytes)",		RLIMIT_STACK,	1024, 's' },
+#endif
+#ifdef  RLIMIT_CORE
+	{ "coredump(blocks)",		RLIMIT_CORE,	 512, 'c' },
+#endif
+#ifdef RLIMIT_RSS
+	{ "memory(kbytes)",		RLIMIT_RSS,	1024, 'm' },
+#endif
+#ifdef RLIMIT_MEMLOCK
+	{ "locked memory(kbytes)",	RLIMIT_MEMLOCK, 1024, 'l' },
+#endif
+#ifdef RLIMIT_NPROC
+	{ "process(processes)",		RLIMIT_NPROC,      1, 'p' },
+#endif
+#ifdef RLIMIT_NOFILE
+	{ "nofiles(descriptors)",	RLIMIT_NOFILE,     1, 'n' },
+#endif
+#ifdef RLIMIT_VMEM
+	{ "vmemory(kbytes)",		RLIMIT_VMEM,	1024, 'v' },
+#endif
+#ifdef RLIMIT_SWAP
+	{ "swap(kbytes)",		RLIMIT_SWAP,	1024, 'w' },
+#endif
+#ifdef RLIMIT_SBSIZE
+	{ "sbsize(bytes)",		RLIMIT_SBSIZE,	   1, 'b' },
+#endif
+	{ (char *) 0,			0,		   0,  '\0' }
+};
+
+int
+ulimitcmd(int argc, char **argv)
+{
+	int	c;
+	rlim_t val = 0;
+	enum { SOFT = 0x1, HARD = 0x2 }
+			how = SOFT | HARD;
+	const struct limits	*l;
+	int		set, all = 0;
+	int		optc, what;
+	struct rlimit	limit;
+
+	what = 'f';
+	while ((optc = nextopt("HSabtfdsmcnpl")) != '\0')
+		switch (optc) {
+		case 'H':
+			how = HARD;
+			break;
+		case 'S':
+			how = SOFT;
+			break;
+		case 'a':
+			all = 1;
+			break;
+		default:
+			what = optc;
+		}
+
+	for (l = limits; l->name && l->option != what; l++)
+		;
+	if (!l->name)
+		error("internal error (%c)", what);
+
+	set = *argptr ? 1 : 0;
+	if (set) {
+		char *p = *argptr;
+
+		if (all || argptr[1])
+			error("too many arguments");
+		if (strcmp(p, "unlimited") == 0)
+			val = RLIM_INFINITY;
+		else {
+			val = (rlim_t) 0;
+
+			while ((c = *p++) >= '0' && c <= '9')
+			{
+				val = (val * 10) + (long)(c - '0');
+				if (val < (rlim_t) 0)
+					break;
+			}
+			if (c)
+				error("bad number");
+			val *= l->factor;
+		}
+	}
+	if (all) {
+		for (l = limits; l->name; l++) {
+			getrlimit(l->cmd, &limit);
+			if (how & SOFT)
+				val = limit.rlim_cur;
+			else if (how & HARD)
+				val = limit.rlim_max;
+
+			out1fmt("%-20s ", l->name);
+			if (val == RLIM_INFINITY)
+				out1fmt("unlimited\n");
+			else
+			{
+				val /= l->factor;
+#ifdef BSD4_4
+				out1fmt("%lld\n", (long long) val);
+#else
+				out1fmt("%ld\n", (long) val);
+#endif
+			}
+		}
+		return 0;
+	}
+
+	getrlimit(l->cmd, &limit);
+	if (set) {
+		if (how & HARD)
+			limit.rlim_max = val;
+		if (how & SOFT)
+			limit.rlim_cur = val;
+		if (setrlimit(l->cmd, &limit) < 0)
+			error("error setting limit (%s)", strerror(errno));
+	} else {
+		if (how & SOFT)
+			val = limit.rlim_cur;
+		else if (how & HARD)
+			val = limit.rlim_max;
+
+		if (val == RLIM_INFINITY)
+			out1fmt("unlimited\n");
+		else
+		{
+			val /= l->factor;
+#ifdef BSD4_4
+			out1fmt("%lld\n", (long long) val);
+#else
+			out1fmt("%ld\n", (long) val);
+#endif
+		}
+	}
+	return 0;
+}
+#endif /* __KLIBC__ */

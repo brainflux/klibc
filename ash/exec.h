@@ -1,6 +1,8 @@
+/*	$NetBSD: exec.h,v 1.21 2003/08/07 09:05:31 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,44 +31,49 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)exec.h	5.1 (Berkeley) 3/7/91
- *	exec.h,v 1.4 1993/08/01 18:58:30 mycroft Exp
+ *	@(#)exec.h	8.3 (Berkeley) 6/8/95
  */
 
 /* values of cmdtype */
-#define CMDUNKNOWN -1		/* no entry in table for command */
-#define CMDNORMAL 0		/* command is an executable program */
-#define CMDBUILTIN 1		/* command is a shell builtin */
-#define CMDFUNCTION 2		/* command is a shell function */
+#define CMDUNKNOWN	-1	/* no entry in table for command */
+#define CMDNORMAL	0	/* command is an executable program */
+#define CMDFUNCTION	1	/* command is a shell function */
+#define CMDBUILTIN	2	/* command is a shell builtin */
+#define CMDSPLBLTIN	3	/* command is a special shell builtin */
 
 
 struct cmdentry {
 	int cmdtype;
 	union param {
 		int index;
+		int (*bltin)(int, char**);
 		union node *func;
 	} u;
 };
 
 
-extern char *pathopt;		/* set by padvance */
+/* action to find_command() */
+#define DO_ERR		0x01	/* prints errors */
+#define DO_ABS		0x02	/* checks absolute paths */
+#define DO_NOFUNC	0x04	/* don't return shell functions, for command */
+#define DO_ALTPATH	0x08	/* using alternate path */
+#define DO_ALTBLTIN	0x20	/* %builtin in alt. path */
 
-#ifdef __STDC__
-void shellexec(char **, char **, char *, int);
-char *padvance(char **, char *);
-void find_command(char *, struct cmdentry *, int);
-int find_builtin(char *);
+extern const char *pathopt;	/* set by padvance */
+
+void shellexec(char **, char **, const char *, int, int)
+    __attribute__((__noreturn__));
+char *padvance(const char **, const char *);
+int hashcmd(int, char **);
+void find_command(char *, struct cmdentry *, int, const char *);
+int (*find_builtin(char *))(int, char **);
+int (*find_splbltin(char *))(int, char **);
 void hashcd(void);
-void changepath(char *);
+void changepath(const char *);
+void deletefuncs(void);
+void getcmdentry(char *, struct cmdentry *);
+void addcmdentry(char *, struct cmdentry *);
 void defun(char *, union node *);
-void unsetfunc(char *);
-#else
-void shellexec();
-char *padvance();
-void find_command();
-int find_builtin();
-void hashcd();
-void changepath();
-void defun();
-void unsetfunc();
-#endif
+int unsetfunc(char *);
+int typecmd(int, char **);
+void hash_special_builtins(void);

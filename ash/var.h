@@ -1,6 +1,8 @@
+/*	$NetBSD: var.h,v 1.22 2003/08/07 09:05:39 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,8 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)var.h	5.1 (Berkeley) 3/7/91
- *	var.h,v 1.4 1993/08/01 18:58:33 mycroft Exp
+ *	@(#)var.h	8.2 (Berkeley) 5/4/95
  */
 
 /*
@@ -42,26 +39,31 @@
  */
 
 /* flags */
-#define VEXPORT		01	/* variable is exported */
-#define VREADONLY	02	/* variable cannot be modified */
-#define VSTRFIXED	04	/* variable struct is staticly allocated */
-#define VTEXTFIXED	010	/* text is staticly allocated */
-#define VSTACK		020	/* text is allocated on the stack */
-#define VUNSET		040	/* the variable is not set */
+#define VEXPORT		0x01	/* variable is exported */
+#define VREADONLY	0x02	/* variable cannot be modified */
+#define VSTRFIXED	0x04	/* variable struct is statically allocated */
+#define VTEXTFIXED	0x08	/* text is statically allocated */
+#define VSTACK		0x10	/* text is allocated on the stack */
+#define VUNSET		0x20	/* the variable is not set */
+#define VNOFUNC		0x40	/* don't call the callback function */
+#define VNOSET		0x80	/* do not set variable - just readonly test */
 
 
 struct var {
 	struct var *next;		/* next entry in hash list */
-	int flags;		/* flags are defined above */
-	char *text;		/* name=value */
+	int flags;			/* flags are defined above */
+	char *text;			/* name=value */
+	void (*func)(const char *);
+					/* function to be called when  */
+					/* the variable gets set/unset */
 };
 
 
 struct localvar {
-	struct localvar *next;	/* next local variable in list */
-	struct var *vp;		/* the variable that was made local */
-	int flags;		/* saved flags */
-	char *text;		/* saved text */
+	struct localvar *next;		/* next local variable in list */
+	struct var *vp;			/* the variable that was made local */
+	int flags;			/* saved flags */
+	char *text;			/* saved text */
 };
 
 
@@ -76,8 +78,11 @@ extern struct var vmpath;
 extern struct var vpath;
 extern struct var vps1;
 extern struct var vps2;
-#if ATTY
+extern struct var vps4;
+#ifdef KLIBC_SH_HISTORY
 extern struct var vterm;
+extern struct var vtermcap;
+extern struct var vhistsize;
 #endif
 
 /*
@@ -87,12 +92,16 @@ extern struct var vterm;
  */
 
 #define ifsval()	(vifs.text + 4)
+#define ifsset()	((vifs.flags & VUNSET) == 0)
 #define mailval()	(vmail.text + 5)
 #define mpathval()	(vmpath.text + 9)
 #define pathval()	(vpath.text + 5)
 #define ps1val()	(vps1.text + 4)
 #define ps2val()	(vps2.text + 4)
-#if ATTY
+#define ps4val()	(vps4.text + 4)
+#define optindval()	(voptind.text + 7)
+#ifdef KLIBC_SH_HISTORY
+#define histsizeval()	(vhistsize.text + 9)
 #define termval()	(vterm.text + 5)
 #endif
 
@@ -101,28 +110,23 @@ extern struct var vterm;
 #endif
 #define mpathset()	((vmpath.flags & VUNSET) == 0)
 
-
-#ifdef __STDC__
-void initvar();
-void setvar(char *, char *, int);
+void initvar(void);
+void setvar(const char *, const char *, int);
 void setvareq(char *, int);
 struct strlist;
-void listsetvar(struct strlist *);
-char *lookupvar(char *);
-char *bltinlookup(char *, int);
-char **environment();
-int showvarscmd(int, char **);
-void mklocal(char *);
+void listsetvar(struct strlist *, int);
+char *lookupvar(const char *);
+char *bltinlookup(const char *, int);
+char **environment(void);
+void shprocvar(void);
+int showvars(const char *, int, int);
+int exportcmd(int, char **);
+int localcmd(int, char **);
+void mklocal(const char *, int);
+void listmklocal(struct strlist *, int);
 void poplocalvars(void);
-#else
-void initvar();
-void setvar();
-void setvareq();
-void listsetvar();
-char *lookupvar();
-char *bltinlookup();
-char **environment();
-int showvarscmd();
-void mklocal();
-void poplocalvars();
-#endif
+int setvarcmd(int, char **);
+int unsetcmd(int, char **);
+int unsetvar(const char *, int);
+int setvarsafe(const char *, const char *, int);
+void print_quoted(const char *);

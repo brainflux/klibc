@@ -1,6 +1,8 @@
+/*	$NetBSD: shell.h,v 1.17 2003/08/07 09:05:38 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,56 +31,54 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)shell.h	5.4 (Berkeley) 4/12/91
- *	shell.h,v 1.4 1993/08/01 18:58:35 mycroft Exp
+ *	@(#)shell.h	8.2 (Berkeley) 5/4/95
  */
 
 /*
  * The follow should be set to reflect the type of system you have:
  *	JOBS -> 1 if you have Berkeley job control, 0 otherwise.
- *	SYMLINKS -> 1 if your system includes symbolic links, 0 otherwise.
- *	DIRENT -> 1 if your system has the SVR3 directory(3X) routines.
- *	UDIR -> 1 if you want the shell to simulate the /u directory.
- *	ATTY -> 1 to include code for atty(1).
  *	SHORTNAMES -> 1 if your linker cannot handle long names.
  *	define BSD if you are running 4.2 BSD or later.
  *	define SYSV if you are running under System V.
- *	define DEBUG=1 to compile in debugging (set global "debug" to turn on)
+ *	define DEBUG=1 to compile in debugging ('set -o debug' to turn on)
  *	define DEBUG=2 to compile in and turn on debugging.
+ *	define DO_SHAREDVFORK to indicate that vfork(2) shares its address
+ *	       with its parent.
  *
- * When debugging is on, debugging info will be written to $HOME/trace and
+ * When debugging is on, debugging info will be written to ./trace and
  * a quit signal will generate a core dump.
  */
 
-#include <stddef.h>
+#include <sys/param.h>
 
-#define JOBS 0
-#define SYMLINKS 1
-#define DIRENT 1
-#define UDIR 0
-#define ATTY 0
-#define BSD
-/* #define DEBUG */
+#ifndef BSD
+#define BSD 1
+#endif
 
-#ifdef __STDC__
+#ifndef DO_SHAREDVFORK
+#if __NetBSD_Version__ >= 104000000
+#define DO_SHAREDVFORK
+#endif
+#endif
+
 typedef void *pointer;
 #ifndef NULL
 #define NULL (void *)0
 #endif
-#else /* not __STDC__ */
-typedef char *pointer;
-#ifndef NULL
-#define NULL 0
-#endif
-#endif /*  not __STDC__ */
 #define STATIC	/* empty */
 #define MKINIT	/* empty */
+
+#ifndef __KLIBC__
+#include <sys/cdefs.h>
+#endif
 
 extern char nullstr[1];		/* null string */
 
 
 #ifdef DEBUG
 #define TRACE(param)	trace param
+#define TRACEV(param)	tracev param
 #else
 #define TRACE(param)
+#define TRACEV(param)
 #endif

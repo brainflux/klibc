@@ -1,6 +1,8 @@
+/*	$NetBSD: trap.h,v 1.17 2003/08/07 09:05:39 agc Exp $	*/
+
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993
+ *	The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Kenneth Almquist.
@@ -13,11 +15,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -33,17 +31,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)trap.h	5.1 (Berkeley) 3/7/91
- *	trap.h,v 1.4 1993/08/01 18:58:34 mycroft Exp
+ *	@(#)trap.h	8.3 (Berkeley) 6/5/95
  */
-
-#include <signal.h>
 
 extern int pendingsigs;
 
-void clear_traps(void);
-__sighandler_t setsignal(int);
-void ignoresig(int);
+int trapcmd(int, char **);
+void clear_traps(int);
+long setsignal(int, int);
+void ignoresig(int, int);
+void onsig(int);
 void dotrap(void);
 void setinteractive(int);
-void exitshell(int);
+void exitshell(int) __attribute__((__noreturn__));
