@@ -48,9 +48,9 @@ static void do_stat(const char *path)
   printf("   st_atime     = %jd\n"
 	 "   st.mtime     = %jd\n"
 	 "   st.ctime     = %jd\n",
-	 (uintmax_t)st.st_atime.tv_sec,
-	 (uintmax_t)st.st_mtime.tv_sec,
-	 (uintmax_t)st.st_ctime.tv_sec);
+	 (uintmax_t)st.st_atime,
+	 (uintmax_t)st.st_mtime,
+	 (uintmax_t)st.st_ctime);
 #endif
 }
 
