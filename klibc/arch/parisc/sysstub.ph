@@ -20,20 +20,8 @@ sub make_sysstub($$$$@) {
     print OUT "\t.proc\n";
     print OUT "\.callinfo\n";
     print OUT "${fname}:\n";
-
-    print OUT "#if __NR_${sname} <= 0x3ff\n";
-
     print OUT "\tb\t__syscall_common\n";
     print OUT "\t  ldo\t__NR_${sname}(%r0),%r20\n";
-
-    print OUT "#else\n";
-
-    print OUT "\tldi\t__NR_${sname}, %r20\n";
-    print OUT "\tb\t__syscall_common\n";
-    print OUT "\tnop\n";
-
-    print OUT "#endif\n";
-
     print OUT "\t.procend\n";
     close(OUT);
 }
