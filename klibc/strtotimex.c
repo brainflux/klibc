@@ -15,7 +15,7 @@ char * NAME (const char *str, TIMEX *ts)
 {
   int n;
   char *s, *s0;
-  __typeof__(ts->FSEC) fs;	/* Fractional seconds */
+  unsigned long fs;		/* Fractional seconds */
 
   ts->tv_sec = strtoul(str, &s, 10);
   fs = 0;
