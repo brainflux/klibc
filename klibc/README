@@ -15,8 +15,8 @@ a) Create a symlink called "linux" pointing to a reasonably recent
    or any of its variants on the kernel tree is question, followed by
    a "make dep".
 
-b) Change ARCH in the main Makefile to match your architecture.
-   If you're cross-compiling, set CROSS to your toolchain prefix.
+b) If you're cross-compiling, change ARCH in the main MCONFIG file to
+   the appropriate architecture, and set CROSS to your toolchain prefix.
 
 c) Type "make" and pray...
 
