@@ -1,4 +1,4 @@
-#ident "$Id: run-init.c,v 1.3 2004/06/08 20:24:42 hpa Exp $"
+#ident "$Id: run-init.c,v 1.4 2004/06/09 02:51:58 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
     die("nuking initramfs contents");
 
   /* Overmount the root */
-  if ( mount(".", "/", NULL, MS_BIND, NULL) )
+  if ( mount(".", "/", NULL, MS_MOVE, NULL) )
     die("overmounting root");
   
   /* chroot, chdir */
