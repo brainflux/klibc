@@ -34,8 +34,8 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
 
    The following is the last known status of various architectures:
 
-   Known to work:	       alpha arm i386
-   Works static, not shared:   mips(*) s390 s390x sparc(*) sparc64(*) arm-thumb
+   Known to work:	       alpha arm i386 s390 s390x
+   Works static, not shared:   mips(*) sparc(*) sparc64(*) arm-thumb
    Need crt0.S updates:	       ppc 
    Missing setjmp:	       ppc64
    May or may not work:	       x86_64

@@ -11,11 +11,6 @@ CFLAGS  = -Wp,-MD,$(dir $*).$(notdir $*).d $(OPTFLAGS) $(REQFLAGS) $(WARNFLAGS)
 
 SOFLAGS = -fPIC
 
-#
-# Include arch-specific rule fragments
-#
-include arch/$(ARCH)/MCONFIG
-
 .SUFFIXES: .c .o .a .so .lo .i .S .s .ls .ss .lss
 
 .c.o:

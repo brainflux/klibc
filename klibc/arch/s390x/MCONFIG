@@ -9,3 +9,5 @@
 
 OPTFLAGS = -Os -fomit-frame-pointer
 BITSIZE  = 64
+
+SHAREDFLAGS	= -Ttext 0x40000200
