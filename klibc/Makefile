@@ -1,3 +1,4 @@
+ARCH    = i386
 CC	= gcc
 LD      = ld
 OPTFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 \
@@ -40,7 +41,7 @@ STRIP   = strip -R .comment -R .note
 
 all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
-.SUFFIXES: .c .o .a .so .lo .i .s .ls
+.SUFFIXES: .c .o .a .so .lo .i .S .s .ls
 
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -50,6 +51,12 @@ all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
 .c.s:
 	$(CC) $(CFLAGS) -S -o $@ $<
+
+.S.o:
+	$(CC) $(CFLAGS) -D__ASSEMBLY__ -c -o $@ $<
+
+.S.lo:
+	$(CC) $(CFLAGS) $(SOFLAGS) -D__ASSEMBLY__ -c -o $@ $<
 
 .c.lo:
 	$(CC) $(CFLAGS) $(SOFLAGS) -c -o $@ $<
@@ -88,23 +95,25 @@ $(SOLIB): $(SOOBJS) syscalls.dir
 syscalls.dir: SYSCALLS syscalls.pl syscommon.h
 	rm -rf syscalls
 	mkdir syscalls
-	$(PERL) syscalls.pl < SYSCALLS
+	$(PERL) syscalls.pl $(ARCH) < SYSCALLS
 	$(MAKE) syscalls-objs
 	touch syscalls.dir
 
-SYSCALLS = $(patsubst %.c,%.o,$(wildcard syscalls/*.c)) \
-	   $(patsubst %.c,%.lo,$(wildcard syscalls/*.c))
+SYSCALLS = \
+	$(addsuffix .o,$(basename $(wildcard syscalls/*.[cS]))) \
+	$(addsuffix .lo,$(basename $(wildcard syscalls/*.[cS])))
 syscalls-objs: $(SYSCALLS)
 
 socketcalls.dir: SOCKETCALLS socketcalls.pl socketcommon.h
 	rm -rf socketcalls
 	mkdir socketcalls
-	$(PERL) socketcalls.pl < SOCKETCALLS
+	$(PERL) socketcalls.pl $(ARCH) < SOCKETCALLS
 	$(MAKE) socketcalls-objs
 	touch socketcalls.dir
 
-SOCKETCALLS = $(patsubst %.c,%.o,$(wildcard socketcalls/*.c)) \
-	      $(patsubst %.c,%.lo,$(wildcard socketcalls/*.c))
+SOCKETCALLS = \
+	$(addsuffix .o,$(basename $(wildcard socketcalls/*.[cS]))) \
+	$(addsuffix .lo,$(basename $(wildcard socketcalls/*.[cS])))
 socketcalls-objs: $(SOCKETCALLS)
 
 clean:

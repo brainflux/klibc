@@ -16,7 +16,8 @@ b) Create a symlink in the include directory called "bitsize" pointing
    either to the "bits32" or the "bits64" directory, depending on the
    architecture you're compiling for.
 
-c) Change OPTFLAGS in the main Makefile to match your architecture.
+c) Change ARCH and OPTFLAGS in the main Makefile to match your
+   architecture.
 
 d) Type "make" and pray...
 
