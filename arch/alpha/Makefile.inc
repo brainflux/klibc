@@ -1,9 +1,14 @@
+# -*- makefile -*-
 #
 # arch/alpha/Makefile
 #
-# Special rules for the alpha make.  Note that this is actually included
-# from the main Makefile, and that pathnames should be accordingly.
+# Special rules for this architecture.  Note that this is actually
+# included from the main Makefile, and that pathnames should be
+# accordingly.
 #
+
+OPTFLAGS = -Os -fomit-frame-pointer
+BITSIZE  = 64
 
 # Special CFLAGS for the divide code
 DIVCFLAGS = $(REQFLAGS) \
@@ -32,8 +37,6 @@ ARCHSOOBJS = \
 	arch/$(ARCH)/__remlu.lo \
 	arch/$(ARCH)/__divl.lo \
 	arch/$(ARCH)/__reml.lo
-
-ARCHCLEAN = arch/$(ARCH)/*.ss arch/$(ARCH)/*.lss
 
 arch/$(ARCH)/%.s: arch/$(ARCH)/%.ss
 	sed -e 's/\$$0\b/$$27/g' -e 's/\$$24\b/$$99/g' \
@@ -92,3 +95,7 @@ arch/$(ARCH)/__divl.lss: arch/$(ARCH)/divide.c
 
 arch/$(ARCH)/__reml.lss: arch/$(ARCH)/divide.c
 	$(CC) $(DIVCFLAGS) -fPIC -DSIGNED=1 -DREM=1 -DBITS=32 -DNAME=__reml -S -o $@ $<
+
+archclean:
+	rm -f arch/$(ARCH)/*.ss arch/$(ARCH)/*.lss
+

@@ -2,8 +2,6 @@ ARCH    = i386
 CROSS   = 
 CC	= $(CROSS)gcc
 LD      = $(CROSS)ld
-OPTFLAGS = -march=i386 -mcpu=i686 -Os -fomit-frame-pointer \
-	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
 REQFLAGS = -nostdinc -iwithprefix include -I. -I./include \
 	  -I./linux/include -Wall
 CFLAGS  = $(OPTFLAGS) $(REQFLAGS)
@@ -46,8 +44,10 @@ LIBGCC  = $(shell $(CC) --print-libgcc)
 
 all: $(TESTS) $(CRT0) $(LIB) $(SOLIB)
 
-# If there is an arch-specific file...
--include arch/$(ARCH)/Makefile
+#
+# Include arch-specific rule fragments
+#
+include arch/$(ARCH)/Makefile.inc
 
 .SUFFIXES: .c .o .a .so .lo .i .S .s .ls .ss .lss
 
@@ -139,9 +139,9 @@ objects-static: $(STATIC)
 objects-shared: $(SHARED)
 	touch $(DIR)/shared.obj
 
-clean:
+clean: archclean
 	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls *.stripped
-	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls $(ARCHCLEAN)
+	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
 
