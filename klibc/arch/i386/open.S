@@ -2,7 +2,8 @@
  * arch/i386/open.S
  *
  * Handle the open() system call - oddball due to the varadic
- * prototype, which forces the use of the cdecl calling convention.
+ * prototype, which forces the use of the cdecl calling convention,
+ * and the need for O_LARGEFILE.
  */
 
 #include <asm/unistd.h>

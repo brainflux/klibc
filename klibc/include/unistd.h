@@ -93,7 +93,7 @@ __extern ssize_t pwrite(int, void *, size_t, off_t);
 
 __extern int dup(int);
 __extern int dup2(int, int);
-__extern int fcntl(int, int, long);
+__extern int fcntl(int, int, ...);
 __extern int ioctl(int, int, void *);
 __extern int flock(int, int);
 __extern int fsync(int);
