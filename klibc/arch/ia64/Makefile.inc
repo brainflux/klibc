@@ -9,7 +9,8 @@
 
 ARCHOBJS = \
 	arch/$(ARCH)/vfork.o \
-	arch/$(ARCH)/setjmp.o
+	arch/$(ARCH)/setjmp.o \
+	arch/$(ARCH)/pipe.o
 
 ARCHSOOBJS = $(patsubst %o,%.lo,%(ARCHOBJS))
 
