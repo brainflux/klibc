@@ -9,14 +9,21 @@
 #include <stdarg.h>
 #include <stddef.h>
 
-#define stdin  0
-#define stdout 1
-#define stderr 2
+/* This structure doesn't really exist, but it gives us something
+   to define FILE * with */
+struct _IO_file;
+typedef struct _IO_file FILE;
 
-__extern int fputs(const char *s, int fd);
+#define stdin  ((FILE *)0)
+#define stdout ((FILE *)1)
+#define stderr ((FILE *)2)
+
+__extern int fputs(const char *, FILE *);
 
 __extern int printf(const char *, ...);
 __extern int vprintf(const char *, va_list);
+__extern int fprintf(FILE *, const char *, ...);
+__extern int vfprintf(FILE *, const char *, va_list);
 __extern int sprintf(char *, const char *, ...);
 __extern int vsprintf(char *, const char *, va_list);
 __extern int snprintf(char *, size_t n, const char *, ...);

@@ -10,7 +10,7 @@
 #include <string.h>
 #include <xio.h>
 
-int fputs(const char *s, int fd)
+int fputs(const char *s, FILE *file)
 {
-  return __xwrite(fd, s, strlen(s));
+  return __xwrite((int)file, s, strlen(s));
 }
