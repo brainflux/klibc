@@ -86,7 +86,7 @@ static void *grab_file(const char *filename, unsigned long *size)
 
 int main(int argc, char *argv[])
 {
-	unsigned int i;
+	int i;
 	long int ret;
 	unsigned long len;
 	void *file;
