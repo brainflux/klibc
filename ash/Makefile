@@ -113,7 +113,8 @@ init.c: mkinit.sh $(SRCS)
 $(OBJ_NODES): nodes.h
 $(OBJ_SYNTAX): syntax.h
 
-nodes.c nodes.h: mknodes.sh nodetypes nodes.c.pat
+nodes.c nodes.h: mknodes.sh nodetypes nodes.c.pat nodes
+nodes:
 	sh mknodes.sh nodetypes nodes.c.pat .
 
 signames.c: mksignames
