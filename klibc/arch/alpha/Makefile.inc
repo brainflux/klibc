@@ -11,7 +11,7 @@
 DIVCFLAGS = $(REQFLAGS) \
 	-O3 -fomit-frame-pointer -fcall-saved-1 -fcall-saved-2 \
 	-fcall-saved-3 -fcall-saved-4 -fcall-saved-5 -fcall-saved-6 \
-	-fcall-saved-7 -fcall-saved-8 -fcall-saved-15 -fcall-saved-16 \
+	-fcall-saved-7 -fcall-saved-8 -ffixed-15 -fcall-saved-16 \
 	-fcall-saved-17 -fcall-saved-18 -fcall-saved-19 -fcall-saved-20 \
 	-fcall-saved-21 -fcall-saved-22 -ffixed-23 -fcall-saved-24 \
 	-ffixed-25 -ffixed-27
@@ -28,7 +28,7 @@ ARCHOBJS = \
 	arch/$(ARCH)/pipe.o \
 	arch/$(ARCH)/setjmp.o \
 	arch/$(ARCH)/syscall.o \
-	arch/$(ARCH)/sysdual.o \
+	arch/$(ARCH)/sysdual.o
 
 ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
 
