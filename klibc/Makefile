@@ -17,7 +17,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
 	  strtoimax.o strtoumax.o \
-	  _exit.o exit.o atexit.o onexit.o \
+	  exitc.o exits.o atexit.o onexit.o \
 	  execl.o execle.o execv.o \
 	  wait.o wait3.o waitpid.o setpgrp.o \
 	  printf.o vprintf.o xread.o xwrite.o fputs.o \
