@@ -117,6 +117,9 @@ while ( defined($a = shift(@ARGV)) ) {
 	# (-DFOO) or a disjoint argument (-D FOO)
 	push(@ccopt, $a);
 	push(@ccopt, shift(@ARGV)) if ( $2 eq '' );
+    } elsif ( $a eq '-include' ) {
+	# Options to gcc which always take a disjoint argument
+	push(@ccopt, $a, shift(@ARGV));
     } elsif ( $a =~ /^-[gp]/ ) {
 	# Debugging options to gcc *and* ld
 	push(@ccopt, $a);
@@ -143,6 +146,7 @@ while ( defined($a = shift(@ARGV)) ) {
 	push(@ccopt, $a);
 	@includes = ();
     } elsif ( $a =~ /^(-print|--help)/ ) {
+	# Pseudo-operations; just pass to gcc and don't do anything else
 	push(@ccopt, $a);
 	$operation = 'c' if ( $operation eq '' );
     } else {
@@ -163,9 +167,10 @@ if ( $operation ne '' ) {
 } else {
     @outopt = ('-o', $output || 'a.out');
 
+    @objs = ();
+    @rmobjs = ();
+
     foreach $f ( @files ) {
-	@objs = ();
-	@rmobjs = ();
 	if ( $flang{$f} eq 'obj' ) {
 	    push(@objs, $f);
 	} else {
