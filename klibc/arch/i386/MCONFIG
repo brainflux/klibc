@@ -13,8 +13,16 @@
 # them to be cdecl
 # REGPARM = -mregparm=3 -DREGPARM
 
-OPTFLAGS = $(REGPARM) -march=i386 -Os \
-	   -falign-functions=0 -falign-jumps=0 -falign-loops=0
+gcc_major := $(shell $(CC) -v 2>&1 | awk '/gcc version/{print int($$3)}')
+
+OPTFLAGS = $(REGPARM) -march=i386 -Os
+
+ifeq ($(gcc_major),3)
+OPTFLAGS += -falign-functions=0 -falign-jumps=0 -falign-loops=0
+else
+OPTFLAGS += -malign-functions=0 -malign-jumps=0 -malign-loops=0
+endif
+
 BITSIZE  = 32
 
 # Extra linkflags when building the shared version of the library
