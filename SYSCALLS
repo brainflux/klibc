@@ -11,7 +11,7 @@
 #
 # Process-related syscalls
 #
-pid_t vfork()
+<!mips,mips64> pid_t vfork()
 <!alpha> pid_t getpid()
 <alpha> pid_t getxpid@dual0::getpid()
 int setpgid(pid_t, pid_t)

@@ -20,10 +20,10 @@ NESTED(__start, 32, 16)
 	addiu	a1, sp, 4
 	sll	a2, a0, 4
 	addiu	a2, 4
-	addiu	a2, a1
+	addu	a2, a1
 	sw	a2, environ
-	jalr	main
+	jal	main
 	move	a0, v0
-	jalr	exit
+	jal	exit
 
 	END(__start)
