@@ -7,5 +7,15 @@
 # accordingly.
 #
 
-OPTFLAGS = -Os -fomit-frame-pointer
+THUMB    = n
+CPU_ARCH := armv4
+CPU_TUNE := strongarm
+
+OPTFLAGS = -Os -fomit-frame-pointer -march=$(CPU_ARCH) -mtune=$(CPU_TUNE)
 BITSIZE  = 32
+
+ifeq ($(THUMB),y)
+CPU_ARCH := $(CPU_ARCH)t
+OPTFLAGS += -mthumb
+LDFLAGS  += --thumb-entry _start
+endif

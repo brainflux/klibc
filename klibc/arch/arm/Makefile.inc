@@ -7,4 +7,15 @@
 # accordingly.
 #
 
+ifeq ($(THUMB),y)
+ARCHOBJS = arch/arm/exits-thumb.o \
+	   arch/arm/setjmp-thumb.o
+LIBGCC   =
+else
+ARCHOBJS = arch/arm/exits-arm.o \
+	   arch/arm/setjmp-arm.o
+endif
+
+ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
+
 archclean:
