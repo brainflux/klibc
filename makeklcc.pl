@@ -21,9 +21,11 @@ print "#!${perlpath}\n";
 open(KLIBCCONF, '<', $klibcconf) or die "$0: cannot open $klibcconf: $!\n";
 while ( defined($l = <KLIBCCONF>) ) {
     chomp $l;
-    if ( $l =~ /=/ ) {
-	print "\$$` = \"\Q$'\E\";\n";
-	print "\@$` = ", string2list("$'"), ";\n";
+    if ( $l =~ /^([^=]+)\=(.*)$/ ) {
+	$n = $1;  $s = $2;
+	print "\$$n = \"\Q$s\E\";\n";
+	print "\@$n = ", string2list($s), ";\n";
+	print "\$conf{\'\L$n\E\'} = \\\$$n;\n";
     }
 }
 close(KLIBCCONF);
