@@ -10,11 +10,17 @@ typedef uint32_t uint;
 typedef int32_t  sint;
 #endif
 
-uint NAME (uint num, uint den)
+#ifdef SIGNED
+typedef sint xint;
+#else
+typedef uint xint;
+#endif
+
+xint NAME (uint num, uint den)
 {
   uint quot = 0, qbit = 1;
   int minus = 0;
-  uint v;
+  xint v;
   
   if ( den == 0 ) {
     /* This is really $16, but $16 and $24 are exchanged by a script */
@@ -45,7 +51,7 @@ uint NAME (uint num, uint den)
     qbit >>= 1;
   }
 
-  v = REM ? num : quot;
+  v = (xint)(REM ? num : quot);
   if ( minus ) v = -v;
   return v;
 }
