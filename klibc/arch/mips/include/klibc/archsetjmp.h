@@ -32,7 +32,7 @@ struct __jmp_buf {
   unsigned long __f31;
   unsigned long __fcr31;
   unsigned long __unused;
-} __attribute__((align(8)));
+} __attribute__((aligned(8)));
 
 typedef struct __jmp_buf jmp_buf[1];
 
