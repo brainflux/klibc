@@ -45,7 +45,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    m68k:	 Not yet ported
    mips64:	 Not yet ported
    mips:	 Working
-   parisc:	 Needs sysstub.ph
+   parisc:	 Untested
    ppc64:	 Working
    ppc:		 Working
    s390:	 Working static, shared untested
