@@ -139,6 +139,35 @@ type name (type1 arg1,type2 arg2,type3 arg3,type4 arg4,type5 arg5,type6 arg6) \
 
 #endif /* _syscall6() missing */
 
+#elif defined(__s390x__)
+
+/* S/390X only has five syscall parameters, and uses a structure for
+   6-argument syscalls. */
+
+#ifndef _syscall6
+
+#define _syscall6(type,name,type1,arg1,type2,arg2,type3,arg3,\
+                  type4,arg4,type5,arg5,type6,arg6)          \
+type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
+          type5 arg5, type6 arg6) {			     \
+	struct {					     \
+		type1 name1; type2 name2; type3 name3;	     \
+		type4 name4; type5 name5; type6 name6;	     \
+	} __arg = { arg1, arg2, arg3, arg4, arg5, arg6 };    \
+	register void *__argp asm("2") = &__arg;	     \
+	long __res;					     \
+	__asm__ __volatile__ (               	             \
+                "    svc %b1\n"                              \
+                "    lgr  %0,2"                              \
+                : "=d" (__res)                               \
+                : "i" (__NR_##name),                         \
+                  "d" (__argp)				     \
+		: _svc_clobber);			     \
+	__syscall_return(type, __res)			     \
+}
+
+#endif /* _syscall6() missing */
+
 #elif defined(__s390__)
 
 /* S/390 only has five syscall parameters, and uses a structure for

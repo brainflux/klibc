@@ -1,5 +1,5 @@
 #
-# crt0.S
+# arch/i386/crt0.S
 #
 # void _start(void)
 # {

@@ -1,5 +1,5 @@
 #
-# crt0.S
+# arch/ppc/crt0.S
 #
 # void _start(void)
 # {
