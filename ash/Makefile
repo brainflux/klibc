@@ -69,7 +69,11 @@ mknodes: mknodes.c
 	$(HOST_CC) $(HOST_CFLAGS) $(HOST_LDFLAGS) mknodes.c -o $@ $(HOST_LIBS)
 
 clean:
-	rm -f core $(CLEANFILES) $(PROG) $(OBJS)
+	rm -f core $(CLEANFILES) $(PROG) $(OBJS) .*.d
 
 spotless: clean
 	find . -name \*~ -not -type d -print0 | xargs -0rt rm -f
+
+ifneq ($(wildcard .*.d),)
+include $(wildcard .*.d)
+endif

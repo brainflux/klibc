@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# $Id: Makefile,v 1.2 2002/08/18 10:11:34 hpa Exp $
+# $Id: Makefile,v 1.3 2002/08/21 08:38:07 rmk Exp $
 
 #### Start of system configuration section. ####
 
@@ -26,6 +26,9 @@ include ../MCONFIG
 include MCONFIG
 
 #### End of system configuration section. ####
+
+MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
+CFLAGS   = $(MAKEDEPS) $(DEFS) $(OPTFLAGS) $(REQFLAGS) $(WARNFLAGS)
 
 ZIPSRCS = zip.c deflate.c trees.c bits.c
 UNZIPSRCS = unzip.c inflate.c
@@ -65,11 +68,11 @@ gzip.stripped: gzip
 	$(STRIP) $< -o $@
 
 clean:
-	$(RM) -f core *.o gzip gunzip zcat gzip.stripped
+	$(RM) -f core *.o gzip gunzip zcat gzip.stripped .*.d
 
 spotless: clean
 	rm -f *~
 
-gzip.o zip.o deflate.o trees.o bits.o unzip.o inflate.o: gzip.h tailor.h
-util.o: gzip.h tailor.h
-gzip.o: revision.h
+ifneq ($(wildcard .*.d),)
+include $(wildcard .*.d)
+endif

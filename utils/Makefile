@@ -2,9 +2,10 @@ KLIBSRC = ../klibc
 
 include ../MCONFIG
 
-CFLAGS  = $(OPTFLAGS) $(REQFLAGS) -W -Wall
-LIBS	= $(KLIBC) $(LIBGCC)
-PROGS   = chroot mkdir mkfifo mount pivot_root umount
+MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
+CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall
+LIBS     = $(KLIBC) $(LIBGCC)
+PROGS    = chroot mkdir mkfifo mount pivot_root umount
 
 all:	$(PROGS)
 
@@ -30,7 +31,11 @@ $(CRT0) $(LIBS):
 	@echo '*** error: $@ not up to date' || exit 1
 
 clean:
-	$(RM) *.o $(PROGS) core
+	$(RM) *.o $(PROGS) core .*.d
 
 spotless: clean
 	$(RM) *~
+
+ifneq ($(wildcard .*.d),)
+include $(wildcard .*.d)
+endif

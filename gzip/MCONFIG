@@ -12,8 +12,3 @@ WARNFLAGS = -W -Wall -Wsign-compare
 
 # Set this to y if you want to enable compression support
 ZIP     = n
-
-CFLAGS  = $(DEFS) $(OPTFLAGS) $(REQFLAGS) $(WARNFLAGS)
-
-
-
