@@ -15,7 +15,8 @@ NESTED(__start, 32, 16)
 	sw	zero, 16(sp)
 
 	addiu	a0, sp, 32		# Pointer to ELF entry structure
-	move	a1, v0			# Kernel-provided atexit() pointer
+
 	jal	__libc_init
+	 move	a1, v0			# Kernel-provided atexit() pointer
 
 	END(__start)
