@@ -9,6 +9,12 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#define stdin  0
+#define stdout 1
+#define stderr 2
+
+__extern int fputs(const char *s, int fd);
+
 __extern int printf(const char *, ...);
 __extern int vprintf(const char *, va_list);
 __extern int sprintf(char *, const char *, ...);

@@ -3,8 +3,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
-#include <xio.h>
 
 #define BUFFER_SIZE	16384
 
@@ -21,5 +21,5 @@ int printf(const char *format, ...)
   if ( rv < 0 )
     return rv;
 
-  return __xwrite(1, buffer, rv);
+  return fputs(buffer, stdout);
 }
