@@ -65,10 +65,15 @@ __noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
   }
 
   __page_size = page_size;
+
+#if defined(__i386__) || defined(__x86_64__)
+  asm("bsrl %1,%0" : "=r" (page_shift) : "rm" (page_size));
+#else
   while ( page_size > 1 ) {
     page_shift++;
     page_size >>= 1;
   }
+#endif
   __page_shift = page_shift;
 
   environ = envp;
