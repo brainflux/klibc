@@ -23,9 +23,25 @@ __extern pid_t getppid(void);
 __extern pid_t getpgrp(void);
 __extern int setpgrp(void);
 __extern pid_t setsid(void);
+__extern pid_t getsid(pid_t);
 __extern int execve(const char *, const char * const *, char * const *);
 __extern int execl(const char *, const char *, ...);
 __extern int execv(const char *, const char * const *);
+
+__extern int setuid(uid_t);
+__extern uid_t getuid();
+__extern int setgid(gid_t);
+__extern gid_t setgid(void);
+__extern uid_t geteuid(void);
+__extern gid_t getegid(void);
+__extern int getgroups(int, gid_t *);
+__extern int setgroups(size_t, const gid_t *);
+__extern int setreuid(uid_t, uid_t);
+__extern int setregid(gid_t, gid_t);
+__extern int setresuid(uid_t, uid_t, uid_t);
+__extern int setresgid(gid_t, gid_t, gid_t);
+__extern int getfsuid(uid_t);
+__extern int setfsuid(uid_t);
 
 __extern int access(const char *, int);
 __extern int link(const char *, const char *);
@@ -39,6 +55,9 @@ __extern int pipe(int *);
 __extern int chroot(const char *);
 __extern int symlink(const char *, const char *);
 __extern int readlink(const char *, char *, size_t);
+__extern int chown(const char *, uid_t, gid_t);
+__extern int fchown(int, uid_t, gid_t);
+__extern int lchown(const char *, uid_t, gid_t);
 
 __extern int sync(void);
 
@@ -56,6 +75,7 @@ __extern int ioctl(int, int, void *);
 __extern int flock(int, int);
 __extern int select(int, fd_set *, fd_set *, fd_set *, struct timeval *);
 __extern int fsync(int);
+__extern int fdatasync(int);
 
 __extern int pause(void);
 __extern unsigned int alarm(unsigned int);

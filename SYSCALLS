@@ -16,6 +16,7 @@ pid_t getpgid(pid_t)
 pid_t getppid()
 pid_t getpgrp()
 pid_t setsid()
+pid_t getsid(pid_t)
 pid_t waitpid(pid_t, int *, int)
 pid_t wait4(pid_t, int *, int, struct rusage *)
 int execve(const char *, char * const *, char * const *)
@@ -30,6 +31,11 @@ gid_t setgid()
 uid_t geteuid()
 gid_t getegid()
 int getgroups(int, gid_t *)
+int setgroups(size_t, const gid_t *)
+int setreuid(uid_t, uid_t)
+int setregid(gid_t, gid_t)
+int setresuid(uid_t, uid_t, uid_t)
+int setresgid(gid_t, gid_t, gid_t)
 
 #
 # Filesystem-related system calls
@@ -39,6 +45,10 @@ int umount(const char *)
 int umount2(const char *, int)
 int pivot_root(const char *, const char *)
 int sync()
+int statfs(const char *, struct statfs *)
+int fstatfs(int, struct statfs *)
+int swapon(const char *, int)
+int swapoff(const char *)
 
 #
 # Inode-related system calls
@@ -61,6 +71,9 @@ int stat(const char *, struct stat *)
 int lstat(const char *, struct stat *)
 int fstat(int, struct stat *)
 int getdents(unsigned int, struct dirent *, unsigned int)
+int chown(const char *, uid_t, gid_t)
+int fchown(int, uid_t, gid_t)
+int lchown(const char *, uid_t, gid_t)
 
 #
 # I/O operations
@@ -77,6 +90,7 @@ int ioctl(int, int, void *)
 int flock(int, int)
 int select(int, fd_set *, fd_set *, fd_set *, struct timeval *)
 int fsync(int)
+int fdatasync(int)
 
 #
 # Signal operations
@@ -100,9 +114,13 @@ int settimeofday(const struct timeval *, const struct timezone *)
 int nanosleep(const struct timespec *, struct timespec *)
 
 #
-# Miscellaneous
+# System stuff
 #
 int uname(struct utsname *)
 int setdomainname(const char *, size_t)
 int sethostname(const char *, size_t)
+int init_module(const char *, struct module *)
+void * create_module(const char *, size_t)
+int delete_module(const char *)
+int query_module(const char *, int, void *, size_t, size_t)
 
