@@ -134,3 +134,6 @@ clean:
 	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
+
+spotless: clean
+	find . -name \*~ -not -type d -print0 | xargs -0rt rm -f
