@@ -3,35 +3,46 @@
 # Script to parse the SYSCALLS file and generate appropriate
 # stubs.
 
-($file, $arch, $bits, $unistd) = @ARGV;
+$quiet = defined($ENV{'V'}) ? !$ENV{'V'} : 0;
+
+@args = ();
+for $arg ( @ARGV ) {
+    if ( $arg =~ /^-/ ) {
+	if ( $arg eq '-q' ) {
+	    $quiet = 1;
+	} else {
+	    die "$0: Unknown option: $arg\n";
+	}
+    } else {
+	push(@args, $arg);
+    }
+}
+($file, $arch, $bits, $unistd) = @args;
 
 require "arch/$arch/sysstub.ph";
 
 if (!open(UNISTD, '<', $unistd)) {
-    printf STDERR "$0: $unistd: $!\n";
-    exit(1);
+    die "$0: $unistd: $!\n";
 }
 while ( defined($line = <UNISTD>) ) {
     chomp $line;
 
     if ( $line =~ /^\#\s*define\s+__NR_([A-Za-z0-9_]+)\s+(.*\S)\s*$/ ) {
 	$syscalls{$1} = $2;
-	print STDERR "SYSCALL FOUND: $1\n";
+	print STDERR "SYSCALL FOUND: $1\n" unless ( $quiet );
     }
 }
 close(UNISTD);
 
 if (!open(HAVESYS, '>', "include/klibc/havesyscall.h")) {
-    printf STDERR "$0: include/klibc/havesyscall.h: $!\n";
-    exit(1);
+    die "$0: include/klibc/havesyscall.h: $!\n";
 }
 
 print HAVESYS "#ifndef _KLIBC_HAVESYSCALL_H\n";
 print HAVESYS "#define _KLIBC_HAVESYSCALL_H 1\n\n";
 
 if (!open(FILE, '<', $file)) {
-    print STDERR "$0: $file: $!\n";
-    exit(1);
+    die "$0: $file: $!\n";
 }
 
 while ( defined($line = <FILE>) ) {
@@ -94,8 +105,7 @@ while ( defined($line = <FILE>) ) {
 	print HAVESYS "#define _KLIBC_HAVE_SYSCALL_${fname} ${sname}\n";
 	make_sysstub($fname, $type, $sname, $stype, @args);
     } else {
-	print STDERR "$file:$.: Could not parse input: \"$line\"\n";
-	exit(1);
+	die "$file:$.: Could not parse input: \"$line\"\n";
     }
 }
 

@@ -141,7 +141,7 @@ include/klibc/havesyscall.h: syscalls.dir
 socketcalls.dir: SOCKETCALLS.def socketcalls.pl socketcommon.h
 	rm -rf socketcalls
 	mkdir socketcalls
-	$(PERL) socketcalls.pl $(ARCH) SOCKETCALLS.def
+	$(PERL) socketcalls.pl SOCKETCALLS.def $(ARCH)
 	touch $@
 
 %/static.obj: %.dir

@@ -1,9 +1,23 @@
 #!/usr/bin/perl
-($arch, $file) = @ARGV;
+
+$quiet = defined($ENV{'V'}) ? !$ENV{'V'} : 0;
+
+@args = ();
+for $arg ( @ARGV ) {
+    if ( $arg =~ /^-/ ) {
+	if ( $arg eq '-q' ) {
+	    $quiet = 1;
+	} else {
+	    die "$0: Unknown option: $arg\n";
+	}
+    } else {
+	push(@args, $arg);
+    }
+}
+($file, $arch) = @args;
 
 if (!open(FILE, "< $file")) {
-    print STDERR "$file: $!\n";
-    exit(1);
+    die "$file: $!\n";
 }
 
 while ( defined($line = <FILE>) ) {
@@ -64,7 +78,6 @@ while ( defined($line = <FILE>) ) {
 	    close(OUT);
 	}
     } else {
-	print STDERR "$file:$.: Could not parse input\n";
-	exit(1);
+	die "$file:$.: Could not parse input\n";
     }
 }

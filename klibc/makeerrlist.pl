@@ -50,15 +50,10 @@ sub parse_file($) {
 	}
     }
     close($fh);
-    print STDERR "closing $file\n";
+    print STDERR "closing $file\n" unless ( $quiet );
 }
 	 
-$v = getenv("V");
-if ( defined($v) ) {
-    $quiet = !$v;
-} else {
-    $quiet = 0;
-}
+$quiet = defined($ENV{'V'}) ? !$ENV{'V'} : 0;
 
 foreach $arg ( @ARGV ) {
     if ( $arg eq '-q' ) {

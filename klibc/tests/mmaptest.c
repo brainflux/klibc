@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
 {
   void *foo;
 
+  (void)argc; (void)argv;
+
   /* Important case, this is how we get memory for malloc() */
   errno = 0;
   foo = mmap(0, 65536, PROT_READ|PROT_WRITE,
