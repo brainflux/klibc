@@ -95,8 +95,8 @@ static void parse_opts(char *opts)
 		if (*cp == '\0')
 			continue;
 		if ((val = strchr(cp, '=')) != NULL) {
-			*val++ = '\0';
 			struct int_opts *opts = int_opts;
+			*val++ = '\0';
 			while (opts->name && strcmp(opts->name, cp) != 0)
 				opts++;
 			if (opts->name)
