@@ -5,6 +5,7 @@
 #ifndef _SYSLOG_H
 #define _SYSLOG_H
 
+#include <stdio.h>
 #include <klibc/extern.h>
 
 /* Alert levels */
@@ -48,6 +49,7 @@
 
 __extern void openlog(const char *, int, int);
 __extern void syslog(int, const char *, ...);
+__extern void vsyslog(int, const char *, va_list);
 __extern void closelog(void);
 
 #endif /* _SYSLOG_H */

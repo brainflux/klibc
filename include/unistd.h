@@ -82,6 +82,7 @@ __extern int ioctl(int, int, void *);
 __extern int flock(int, int);
 __extern int fsync(int);
 __extern int fdatasync(int);
+__extern int ftruncate(int, off_t);
 
 __extern int pause(void);
 __extern unsigned int alarm(unsigned int);
