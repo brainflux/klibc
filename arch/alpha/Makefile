@@ -30,6 +30,8 @@ ARCHSOOBJS = \
 	arch/$(ARCH)/__divl.lo \
 	arch/$(ARCH)/__reml.lo
 
+ARCHCLEAN = arch/$(ARCH)/*.ss arch/$(ARCH)/*.lss
+
 arch/$(ARCH)/%.s: arch/$(ARCH)/%.ss
 	sed -e 's/\$$0\b/$$27/g' -e 's/\$$24\b/$$99/g' \
 	    -e 's/\$$16\b/$$24/g' -e 's/\$$17\b/$$25/g' \

@@ -140,7 +140,7 @@ objects-shared: $(SHARED)
 
 clean:
 	rm -f $(TESTS) *.o *.lo *.a *.so *.i *.s *.ls *.stripped
-	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls
+	rm -f arch/*/*.o arch/*/*.lo arch/*/*.i arch/*/*.s arch/*/*.ls $(ARCHCLEAN)
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
 
