@@ -1,4 +1,4 @@
-#ident "$Id: nuke.c,v 1.3 2004/06/08 06:39:44 hpa Exp $"
+#ident "$Id: run-init.c,v 1.1 2004/06/08 06:39:44 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *   
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
@@ -27,12 +27,17 @@
  * ----------------------------------------------------------------------- */
 
 /*
- * nuke.c
+ * run-init.c
  *
- * Simple program which does the same thing as rm -rf, except it takes
- * no options and can therefore not get confused by filenames starting
- * with -.  Similarly, an empty list of inputs is assumed to mean don't
- * do anything.
+ * Usage: exec run-init /real-root /sbin/init "$@"
+ *
+ * This program should be called as the last thing in a shell script
+ * acting as /init in an initramfs; it does the following:
+ *
+ * - Delete all files in the initramfs;
+ * - Remounts /real-root onto the root filesystem;
+ * - Chroots;
+ * - Spawns the specified init program (with arguments.)
  */
 
 #include <alloca.h>
@@ -40,22 +45,39 @@
 #include <dirent.h>
 #include <errno.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include <sys/types.h>
 #include <unistd.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/vfs.h>
 
 static const char *program;
 
+static void __attribute__((noreturn)) die(const char *msg)
+{
+  fprintf(stderr, "%s: %s: %s\n", program, msg, strerror(errno));
+  exit(1);
+}
+
 static int nuke(const char *what);
 
-static int nuke_dirent(int len, const char *dir, const char *name)
+static int nuke_dirent(int len, const char *dir, const char *name, dev_t me)
 {
   int bytes = len+strlen(name)+2;
   char path[bytes];
   int xlen;
+  struct stat st;
 
   xlen = snprintf(path, bytes, "%s/%s", dir, name);
   assert(xlen < bytes);
+
+  if ( stat(path, &st) )
+    return ENOENT;		/* Return 0 since already gone? */
+
+  if ( st.st_dev != me )
+    return 0;			/* DO NOT recurse down mount points!!!!! */
 
   return nuke(path);
 }
@@ -67,7 +89,14 @@ static int nuke_dir(const char *what)
   DIR *dir;
   struct dirent *d;
   int err = 0;
+  struct stat st;
+
+  if ( stat(what, &st) )
+    return errno;
   
+  if ( !S_ISDIR(st.st_mode) )
+    return ENOTDIR;
+
   if ( !(dir = opendir(what)) ) {
     /* EACCES means we can't read it.  Might be empty and removable;
        if not, the rmdir() in nuke() will trigger an error. */
@@ -81,7 +110,7 @@ static int nuke_dir(const char *what)
 	  (d->d_name[1] == '.' && d->d_name[2] == '\0')) )
       continue;
     
-    err = nuke_dirent(len, what, d->d_name);
+    err = nuke_dirent(len, what, d->d_name, st.st_dev);
     if ( err ) {
       closedir(dir);
       return err;
@@ -110,25 +139,52 @@ static int nuke(const char *what)
   }
 
   if ( err ) {
-    fprintf(stderr, "%s: %s: %s\n", program, what, strerror(err));
-    return err;
+    errno = err;
+    die(what);
   } else {
     return 0;
   }
 }
 
+#define RAMFS_MAGIC	0x858458f6
+#define TMPFS_MAGIC	0x01021994
+
 int main(int argc, char *argv[])
 {
-  int i;
-  int err = 0;
+  struct statfs sfs;
 
   program = argv[0];
 
-  for ( i = 1 ; i < argc ; i++ ) {
-    err = nuke(argv[i]);
-    if ( err )
-      break;
+  if ( argc < 3 ) {
+    fprintf(stderr, "Usage: exec %s /real-root /sbin/init [args]\n", program);
+    exit(1);
   }
 
-  return !!err;
+  /* Make sure we're in the root directory */
+  if ( chdir("/") )
+    die("cd /");
+    
+  /* Make sure we're on a ramfs - this avoids accidents */
+  if ( statfs(".", &sfs) )
+    die("statfs /");
+  if ( sfs.f_type != RAMFS_MAGIC && sfs.f_type != TMPFS_MAGIC )
+    die("rootfs not a ramfs or tmpfs");
+
+  /* Delete rootfs contents */
+  if ( nuke_dir(".") )
+    die("nuking initramfs contents");
+
+  /* Overmount the root */
+  if ( mount(argv[2], "/", NULL, MS_BIND, NULL) )
+    die("overmounting root");
+  
+  /* Chroot */
+  if ( chroot(".") )
+    die("chroot");
+
+  /* Spawn init */
+  execv(argv[3], argv+3);
+
+  die(argv[3]);			/* Failed to spawn init */
 }
+
