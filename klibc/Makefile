@@ -1,8 +1,8 @@
 ARCH    = i386
 CC	= gcc
 LD      = ld
-#OPTFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 \
-#	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
+OPTFLAGS = -Os -fomit-frame-pointer -march=i386 -mcpu=i686 \
+	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
 CFLAGS  = -I. -I./include -I./linux/include -Wall -g $(OPTFLAGS)
 LDFLAGS =
 AR      = ar
