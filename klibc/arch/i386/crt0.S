@@ -1,28 +1,31 @@
 #
 # arch/i386/crt0.S
 #
-# void _start(void)
-# {
-#    /* Divine up argc, argv, and envp */
-#    environ = envp;
-#    exit(main(argc, argv, envp));
-# } 
+# Does arch-specific initialization and invokes __libc_init
+# with the appropriate arguments.
 #
-
+# See __static_init.c or __shared_init.c for the expected
+# arguments.
+#
+	
 	.text
 	.align 4
 	.type _start,@function
 	.globl _start
 _start:
-	movl (%esp),%ecx
-	leal 4(%esp),%edx
-	leal 4(%edx,%ecx,4),%eax
-	push %eax
-	push %edx
-	push %ecx
-	movl %eax,environ
-	call main
-	push %eax
-	call exit
+	# Save the address of the ELF argument array
+	movl %esp,%eax		# Address of ELF arguments
+	# Set up a faux stack frame for the benefit of gdb
+	xorl %ebp,%ebp
+	push %ebp		# Keep gdb from getting confused
+	push %ebp		# Keep gdb from getting confused
+	# Push the arguments and called __libc_init()
+	push %edx		# atexit() function
+	push %eax		# ELF array
+	call __libc_init
+	# If __libc_init returns, problem...	
+	ud2
+	hlt
 	
-	.size _start,.-_start
+	.size _start, .-_start
+

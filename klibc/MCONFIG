@@ -11,10 +11,6 @@ WARNFLAGS = -W -Wall -Wpointer-arith -Wwrite-strings -Wstrict-prototypes -Winlin
 CFLAGS  = -Wp,-MD,$(dir $*).$(notdir $*).d $(OPTFLAGS) $(REQFLAGS) $(WARNFLAGS)
 
 SOFLAGS = -fPIC
-SOOBJS  = $(patsubst %.o,%.lo,$(LIBOBJS))
-SOLIB   = libc.so
-SONAME  = libc.so
-CRT0    = crt0.o
 
 #
 # Include arch-specific rule fragments

@@ -7,14 +7,15 @@
 # Include configuration rules
 include MCONFIG
 
-TESTS   = $(patsubst %.c,%,$(wildcard tests/*.c))
+TESTS   = $(patsubst %.c,%,$(wildcard tests/*.c)) \
+	  $(patsubst %.c,%.shared,$(wildcard tests/*.c))
 LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  vsscanf.o sscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
 	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
 	  strtoimax.o strtoumax.o \
-	  __main.o globals.o exitc.o atexit.o onexit.o \
+	  globals.o exitc.o atexit.o onexit.o \
 	  execl.o execle.o execv.o execvpe.o execvp.o execlp.o execlpe.o \
 	  fork.o wait.o wait3.o waitpid.o setpgrp.o \
 	  printf.o vprintf.o fprintf.o vfprintf.o perror.o \
@@ -35,30 +36,57 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  qsort.o lrand48.o srand48.o seed48.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
 	  inet/inet_ntop.o inet/inet_pton.o
+SOLIB   = libc.so
+SOHASH  = klibc.so
+
+CRT0    = crt0.o
 LIB     = libc.a
 
-all: tests $(CRT0) $(LIB) #$(SOLIB)
+all: tests $(CRT0) $(LIB) $(SOLIB) klibc.so
 
 # Add any architecture-specific rules
 include arch/$(ARCH)/Makefile.inc
 
 tests: $(TESTS)
 
-tests/% : tests/%.c $(LIB) $(CRT0)
-	$(CC) $(CFLAGS) -c -o tests/$*.o $<
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) tests/$*.o $(LIB) $(LIBGCC)
+tests/%.o : tests/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+tests/% : tests/%.o $(LIB) $(CRT0)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) $< $(LIB) $(LIBGCC)
 	cp $@ $@.stripped
 	$(STRIP) $@.stripped
 
-$(LIB): $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
+tests/%.shared : tests/%.o interp.o $(SOLIB)
+	$(LD) $(LDFLAGS) -o $@ -e main interp.o tests/$*.o -R $(SOLIB) $(LIBGCC)
+	cp $@ $@.stripped
+	$(STRIP) $@.stripped
+
+$(LIB): __static_init.o $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
 	rm -f $(LIB)
-	$(AR) cq $(LIB) $(LIBOBJS) $(ARCHOBJS) syscalls/*.o socketcalls/*.o
+	$(AR) cq $(LIB) __static_init.o $(LIBOBJS) $(ARCHOBJS) syscalls/*.o socketcalls/*.o
 	$(RANLIB) $(LIB)
 
-$(SOLIB): $(SOOBJS) $(ARCHSOOBJS) syscalls/shared.obj socketcalls/shared.obj
-	$(LD) $(LDFLAGS) -shared -soname $(SONAME) -o $@ \
-		$(SOOBJS) $(ARCHSOOBJS) syscalls/*.lo socketcalls/*.lo \
-	        $(LIBGCC)
+$(SOLIB): $(CRT0) __shared_init.o $(LIBOBJS) $(ARCHOBJS) syscalls/static.obj socketcalls/static.obj
+	$(LD) $(LDFLAGS) $(SHAREDFLAGS) -e _start -o $@ \
+		$(CRT0) __shared_init.o $(LIBOBJS) $(ARCHOBJS) \
+	        syscalls/*.o socketcalls/*.o \
+		$(LIBGCC)
+
+$(SOLIB).hash: $(SOLIB) md5hash.pl
+	$(NM) $(SOLIB) | \
+		egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
+		sort | $(PERL) md5hash.pl > $@
+	ln -s $(SOLIB) klibc-`cat $@`.so
+
+$(SOHASH): $(SOLIB) $(SOLIB).hash
+	cp -f $(SOLIB) $@
+	$(STRIP) $@
+	ln -f $@ klibc-`cat $(SOLIB).hash`.so
+
+interp.o: interp.S $(SOLIB).hash
+	$(CC) $(CFLAGS) -D__ASSEMBLY__ -DSOHASH=\"`cat $(SOLIB).hash`\" \
+		-c -o $@ $<
 
 crt0.o: arch/$(ARCH)/crt0.o
 	cp arch/$(ARCH)/crt0.o .
@@ -78,27 +106,21 @@ socketcalls.dir: SOCKETCALLS socketcalls.pl socketcommon.h
 %/static.obj: %.dir
 	$(MAKE) objects-$(basename $(notdir $@)) DIR=$*
 
-%/shared.obj: %.dir
-	$(MAKE) objects-$(basename $(notdir $@)) DIR=$*
-
 STATIC = $(addsuffix .o,$(basename $(wildcard $(DIR)/*.[cS])))
-SHARED = $(addsuffix .lo,$(basename $(wildcard $(DIR)/*.[cS])))
 
 objects-static: $(STATIC)
 	touch $(DIR)/static.obj
 
-objects-shared: $(SHARED)
-	touch $(DIR)/shared.obj
-
 clean: archclean
 	find . -type f -a \( -name \*.[isoa] -o -name \*.l[iso] \) -print0 | xargs -0rt rm -f
-	rm -f *.a *.so
+	rm -f *.a *.so *.hash *.syms *.stripped
 	rm -f $(TESTS) tests/*.stripped
 	rm -rf syscalls syscalls.dir
 	rm -rf socketcalls socketcalls.dir
 
 spotless: clean
-	find . -name \*~ -not -type d -print0 | xargs -0rt rm -f
+	find . \( -name \*~ -o -name '.*.d' \) -not -type d -print0 | \
+		xargs -0rt rm -f
 
 ifneq ($(wildcard $(DIR)/.*.d),)
 include $(wildcard $(DIR)/.*.d)

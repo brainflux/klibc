@@ -10,3 +10,8 @@
 OPTFLAGS = -march=i386 -mcpu=i686 -Os -fomit-frame-pointer \
 	   -malign-functions=0 -malign-jumps=0 -malign-loops=0
 BITSIZE  = 32
+
+# Extra linkflags when building the shared version of the library
+# This address needs to be reachable using normal inter-module
+# calls, and work on the memory models for this architecture
+SHAREDFLAGS	= -Ttext 0x38000000
