@@ -103,7 +103,7 @@ name_to_dev_t(const char *name)
 	if ( name[0] == '/' && !stat(name, &st) && S_ISBLK(st.st_mode) )
 		return st.st_rdev;
 	
-	if ( !strncmp(name, "/dev/", 5) ) {
+	if ( strncmp(name, "/dev/", 5) ) {
 		res = (dev_t) strtoul(name, &p, 16);
 		if (*p)
 			return 0;
@@ -111,7 +111,7 @@ name_to_dev_t(const char *name)
 	}
 	name += 5;
 	if (strcmp(name, "nfs") == 0)
-		return 0;
+		return Root_NFS;
 
 	len = strlen(name);
 	s = alloca(len+1);
