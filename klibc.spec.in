@@ -30,6 +30,8 @@ toolset, but are typically much smaller than their full-function
 counterparts.  They are intended for inclusion in initramfs images and
 embedded systems.
 
+%define udocdir %{_defaultdocdir}/%{name}-utils-%{version}
+
 %prep
 %setup -q
 cp -dRs /lib/modules/`uname -r`/build ./linux
@@ -60,32 +62,32 @@ make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 
 # Install the docs
 
-install -m 444 README $doc
-install -m 444 klibc/README $doc/README.klibc
-install -m 444 klibc/arch/README $doc/README.klibc.arch
+mkdir -p ${_docdir} %{udocdir}
+install -m 444 README %{_docdir}
+install -m 444 klibc/README %{_docdir}/README.klibc
+install -m 444 klibc/arch/README %{_docdir}/README.klibc.arch
 
-install -m 444 gzip/COPYING $udoc/COPYING.gzip
-install -m 444 gzip/README $udoc/README.gzip
-install -m 444 ipconfig/README $udoc/README.ipconfig
-install -m 444 kinit/README $udoc/README.kinit
+install -m 444 gzip/COPYING %{udocdir}/COPYING.gzip
+install -m 444 gzip/README %{udocdir}/README.gzip
+install -m 444 ipconfig/README %{udocdir}/README.ipconfig
+install -m 444 kinit/README %{udocdir}/README.kinit
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%docdir %{prefix}/share/doc/%{name}-%{version}
 %{_libdir}/klibc/lib
 ${_bindir}/klcc
 %doc ${_mandir}/man1/klcc.1
 /lib/klibc-*.so
-%{prefix}/share/doc/%{name}-%{version}
+%docdir %{_docdir}
 
 %files utils
 %defattr(-,root,root,-)
 %{_libdir}/klibc/bin
-%docdir %{prefix}/share/doc/%{name}-utils-%{version}
 %{prefix}/share/doc/%{name}-utils-%{version}
+%docdir %{udocdir}
 
 %changelog
 * Tue Mar 1 2005 H. Peter Anvin <hpa@zytor.com>
