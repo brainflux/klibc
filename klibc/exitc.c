@@ -10,9 +10,9 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-/* We have an assembly version for i386 */
+/* We have an assembly version for i386 and x86-64 */
 
-#ifndef __i386__
+#if !defined(__i386__) && !defined(__x86_64__)
 
 #define __NR___exit __NR_exit
 

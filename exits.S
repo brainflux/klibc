@@ -42,4 +42,33 @@ _exit:
 	int $0x80
 	.size _exit,.-exit
 
+#elif defined(__x86_64__)
+
+	.data
+	.align 8
+	.globl __exit_handler
+	.type __exit_handler,@object
+__exit_handler:
+	.quad _exit
+	.size __exit_handler,8
+
+	.text
+	.align 8
+	.globl exit
+	.type exit,@function
+exit:
+	jmp *(__exit_handler)
+	.size exit,.-exit
+
+	/* No need to save any registers... we're exiting! */
+	.text
+	.align 4
+	.globl _exit
+	.type _exit,@function
+_exit:
+	movl $__NR_exit,%rax
+	/* The argument is already in %rdi */
+	syscall
+	.size _exit,.-exit
+
 #endif
