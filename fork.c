@@ -11,9 +11,13 @@
 
 #ifdef __NR_fork
 
-_syscall0(pid_t,fork);
-
+#ifdef __sparc__
+_syscall0_forkish(pid_t,fork);
 #else
+_syscall0(pid_t,fork);
+#endif
+
+#else /* __NR_fork */
 
 static inline _syscall2(pid_t,clone,unsigned long,flags,void *,newsp);
 

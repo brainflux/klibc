@@ -67,19 +67,31 @@ _start:
 ! or without an imposed bias.
 
 	andcc	%sp, 1, %g5
-	bnz,a	.LHaveBias
+	bz,a	.LNoBias
+	 nop
 	mov	2047, %g5
-.LHaveBias:
+.LNoBias:
 	add	%sp, %g5, %g5
 
+! On entry, the kernel leaves room for one register frame, but
+! the C API wants more free space.  Thus, we need to drop the stack
+! pointer additionally.   
+
 #if TARGET_PTR_SIZE == 32
-	ld	[%g5 + 0x40], %o0	! argc
+	sub	%sp, 32, %sp		! make room for incoming arguments
+#else /* TARGET_PTR_SIZE == 64 */
+	sub	%sp, 64, %sp		! make room for incoming arguments
+#endif
+
+! Set up pointers to argc and argv
+#if TARGET_PTR_SIZE == 32
+       	ld	[%g5 + 0x40], %o0	! argc
 	add	%g5, 0x44, %o1		! argv
 	add	%o0, 1, %o2
 	sll	%o2, 2, %o2
 #else /* TARGET_PTR_SIZE == 64 */
-	ld	[%g5 + 0x88], %o0	! argc.lo
-	add	%sp, 0x90, %o1		! argv
+	ld	[%g5 + 0x80], %o0	! argc.lo
+	add	%sp, 0x88, %o1		! argv
 	add	%o0, 1, %o2
 	sll	%o2, 3, %o2
 #endif
@@ -87,16 +99,16 @@ _start:
 	sethi	%hi (environ), %o3
 	or	%o3, %lo (environ), %o3
 #if TARGET_PTR_SIZE == 32
-	st	%o2, [%o3 + %g4]
+        st	%o2, [%o3 + %g4]
 #else /* TARGET_PTR_SIZE == 64 */
 	stx	%o2, [%o3 + %g4]
 #endif
 
 	call	main
-	nop
+	 nop
 	
 	call	exit
-	nop
+	 nop
 
 ! If all the above methods fail to terminate the program, try an illegal insn.
 ! If that does not work, the o/s is hosed more than we are.

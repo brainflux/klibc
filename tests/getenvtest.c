@@ -17,6 +17,7 @@ int main(int argc, char *argv[], char *envp[])
   printf("USER = %s\n", getenv("USER"));
 
   /* Test argc/argv */
+  printf("argc = %d\n", argc);
   for ( i = 0 ; i < argc ; i++ ) {
     printf("argv[%2d] = %s\n", i, argv[i]);
   }

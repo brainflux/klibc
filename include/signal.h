@@ -18,6 +18,9 @@
 #ifndef SA_NODEFER
 # define SA_NODEFER SA_NOMASK
 #endif
+#ifndef NSIG
+# define NSIG _NSIG
+#endif
 
 __extern const char * const sys_siglist[];
 
