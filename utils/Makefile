@@ -5,12 +5,18 @@ include ../MCONFIG
 MAKEDEPS = -Wp,-MD,.$(subst /,-,$*).d
 CFLAGS   = $(MAKEDEPS) $(OPTFLAGS) $(REQFLAGS) -W -Wall
 LIBS     = $(KLIBC) $(LIBGCC)
-PROGS    = chroot mkdir mkfifo mount pivot_root umount
+PROGS    = chroot dd fstype mkdir mkfifo mount pivot_root umount
 
 all:	$(PROGS)
 
 chroot:	chroot.o $(CRT0) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) chroot.o $(LIBS)
+
+dd:	dd.o $(CRT0) $(LIBS)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) dd.o $(LIBS)
+
+fstype:	fstype.o $(CRT0) $(LIBS)
+	$(LD) $(LDFLAGS) -o $@ $(CRT0) fstype.o $(LIBS)
 
 mkdir:	mkdir.o file_mode.o $(CRT0) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $(CRT0) mkdir.o file_mode.o $(LIBS)
