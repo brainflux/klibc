@@ -42,7 +42,7 @@ embedded systems.
 
 %prep
 %setup -q
-cp -as /lib/modules/`uname -r`/build ./linux
+cp -dRs /lib/modules/`uname -r`/build ./linux
 make -C linux defconfig ARCH=%{_target_cpu}
 make -C linux prepare ARCH=%{_target_cpu}
 # Deal with braindamage in RedHat's kernel-source RPM
