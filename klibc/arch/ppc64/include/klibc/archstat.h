@@ -4,7 +4,8 @@
 #define _STATBUF_ST_NSEC
 
 /* This matches struct stat64 in glibc2.1. Only used for 32 bit. */
-struct stat64 {
+
+struct stat {
 	unsigned long st_dev; 		/* Device.  */
 	unsigned long st_ino;		/* File serial number.  */
 	unsigned int st_mode;		/* File mode.  */
