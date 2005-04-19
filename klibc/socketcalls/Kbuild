@@ -1,0 +1,38 @@
+#
+# Generate socket calls based on SOCKETCALLS.def
+#
+
+# Include automatically generated Makefile fragment.
+# It contains definition of socketcall-objs specifying name of all .o files
+-include $(obj)/socketcalls.mk
+
+# Composite object containing all .o file
+always := socketcalls.o
+
+klibc-dir := $(srctree)/usr/klibc
+
+#####
+# Generate socket calls stubs
+# Based on input from SOCKETCALLS.def generate socket call stubs
+targets     := socketcalls.o
+targets     += socketcalls.mk
+targets     += $(socketcall-objs)
+clean-files += *.o
+
+# Create reloctable composite object file
+$(obj)/socketcalls.o: $(call objectify,$(socketcall-objs)) FORCE
+	$(call if_changed,userld)
+	
+quiet_cmd_socketcalls = GEN     $@
+      cmd_socketcalls = $(PERL) $(klibc-dir)/socketcalls.pl        \
+			        $(klibc-dir)/SOCKETCALLS.def       \
+                                $(ARCH) $(obj) > $@ || rm -f $@
+
+# Generate socketcall stubs
+$(obj)/socketcalls.mk: $(klibc-dir)/socketcalls.pl                 \
+                       $(klibc-dir)/SOCKETCALLS.def                \
+		       $(call objectify, $(socketcall-objs:.o=.S)) \
+                       $(klibc-dir)/socketcommon.h 
+	$(call cmd,socketcalls)
+
+
