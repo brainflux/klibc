@@ -145,9 +145,8 @@ ssize_t pwrite64,pwrite::pwrite(int, void *, size_t, off_t)
 ;
 ; Signal operations
 ;
-int kill(pid_t, int)
 ; We really should get rid of the non-rt_* of these, but that takes
-; sanitizing <signal.h> for all architectures, sigh...
+; sanitizing <signal.h> for all architectures, sigh.
 #ifdef __NR_sigaction
 int sigaction::__sigaction(int, const struct sigaction *, struct sigaction *)
 #else
@@ -168,7 +167,7 @@ int sigprocmask(int, const sigset_t *, sigset_t *)
 #else
 int rt_sigprocmask::__rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t)
 #endif
-void sigreturn,rt_sigreturn::__sigreturn(void)
+int kill(pid_t, int)
 <?> unsigned int alarm(unsigned int)
 int getitimer(int, struct itimerval *)
 int setitimer(int, const struct itimerval *, struct itimerval *)

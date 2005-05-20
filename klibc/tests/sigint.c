@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
 {
   struct sigaction act, oact;
   pid_t f;
-  int i;
   
   (void)argc;
 
