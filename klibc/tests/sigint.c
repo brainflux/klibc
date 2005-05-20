@@ -17,17 +17,20 @@ static void sig_handler(int signum)
 
 int main(int argc, char *argv[])
 {
-  struct sigaction act;
+  struct sigaction act, oact;
   pid_t f;
+  int i;
   
+  (void)argc;
+
   memset(&act, 0x00, sizeof(struct sigaction));
   act.sa_handler = sig_handler;
   sigemptyset(&act.sa_mask);
   act.sa_flags = SA_RESTART;
-  sigaction(SIGINT, &act, NULL);
-  sigaction(SIGTERM, &act, NULL);
-  
-  (void)argc;
+
+  /* oact is there for the benefit of strace() */
+  sigaction(SIGINT, &act, &oact);
+  sigaction(SIGTERM, &act, &oact);
 
   f = fork();
 
