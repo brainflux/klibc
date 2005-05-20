@@ -6,8 +6,8 @@
 	
 	.text
 	.align	4
-	.globl	__syscall_common
-	.type	__syscall_common,@function
+	.globl	__sigreturn
+	.type	__sigreturn,@function
 __sigreturn:
 	movl	$__NR_rt_sigreturn,%eax
 	syscall
