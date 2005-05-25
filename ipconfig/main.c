@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <unistd.h>	/* for getopts */
 
 #include <linux/if_arp.h>
 
