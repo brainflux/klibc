@@ -12,6 +12,7 @@
 #include <net/if_ether.h>
 #include <net/if_packet.h>
 #include <netinet/in.h>
+#include <asm/byteorder.h>
 #include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
