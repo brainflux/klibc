@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <asm/byteorder.h>	/* __constant_hton* */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,9 +23,9 @@ struct portmap_reply
 };
 
 static struct portmap_call call = {
-	.rpc.program = htonl(RPC_PMAP_PROGRAM),
-	.rpc.prog_vers = htonl(RPC_PMAP_VERSION),
-	.rpc.proc = htonl(PMAP_PROC_GETPORT),
+	.rpc.program   = __constant_htonl(RPC_PMAP_PROGRAM),
+	.rpc.prog_vers = __constant_htonl(RPC_PMAP_VERSION),
+	.rpc.proc      = __constant_htonl(PMAP_PROC_GETPORT),
 };
 
 __u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
