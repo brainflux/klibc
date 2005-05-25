@@ -9,9 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <net/if_ether.h>
 #include <net/if_packet.h>
+#include <netinet/if_ether.h>
 #include <netinet/in.h>
+#include <netpacket/packet.h>
 #include <asm/byteorder.h>
 #include <arpa/inet.h>
 #include <netinet/ip.h>
