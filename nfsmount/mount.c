@@ -37,7 +37,7 @@ struct mount_reply
 
 #define MNT_REPLY_MINSIZE (sizeof(struct rpc_reply) + sizeof(__u32))
 
-static void get_ports(__u32 server, const struct nfs_mount_data *data)
+static int get_ports(__u32 server, const struct nfs_mount_data *data)
 {
 	__u32 nfs_ver, mount_ver;
 	__u32 proto;
@@ -61,7 +61,7 @@ static void get_ports(__u32 server, const struct nfs_mount_data *data)
 				fprintf(stderr, "NFS over TCP not "
 					"available from %s\n",
 					inet_ntoa(addr));
-				exit(1);
+				return -1;
 			}
 			nfs_port = NFS_PORT;
 		}
@@ -73,6 +73,7 @@ static void get_ports(__u32 server, const struct nfs_mount_data *data)
 		if (mount_port == 0)
 			mount_port = MOUNT_PORT;
 	}
+	return 0;
 }
 
 static inline int pad_len(int len)
@@ -249,7 +250,9 @@ int nfs_mount(const char *pathname, const char *hostname,
 	int ret = 0;
 	int mountflags;
 
-	get_ports(server, data);
+	if (get_ports(server, data) != 0) {
+		goto bail;
+	}
 
 	dump_params(server, path, data);
 
