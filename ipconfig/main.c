@@ -14,7 +14,7 @@
 #include <fcntl.h>
 #include <unistd.h>	/* for getopts */
 
-#include <linux/if_arp.h>
+#include <net/if_arp.h>
 
 #include "ipconfig.h"
 #include "netdev.h"
