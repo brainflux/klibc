@@ -10,6 +10,7 @@
 #include <time.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <unistd.h>	/* for getopts */
