@@ -151,9 +151,9 @@ static int mount_call(__u32 proc, __u32 version,
 
 	memset(mnt_call, 0, sizeof(*mnt_call));
 
-	mnt_call->rpc.program = __constant_htonl(NFS_MNT_PROGRAM);
-	mnt_call->rpc.prog_vers = __constant_htonl(version);
-	mnt_call->rpc.proc = __constant_htonl(proc);
+	mnt_call->rpc.program = htonl(NFS_MNT_PROGRAM);
+	mnt_call->rpc.prog_vers = htonl(version);
+	mnt_call->rpc.proc = htonl(proc);
 	mnt_call->path_len = htonl(path_len);
 	memcpy(mnt_call->path, path, path_len);
 

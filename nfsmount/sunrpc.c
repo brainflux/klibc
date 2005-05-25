@@ -33,7 +33,7 @@ static int rpc_do_reply(struct client *clnt, struct rpc *rpc, size_t off)
 
 	if ((!off && !(ntohl(rpc->reply->hdr.frag_hdr) & LAST_FRAG)) ||
 	    rpc->reply->hdr.udp.xid != rpc->call->hdr.udp.xid ||
-	    rpc->reply->hdr.udp.msg_type != __constant_htonl(RPC_REPLY)) {
+	    rpc->reply->hdr.udp.msg_type != htonl(RPC_REPLY)) {
 		fprintf(stderr, "bad reply\n");
 		goto bail;
 	}
@@ -56,8 +56,8 @@ static void rpc_header(struct client *clnt, struct rpc *rpc)
 {
 	rpc->call->hdr.frag_hdr = htonl(LAST_FRAG | rpc->call_len);
 	rpc->call->hdr.udp.xid = lrand48();
-	rpc->call->hdr.udp.msg_type = __constant_htonl(RPC_CALL);
-	rpc->call->rpc_vers = __constant_htonl(2);
+	rpc->call->hdr.udp.msg_type = htonl(RPC_CALL);
+	rpc->call->rpc_vers = htonl(2);
 }
 
 static int rpc_call_tcp(struct client *clnt, struct rpc *rpc)
