@@ -185,7 +185,7 @@ install: all
 	$(INSTALL_EXEC) klibc-`cat $(SOLIB).hash`.so \
 		$(INSTALLROOT)$(INSTALLDIR)/$(CROSS)lib
 	$(INSTALL_EXEC) klibc-`cat $(SOLIB).hash`.so \
-		$(INSTALLROOT)/$(INSTALLDIR)/$(SHLIBDIR)
+		$(INSTALLROOT)/$(SHLIBDIR)
 
 ifneq ($(wildcard $(DIR).*.d),)
 include $(wildcard $(DIR).*.d)
