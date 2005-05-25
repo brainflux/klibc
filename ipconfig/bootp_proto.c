@@ -4,6 +4,7 @@
  * BOOTP packet protocol handling.
  */
 #include <sys/types.h>
+#include <linux/types.h>	/* for __u8 */
 #include <sys/uio.h>
 #include <stdio.h>
 #include <stdlib.h>

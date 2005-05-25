@@ -2,6 +2,9 @@
  * ipconfig/ipconfig.h
  */
 
+#include <sys/types.h>
+#include <linux/types.h>	/* for __u16 */
+
 #define LOCAL_PORT	68
 #define REMOTE_PORT	(LOCAL_PORT - 1)
 

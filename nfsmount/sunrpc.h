@@ -1,6 +1,8 @@
 /*
  * sunrpc.h - open-coded SunRPC structures
  */
+#include <sys/types.h>
+#include <linux/types.h>	/* for __u32 */
 
 #define SUNRPC_PORT	111
 #define MOUNT_PORT	627
