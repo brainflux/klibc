@@ -1,18 +1,22 @@
-#!/bin/bash -x
+#!/bin/bash -xe
 #
 # Make a tarball from the current git repository
 #
 
-tmp=/var/tmp/klibc.$$
+[ -z "$tmpdir" ] && tmpdir=/var/tmp
+
+tmp=$tmpdir/klibc.$$
 rm -rf $tmp
 cg-export $tmp
-rm -f klibc/maketar.sh
-( cd klibc && make klibc.spec )
-version=`cat klibc/version`
-mv klibc klibc-$version
-rm -f ../klibc-$version.tar*
-tar cvvf ../klibc-$version.tar klibc-$version
-gzip -9 ../klibc-$version.tar
+cd $tmp
+rm -f maketar.sh
+make klibc.spec
+version=`cat version`
+rm -rf $tmpdir/klibc-$version
+mv $tmp $tmpdir/klibc-$version
 cd ..
-rm -rf $tmp
+rm -f klibc-$version.tar*
+tar cvvf klibc-$version.tar klibc-$version
+gzip -9 klibc-$version.tar
+rm -rf klibc-$version
 
