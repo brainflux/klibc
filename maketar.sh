@@ -9,8 +9,7 @@ tmp=$tmpdir/klibc.$$
 rm -rf $tmp
 cg-export $tmp
 cd $tmp
-rm -f maketar.sh
-make klibc.spec
+make release
 version=`cat version`
 rm -rf $tmpdir/klibc-$version
 mv $tmp $tmpdir/klibc-$version
