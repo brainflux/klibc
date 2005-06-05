@@ -177,6 +177,10 @@ static int mount_call(__u32 proc, __u32 version,
 	if (rpc_call(clnt, &rpc) < 0)
 		goto bail;
 
+	if (proc != MNTPROC_MNT) {
+		goto done;
+	}
+
 	if (rpc.reply_len < MNT_REPLY_MINSIZE) {
 		fprintf(stderr, "incomplete reply: %zu < %zu\n",
 			rpc.reply_len, MNT_REPLY_MINSIZE);
