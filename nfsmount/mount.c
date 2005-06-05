@@ -20,19 +20,30 @@ struct mount_call
 	char path[0];
 };
 
-#define NFS_MAXFHSIZE 64
 
-struct nfs_fh
+/*
+ * The following structure is the NFS v3 on-the-wire file handle,
+ * as defined in rfc1813.
+ * This differs from the structure used by the kernel,
+ * defined in <linux/nfh3.h>: rfc has a long in network order,
+ * kernel has a short in native order.
+ * Both kernel and rfc use the name nfs_fh; kernel name is
+ * visible to user apps in some versions of libc.
+ * Use different name to avoid clashes.
+ */
+#define NFS_MAXFHSIZE_WIRE 64
+struct nfs_fh_wire
 {
 	__u32 size;
-	char data[NFS_MAXFHSIZE];
+	char data[NFS_MAXFHSIZE_WIRE];
 } __attribute__((packed));
+
 
 struct mount_reply
 {
 	struct rpc_reply reply;
 	__u32 status;
-	struct nfs_fh fh;
+	struct nfs_fh_wire fh;
 } __attribute__((packed));
 
 #define MNT_REPLY_MINSIZE (sizeof(struct rpc_reply) + sizeof(__u32))
