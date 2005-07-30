@@ -2,7 +2,7 @@
 # kbuild file for usr/ - including initramfs image and klibc
 #
 
-klibc definitions - to be moved to top-level Makefile later
+# klibc definitions - to be moved to top-level Makefile later
 export KLIBSRC := $(srctree)/$(src)/klibc
 export KLIBINC := $(srctree)/$(src)/include
 

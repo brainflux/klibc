@@ -39,12 +39,12 @@ fi
 cp -R gzip/* $kernel/usr/gzip
 
 echo "Copying kbuild files"
-cp kernel/Kbuild.klibc       $kernel/scripts
+cp scripts/Kbuild.klibc       $kernel/scripts
 # Newer kernel versions have Kbuild.include, so do not overwrite it
 if [ ! -f $kernel/scripts/Kbuild.include ]; then
-	cp kernel/Kbuild.include $kernel/scripts
+	cp scripts/Kbuild.include $kernel/scripts
 fi
-cp kernel/Kbuild            $kernel/usr
+cp usr/Kbuild               $kernel/usr
 cp klibc/Kbuild             $kernel/usr/klibc
 cp klibc/syscalls/Kbuild    $kernel/usr/klibc/syscalls
 cp klibc/socketcalls/Kbuild $kernel/usr/klibc/socketcalls
