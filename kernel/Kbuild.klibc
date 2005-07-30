@@ -26,7 +26,6 @@ include $(srctree)/scripts/Kbuild.include
 
 # Defines used when compiling early userspace (klibc programs)
 # ---------------------------------------------------------------------------
-KLIBSRC         := usr/klibc
 
 # Arch specific definitions for klibc
 include $(KLIBSRC)/arch/$(ARCH)/MCONFIG
@@ -42,9 +41,9 @@ USERRANLIB      := $(USERCROSS)ranlib
 USERSTRIP       := $(USERCROSS)strip
 USERNM          := $(USERCROSS)nm
 
-USERCPPFLAGS    := -I$(srctree)/usr/include/arch/$(ARCH)                 \
-                   -I$(srctree)/usr/include/bits$(BITSIZE)               \
-                   -I$(srctree)/usr/include                              \
+USERCPPFLAGS    := -I$(KLIBINC)/arch/$(ARCH)                             \
+                   -I$(KLIBINC)/bits$(BITSIZE)                           \
+                   -I$(KLIBINC)                                          \
                    -Iinclude                                             \
                    $(if $(KBUILD_SRC),-Iinclude2 -I$(srctree)/include)   \
                    -D__KLIBC__=1 -D__KLIBC_MINOR__=0                     \
@@ -56,8 +55,8 @@ USERSTRIPFLAGS  := --strip-all -R .comment -R .note
 
 USERLIBGCC      := $(shell $(USERCC) --print-libgcc)
 USERSHAREDFLAGS := $(SHAREDFLAGS)
-USERCRT0        := $(objtree)/$(KLIBSRC)/arch/$(ARCH)/crt0.o
-USERLIBC        := $(objtree)/$(KLIBSRC)/libc.a
+USERCRT0        := $(KLIBSRC)/arch/$(ARCH)/crt0.o
+USERLIBC        := $(KLIBSRC)/libc.a
 
 #
 # This indicates the location of the final version of the shared library.

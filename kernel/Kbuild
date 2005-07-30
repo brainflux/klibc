@@ -2,6 +2,10 @@
 # kbuild file for usr/ - including initramfs image and klibc
 #
 
+klibc definitions - to be moved to top-level Makefile later
+export KLIBSRC := $(srctree)/$(src)/klibc
+export KLIBINC := $(srctree)/$(src)/include
+
 obj-y        := initramfs_data.o
 always       := klibc/libc.a
 hostprogs-y  := gen_init_cpio

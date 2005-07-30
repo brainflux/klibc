@@ -11,8 +11,6 @@ endif
 # Composite object containing all .o file
 always := syscalls.o
 
-klibc-dir := $(srctree)/usr/klibc
-
 
 #####
 # Generate syscalls stubs
@@ -24,7 +22,7 @@ targets += SYSCALLS.i syscalls.nrs
 targets += $(syscall-objs)
 
 # Side effect of running syscalls.pl
-clean-files += $(objtree)/usr/include/klibc/havesyscall.h
+clean-files += $(KLIBINC)/klibc/havesyscall.h
 # All the syscall stubs
 clean-files += *.o *.S *.c
 
@@ -37,29 +35,29 @@ $(obj)/syscalls.o: $(call objectify,$(syscall-objs)) FORCE
 quiet_cmd_syscall.i = GEN     $@
       cmd_syscall.i = $(USERCC) $(usercflags) -D__ASSEMBLY__ \
                                 -ansi -x assembler-with-cpp -E -o $@ $<
-$(obj)/SYSCALLS.i: $(klibc-dir)/SYSCALLS.def FORCE
+$(obj)/SYSCALLS.i: $(KLIBSRC)/SYSCALLS.def FORCE
 	$(call if_changed_dep,syscall.i)
 
 # Get syscalls numbers
 quiet_cmd_syscall.nrs = GEN     $@
       cmd_syscall.nrs = $(USERCC) $(usercflags) -Wp,-dM -x c -E -o $@ $<
-$(obj)/syscalls.nrs: $(srctree)/usr/include/sys/syscall.h FORCE
+$(obj)/syscalls.nrs: $(KLIBINC)/sys/syscall.h FORCE
 	$(call if_changed_dep,syscall.nrs)
 
-# Generate usr/include/klibc/havesyscall.h + makefile fragment
+# Generate $(KLIBINC)/klibc/havesyscall.h + makefile fragment
 # Using sysstub.pl in arch dir generate all .S files
 quiet_cmd_syscalls = GEN     $@
-      cmd_syscalls = mkdir -p $(objtree)/usr/include/klibc/;                 \
-                     $(PERL) $(klibc-dir)/syscalls.pl $(obj)/SYSCALLS.i      \
-                             $(klibc-dir)/arch/$(ARCH)/sysstub.ph            \
-                             $(ARCH) $(BITSIZE) $(obj)/syscalls.nrs          \
-			     $(obj)                                          \
-                             $(objtree)/usr/include/klibc/havesyscall.h > $@ \
+      cmd_syscalls = mkdir -p $(KLIBINC)/klibc/;                           \
+                     $(PERL) $(KLIBSRC)/syscalls.pl $(obj)/SYSCALLS.i      \
+                             $(KLIBSRC)/arch/$(ARCH)/sysstub.ph            \
+                             $(ARCH) $(BITSIZE) $(obj)/syscalls.nrs        \
+                             $(obj)                                        \
+                             $(KLIBINC)/klibc/havesyscall.h > $@           \
                              || rm -f $@
 
-$(obj)/syscalls.mk: $(klibc-dir)/syscalls.pl $(obj)/SYSCALLS.i \
-                    $(klibc-dir)/arch/$(ARCH)/sysstub.ph       \
-		    $(call objectify, $(syscall-objs:.o=.S))  \
-                    $(klibc-dir)/syscommon.h $(obj)/syscalls.nrs
+$(obj)/syscalls.mk: $(KLIBSRC)/syscalls.pl $(obj)/SYSCALLS.i \
+                    $(KLIBSRC)/arch/$(ARCH)/sysstub.ph       \
+                    $(call objectify, $(syscall-objs:.o=.S))  \
+                    $(KLIBSRC)/syscommon.h $(obj)/syscalls.nrs
 	$(call cmd,syscalls)
 
