@@ -4,7 +4,9 @@
 
 # Include automatically generated Makefile fragment.
 # It contains definition of syscall-objs specifying name of all .o files
+ifeq ($(clean),)
 -include $(obj)/syscalls.mk
+endif
 
 # Composite object containing all .o file
 always := syscalls.o

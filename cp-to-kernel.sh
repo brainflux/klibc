@@ -12,7 +12,7 @@ fi
 
 kernel=$1
 if [ ! -d $kernel ]; then
-	echo "$kernel is not a kernel directory"
+	echo "$kernel is not a directory"
 	exit 1
 fi
 
@@ -32,8 +32,18 @@ if [ -z $2 ]; then
 	cp -R include/* $kernel/usr/include
 fi
 
+echo "Copying gzip"
+if [ ! -d $kernel/usr/gzip ]; then
+	mkdir -p $kernel/usr/gzip
+fi
+cp -R gzip/* $kernel/usr/gzip
+
 echo "Copying kbuild files"
-cp kernel/Kbuild.*          $kernel/scripts
+cp kernel/Kbuild.klibc       $kernel/scripts
+# Newer kernel versions have Kbuild.include, so do not overwrite it
+if [ ! -f $kernel/scripts/Kbuild.include ]; then
+	cp kernel/Kbuild.include $kernel/scripts
+fi
 cp kernel/Kbuild            $kernel/usr
 cp klibc/Kbuild             $kernel/usr/klibc
 cp klibc/syscalls/Kbuild    $kernel/usr/klibc/syscalls

@@ -119,6 +119,7 @@ $(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
 # Build sha1 hash values
 targets     += klibc.so libc.so.hash
 hostprogs-y := sha1hash
+clean-files += klibc-???????????????????????????.so
 
 quiet_cmd_solibhash = HASH    $@
       cmd_solibhash = $(USERNM) $< | egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
@@ -129,7 +130,7 @@ $(SOLIB).hash: $(SOLIB) $(obj)/sha1hash FORCE
 quiet_cmd_sohash = GEN     $@
       cmd_sohash = cat $< > $@;                                           \
                      $(USERSTRIP) $(USERSTRIPFLAGS) $@;                   \
-                     rm -f $(obj)/klibc-??????????????????????.so;        \
+                     rm -f $(obj)/klibc-???????????????????????????.so;   \
                      ln -f $@ $(obj)/klibc-`cat $(SOLIB).hash`.so
 $(SOHASH): $(SOLIB) $(SOLIB).hash
 	$(call cmd,sohash)
@@ -139,7 +140,7 @@ $(SOHASH): $(SOLIB) $(SOLIB).hash
 # build interp.o
 targets += interp.o
 
-quiet_cmd_interp = BUILD  $@
+quiet_cmd_interp = BUILD   $@
       cmd_interp = $(USERCC) $(usercflags) -D__ASSEMBLY__     \
                              -DLIBDIR=\"$(SHLIBDIR)\"         \
 			     -DSOHASH=\"`cat $(SOLIB).hash`\" \

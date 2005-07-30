@@ -4,7 +4,9 @@
 
 # Include automatically generated Makefile fragment.
 # It contains definition of socketcall-objs specifying name of all .o files
+ifeq ($(clean),)
 -include $(obj)/socketcalls.mk
+endif
 
 # Composite object containing all .o file
 always := socketcalls.o
@@ -17,7 +19,7 @@ klibc-dir := $(srctree)/usr/klibc
 targets     := socketcalls.o
 targets     += socketcalls.mk
 targets     += $(socketcall-objs)
-clean-files += *.o
+clean-files += *.S *.o
 
 # Create reloctable composite object file
 $(obj)/socketcalls.o: $(call objectify,$(socketcall-objs)) FORCE

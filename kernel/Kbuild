@@ -7,14 +7,25 @@ always       := klibc/libc.a
 hostprogs-y  := gen_init_cpio
 clean-files  := initramfs_data.cpio.gz initramfs_list
 
+# Descend down into klibc when cleaning
+subdir-      := klibc
+
 # Build klibc library
 $(obj)/klibc/libc.a: FORCE
 	$(Q)$(MAKE) -rR -f $(srctree)/scripts/Kbuild.klibc obj=$(obj)/klibc
+
+initramfs-y += gzip
+
+initramfs-y := $(addprefix $(obj)/,$(initramfs-y))
+.PHONY: $(initramfs-y)
 
 # initramfs_data.o contains the initramfs_data.cpio.gz image.
 # The image is included using .incbin, a dependency which is not
 # tracked automatically.
 $(obj)/initramfs_data.o: $(obj)/initramfs_data.cpio.gz FORCE
+
+$(initramfs-y): $(obj)/klibc/libc.a
+	$(Q)$(MAKE) -f $(srctree)/scripts/Kbuild.klibc obj=$@
 
 ifdef CONFIG_INITRAMFS_ROOT_UID
 gen_initramfs_args += -u $(CONFIG_INITRAMFS_ROOT_UID)
@@ -34,7 +45,7 @@ filechk_initramfs_list = $(CONFIG_SHELL) \
   $(srctree)/scripts/gen_initramfs_list.sh $(gen_initramfs_args) \
                                            $(quotefixed_initramfs_source)
 
-$(obj)/initramfs_list: FORCE
+$(obj)/initramfs_list: $(src)/Kbuild FORCE
 	$(call filechk,initramfs_list)
 
 quiet_cmd_cpio = CPIO    $@

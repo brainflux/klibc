@@ -31,8 +31,7 @@ KLIBSRC         := usr/klibc
 # Arch specific definitions for klibc
 include $(KLIBSRC)/arch/$(ARCH)/MCONFIG
 
-USERWARNFLAGS   := -Wall -Wpointer-arith -Wwrite-strings                 \
-                   -Wstrict-prototypes -Winline
+USERWARNFLAGS   := -W -Wall -Wsign-compare
 
 USERCROSS       := $(CROSS_COMPILE)
 
@@ -48,9 +47,10 @@ USERCPPFLAGS    := -I$(srctree)/usr/include/arch/$(ARCH)                 \
                    -I$(srctree)/usr/include                              \
                    -Iinclude                                             \
                    $(if $(KBUILD_SRC),-Iinclude2 -I$(srctree)/include)   \
-                   -D__KLIBC__ -DBITSIZE=$(BITSIZE)
-USERCFLAGS      := $(USERCPPFLAGS) $(ARCHREQFLAGS) $(OPTFLAGS)           \
-                   $(USERWARNFLAGS)
+                   -D__KLIBC__=1 -D__KLIBC_MINOR__=0                     \
+		   -DBITSIZE=$(BITSIZE)
+USERCFLAGS      := $(USERCPPFLAGS) $(REQFLAGS) $(ARCHREQFLAGS)           \
+                   $(OPTFLAGS) $(USERWARNFLAGS)
 USERAFLAGS      := -D__ASSEMBLY__ $(USERCPPFLAGS)
 USERSTRIPFLAGS  := --strip-all -R .comment -R .note
 
@@ -201,6 +201,7 @@ __build : $(user-dirs) $(user-progs)
 # Descend if needed
 $(sort $(addsuffix /built-in.o,$(user-dirs))): $(user-dirs) ;
 
+# link program that has only a single .o file
 quiet_cmd_user-ld-single = USERLD  $@
       cmd_user-ld-single = $(USERLD) $(USERLDFLAGS) -o $@      \
                            $(USERCRT0) $<                      \
@@ -214,6 +215,7 @@ $(user-single): %: %.o $(USERCRT0) $(USERLIBC) FORCE
 
 targets += $(user-single) $(user-single:=.o)
 
+# link programs that consist of more than one .o file
 multi-deps = $($(subst $(obj)/,,$@-y))
 link-multi-deps = $(addprefix $(obj)/, \
                     $(patsubst %/, %/built-in.o, $(multi-deps)))
