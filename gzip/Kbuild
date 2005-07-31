@@ -3,8 +3,8 @@
 #
 
 # The gzip executable
-user-progs := gzip
-gzip-y     := gzip.o util.o unzip.o inflate.o
+static-y := gzip
+gzip-y   := gzip.o util.o unzip.o inflate.o
 
 # Additional targets 
 always := gunzip zcat gzip.stripped

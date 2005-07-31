@@ -1,0 +1,27 @@
+#
+# Kbuild file for kinit
+#
+
+static-y := kinit
+kinit-y  := kinit.o do_mounts.o nfsroot.o getintfile.o initrd.o
+kinit-y  += open.o readfile.o
+
+kinit-y  += ipconfig/
+kinit-y  += nfsmount/
+
+
+# kinit.c include ipconfig header file
+USERCFLAGS_kinit.o   := -I$(src)/ipconfig
+# So do nfsroot
+USERCFLAGS_nfsroot.o := -I$(src)/ipconfig -I$(src)/nfsmount
+
+
+# TODO - stripped image
+
+ifeq (a,b)
+
+# This should perhaps be a shared binary?
+install: all
+	$(INSTALL_EXEC) $(PROGS) $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
+
+endif

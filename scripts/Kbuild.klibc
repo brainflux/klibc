@@ -6,17 +6,35 @@
 #
 # Kbuild:
 # 
-# user-progs := cat
+# static-y := cat
+# # This will compile a file named cat.c -> the executable 'cat'
+# # The executable will be linked statically
 #
-# This will compile a file named cat.c -> the executable 'cat'
-# 
+# shared-y := cats
+# # This will compile a file named cats.c -> the executable 'cats'
+# # The executable will be linked shared
+#
 # If the user space program consist of more files do the following:
 # Kbuild:
 #
-# user-progs := ipconfig
+# static-y   := ipconfig
 # ipconfig-y := main.o netdev.c
+# So ipconfig will be linked statically using the two .o files
+# specified with ipconfig-y.
+#
+# To set directory wide CFLAGS use:
+# EXTRA_USERCFLAGS := -DDEBUG
+# To set directory wide AFLAGS use:
+# EXTRA_USERAFLAGS := -DDEBUG
+#
+# To set target specific CFLAGS (for .c files) use
+# USERCFLAGS-main.o := -DDEBUG=3
+# To set target specific AFLAGS (for .s files) use
+# USERAFLAGS-main.o := -DDEBUG=3
 
 src := $(obj)
+# Preset target and make sure it is a ':=' variable
+targets :=
 
 .phony: __build
 __build:
@@ -55,8 +73,10 @@ USERSTRIPFLAGS  := --strip-all -R .comment -R .note
 
 USERLIBGCC      := $(shell $(USERCC) --print-libgcc)
 USERSHAREDFLAGS := $(SHAREDFLAGS)
-USERCRT0        := $(KLIBSRC)/arch/$(ARCH)/crt0.o
-USERLIBC        := $(KLIBSRC)/libc.a
+USERCRT0        := $(KLIBOBJ)/arch/$(ARCH)/crt0.o
+USERLIBC        := $(KLIBOBJ)/libc.a
+USERCRTSHARED   := $(KLIBOBJ)/interp.o
+USERLIBCSHARED  := $(KLIBOBJ)/libc.so
 
 #
 # This indicates the location of the final version of the shared library.
@@ -79,21 +99,23 @@ objectify = $(foreach o,$(1),$(if $(filter /%,$(o)),$(o),$(obj)/$(o)))
 include $(obj)/Kbuild
 
 #####
-# user-progs := handling
-
-# user-progs based on a single .c file (with same name)
-user-single := $(foreach p, $(user-progs), $(if $($(p)-y),,$(p)))
-
+# static-y + shared-y handling
+user-progs := $(static-y) $(shared-y)
+# user-progs based on a single .o file (with same name + .o)
+user-objs := $(foreach p, $(user-progs), $(if $($(p)-y),,$(p)))
+user-objs := $(addsuffix .o, $(user-objs))
 # user-progs which is based on several .o files
-user-multi  := $(foreach p, $(user-progs), $(if $($(p)-y),$(p)))
+user-multi := $(foreach p, $(user-progs), $(if $($(p)-y),$(p)))
 # objects used for user-progs with more then one .o file
-user-multi-objs := $(foreach p, $(user-multi), $($(p)-y))
+user-objs += $(foreach p, $(user-multi), $($(p)-y))
 # objects build in this dir
-user-real-objs := $(patsubst %/,,$(user-multi-objs))
-# Directories we need to visit before user-multi-obs are up-to-date
-user-dirs :=  $(patsubst %/,%,$(filter %/, $(user-multi-objs))) 
+user-real-objs := $(patsubst %/,,$(user-objs))
+# Directories we need to visit before user-objs are up-to-date
+user-dirs :=  $(patsubst %/,%,$(filter %/, $(user-objs))) 
 # replace all dir/ with dir/built-in.o
-user-multi-objs := $(patsubst %/, %/built-in.o, $(user-multi-objs))
+user-objs := $(patsubst %/, %/built-in.o, $(user-objs))
+
+targets += $(static-y) $(shared-y)
 
 # $(output-dirs) are a list of directories that contain object files
 output-dirs := $(dir $(user-dirs))
@@ -102,14 +124,14 @@ output-dirs += $(foreach f, $(hostprogs-y) $(targets), \
 output-dirs := $(strip $(sort $(filter-out ./,$(output-dirs))))
 
 # prefix so we get full dir
-user-progs      := $(addprefix $(obj)/,$(user-progs))
-user-single     := $(addprefix $(obj)/,$(user-single))
-user-multi      := $(addprefix $(obj)/,$(user-multi))
-user-multi-objs := $(addprefix $(obj)/,$(user-multi-objs))
+static-y        := $(addprefix $(obj)/,$(static-y))
+shared-y        := $(addprefix $(obj)/,$(shared-y))
+user-objs       := $(addprefix $(obj)/,$(user-objs))
 user-real-objs  := $(addprefix $(obj)/,$(user-real-objs))
 output-dirs     := $(addprefix $(obj)/,$(output-dirs))
 user-dirs       := $(addprefix $(obj)/,$(user-dirs))
 subdir-y        := $(addprefix $(obj)/,$(subdir-y))
+obj-y           := $(addprefix $(obj)/,$(obj-y))
 always          := $(addprefix $(obj)/,$(always))
 targets         := $(addprefix $(obj)/,$(targets))
 
@@ -120,14 +142,12 @@ _useraflags    = $(USERAFLAGS) $(EXTRA_USERAFLAGS) $(USERAFLAGS_$(*F).o)
 usercflags     = -Wp,-MD,$(depfile) $(NOSTDINC_FLAGS) $(_usercflags)
 useraflags     = -Wp,-MD,$(depfile) $(NOSTDINC_FLAGS) $(_useraflags)
 
-ifneq ($(KBUILD_SRC),)
 # Create output directory if not already present
 _dummy := $(shell [ -d $(obj) ] || mkdir -p $(obj))
 
 # Create directories for object files if directory does not exist
 # Needed when obj-y := dir/file.o syntax is used
 _dummy := $(foreach d,$(output-dirs), $(shell [ -d $(d) ] || mkdir -p $(d)))
-endif
 
 # Do we have to make a built-in.o in this dir?
 ifneq ($(strip $(obj-y) $(obj-n) $(obj-)),)
@@ -195,44 +215,43 @@ ifdef user-progs
 # Compile userspace programs for the target
 # ===========================================================================
 
-__build : $(user-dirs) $(user-progs)
+__build : $(user-dirs) $(static-y) $(shared-y)
 
 # Descend if needed
 $(sort $(addsuffix /built-in.o,$(user-dirs))): $(user-dirs) ;
 
-# link program that has only a single .o file
-quiet_cmd_user-ld-single = USERLD  $@
-      cmd_user-ld-single = $(USERLD) $(USERLDFLAGS) -o $@      \
-                           $(USERCRT0) $<                      \
-                           $(filter-out FORCE,$^)              \
-                           $(USERLIBC) $(USERLIBGCC)           \
-                           $(USERLIBGCC);                      \
-                           $(USERSTRIP) $(USERSTRIPFLAGS) $@
+# Define dependencies for link of progs
+# For the simple program:
+#	file.o => file
+# A program with multiple objects
+#	filea.o, fileb.o => file
+# A program with .o files in another dir
+#	dir/built-in.o filea.o => file
 
-$(user-single): %: %.o $(USERCRT0) $(USERLIBC) FORCE
-	$(call if_changed,user-ld-single)
+stripobj = $(subst $(obj)/,,$@)
+addbuiltin = $(addprefix $(obj)/, $(patsubst %/, %/built-in.o, $(1)))
+link-deps = $(if $($(stripobj)-y), $(call addbuiltin, $($(stripobj)-y)), $@.o) 
 
-targets += $(user-single) $(user-single:=.o)
+quiet_cmd_ld-static = USERLD  $@
+      cmd_ld-static = $(USERLD) $(USERLDFLAGS) -o $@      \
+                       $(USERCRT0)                        \
+                       $(link-deps)                       \
+                       $(USERLIBC) $(USERLIBGCC)
 
-# link programs that consist of more than one .o file
-multi-deps = $($(subst $(obj)/,,$@-y))
-link-multi-deps = $(addprefix $(obj)/, \
-                    $(patsubst %/, %/built-in.o, $(multi-deps)))
+$(static-y): $(user-objs) FORCE
+	$(call if_changed,ld-static)
 
-quiet_cmd_user-ld-multi = USERLD  $@
-      cmd_user-ld-multi = $(USERLD) $(USERLDFLAGS) -o $@       \
-                           $(USERCRT0)                         \
-                           $(link-multi-deps)                  \
-                           $(USERLIBC) $(USERLIBGCC)           \
-                           $(USERLIBGCC);                      \
-                           $(USERSTRIP) $(USERSTRIPFLAGS) $@
-
-$(user-multi): $(user-multi-objs) FORCE
-	$(call if_changed,user-ld-multi)
-
-targets += $(user-multi) $(user-real-objs)
+quiet_cmd_ld-shared = USERLD  $@
+      cmd_ld-shared = $(USERLD) $(USERLDFLAGS) -o $@      \
+                       -e main $(USERCRTSHARED)           \
+                       $(link-deps)                       \
+                       $(USERLIBCSHARED) $(USERLIBGCC)
+		       
+$(shared-y): $(user-objs) FORCE
+	$(call if_changed,ld-shared)
+	
+targets += $(user-real-objs)
 endif
-
 
 # Compile programs on the host
 # ===========================================================================
@@ -277,7 +296,6 @@ quiet_cmd_strip = STRIP   $@
 # may be building above, using $(if_changed{,_dep}). As an
 # optimization, we don't need to read them if the target does not
 # exist, we will rebuild anyway in that case.
-
 targets := $(wildcard $(sort $(targets)))
 cmd_files := $(wildcard $(foreach f,$(targets),$(dir $(f)).$(notdir $(f)).cmd))
 

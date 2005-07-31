@@ -38,6 +38,24 @@ if [ ! -d $kernel/usr/gzip ]; then
 fi
 cp -R gzip/* $kernel/usr/gzip
 
+echo "Copying kinit"
+if [ ! -d $kernel/usr/kinit ]; then
+	mkdir -p $kernel/usr/kinit
+fi
+cp -R kinit/* $kernel/usr/kinit
+
+echo "Copying ipconfig"
+if [ ! -d $kernel/usr/kinit/ipconfig ]; then
+	mkdir -p $kernel/usr/kinit/ipconfig
+fi
+cp -R ipconfig/* $kernel/usr/kinit/ipconfig
+
+echo "Copying nfsmount"
+if [ ! -d $kernel/usr/kinit/nfsmount ]; then
+	mkdir -p $kernel/usr/kinit/nfsmount
+fi
+cp -R nfsmount/* $kernel/usr/kinit/nfsmount
+
 echo "Copying kbuild files"
 cp scripts/Kbuild.klibc       $kernel/scripts
 # Newer kernel versions have Kbuild.include, so do not overwrite it

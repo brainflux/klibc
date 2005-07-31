@@ -5,6 +5,7 @@
 # klibc definitions - to be moved to top-level Makefile later
 export KLIBSRC := $(srctree)/$(src)/klibc
 export KLIBINC := $(srctree)/$(src)/include
+export KLIBOBJ := $(objtree)/$(obj)/klibc
 
 obj-y        := initramfs_data.o
 always       := klibc/libc.a
@@ -18,7 +19,7 @@ subdir-      := klibc
 $(obj)/klibc/libc.a: FORCE
 	$(Q)$(MAKE) -rR -f $(srctree)/scripts/Kbuild.klibc obj=$(obj)/klibc
 
-initramfs-y += gzip
+initramfs-y += gzip kinit
 
 initramfs-y := $(addprefix $(obj)/,$(initramfs-y))
 .PHONY: $(initramfs-y)
