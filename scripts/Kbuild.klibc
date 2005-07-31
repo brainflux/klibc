@@ -263,6 +263,16 @@ quiet_cmd_userld = USERLD  $@
                                 $(filter-out FORCE,$^) -o $@
 
 
+# Link target to a new name
+# ---------------------------------------------------------------------------
+quiet_cmd_ln = LN      $@
+      cmd_ln = rm -f $@ && ln $< $@
+
+# Strip target (remove all debugging info)
+quiet_cmd_strip = STRIP   $@
+      cmd_strip = $(USERSTRIP) $(USERSTRIPFLAGS) $< -o $@
+ 
+
 # Read all saved command lines and dependencies for the $(targets) we
 # may be building above, using $(if_changed{,_dep}). As an
 # optimization, we don't need to read them if the target does not

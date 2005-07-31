@@ -1,49 +1,28 @@
+#
+# Kbuild file for gzip
+#
 
+# The gzip executable
 user-progs := gzip
-gzip-y    := gzip.o util.o unzip.o inflate.o
+gzip-y     := gzip.o util.o unzip.o inflate.o
 
-ifeq (a,b)
+# Additional targets 
+always := gunzip zcat gzip.stripped
 
-Kept for convinience
-ZIPSRCS = zip.c deflate.c trees.c bits.c
-UNZIPSRCS = unzip.c inflate.c
+# Optional ZIP support
+gzip-$(CONFIG_KLIB_ZIP)   += zip.o deflate.o trees.o bits.o
+cflags-$(CONFIG_KLIB_ZIP) += -DSUPPORT_ZIP
+EXTRA_USERCFLAGS := $(cflags-y)
 
-SRCS = gzip.c util.c $(UNZIPSRCS)
-OBJS = $(SRCS:.c=.o)
-HDRS = gzip.h tailor.h revision.h
-LIBS = $(KLIBC) $(LIBGCC)
+# Additionally linked targets
+$(obj)/gunzip $(obj)/zcat: $(obj)/gzip
+	$(call cmd,ln)
 
-ifeq ($(ZIP),y)
-DEFS += -DSUPPORT_ZIP
-SRCS += $(ZIPSRCS)
-endif
+# A stripped version of gzip
+$(obj)/gzip.stripped: $(obj)/gzip
+	$(call cmd,strip)
 
-all:	gzip gunzip zcat gzip.stripped
 
-# Actual build-related targets
-
-gzip:	Makefile $(OBJS) $(CRT0) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(CRT0) $(OBJS) $(LIBS)
-
-gunzip:	gzip
-	rm -f $@
-	ln $< $@
-
-zcat: gzip
-	rm -f $@
-	ln $< $@
-
-gzip.stripped: gzip
-	$(STRIP) $< -o $@
-
-clean:
-	$(RM) -f core *.o gzip gunzip zcat gzip.stripped .*.d
-
-spotless: clean
-	rm -f *~
-
-# These should presumably be shared...
-install: all
-	$(INSTALL_EXEC) gzip gunzip zcat $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
-	
-endif
+# Old install target - TODO
+#install: all
+#	$(INSTALL_EXEC) gzip gunzip zcat $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
