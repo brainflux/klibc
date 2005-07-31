@@ -112,8 +112,8 @@ user-objs += $(foreach p, $(user-multi), $($(p)-y))
 user-real-objs := $(patsubst %/,,$(user-objs))
 # Directories we need to visit before user-objs are up-to-date
 user-dirs :=  $(patsubst %/,%,$(filter %/, $(user-objs))) 
-# replace all dir/ with dir/built-in.o
-user-objs := $(patsubst %/, %/built-in.o, $(user-objs))
+# replace all dir/ with dir/lib.a
+user-objs := $(patsubst %/, %/lib.a, $(user-objs))
 
 targets += $(static-y) $(shared-y)
 
@@ -149,12 +149,12 @@ _dummy := $(shell [ -d $(obj) ] || mkdir -p $(obj))
 # Needed when obj-y := dir/file.o syntax is used
 _dummy := $(foreach d,$(output-dirs), $(shell [ -d $(d) ] || mkdir -p $(d)))
 
-# Do we have to make a built-in.o in this dir?
+# Do we have to make a lib.a in this dir?
 ifneq ($(strip $(obj-y) $(obj-n) $(obj-)),)
-builtin-target := $(obj)/built-in.o
+lib-target := $(obj)/lib.a
 endif
 
-__build: $(subdir-y) $(builtin-target) $(always)
+__build: $(subdir-y) $(lib-target) $(always)
 	@:
 
 # Compile C sources (.c)
@@ -198,17 +198,17 @@ targets += $(real-objs-y)
 #
 # Rule to compile a set of .o files into one .o file
 #
-ifdef builtin-target
+ifdef lib-target
 quiet_cmd_link_o_target = LD      $@
-# If the list of objects to link is empty, just create an empty built-in.o
+# If the list of objects to link is empty, just create an empty lib.a
 cmd_link_o_target = $(if $(strip $(obj-y)),\
-                    $(USERLD) $(USERLDFLAGS) -r -o $@ $(filter $(obj-y), $^),\
-                    rm -f $@; $(AR) rcs $@)
+                    rm -f $@; $(USERAR) cru $@ $(filter $(obj-y), $^),\
+                    rm -f $@; $(USERAR) crs $@)
 
-$(builtin-target): $(obj-y) FORCE
+$(lib-target): $(obj-y) FORCE
 	$(call if_changed,link_o_target)
-targets += $(builtin-target)
-endif # builtin-target
+targets += $(lib-target)
+endif # lib-target
 
 
 ifdef user-progs
@@ -218,7 +218,7 @@ ifdef user-progs
 __build : $(user-dirs) $(static-y) $(shared-y)
 
 # Descend if needed
-$(sort $(addsuffix /built-in.o,$(user-dirs))): $(user-dirs) ;
+$(sort $(addsuffix /lib.a,$(user-dirs))): $(user-dirs) ;
 
 # Define dependencies for link of progs
 # For the simple program:
@@ -226,11 +226,11 @@ $(sort $(addsuffix /built-in.o,$(user-dirs))): $(user-dirs) ;
 # A program with multiple objects
 #	filea.o, fileb.o => file
 # A program with .o files in another dir
-#	dir/built-in.o filea.o => file
+#	dir/lib.a filea.o => file
 
-stripobj = $(subst $(obj)/,,$@)
-addbuiltin = $(addprefix $(obj)/, $(patsubst %/, %/built-in.o, $(1)))
-link-deps = $(if $($(stripobj)-y), $(call addbuiltin, $($(stripobj)-y)), $@.o) 
+stripobj  = $(subst $(obj)/,,$@)
+addliba   = $(addprefix $(obj)/, $(patsubst %/, %/lib.a, $(1)))
+link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o) 
 
 quiet_cmd_ld-static = USERLD  $@
       cmd_ld-static = $(USERLD) $(USERLDFLAGS) -o $@      \
