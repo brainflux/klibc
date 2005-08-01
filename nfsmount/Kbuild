@@ -9,7 +9,7 @@ shared-y := shared/nfsmount
 objs := main.o mount.o portmap.o dummypmap.o sunrpc.o
 
 # Create built-in.o with all .o files (used by kinit)
-obj-y := $(objs)
+lib-y := $(objs)
 
 # .o files used for executables
 static/nfsmount-y := $(objs)

@@ -131,7 +131,7 @@ user-real-objs  := $(addprefix $(obj)/,$(user-real-objs))
 output-dirs     := $(addprefix $(obj)/,$(output-dirs))
 user-dirs       := $(addprefix $(obj)/,$(user-dirs))
 subdir-y        := $(addprefix $(obj)/,$(subdir-y))
-obj-y           := $(addprefix $(obj)/,$(obj-y))
+lib-y           := $(addprefix $(obj)/,$(lib-y))
 always          := $(addprefix $(obj)/,$(always))
 targets         := $(addprefix $(obj)/,$(targets))
 
@@ -146,11 +146,11 @@ useraflags     = -Wp,-MD,$(depfile) $(NOSTDINC_FLAGS) $(_useraflags)
 _dummy := $(shell [ -d $(obj) ] || mkdir -p $(obj))
 
 # Create directories for object files if directory does not exist
-# Needed when obj-y := dir/file.o syntax is used
+# Needed when lib-y := dir/file.o syntax is used
 _dummy := $(foreach d,$(output-dirs), $(shell [ -d $(d) ] || mkdir -p $(d)))
 
 # Do we have to make a lib.a in this dir?
-ifneq ($(strip $(obj-y) $(obj-n) $(obj-)),)
+ifneq ($(strip $(lib-y) $(lib-n) $(lib-)),)
 lib-target := $(obj)/lib.a
 endif
 
@@ -201,11 +201,11 @@ targets += $(real-objs-y)
 ifdef lib-target
 quiet_cmd_link_o_target = LD      $@
 # If the list of objects to link is empty, just create an empty lib.a
-cmd_link_o_target = $(if $(strip $(obj-y)),\
-                    rm -f $@; $(USERAR) cru $@ $(filter $(obj-y), $^),\
+cmd_link_o_target = $(if $(strip $(lib-y)),\
+                    rm -f $@; $(USERAR) cru $@ $(filter $(lib-y), $^),\
                     rm -f $@; $(USERAR) crs $@)
 
-$(lib-target): $(obj-y) FORCE
+$(lib-target): $(lib-y) FORCE
 	$(call if_changed,link_o_target)
 targets += $(lib-target)
 endif # lib-target

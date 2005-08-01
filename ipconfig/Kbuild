@@ -18,7 +18,7 @@ objs += bootp_proto.o
 
 
 # Create built-in.o with all object files (used by kinit)
-obj-y := $(objs)
+lib-y := $(objs)
 
 # .o files used to built executables
 static/ipconfig-y := $(objs)
