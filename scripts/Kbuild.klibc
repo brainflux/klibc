@@ -207,7 +207,7 @@ cmd_link_o_target = $(if $(strip $(lib-y)),\
 
 $(lib-target): $(lib-y) FORCE
 	$(call if_changed,link_o_target)
-targets += $(lib-target)
+targets += $(lib-target) $(lib-y)
 endif # lib-target
 
 
@@ -234,20 +234,22 @@ link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o)
 
 quiet_cmd_ld-static = USERLD  $@
       cmd_ld-static = $(USERLD) $(USERLDFLAGS) -o $@      \
+                       $(EXTRA_USERLDFLAGS)               \
                        $(USERCRT0)                        \
                        $(link-deps)                       \
                        $(USERLIBC) $(USERLIBGCC)
 
-$(static-y): $(user-objs) FORCE
+$(static-y): $(user-objs) $(lib-target) FORCE
 	$(call if_changed,ld-static)
 
 quiet_cmd_ld-shared = USERLD  $@
       cmd_ld-shared = $(USERLD) $(USERLDFLAGS) -o $@      \
+                       $(EXTRA_USERLDFLAGS)               \
                        -e main $(USERCRTSHARED)           \
                        $(link-deps)                       \
                        $(USERLIBCSHARED) $(USERLIBGCC)
 		       
-$(shared-y): $(user-objs) FORCE
+$(shared-y): $(user-objs) $(lib-target) FORCE
 	$(call if_changed,ld-shared)
 	
 targets += $(user-real-objs)
