@@ -1,0 +1,56 @@
+#
+# Kbuild file for klib utils
+#
+
+progs := chroot dd fstype mkdir mkfifo mount pivot_root umount
+progs += true false sleep ln nuke minips run-init printf cat
+progs += insmod uname
+
+static-y := $(addprefix static/, $(progs))
+shared-y := $(addprefix shared/, $(progs))
+
+# The binary is placed in a subdir, so we need to tell kbuild this
+static/chroot-y     := chroot.o
+shared/chroot-y     := chroot.o
+static/dd-y         := dd.o
+shared/dd-y         := dd.o
+static/fstype-y     := fstype.o
+shared/fstype-y     := fstype.o
+static/mkdir-y      := mkdir.o file_mode.o
+shared/mkdir-y      := mkdir.o file_mode.o
+static/mkfifo-y     := mkfifo.o file_mode.o
+shared/mkfifo-y     := mkfifo.o file_mode.o
+static/mount-y      := mount_main.o mount_opts.o
+shared/mount-y      := mount_main.o mount_opts.o
+static/pivot_root-y := pivot_root.o
+shared/pivot_root-y := pivot_root.o
+static/umount-y     := umount.o
+shared/umount-y     := umount.o
+static/true-y       := true.o
+shared/true-y       := true.o
+static/false-y      := false.o
+shared/false-y      := false.o
+static/sleep-y      := sleep.o
+shared/sleep-y      := sleep.o
+static/ln-y         := ln.o
+shared/ln-y         := ln.o
+static/nuke-y       := nuke.o
+shared/nuke-y       := nuke.o
+static/minips-y     := minips.o
+shared/minips-y     := minips.o
+static/run-init-y   := run-init.o
+shared/run-init-y   := run-init.o
+static/printf-y     := printf.o
+shared/printf-y     := printf.o
+static/cat-y        := cat.o
+shared/cat-y        := cat.o
+static/insmod-y     := insmod.o
+shared/insmod-y     := insmod.o
+static/uname-y      := uname.o
+shared/uname-y      := uname.o
+
+
+ifeq (a,b)
+install: all
+	$(INSTALL_EXEC) shared/* $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin	
+endif

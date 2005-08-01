@@ -1,0 +1,113 @@
+#
+# Kbuild file for Ash
+#
+
+
+static-y := sh
+
+sh-y := init.o
+sh-y += arith.o arith_lex.o
+sh-y +=	builtins.o cd.o echo.o error.o eval.o exec.o expand.o
+sh-y += input.o jobs.o main.o memalloc.o miscbltin.o
+sh-y += mystring.o nodes.o options.o parser.o redir.o
+sh-y += show.o syntax.o trap.o output.o var.o test.o
+
+cflags-y := -DSHELL
+
+cflags-$(CONFIG_KLIBC_SH_HISTORY) += -DKLIBC_SH_HISTORY
+    sh-$(CONFIG_KLIBC_SH_HISTORY) += histedit.o
+
+cflags-$(CONFIG_KLIBC_SH_PRINTF) += -DKLIBC_SH_PRINTF
+    sh-$(CONFIG_KLIBC_SH_PRINTF) += printf.o
+
+cflags-$(CONFIG_KLIBC_SH_ALIAS) += -DKLIBC_SH_ALIAS
+    sh-$(CONFIG_KLIBC_SH_ALIAS) += alias.o
+
+cflags-$(CONFIG_KLIBC_SH_MAIL) += -DKLIBC_SH_MAIL
+    sh-$(CONFIG_KLIBC_SH_MAIL) += mail.o
+
+cflags-y += -DJOBS=$(if $(CONFIG_KLIBC_SH_JOBS),1,0)
+    sh-$(CONFIG_KLIBC_SH_JOBS) += kill.o
+
+EXTRA_USERCFLAGS := $(cflags-y)
+
+# The shared binary
+shared-y    := sh.shared
+sh.shared-y := $(sh-y)
+
+
+# bison produces substantially smaller output than byacc
+YACC =  bison -y
+LEX  =  lex
+
+# Generate token.h
+$(obj)/parser.o: $(obj)/token.h
+
+quiet_cmd_mktokens = GEN     $@
+      cmd_mktokens = sh $< $(obj)
+$(obj)/token.h: $(src)/mktokens
+	$(call cmd,mktokens)
+	
+# Generate builtins{.c + .h}
+quiet_cmd_mkbuiltins = GEN     $@
+      cmd_mkbuiltins = sh $< $(srctree)/$(src)/shell.h \
+                             $(srctree)/$(src)/builtins.def $(obj) "$(cflags)"
+$(obj)/builtins.h $(obj)/builtins.c: $(src)/mkbuiltins $(src)/shell.h \
+                                     $(src)/builtins.def
+	$(call cmd,mkbuiltins)
+
+# Generate init.c
+quiet_cmd_mkinit = GEN     $@
+      cmd_mkinit = sh $< $(obj) $(filter-out $<, $^) && touch $@
+      
+# list all .c files excluding itself      
+all-src := $(addprefix $(src)/, $(filter-out init.c, $(sh-y:.o=.c)))
+$(obj)/init.c: $(src)/mkinit.sh $(all-src)
+	$(call cmd,mkinit)
+
+# Generate nodes{.c + .h}
+quiet_cmd_mknodes = GEN     $@
+      cmd_mknodes = sh $< $(srctree)/$(src)/nodetypes \
+                          $(srctree)/$(src)/nodes.c.pat $(obj)
+
+$(obj)/nodes.c: $(obj)/nodes.h
+$(obj)/nodes.h: $(src)/mknodes
+	$(call cmd,mknodes)
+
+
+# Link built in to .c files - yrk
+
+quiet_cmd_cpbltin = CP      $@
+      cmd_cpbltin = cat $< > $@
+
+$(obj)/echo.c: $(src)/bltin/echo.c
+	$(call cmd,cpbltin)
+
+$(obj)/test.c: $(src)/bltin/test.c
+	$(call cmd,cpbltin)
+
+$(obj)/kill.c: $(src)/bltin/kill.c
+	$(call cmd,cpbltin)
+
+$(obj)/printf.c: $(src)/bltin/printf.c
+	$(call cmd,cpbltin)
+
+# Generate parser
+
+$(obj)/arith.c: $(src)/arith.y
+	$(YACC) $< -o $@
+
+$(obj)/arith_lex.o:   $(obj)/arith_lex.c   $(obj)/arith.h
+$(obj)/arith_yylex.o: $(obj)/arith_yylex.c $(obj)/arith.h
+
+$(obj)/arith_lex.c: $(src)/arith_lex.l
+	$(LEX) -o$@ $<
+
+$(obj)/arith.h: $(src)/arith.c
+	$(PERL) -ne 'print if ( /^\#\s*define\s+ARITH/ );' < $< > $@
+
+ifeq (a,b)
+install: all
+	$(INSTALL_EXEC) sh.shared $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin/sh
+
+endif

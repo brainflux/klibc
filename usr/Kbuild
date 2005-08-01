@@ -19,7 +19,7 @@ subdir-      := klibc
 $(obj)/klibc/libc.a: FORCE
 	$(Q)$(MAKE) -rR -f $(srctree)/scripts/Kbuild.klibc obj=$(obj)/klibc
 
-initramfs-y += gzip kinit
+initramfs-y += gzip kinit ash utils
 
 initramfs-y := $(addprefix $(obj)/,$(initramfs-y))
 .PHONY: $(initramfs-y)

@@ -56,6 +56,18 @@ if [ ! -d $kernel/usr/kinit/nfsmount ]; then
 fi
 cp -R nfsmount/* $kernel/usr/kinit/nfsmount
 
+echo "Copying ash"
+if [ ! -d $kernel/usr/ash ]; then
+	mkdir -p $kernel/usr/ash
+fi
+cp -R ash/* $kernel/usr/ash
+
+echo "Copying utils"
+if [ ! -d $kernel/usr/utils ]; then
+	mkdir -p $kernel/usr/utils
+fi
+cp -R utils/* $kernel/usr/utils
+
 echo "Copying kbuild files"
 cp scripts/Kbuild.klibc       $kernel/scripts
 # Newer kernel versions have Kbuild.include, so do not overwrite it

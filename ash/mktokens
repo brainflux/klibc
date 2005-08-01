@@ -37,6 +37,8 @@
 # token marks the end of a list.  The third column is the name to print in
 # error messages.
 
+objdir=$1
+
 cat > /tmp/ka$$ <<\!
 TEOF	1	end of file
 TNL	0	newline
@@ -68,7 +70,7 @@ TESAC	1	"esac"
 TNOT	0	"!"
 !
 nl=`wc -l /tmp/ka$$`
-exec > token.h
+exec > ${objdir}/token.h
 awk '{print "#define " $1 " " NR-1}' /tmp/ka$$
 echo '
 /* Array indicating which tokens mark the end of a list */
