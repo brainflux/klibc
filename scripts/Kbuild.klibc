@@ -48,7 +48,7 @@ include $(srctree)/scripts/Kbuild.include
 # Arch specific definitions for klibc
 include $(KLIBSRC)/arch/$(ARCH)/MCONFIG
 
-USERWARNFLAGS   := -W -Wall -Wsign-compare
+USERWARNFLAGS   := -W -Wall -Wno-sign-compare
 
 USERCROSS       := $(CROSS_COMPILE)
 
