@@ -35,12 +35,15 @@ EXTRA_USERCFLAGS := $(cflags-y)
 shared-y    := sh.shared
 sh.shared-y := $(sh-y)
 
+# For cleaning
+targets := $(static-y) $(shared-y)
 
 # bison produces substantially smaller output than byacc
 YACC =  bison -y
 LEX  =  lex
 
 # Generate token.h
+targets += token.h
 $(obj)/parser.o: $(obj)/token.h
 
 quiet_cmd_mktokens = GEN     $@
@@ -49,6 +52,7 @@ $(obj)/token.h: $(src)/mktokens
 	$(call cmd,mktokens)
 	
 # Generate builtins{.c + .h}
+targets += builtins.c builtins.h
 quiet_cmd_mkbuiltins = GEN     $@
       cmd_mkbuiltins = sh $< $(srctree)/$(src)/shell.h \
                              $(srctree)/$(src)/builtins.def $(obj) "$(cflags)"
@@ -57,6 +61,7 @@ $(obj)/builtins.h $(obj)/builtins.c: $(src)/mkbuiltins $(src)/shell.h \
 	$(call cmd,mkbuiltins)
 
 # Generate init.c
+targets += init.c
 quiet_cmd_mkinit = GEN     $@
       cmd_mkinit = sh $< $(obj) $(filter-out $<, $^) && touch $@
       
@@ -66,16 +71,18 @@ $(obj)/init.c: $(src)/mkinit.sh $(all-src)
 	$(call cmd,mkinit)
 
 # Generate nodes{.c + .h}
+targets += nodes.c nodes.h
 quiet_cmd_mknodes = GEN     $@
       cmd_mknodes = sh $< $(srctree)/$(src)/nodetypes \
                           $(srctree)/$(src)/nodes.c.pat $(obj)
 
 $(obj)/nodes.c: $(obj)/nodes.h
-$(obj)/nodes.h: $(src)/mknodes
+$(obj)/nodes.h: $(src)/mknodes.sh
 	$(call cmd,mknodes)
 
 
 # Link built in to .c files - yrk
+targets += echo.c test.c kill.c printf.c
 
 quiet_cmd_cpbltin = CP      $@
       cmd_cpbltin = cat $< > $@
@@ -93,7 +100,7 @@ $(obj)/printf.c: $(src)/bltin/printf.c
 	$(call cmd,cpbltin)
 
 # Generate parser
-
+targets += arith.c arith_lex.c arith.h
 $(obj)/arith.c: $(src)/arith.y
 	$(YACC) $< -o $@
 

@@ -49,6 +49,7 @@ shared/insmod-y     := insmod.o
 static/uname-y      := uname.o
 shared/uname-y      := uname.o
 
+clean-dirs := static shared
 
 ifeq (a,b)
 install: all

@@ -18,6 +18,10 @@ USERCFLAGS_nfsroot.o := -I$(src)/ipconfig -I$(src)/nfsmount
 
 # TODO - stripped image
 
+# Cleaning
+targets := $(static-y) $(shared-y)
+subdir- := ipconfig nfsmount
+
 ifeq (a,b)
 
 # This should perhaps be a shared binary?

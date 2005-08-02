@@ -6,31 +6,32 @@
 export KLIBSRC := $(srctree)/$(src)/klibc
 export KLIBINC := $(srctree)/$(src)/include
 export KLIBOBJ := $(objtree)/$(obj)/klibc
+CONFIG_KLIBC := 1
 
+# Klibc binaries
+ifdef CONFIG_KLIBC
+klibc := -f $(srctree)/scripts/Kbuild.klibc obj
+
+.PHONY: klibcdirs
+$(obj)/initramfs_list: klibcdirs
+
+klibcdirs: FORCE
+	$(Q)$(MAKE) $(klibc)=$(src)/klibc
+	$(Q)$(MAKE) $(klibc)=$(src)/kinit
+	$(Q)$(MAKE) $(klibc)=$(src)/utils
+	$(Q)$(MAKE) $(klibc)=$(src)/ash
+	$(Q)$(MAKE) $(klibc)=$(src)/gzip
+endif
+subdir- := klibc kinit utils ash gzip
+
+
+# Generate builtin.o based on initramfs_data.o
 obj-y        := initramfs_data.o
-always       := klibc/libc.a
-hostprogs-y  := gen_init_cpio
-clean-files  := initramfs_data.cpio.gz initramfs_list
-
-# Descend down into klibc when cleaning
-subdir-      := klibc
-
-# Build klibc library
-$(obj)/klibc/libc.a: FORCE
-	$(Q)$(MAKE) -rR -f $(srctree)/scripts/Kbuild.klibc obj=$(obj)/klibc
-
-initramfs-y += gzip kinit ash utils
-
-initramfs-y := $(addprefix $(obj)/,$(initramfs-y))
-.PHONY: $(initramfs-y)
 
 # initramfs_data.o contains the initramfs_data.cpio.gz image.
 # The image is included using .incbin, a dependency which is not
 # tracked automatically.
 $(obj)/initramfs_data.o: $(obj)/initramfs_data.cpio.gz FORCE
-
-$(initramfs-y): $(obj)/klibc/libc.a
-	$(Q)$(MAKE) -f $(srctree)/scripts/Kbuild.klibc obj=$@
 
 ifdef CONFIG_INITRAMFS_ROOT_UID
 gen_initramfs_args += -u $(CONFIG_INITRAMFS_ROOT_UID)
@@ -71,8 +72,10 @@ targets += $(quotefixed_initramfs_source)
 else
 
 # INITRAMFS_SOURCE is not a cpio archive - create one
+hostprogs-y  := gen_init_cpio
+
 $(obj)/initramfs_data.cpio: $(obj)/gen_init_cpio \
-                            $(initramfs-y) $(obj)/initramfs_list FORCE
+                            $(obj)/initramfs_list FORCE
 	$(call if_changed,cpio)
 
 targets += initramfs_data.cpio
@@ -80,9 +83,10 @@ initramfs_data_cpio = $(obj)/initramfs_data.cpio
 
 endif
 
-
 $(obj)/initramfs_data.cpio.gz: $(initramfs_data_cpio) FORCE
 	$(call if_changed,gzip)
 
 targets += initramfs_data.cpio.gz
 
+# Cleaning time
+clean-files  := initramfs_data.cpio.gz initramfs_list

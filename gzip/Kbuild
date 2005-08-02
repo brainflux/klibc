@@ -22,6 +22,8 @@ $(obj)/gunzip $(obj)/zcat: $(obj)/gzip
 $(obj)/gzip.stripped: $(obj)/gzip
 	$(call cmd,strip)
 
+# Cleaning
+targets := $(static-y) $(shared-y)
 
 # Old install target - TODO
 #install: all

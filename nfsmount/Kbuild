@@ -21,6 +21,8 @@ dummypmap-y := dummypmap_test.o
 # TODO - do we want a stripped version
 # TODO - do we want the static.g + shared.g directories?
 
+clean-dirs := static shared
+
 ifeq (a,b)
 
 install: all
