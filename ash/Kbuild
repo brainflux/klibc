@@ -29,6 +29,11 @@ cflags-$(CONFIG_KLIBC_SH_MAIL) += -DKLIBC_SH_MAIL
 cflags-y += -DJOBS=$(if $(CONFIG_KLIBC_SH_JOBS),1,0)
     sh-$(CONFIG_KLIBC_SH_JOBS) += kill.o
 
+# locate .h files from generated .c files (make O=)
+cflags-y += -I$(srctree)/$(src)
+# locate generated .h files from normal .c files
+cflags-y += -I$(objtree)/$(obj)
+
 EXTRA_KLIBCCFLAGS := $(cflags-y)
 
 # The shared binary

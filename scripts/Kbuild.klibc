@@ -79,7 +79,7 @@ KLIBCCPPFLAGS    := -I$(KLIBCINC)/arch/$(ARCH)         \
                     -I$(KLIBCINC)
 # kernel include paths
 KLIBCCPPFLAGS    += -I$(KLIBCKERNELSRC)include                              \
-                     $(if $(KBUILD_SRC),-I$include2 -I$(srctree)/include)
+                     $(if $(KBUILD_SRC),-Iinclude2 -I$(srctree)/include)
 # klibc definitions
 KLIBCCPPFLAGS    += -D__KLIBC__=1 -D__KLIBC_MINOR__=0                       \
 		    -DBITSIZE=$(KLIBCBITSIZE)
