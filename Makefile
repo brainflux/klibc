@@ -2,7 +2,51 @@ VERSION := $(shell cat version)
 SUBDIRS = klibc ash ipconfig nfsmount utils kinit gzip
 SRCROOT = .
 
-all:
+# kbuild compatibility
+export srctree  := .
+export objtree  := .
+export KLIBCSRC := klibc
+export KLIBCINC := include
+export KLIBCOBJ := klibc
+
+export ARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
+
+# Location for installation
+export prefix      = /usr
+export bindir      = $(prefix)/bin
+export libdir      = $(prefix)/lib
+export mandir      = $(prefix)/man
+export INSTALLDIR  = $(prefix)/lib/klibc
+
+# Prefix Make commands wth $(Q) to silence them
+# Use quiet_cmd_xxx, cmd_xxx to create nice output
+# use make V=1 to get verbose output
+ifeq ($(KBUILD_VERBOSE),1)
+  quiet =
+  Q =
+else
+  quiet=quiet_
+  Q = @
+endif
+
+# If the user is running make -s (silent mode), suppress echoing of
+# commands
+
+ifneq ($(findstring s,$(MAKEFLAGS)),)
+  quiet=silent_
+endif
+
+export quiet Q KBUILD_VERBOSE
+
+# Do not print "Entering directory ..."
+MAKEFLAGS += --no-print-directory
+
+# Shorthand to call Kbuild.klibc
+klibc := -f $(srctree)/scripts/Kbuild.klibc obj
+
+# Very first target
+.PHONY: klcc
+all: klcc
 
 rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 
@@ -13,29 +57,9 @@ klibc.spec: klibc.spec.in version
 rpm: klibc.spec
 	+$(rpmbuild) -bb klibc.spec --target=$(ARCH)
 
-$(CROSS)klibc.config: Makefile
-	rm -f $@
-	echo 'ARCH=$(ARCH)' >> $@
-	echo 'CROSS=$(CROSS)' >> $@
-	echo 'KCROSS=$(KCROSS)' >> $@
-	echo 'CC=$(CC)' >> $@
-	echo 'LD=$(LD)' >> $@
-	echo 'REQFLAGS=$(filter-out -I%,$(REQFLAGS))' >> $@
-	echo 'OPTFLAGS=$(OPTFLAGS)' >> $@
-	echo 'LDFLAGS=$(LDFLAGS)' >> $@
-	echo 'STRIP=$(STRIP)' >> $@
-	echo 'STRIPFLAGS=$(STRIPFLAGS)' >> $@
-	echo 'EMAIN=$(EMAIN)' >> $@
-	echo 'BITSIZE=$(BITSIZE)' >> $@
-	echo 'prefix=$(INSTALLDIR)' >> $@
-	echo 'bindir=$(INSTALLDIR)/$(KCROSS)bin' >> $@
-	echo 'libdir=$(INSTALLDIR)/$(KCROSS)lib' >> $@
-	echo 'includedir=$(INSTALLDIR)/$(KCROSS)include' >> $@
-
-$(CROSS)klcc: klcc.in $(CROSS)klibc.config makeklcc.pl
-	$(PERL) makeklcc.pl klcc.in $(CROSS)klibc.config \
-		$(shell bash -c 'type -p $(PERL)') > $@ || ( rm -f $@ ; exit 1 )
-	chmod a+x $@
+# Build klcc - it is the first target
+klcc:
+	$(Q)$(MAKE) $(klibc)=klcc
 
 %: local-%
 	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done

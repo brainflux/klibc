@@ -51,6 +51,7 @@ KLIBCOPTFLAGS     :=
 KLIBCWARNFLAGS    := -W -Wall -Wno-sign-compare
 KLIBCSHAREDFLAGS  := 
 KLIBCBITSIZE      :=
+KLIBCLDFLAGS      :=
 
 # Arch specific definitions for klibc
 include $(KLIBCSRC)/arch/$(ARCH)/MCONFIG
@@ -62,9 +63,10 @@ KLIBCOPTFLAGS     += $(OPTFLAGS)
 KLIBCWARNFLAGS    += $(WARNFLAGS) -W -Wall -Wno-sign-compare
 KLIBCSHAREDFLAGS  += $(SHAREDFLAGS)
 KLIBCBITSIZE      := $(strip $(KLIBCBITSIZE) $(BITSIZE))
-
+KLIBCLDFLAGS      += $(LDFLAGS)
 KLIBCROSS        := $(CROSS_COMPILE)
 
+# binutils
 KLIBCLD          := $(KLIBCROSS)ld
 KLIBCCC          := $(KLIBCROSS)gcc
 KLIBCAR          := $(KLIBCROSS)ar
