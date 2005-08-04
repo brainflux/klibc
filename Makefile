@@ -1,5 +1,5 @@
 VERSION := $(shell cat version)
-SUBDIRS = klibc ash ipconfig nfsmount utils kinit gzip
+SUBDIRS = ipconfig nfsmount kinit
 SRCROOT = .
 
 # kbuild compatibility
@@ -8,8 +8,16 @@ export objtree  := .
 export KLIBCSRC := klibc
 export KLIBCINC := include
 export KLIBCOBJ := klibc
+export KLIBCKERNELSRC := linux/
+
+export CC      := gcc
+NOSTDINC_FLAGS := -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
 export ARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
+
+export HOSTCC     := gcc
+export HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
+export PERL       := perl
 
 # Location for installation
 export prefix      = /usr
@@ -18,9 +26,20 @@ export libdir      = $(prefix)/lib
 export mandir      = $(prefix)/man
 export INSTALLDIR  = $(prefix)/lib/klibc
 
-# Prefix Make commands wth $(Q) to silence them
+
+# Prefix Make commands with $(Q) to silence them
 # Use quiet_cmd_xxx, cmd_xxx to create nice output
 # use make V=1 to get verbose output
+
+ifdef V
+  ifeq ("$(origin V)", "command line")
+    KBUILD_VERBOSE = $(V)
+  endif
+endif
+ifndef KBUILD_VERBOSE
+  KBUILD_VERBOSE = 0
+endif
+
 ifeq ($(KBUILD_VERBOSE),1)
   quiet =
   Q =
@@ -62,6 +81,11 @@ klcc:
 	$(Q)$(MAKE) $(klibc)=klcc
 
 %: local-%
+	$(Q)$(MAKE) $(klibc)=scripts/basic
+	$(Q)$(MAKE) $(klibc)=klibc
+	$(Q)$(MAKE) $(klibc)=ash
+	$(Q)$(MAKE) $(klibc)=utils
+	$(Q)$(MAKE) $(klibc)=gzip
 	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
 
 local-all: $(CROSS)klcc
