@@ -11,9 +11,9 @@ kinit-y  += nfsmount/
 
 
 # kinit.c include ipconfig header file
-USERCFLAGS_kinit.o   := -I$(src)/ipconfig
+KLIBCCFLAGS_kinit.o   := -I$(src)/ipconfig
 # So do nfsroot
-USERCFLAGS_nfsroot.o := -I$(src)/ipconfig -I$(src)/nfsmount
+KLIBCCFLAGS_nfsroot.o := -I$(src)/ipconfig -I$(src)/nfsmount
 
 
 # TODO - stripped image

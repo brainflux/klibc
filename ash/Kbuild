@@ -29,7 +29,7 @@ cflags-$(CONFIG_KLIBC_SH_MAIL) += -DKLIBC_SH_MAIL
 cflags-y += -DJOBS=$(if $(CONFIG_KLIBC_SH_JOBS),1,0)
     sh-$(CONFIG_KLIBC_SH_JOBS) += kill.o
 
-EXTRA_USERCFLAGS := $(cflags-y)
+EXTRA_KLIBCCFLAGS := $(cflags-y)
 
 # The shared binary
 shared-y    := sh.shared

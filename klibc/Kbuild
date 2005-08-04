@@ -95,10 +95,10 @@ libc-deps = $(call objectify, $(libc-y) $(ARCHOBJS)) \
 ######
 # Build static library: libc.a
 targets += libc.a __static_init.o
-quiet_cmd_libc = USERAR  $@
+quiet_cmd_libc = KLIBCAR  $@
       cmd_libc = rm -f $@; \
-                 $(USERAR) cq $@ $(filter-out FORCE,$^); \
-                 $(USERRANLIB) $@
+                 $(KLIBCAR) cq $@ $(filter-out FORCE,$^); \
+                 $(KLIBCRANLIB) $@
 
 $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
 	$(call if_changed,libc)
@@ -108,8 +108,8 @@ $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
 targets += libc.so __shared_init.o
 
 quiet_cmd_libcso = LD      $@
-      cmd_libcso = $(USERLD) $(USERLDFLAGS) $(USERSHAREDFLAGS) \
-                             -o $@ $(filter-out FORCE,$^) $(USERLIBGCC)
+      cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) \
+                             -o $@ $(filter-out FORCE,$^) $(KLIBCLIBGCC)
 
 $(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
 	$(call if_changed,libcso)
@@ -122,14 +122,14 @@ hostprogs-y := sha1hash
 clean-files += klibc-???????????????????????????.so
 
 quiet_cmd_solibhash = HASH    $@
-      cmd_solibhash = $(USERNM) $< | egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
+      cmd_solibhash = $(KLIBCNM) $< | egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
                                         sort | $(obj)/sha1hash > $@
 $(SOLIB).hash: $(SOLIB) $(obj)/sha1hash FORCE
 	$(call if_changed,solibhash)
 
 quiet_cmd_sohash = GEN     $@
       cmd_sohash = cat $< > $@;                                           \
-                     $(USERSTRIP) $(USERSTRIPFLAGS) $@;                   \
+                     $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@;                   \
                      rm -f $(obj)/klibc-???????????????????????????.so;   \
                      ln -f $@ $(obj)/klibc-`cat $(SOLIB).hash`.so
 $(SOHASH): $(SOLIB) $(SOLIB).hash
@@ -141,7 +141,7 @@ $(SOHASH): $(SOLIB) $(SOLIB).hash
 targets += interp.o
 
 quiet_cmd_interp = BUILD   $@
-      cmd_interp = $(USERCC) $(usercflags) -D__ASSEMBLY__     \
+      cmd_interp = $(KLIBCCC) $(klibccflags) -D__ASSEMBLY__     \
                              -DLIBDIR=\"$(SHLIBDIR)\"         \
 			     -DSOHASH=\"`cat $(SOLIB).hash`\" \
 			     -c -o $@ $<

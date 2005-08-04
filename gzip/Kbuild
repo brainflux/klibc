@@ -12,7 +12,7 @@ always := gunzip zcat gzip.stripped
 # Optional ZIP support
 gzip-$(CONFIG_KLIB_ZIP)   += zip.o deflate.o trees.o bits.o
 cflags-$(CONFIG_KLIB_ZIP) += -DSUPPORT_ZIP
-EXTRA_USERCFLAGS := $(cflags-y)
+EXTRA_KLIBCCFLAGS := $(cflags-y)
 
 # Additionally linked targets
 $(obj)/gunzip $(obj)/zcat: $(obj)/gzip

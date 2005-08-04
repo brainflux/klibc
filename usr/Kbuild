@@ -3,9 +3,9 @@
 #
 
 # klibc definitions - to be moved to top-level Makefile later
-export KLIBSRC := $(srctree)/$(src)/klibc
-export KLIBINC := $(srctree)/$(src)/include
-export KLIBOBJ := $(objtree)/$(obj)/klibc
+export KLIBCSRC := $(srctree)/$(src)/klibc
+export KLIBCINC := $(srctree)/$(src)/include
+export KLIBCOBJ := $(objtree)/$(obj)/klibc
 CONFIG_KLIBC := 1
 
 # Klibc binaries
