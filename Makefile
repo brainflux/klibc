@@ -2,8 +2,8 @@ VERSION := $(shell cat version)
 SRCROOT = .
 
 # kbuild compatibility
-export srctree  := .
-export objtree  := .
+export srctree  := $(shell pwd)
+export objtree  := $(shell pwd)
 export KLIBCSRC := klibc
 export KLIBCINC := include
 export KLIBCOBJ := klibc
@@ -86,11 +86,8 @@ klcc:
 klibc:
 	$(Q)$(MAKE) $(klibc)=.
 
-local-clean:
-	rm -f klibc.config klcc
-
-local-spotless: local-clean
-	rm -f klibc.spec *~ tags
+clean:
+	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.clean obj=.
 
 install: all
 	$(Q)$(MAKE) -f $(srctree)/scripts/Kbuild.install obj=.

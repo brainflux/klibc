@@ -30,3 +30,6 @@ $(obj)/$(KLIBCCROSS)klcc: $(src)/makeklcc.pl $(src)/klcc.in \
 	$(PERL) $< $(srctree)/$(src)/klcc.in $(obj)/$(KLIBCCROSS)klibc.config \
 		$(shell bash -c 'type -p $(PERL)') > $@ || ( rm -f $@ ; exit 1 )
 	chmod a+x $@
+
+# Cleaning targets
+clean-files := $(KLIBCCROSS)klibc.config $(KLIBCCROSS)klcc
