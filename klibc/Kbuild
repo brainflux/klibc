@@ -48,6 +48,9 @@ libc-$(CONFIG_KLIBC_ZLIB)    += \
 	zlib/uncompr.o zlib/deflate.o zlib/trees.o zlib/zutil.o \
 	zlib/inflate.o zlib/infback.o zlib/inftrees.o zlib/inffast.o
 
+# zlib specific flag
+EXTRA_CFLAGS := -DDYNAMIC_CRC_TABLE
+
 #####
 # Add any architecture-specific rules
 include $(obj)/arch/$(ARCH)/Makefile.inc
