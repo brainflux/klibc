@@ -86,6 +86,9 @@ klcc:
 klibc:
 	$(Q)$(MAKE) $(klibc)=.
 
+test: klibc
+	$(Q)$(MAKE) $(klibc)=klibc/tests
+	
 clean:
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.clean obj=.
 
