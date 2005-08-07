@@ -1,5 +1,4 @@
 VERSION := $(shell cat version)
-SUBDIRS = ipconfig nfsmount kinit
 SRCROOT = .
 
 # kbuild compatibility
@@ -86,7 +85,6 @@ klcc:
 
 klibc:
 	$(Q)$(MAKE) $(klibc)=.
-#$(Q)set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
 
 local-clean:
 	rm -f klibc.config klcc
