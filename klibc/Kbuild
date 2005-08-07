@@ -67,6 +67,8 @@ SOHASH   := $(call objectify,$(SOHASH))
 CRT0     := $(call objectify,$(CRT0))
 INTERP_O := $(call objectify,$(INTERP_O))
 
+SOLIBHASH = $(shell cat $(SOLIB).hash)
+
 targets  := arch/$(ARCH)/crt0.o
 targets  += $(libc-y) $(ARCHOBJS)
 
@@ -131,7 +133,7 @@ quiet_cmd_sohash = GEN     $@
       cmd_sohash = cat $< > $@;                                           \
                      $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@;                   \
                      rm -f $(obj)/klibc-???????????????????????????.so;   \
-                     ln -f $@ $(obj)/klibc-`cat $(SOLIB).hash`.so
+                     ln -f $@ $(obj)/klibc-$(SOLIBHASH).so
 $(SOHASH): $(SOLIB) $(SOLIB).hash
 	$(call cmd,sohash)
 
@@ -143,8 +145,20 @@ targets += interp.o
 quiet_cmd_interp = BUILD   $@
       cmd_interp = $(KLIBCCC) $(klibccflags) -D__ASSEMBLY__     \
                              -DLIBDIR=\"$(SHLIBDIR)\"         \
-			     -DSOHASH=\"`cat $(SOLIB).hash`\" \
+			     -DSOHASH=\"$(SOLIBHASH)\" \
 			     -c -o $@ $<
 
 $(INTERP_O): $(obj)/interp.S $(SOLIB).hash
 	$(call if_changed,interp)
+
+#####
+# Install klibc
+install-rule:
+	@echo "  INSTALL klibc to $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib"
+	$(Q)$(foreach f, $(LIB) $(SOLIB) $(CRT0) $(INTERP_O), \
+	  $(shell $(install-data) $(f) \
+	          $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib))
+	$(Q)$(install-lib) $(obj)/klibc-$(SOLIBHASH).so \
+	                      $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib
+	$(Q)$(install-lib) $(obj)/klibc-$(SOLIBHASH).so \
+	                      $(INSTALLROOT)$(SHLIBDIR)

@@ -118,8 +118,6 @@ $(obj)/arith_lex.c: $(src)/arith_lex.l
 $(obj)/arith.h: $(src)/arith.c
 	$(PERL) -ne 'print if ( /^\#\s*define\s+ARITH/ );' < $< > $@
 
-ifeq (a,b)
-install: all
-	$(INSTALL_EXEC) sh.shared $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin/sh
 
-endif
+# Targets to install
+install-y := sh.shared

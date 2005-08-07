@@ -25,6 +25,7 @@ export bindir      = $(prefix)/bin
 export libdir      = $(prefix)/lib
 export mandir      = $(prefix)/man
 export INSTALLDIR  = $(prefix)/lib/klibc
+export INSTALLROOT =
 
 # Create a fake .config as present in the kernel tree
 # But if it exists leave it alone
@@ -67,8 +68,8 @@ MAKEFLAGS += --no-print-directory
 klibc := -f $(srctree)/scripts/Kbuild.klibc obj
 
 # Very first target
-.PHONY: klcc
-all: klcc
+.PHONY: all klcc klibc
+all: klcc klibc
 
 rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 
@@ -83,15 +84,9 @@ rpm: klibc.spec
 klcc:
 	$(Q)$(MAKE) $(klibc)=klcc
 
-%: local-%
-	$(Q)$(MAKE) $(klibc)=scripts/basic
-	$(Q)$(MAKE) $(klibc)=klibc
-	$(Q)$(MAKE) $(klibc)=ash
-	$(Q)$(MAKE) $(klibc)=utils
-	$(Q)$(MAKE) $(klibc)=gzip
-	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
-
-local-all: $(CROSS)klcc
+klibc:
+	$(Q)$(MAKE) $(klibc)=.
+#$(Q)set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
 
 local-clean:
 	rm -f klibc.config klcc
@@ -99,30 +94,10 @@ local-clean:
 local-spotless: local-clean
 	rm -f klibc.spec *~ tags
 
-local-install: $(CROSS)klcc
-	mkdir -p $(INSTALLROOT)$(bindir)
-	mkdir -p $(INSTALLROOT)$(mandir)/man1
-	mkdir -p $(INSTALLROOT)$(SHLIBDIR)
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)
-	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)lib
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)bin
-	set -xe ; for d in linux scsi asm-$(ARCH) asm-generic $(ASMARCH); do \
-	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include/$$d ; \
-	  for r in $(KRNLSRC)/include $(KRNLOBJ)/include $(KRNLOBJ)/include2 ; do \
-	    [ ! -d $$r/$$d ] || \
-	      cp -rfL $$r/$$d/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/$$d/. ; \
-	  done ; \
-	done
-	cd $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include && ln -sf asm-$(ARCH) asm
-	cp -rf include/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/.
-	$(INSTALL_DATA) klcc.1 $(INSTALLROOT)$(mandir)/man1/$(KCROSS)klcc.1
-	$(INSTALL_EXEC) $(KCROSS)klcc $(INSTALLROOT)$(bindir)
+install: all
+	$(Q)$(MAKE) -f $(srctree)/scripts/Kbuild.install obj=.
 
 # This does all the prep work needed to turn a freshly exported git repository
 # into a release tarball tree
 release: klibc.spec
 	rm -f maketar.sh
-
--include MCONFIG

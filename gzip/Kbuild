@@ -25,6 +25,5 @@ $(obj)/gzip.stripped: $(obj)/gzip
 # Cleaning
 targets := $(static-y) $(shared-y)
 
-# Old install target - TODO
-#install: all
-#	$(INSTALL_EXEC) gzip gunzip zcat $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
+# Targets to install
+install-y := gzip gunzip zcat
