@@ -7,29 +7,38 @@ always := $(KLIBCCROSS)klcc
 $(obj)/$(KLIBCCROSS)klibc.config: $(src)/Kbuild \
 				  $(srctree)/Makefile \
                                   $(srctree)/scripts/Kbuild.klibc
-	rm -f $@
-	echo 'ARCH=$(ARCH)' >> $@
-	echo 'CROSS=$(KLIBCCROSS)' >> $@
-	echo 'KCROSS=$(KCROSS)' >> $@
-	echo 'CC=$(KLIBCCC)' >> $@
-	echo 'LD=$(KLIBCLD)' >> $@
-	echo 'REQFLAGS=$(filter-out -I%,$(KLIBCREQFLAGS))' >> $@
-	echo 'OPTFLAGS=$(KLIBCOPTFLAGS)' >> $@
-	echo 'LDFLAGS=$(KLIBCLDFLAGS)' >> $@
-	echo 'STRIP=$(KLIBCSTRIP)' >> $@
-	echo 'STRIPFLAGS=$(KLIBCSTRIPFLAGS)' >> $@
-	echo 'EMAIN=$(KLIBCEMAIN)' >> $@
-	echo 'BITSIZE=$(KLIBCBITSIZE)' >> $@
-	echo 'prefix=$(INSTALLDIR)' >> $@
-	echo 'bindir=$(INSTALLDIR)/$(KCROSS)bin' >> $@
-	echo 'libdir=$(INSTALLDIR)/$(KCROSS)lib' >> $@
-	echo 'includedir=$(INSTALLDIR)/$(KCROSS)include' >> $@
+	@echo "  GEN     $@"
+	$(Q)rm -f $@
+	$(Q)echo 'ARCH=$(ARCH)' >> $@
+	$(Q)echo 'CROSS=$(KLIBCCROSS)' >> $@
+	$(Q)echo 'KCROSS=$(KCROSS)' >> $@
+	$(Q)echo 'CC=$(KLIBCCC)' >> $@
+	$(Q)echo 'LD=$(KLIBCLD)' >> $@
+	$(Q)echo 'REQFLAGS=$(filter-out -I%,$(KLIBCREQFLAGS))' >> $@
+	$(Q)echo 'OPTFLAGS=$(KLIBCOPTFLAGS)' >> $@
+	$(Q)echo 'LDFLAGS=$(KLIBCLDFLAGS)' >> $@
+	$(Q)echo 'STRIP=$(KLIBCSTRIP)' >> $@
+	$(Q)echo 'STRIPFLAGS=$(KLIBCSTRIPFLAGS)' >> $@
+	$(Q)echo 'EMAIN=$(KLIBCEMAIN)' >> $@
+	$(Q)echo 'BITSIZE=$(KLIBCBITSIZE)' >> $@
+	$(Q)echo 'prefix=$(INSTALLDIR)' >> $@
+	$(Q)echo 'bindir=$(INSTALLDIR)/$(KCROSS)bin' >> $@
+	$(Q)echo 'libdir=$(INSTALLDIR)/$(KCROSS)lib' >> $@
+	$(Q)echo 'includedir=$(INSTALLDIR)/$(KCROSS)include' >> $@
 
+
+# Generate klcc
+targets := $(KLIBCCROSS)klcc
+
+quiet_cmd_klcc = GEN     $@
+      cmd_klcc = $(PERL) $< $(srctree)/$(src)/klcc.in \
+                            $(obj)/$(KLIBCCROSS)klibc.config \
+                            $(shell bash -c 'type -p $(PERL)') \
+			      > $@ || ( rm -f $@ ; exit 1 ) && \
+			      chmod a+x $@
 $(obj)/$(KLIBCCROSS)klcc: $(src)/makeklcc.pl $(src)/klcc.in \
                           $(obj)/$(KLIBCCROSS)klibc.config
-	$(PERL) $< $(srctree)/$(src)/klcc.in $(obj)/$(KLIBCCROSS)klibc.config \
-		$(shell bash -c 'type -p $(PERL)') > $@ || ( rm -f $@ ; exit 1 )
-	chmod a+x $@
+	$(call if_changed,klcc)
 
 # Cleaning targets
 clean-files := $(KLIBCCROSS)klibc.config $(KLIBCCROSS)klcc

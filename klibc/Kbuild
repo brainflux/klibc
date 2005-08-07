@@ -100,7 +100,7 @@ libc-deps = $(call objectify, $(libc-y) $(ARCHOBJS)) \
 ######
 # Build static library: libc.a
 targets += libc.a __static_init.o
-quiet_cmd_libc = KLIBCAR  $@
+quiet_cmd_libc = KLIBCAR $@
       cmd_libc = rm -f $@; \
                  $(KLIBCAR) cq $@ $(filter-out FORCE,$^); \
                  $(KLIBCRANLIB) $@
@@ -112,7 +112,7 @@ $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
 # Build shared library
 targets += libc.so __shared_init.o
 
-quiet_cmd_libcso = LD      $@
+quiet_cmd_libcso = KLIBCLD $@
       cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) \
                              -o $@ $(filter-out FORCE,$^) $(KLIBCLIBGCC)
 
