@@ -23,8 +23,5 @@ dummypmap-y := dummypmap_test.o
 
 clean-dirs := static shared
 
-ifeq (a,b)
-
-install: all
-	$(INSTALL_EXEC) shared/* $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin	
-endif
+# Install binary
+install-y := $(shared-y)

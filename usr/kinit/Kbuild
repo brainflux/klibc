@@ -22,10 +22,6 @@ KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig -I$(srctree)/$(src)/nfsmou
 targets := $(static-y) $(shared-y)
 subdir- := ipconfig nfsmount
 
-ifeq (a,b)
 
-# This should perhaps be a shared binary?
-install: all
-	$(INSTALL_EXEC) $(PROGS) $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
-
-endif
+# install binary
+install-y := kinit

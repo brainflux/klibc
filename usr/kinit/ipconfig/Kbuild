@@ -27,12 +27,5 @@ shared/ipconfig-y := $(objs)
 # Cleaning
 clean-dirs := static shared
 
-ifeq (a,b)
-# TODO - can we replace this with built-in.o?
-$(LIB): $(OBJS)
-	$(AR) cru $(LIB) $(OBJS)
-
-install: all
-	$(INSTALL_EXEC) shared/* $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)bin
-
-endif
+# install binary
+install-y := $(shared-y)
