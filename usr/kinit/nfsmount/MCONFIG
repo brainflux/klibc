@@ -1,8 +1,0 @@
-# -*- makefile -*-
-
-SRCROOT = ..
-
-include $(SRCROOT)/MCONFIG
-include $(SRCROOT)/MRULES
-
-CFLAGS = -Wp,-MD,$(dir $@).$(notdir $@).d $(OPTFLAGS) $(REQFLAGS) -Wstrict-prototypes -Wall -I.
