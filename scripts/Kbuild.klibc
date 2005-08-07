@@ -58,7 +58,7 @@ include $(KLIBCSRC)/arch/$(ARCH)/MCONFIG
 
 # FIXME - backwards compatibility. Remove when all MCONFIGs are corrected
 KLIBCREQFLAGS     += $(REQFLAGS)
-KLIBCARCHREQFLAGS += $(REQFLAGS)
+KLIBCARCHREQFLAGS += $(ARCHREQFLAGS)
 KLIBCOPTFLAGS     += $(OPTFLAGS)
 KLIBCWARNFLAGS    += $(WARNFLAGS) -W -Wall -Wno-sign-compare
 KLIBCSHAREDFLAGS  += $(SHAREDFLAGS)
@@ -87,7 +87,7 @@ KLIBCCPPFLAGS    += -D__KLIBC__=1 -D__KLIBC_MINOR__=0                       \
 		    -DBITSIZE=$(KLIBCBITSIZE)
 KLIBCCFLAGS      := $(KLIBCCPPFLAGS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS)  \
                     $(KLIBCOPTFLAGS) $(KLIBCWARNFLAGS)
-KLIBCAFLAGS      := -D__ASSEMBLY__ $(KLIBCCPPFLAGS)
+KLIBCAFLAGS      := -D__ASSEMBLY__ $(KLIBCCFLAGS)
 KLIBCSTRIPFLAGS  := --strip-all -R .comment -R .note
 
 KLIBCLIBGCC      := $(shell $(KLIBCCC) --print-libgcc)

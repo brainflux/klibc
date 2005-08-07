@@ -26,6 +26,9 @@ export libdir      = $(prefix)/lib
 export mandir      = $(prefix)/man
 export INSTALLDIR  = $(prefix)/lib/klibc
 
+# Create a fake .config as present in the kernel tree
+# But if it exists leave it alone
+$(if $(wildcard $(objtree)/.config),,$(shell echo CONFIG_KLIBC=y > .config))
 
 # Prefix Make commands with $(Q) to silence them
 # Use quiet_cmd_xxx, cmd_xxx to create nice output
