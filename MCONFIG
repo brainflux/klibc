@@ -42,7 +42,7 @@ INCLUDE = -I$(SRCROOT)/include/arch/$(ARCH) \
 	  -I$(SRCROOT)/include/bits$(BITSIZE) \
 	  -I$(SRCROOT)/include \
 	  -I$(KRNLOBJ)/include -I$(KRNLOBJ)/include2 -I$(KRNLSRC)/include
-REQFLAGS = $(ARCHREQFLAGS) $(KLIBCVER) -nostdinc -iwithprefix include \
+REQFLAGS = $(ARCHREQFLAGS) $(KLIBCVER) -nostdlib -nostdinc -iwithprefix include \
 	   $(INCLUDE)
 LDFLAGS =
 AR      = $(CROSS)ar
