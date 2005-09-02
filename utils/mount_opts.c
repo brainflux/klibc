@@ -32,8 +32,11 @@ static const struct mount_opts options[] = {
 
 static void add_extra_option(struct extra_opts *extra, char *s)
 {
-	int len = strlen(s) + 1;			/* +1 for ',' */
+	int len = strlen(s);
 	int newlen = extra->used_size + len;
+
+	if (extra->str)
+	       len++;			/* +1 for ',' */
 
 	if (newlen >= extra->alloc_size) {
 		char *new;
@@ -42,15 +45,18 @@ static void add_extra_option(struct extra_opts *extra, char *s)
 		if (!new)
 			return;
 
-		extra->end += new - extra->str;
 		extra->str = new;
+		extra->end = extra->str + extra->used_size;
 		extra->alloc_size = newlen;
 	}
 
-	if (extra->used_size)
+	if (extra->used_size) {
 		*extra->end = ',';
+		extra->end++;
+	}
 	strcpy(extra->end, s);
 	extra->used_size += len;
+
 }
 
 unsigned long
