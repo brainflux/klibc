@@ -1054,6 +1054,8 @@ expandmeta(struct strlist *str, int flag)
 	char c;
 	/* TODO - EXP_REDIR */
 
+	(void)flag;
+
 	while (str) {
 		if (fflag)
 			goto nometa;

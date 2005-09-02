@@ -89,6 +89,8 @@ cdcmd(int argc, char **argv)
 	struct stat statb;
 	int print = cdprint;	/* set -cdprint to enable */
 
+	(void)argc; (void)argv;
+
 	nextopt(nullstr);
 
 	/*
@@ -314,6 +316,8 @@ pwdcmd(int argc, char **argv)
 {
 	int i;
 	char opt = 'L';
+
+	(void)argc; (void)argv;
 
 	while ((i = nextopt("LP")) != '\0')
 		opt = i;

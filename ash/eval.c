@@ -620,8 +620,8 @@ syspath(void)
 	static char *sys_path = NULL;
 #ifdef _HAVE_SYSCTL
 	static int mib[] = {CTL_USER, USER_CS_PATH};
-#endif
 	size_t len;
+#endif
 
 	if (sys_path == NULL) {
 #ifdef _HAVE_SYSCTL
@@ -705,13 +705,16 @@ evalcommand(union node *cmd, int flags, struct backcmd *backcmd)
 	volatile int e;
 	char *lastarg;
 	const char *path = pathval();
-	int temp_path;
+	int temp_path = 0;
 #if __GNUC__
 	/* Avoid longjmp clobbering */
 	(void) &argv;
 	(void) &argc;
 	(void) &lastarg;
 	(void) &flags;
+	(void) &mode;
+	(void) &path;
+	(void) &temp_path;
 #endif
 
 	vforked = 0;
@@ -1132,6 +1135,8 @@ prehash(union node *n)
 int
 bltincmd(int argc, char **argv)
 {
+	(void)argc; (void)argv;
+  
 	/*
 	 * Preserve exitstatus of a previous possible redirection
 	 * as POSIX mandates
@@ -1192,6 +1197,7 @@ returncmd(int argc, char **argv)
 int
 falsecmd(int argc, char **argv)
 {
+	(void)argc; (void)argv;
 	return 1;
 }
 
@@ -1199,6 +1205,7 @@ falsecmd(int argc, char **argv)
 int
 truecmd(int argc, char **argv)
 {
+	(void)argc; (void)argv;
 	return 0;
 }
 
@@ -1254,6 +1261,8 @@ timescmd(int argc, char **argv)
 	int u, s, cu, cs;
 	char us[8], ss[8], cus[8], css[8];
 
+	(void)argc; (void)argv;
+	
 	nextopt("");
 
 	times(&tms);
