@@ -10,7 +10,7 @@ export KLIBCOBJ := klibc
 export KLIBCKERNELSRC := linux/
 
 export CC      := gcc
-NOSTDINC_FLAGS := -nostdinc -isystem $(shell $(CC) -print-file-name=include)
+NOSTDINC_FLAGS := -nostdlib -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
 export ARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 
@@ -88,7 +88,7 @@ klibc:
 
 test: klibc
 	$(Q)$(MAKE) $(klibc)=klibc/tests
-	
+
 clean:
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.clean obj=.
 
