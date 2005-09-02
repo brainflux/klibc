@@ -963,13 +963,17 @@ typecmd(int argc, char **argv)
 	struct cmdentry entry;
 	struct tblentry *cmdp;
 	char * const *pp;
-	struct alias *ap;
 	int err = 0;
 	char *arg;
 	int c;
 	int V_flag = 0;
 	int v_flag = 0;
 	int p_flag = 0;
+#ifdef KLIBC_SH_ALIAS
+	struct alias *ap;
+#endif
+
+	(void)argc; (void)argv;
 
 	while ((c = nextopt("vVp")) != 0) {
 		switch (c) {
