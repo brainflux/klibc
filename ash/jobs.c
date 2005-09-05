@@ -490,6 +490,8 @@ jobscmd(int argc, char **argv)
 	int mode, m;
 	int sv = jobs_invalid;
 
+	(void)argc; (void)argv;
+
 	jobs_invalid = 0;
 	mode = 0;
 	while ((m = nextopt("lp")))
@@ -589,8 +591,10 @@ int
 waitcmd(int argc, char **argv)
 {
 	struct job *job;
-	int status, retval;
+	int status, retval = 0;
 	struct job *jp;
+
+	(void)argc; (void)argv;
 
 	nextopt("");
 
@@ -649,6 +653,8 @@ jobidcmd(int argc, char **argv)
 {
 	struct job *jp;
 	int i;
+
+	(void)argc; (void)argv;
 
 	nextopt("");
 	jp = getjob(*argptr, 0);
@@ -762,6 +768,8 @@ makejob(union node *node, int nprocs)
 {
 	int i;
 	struct job *jp;
+
+	(void)node;
 
 	if (jobs_invalid) {
 		for (i = njobs, jp = jobtab ; --i >= 0 ; jp++) {
@@ -884,6 +892,8 @@ forkchild(struct job *jp, union node *n, int mode, int vforked)
 	int pgrp;
 	const char *devnull = _PATH_DEVNULL;
 	const char *nullerr = "Can't open %s";
+
+	(void)pgrp; (void)n;
 
 	wasroot = rootshell;
 	TRACE(("Child shell %d\n", getpid()));
@@ -1126,7 +1136,7 @@ dowait(int block, struct job *job)
 #ifdef SYSV
 STATIC int gotsigchild;
 
-STATIC int onsigchild() {
+STATIC int onsigchild(void) {
 	gotsigchild = 1;
 }
 #endif
@@ -1135,6 +1145,8 @@ STATIC int onsigchild() {
 STATIC int
 waitproc(int block, struct job *jp, int *status)
 {
+	(void)jp;
+
 #ifdef BSD
 	int flags = 0;
 

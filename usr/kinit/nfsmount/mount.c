@@ -96,6 +96,8 @@ static inline void dump_params(__u32 server,
 			       const char *path,
 			       const struct nfs_mount_data *data)
 {
+	(void)server; (void)path; (void)data;
+
 #ifdef NFS_DEBUG
 	struct in_addr addr = { server };
 
@@ -121,6 +123,8 @@ static inline void dump_params(__u32 server,
 
 static inline void dump_fh(const char *data, int len)
 {
+	(void)data; (void)len;
+
 #ifdef NFS_DEBUG
 	int i = 0;
 	int max = len - (len % 8);

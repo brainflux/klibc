@@ -54,6 +54,8 @@ static int rpc_do_reply(struct client *clnt, struct rpc *rpc, size_t off)
 
 static void rpc_header(struct client *clnt, struct rpc *rpc)
 {
+	(void)clnt;
+
 	rpc->call->hdr.frag_hdr = htonl(LAST_FRAG | rpc->call_len);
 	rpc->call->hdr.udp.xid = lrand48();
 	rpc->call->hdr.udp.msg_type = htonl(RPC_CALL);
