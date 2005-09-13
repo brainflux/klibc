@@ -7,7 +7,7 @@
  *  FSSIZE - filesystem size (if known)
  *
  * We currently detect (in order):
- *  gzip, cramfs, romfs, xfs, minix, ext3, ext2, reiserfs
+ *  gzip, cramfs, romfs, xfs, minix, ext3, ext2, reiserfs, jfs
  *
  * MINIX, ext3 and Reiserfs bits are currently untested.
  */
@@ -27,6 +27,12 @@
 #include "ext2_fs.h"
 #include "ext3_fs.h"
 #include "xfs_sb.h"
+
+/*
+ * Slightly cleaned up version of jfs_superblock to
+ * avoid pulling in other kernel header files.
+ */
+#include "jfs_superblock.h"
 
 /*
  * reiserfs_fs.h is too sick to include directly.
@@ -174,6 +180,19 @@ static int xfs_image(const unsigned char *buf, unsigned long *blocks)
 	return 0;
 }
 
+static int jfs_image(const unsigned char *buf, unsigned long *blocks)
+{
+	const struct jfs_superblock *sb =
+		(const struct jfs_superblock *)buf;
+
+	if (! strncmp(sb->s_magic,JFS_MAGIC, 4)) {
+		/* 512 is the VFS Block size */
+		*blocks = __le32_to_cpu(sb->s_size) * 512;;
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t		block;
 	const char	name[12];
@@ -189,7 +208,8 @@ static struct imagetype images[] = {
 	{ 1,	"ext3",		ext3_image	},
 	{ 1,	"ext2",		ext2_image	},
 	{ 8,	"reiserfs",	reiserfs_image	},
-	{ 64,	"reiserfs",	reiserfs_image	}
+	{ 64,	"reiserfs",	reiserfs_image	},
+	{ 32,	"jfs",		jfs_image	}
 };
 
 int main(int argc, char *argv[])
