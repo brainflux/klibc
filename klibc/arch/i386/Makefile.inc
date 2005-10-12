@@ -8,7 +8,6 @@
 #
 
 ARCHOBJS = \
-	arch/$(ARCH)/exits.o \
 	arch/$(ARCH)/socketcall.o \
 	arch/$(ARCH)/setjmp.o \
 	arch/$(ARCH)/syscall.o \

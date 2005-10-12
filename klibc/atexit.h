@@ -13,5 +13,7 @@ struct atexit {
   struct atexit *next;
 };
 
+extern struct atexit *__atexit_list;
+
 #endif /* ATEXIT_H */
 
