@@ -29,6 +29,6 @@ _start:
         bl	__libc_init,%r2
         nop
 /* break miserably if we ever return */
-        iitlbp	%r0,(%r0) /* illegal instruction */
+        iitlbp	%r0,(%sr0,%r0) /* illegal instruction */
         nop
         .procend
