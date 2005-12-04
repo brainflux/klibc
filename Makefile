@@ -1,4 +1,8 @@
 VERSION := $(shell cat version)
+<<<<<<< Makefile
+=======
+SUBDIRS = klibc dash ipconfig nfsmount utils kinit gzip
+>>>>>>> .merge_file_FmQn3Q
 SRCROOT = .
 
 # kbuild compatibility

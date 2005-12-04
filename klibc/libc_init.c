@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <klibc/compiler.h>
 #include <elf.h>
+#include "atexit.h"
 
 /* This file is included from __static_init.c or __shared_init.c */
 #ifndef SHARED
@@ -31,6 +32,8 @@ struct auxentry {
   uintptr_t v;
 };
 
+static struct atexit at_exit;
+
 __noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
 {
   int argc;
@@ -44,6 +47,12 @@ __noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
 #define MAIN main
 #endif
   unsigned int page_size = 0, page_shift = 0;
+
+  if ( onexit ) {
+    at_exit.fctn = (void(*)(int, void *))onexit;
+    /* at_exit.next = NULL already */
+    __atexit_list = &at_exit;
+  }
 
   (void)onexit;			/* For now, we ignore this... */
 

@@ -16,7 +16,7 @@
 ;
 ; Process-related syscalls
 ;
-<!i386,x86_64> void _exit,exit::_exit(int)
+void _exit,exit::_exit(int)
 <?!ia64> pid_t clone::__clone(unsigned long, void *)
 <?ia64> pid_t clone::__clone2(unsigned long, void *, void *)
 <?!sparc> pid_t fork()
