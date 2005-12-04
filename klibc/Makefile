@@ -41,6 +41,7 @@ LIBOBJS = vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  gethostname.o getdomainname.o getcwd.o \
 	  seteuid.o setegid.o \
 	  getenv.o setenv.o putenv.o __put_env.o unsetenv.o \
+	  clearenv.o nullenv.o \
 	  getopt.o readdir.o \
 	  syslog.o closelog.o pty.o getpt.o isatty.o reboot.o \
 	  time.o utime.o llseek.o nice.o getpriority.o \

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "env.h"
 
 int unsetenv(const char *name)
 {
@@ -26,6 +27,9 @@ int unsetenv(const char *name)
       return -1;
     }
   }
+
+  if ( !environ )
+    return 0;
 
   for ( p = environ ; (q = *p) ; p++ ) {
     if ( !strncmp(name,q,len) && q[len] == '=' )

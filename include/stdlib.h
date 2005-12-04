@@ -47,6 +47,7 @@ __extern char *getenv(const char *);
 __extern int putenv(const char *);
 __extern int setenv(const char *, const char *, int);
 __extern int unsetenv(const char *);
+__extern int clearenv(void);
 
 __extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
