@@ -8,7 +8,7 @@ $(obj)/all:
 	$(Q)$(MAKE) $(klibc)=scripts/basic
 	$(Q)$(MAKE) $(klibc)=klibc
 	$(Q)$(MAKE) $(klibc)=usr/kinit
-	$(Q)$(MAKE) $(klibc)=ash
+	$(Q)$(MAKE) $(klibc)=dash
 	$(Q)$(MAKE) $(klibc)=utils
 	$(Q)$(MAKE) $(klibc)=gzip
 
