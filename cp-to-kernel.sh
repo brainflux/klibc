@@ -45,11 +45,11 @@ fi
 cp -R usr/kinit/* $kernel/usr/kinit
 
 
-echo "Copying ash"
-if [ ! -d $kernel/usr/ash ]; then
-	mkdir -p $kernel/usr/ash
+echo "Copying dash"
+if [ ! -d $kernel/usr/dash ]; then
+	mkdir -p $kernel/usr/dash
 fi
-cp -R ash/* $kernel/usr/ash
+cp -R dash/* $kernel/usr/dash
 
 echo "Copying utils"
 if [ ! -d $kernel/usr/utils ]; then

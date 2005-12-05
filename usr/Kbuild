@@ -19,10 +19,10 @@ klibcdirs: FORCE
 	$(Q)$(MAKE) $(klibc)=$(src)/klibc
 	$(Q)$(MAKE) $(klibc)=$(src)/kinit
 	$(Q)$(MAKE) $(klibc)=$(src)/utils
-	$(Q)$(MAKE) $(klibc)=$(src)/ash
+	$(Q)$(MAKE) $(klibc)=$(src)/dash
 	$(Q)$(MAKE) $(klibc)=$(src)/gzip
 endif
-subdir- := klibc kinit utils ash gzip
+subdir- := klibc kinit utils dash gzip
 
 
 # Generate builtin.o based on initramfs_data.o

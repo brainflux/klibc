@@ -14,4 +14,4 @@ $(obj)/all:
 
 
 # Directories to visit during clean and install
-subdir- := scripts/basic klcc klibc ash utils gzip usr/kinit klibc/tests
+subdir- := scripts/basic klcc klibc dash utils gzip usr/kinit klibc/tests
