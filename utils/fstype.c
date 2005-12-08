@@ -16,8 +16,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <endian.h>
 #include <netinet/in.h>
+#include <sys/vfs.h>
 
 #define cpu_to_be32(x) __cpu_to_be32(x)	/* Needed by romfs_fs.h */
 
@@ -185,7 +187,7 @@ static int jfs_image(const unsigned char *buf, unsigned long *blocks)
 	const struct jfs_superblock *sb =
 		(const struct jfs_superblock *)buf;
 
-	if (! strncmp(sb->s_magic,JFS_MAGIC, 4)) {
+	if (!memcmp(sb->s_magic, JFS_MAGIC, 4)) {
 		/* 512 is the VFS Block size */
 		*blocks = __le32_to_cpu(sb->s_size) * 512;;
 		return 1;
@@ -219,12 +221,21 @@ int main(int argc, char *argv[])
 	off_t cur_block = (off_t)-1;
 	unsigned int i;
 	int ret;
+	int fd = 0;
 
 	progname = argv[0];
 
-	if (argc != 1) {
-		fprintf(stderr, "Usage: %s < file\n", progname);
+	if (argc >= 2) {
+		fprintf(stderr, "Usage: %s [file]\n", progname);
 		return 1;
+	}
+
+	if (argc >= 1 && strcmp(argv[1], "-")) {
+		fd = open(argv[1], O_RDONLY);
+		if ( fd < 0 ) {
+			perror(argv[1]);
+			return 1;
+		}
 	}
 
 	for (i = 0; i < ARRAY_SIZE(images); i++) {
@@ -233,7 +244,7 @@ int main(int argc, char *argv[])
 			 * Read block.
 			 */
 			cur_block = images[i].block;
-			ret = readfile(0, cur_block * BLOCK_SIZE, buf,
+			ret = readfile(fd, cur_block * BLOCK_SIZE, buf,
 				       BLOCK_SIZE);
 			if (ret != 0)
 				return ret;
