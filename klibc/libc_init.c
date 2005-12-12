@@ -12,6 +12,13 @@
  *  void (*onexit)(void) -- Function to install into onexit
  */
 
+/*
+ * Several Linux ABIs don't pass the onexit pointer, and the ones that
+ * do never use it.  Therefore, unless USE_ONEXIT is defined, we just
+ * ignore the onexit pointer.
+ */
+/* #define USE_ONEXIT */
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -32,8 +39,6 @@ struct auxentry {
   uintptr_t v;
 };
 
-static struct atexit at_exit;
-
 __noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
 {
   int argc;
@@ -48,13 +53,17 @@ __noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
 #endif
   unsigned int page_size = 0, page_shift = 0;
 
+#ifdef USE_ONEXIT
   if ( onexit ) {
+    static struct atexit at_exit;
+
     at_exit.fctn = (void(*)(int, void *))onexit;
     /* at_exit.next = NULL already */
     __atexit_list = &at_exit;
   }
-
-  (void)onexit;			/* For now, we ignore this... */
+#else
+  (void)onexit;			/* Ignore this... */
+#endif
 
   argc = (int)*elfdata++;
   argv = (char **)elfdata;
