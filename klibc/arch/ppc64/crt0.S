@@ -25,7 +25,7 @@ _start:
 ._start:
 	stdu    %r1,-32(%r1)
 	addi    %r3,%r1,32
-	mr      %r4,%r7     /* fini */
+	li	%r4,0		/* fini (unused) */
 	b 	.__libc_init
 	nop
 
