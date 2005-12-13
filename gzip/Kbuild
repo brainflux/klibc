@@ -7,7 +7,7 @@ static-y := gzip
 gzip-y   := gzip.o util.o unzip.o inflate.o
 
 # Additional targets 
-always := gunzip zcat gzip.stripped
+always := gunzip zcat
 
 # Optional ZIP support
 gzip-$(CONFIG_KLIB_ZIP)   += zip.o deflate.o trees.o bits.o
@@ -18,12 +18,8 @@ EXTRA_KLIBCCFLAGS := $(cflags-y)
 $(obj)/gunzip $(obj)/zcat: $(obj)/gzip
 	$(call cmd,ln)
 
-# A stripped version of gzip
-$(obj)/gzip.stripped: $(obj)/gzip
-	$(call cmd,strip)
-
 # Cleaning
-targets := $(static-y) $(shared-y)
+targets := gzip gzip.g gunzip zcat
 
 # Targets to install
 install-y := gzip gunzip zcat

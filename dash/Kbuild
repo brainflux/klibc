@@ -57,7 +57,7 @@ sh.shared-y := $(sh-y)
 hostprogs-y := $(HELPERS)
 
 # For cleaning
-targets := $(static-y) $(shared-y) $(CLEANFILES)
+targets := sh sh.g sh.shared sh.shared.g $(CLEANFILES)
 
 # Generate token.h
 $(obj)/parser.o: $(obj)/token.h

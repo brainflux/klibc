@@ -19,7 +19,7 @@ KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig -I$(srctree)/$(src)/nfsmou
 # TODO - stripped image
 
 # Cleaning
-targets := $(static-y) $(shared-y)
+targets := kinit kinit.g
 subdir- := ipconfig nfsmount
 
 

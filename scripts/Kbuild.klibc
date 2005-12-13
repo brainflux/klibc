@@ -245,7 +245,10 @@ quiet_cmd_ld-static = KLIBCLD $@
                        $(EXTRA_KLIBCLDFLAGS)              \
                        $(KLIBCCRT0)                       \
                        $(link-deps)                       \
-                       $(KLIBCLIBC) $(KLIBCLIBGCC)
+                       $(KLIBCLIBC) $(KLIBCLIBGCC);       \
+                       cp -f $@ $@.g;                     \
+                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
+		       
 
 $(static-y): $(klibc-objs) $(lib-target) FORCE
 	$(call if_changed,ld-static)
@@ -255,7 +258,10 @@ quiet_cmd_ld-shared = KLIBCLD $@
                        $(EXTRA_KLIBCLDFLAGS)              \
                        $(KLIBCEMAIN) $(KLIBCCRTSHARED)    \
                        $(link-deps)                       \
-                       -R $(KLIBCLIBCSHARED) $(KLIBCLIBGCC)
+                       -R $(KLIBCLIBCSHARED) $(KLIBCLIBGCC);\
+                       cp -f $@ $@.g;                     \
+                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
+ 
 		       
 $(shared-y): $(klibc-objs) $(lib-target) FORCE
 	$(call if_changed,ld-shared)
