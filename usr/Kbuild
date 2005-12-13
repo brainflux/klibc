@@ -2,14 +2,31 @@
 # kbuild file for usr/ - including initramfs image and klibc
 #
 
-obj-y        := initramfs_data.o
-always       := klibc/libc.a
-hostprogs-y  := gen_init_cpio
-clean-files  := initramfs_data.cpio.gz initramfs_list
+# klibc definitions - to be moved to top-level Makefile later
+export KLIBCSRC := $(srctree)/$(src)/klibc
+export KLIBCINC := $(srctree)/$(src)/include
+export KLIBCOBJ := $(objtree)/$(obj)/klibc
+CONFIG_KLIBC := 1
 
-# Build klibc library
-$(obj)/klibc/libc.a: FORCE
-	$(Q)$(MAKE) -rR -f $(srctree)/scripts/Kbuild.klibc obj=$(obj)/klibc
+# Klibc binaries
+ifdef CONFIG_KLIBC
+klibc := -f $(srctree)/scripts/Kbuild.klibc obj
+
+.PHONY: klibcdirs
+$(obj)/initramfs_list: klibcdirs
+
+klibcdirs: FORCE
+	$(Q)$(MAKE) $(klibc)=$(src)/klibc
+	$(Q)$(MAKE) $(klibc)=$(src)/kinit
+	$(Q)$(MAKE) $(klibc)=$(src)/utils
+	$(Q)$(MAKE) $(klibc)=$(src)/dash
+	$(Q)$(MAKE) $(klibc)=$(src)/gzip
+endif
+subdir- := klibc kinit utils dash gzip
+
+
+# Generate builtin.o based on initramfs_data.o
+obj-y        := initramfs_data.o
 
 # initramfs_data.o contains the initramfs_data.cpio.gz image.
 # The image is included using .incbin, a dependency which is not
@@ -34,7 +51,7 @@ filechk_initramfs_list = $(CONFIG_SHELL) \
   $(srctree)/scripts/gen_initramfs_list.sh $(gen_initramfs_args) \
                                            $(quotefixed_initramfs_source)
 
-$(obj)/initramfs_list: FORCE
+$(obj)/initramfs_list: $(src)/Kbuild FORCE
 	$(call filechk,initramfs_list)
 
 quiet_cmd_cpio = CPIO    $@
@@ -55,8 +72,10 @@ targets += $(quotefixed_initramfs_source)
 else
 
 # INITRAMFS_SOURCE is not a cpio archive - create one
+hostprogs-y  := gen_init_cpio
+
 $(obj)/initramfs_data.cpio: $(obj)/gen_init_cpio \
-                            $(initramfs-y) $(obj)/initramfs_list FORCE
+                            $(obj)/initramfs_list FORCE
 	$(call if_changed,cpio)
 
 targets += initramfs_data.cpio
@@ -64,9 +83,10 @@ initramfs_data_cpio = $(obj)/initramfs_data.cpio
 
 endif
 
-
 $(obj)/initramfs_data.cpio.gz: $(initramfs_data_cpio) FORCE
 	$(call if_changed,gzip)
 
 targets += initramfs_data.cpio.gz
 
+# Cleaning time
+clean-files  := initramfs_data.cpio.gz initramfs_list

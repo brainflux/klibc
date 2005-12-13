@@ -1,8 +1,74 @@
 VERSION := $(shell cat version)
-SUBDIRS = klibc dash ipconfig nfsmount utils kinit gzip
 SRCROOT = .
 
-all:
+# kbuild compatibility
+export srctree  := $(shell pwd)
+export objtree  := $(shell pwd)
+export KLIBCSRC := klibc
+export KLIBCINC := include
+export KLIBCOBJ := klibc
+export KLIBCKERNELSRC := linux/
+
+export CC      := gcc
+NOSTDINC_FLAGS := -nostdlib -nostdinc -isystem $(shell $(CC) -print-file-name=include)
+
+export ARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
+
+export HOSTCC     := gcc
+export HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
+export PERL       := perl
+
+# Location for installation
+export prefix      = /usr
+export bindir      = $(prefix)/bin
+export libdir      = $(prefix)/lib
+export mandir      = $(prefix)/man
+export INSTALLDIR  = $(prefix)/lib/klibc
+export INSTALLROOT =
+
+# Create a fake .config as present in the kernel tree
+# But if it exists leave it alone
+$(if $(wildcard $(objtree)/.config),,$(shell echo CONFIG_KLIBC=y > .config))
+
+# Prefix Make commands with $(Q) to silence them
+# Use quiet_cmd_xxx, cmd_xxx to create nice output
+# use make V=1 to get verbose output
+
+ifdef V
+  ifeq ("$(origin V)", "command line")
+    KBUILD_VERBOSE = $(V)
+  endif
+endif
+ifndef KBUILD_VERBOSE
+  KBUILD_VERBOSE = 0
+endif
+
+ifeq ($(KBUILD_VERBOSE),1)
+  quiet =
+  Q =
+else
+  quiet=quiet_
+  Q = @
+endif
+
+# If the user is running make -s (silent mode), suppress echoing of
+# commands
+
+ifneq ($(findstring s,$(MAKEFLAGS)),)
+  quiet=silent_
+endif
+
+export quiet Q KBUILD_VERBOSE
+
+# Do not print "Entering directory ..."
+MAKEFLAGS += --no-print-directory
+
+# Shorthand to call Kbuild.klibc
+klibc := -f $(srctree)/scripts/Kbuild.klibc obj
+
+# Very first target
+.PHONY: all klcc klibc
+all: klcc klibc
 
 rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 
@@ -13,65 +79,23 @@ klibc.spec: klibc.spec.in version
 rpm: klibc.spec
 	+$(rpmbuild) -bb klibc.spec --target=$(ARCH)
 
-$(CROSS)klibc.config: Makefile
-	rm -f $@
-	echo 'ARCH=$(ARCH)' >> $@
-	echo 'CROSS=$(CROSS)' >> $@
-	echo 'KCROSS=$(KCROSS)' >> $@
-	echo 'CC=$(CC)' >> $@
-	echo 'LD=$(LD)' >> $@
-	echo 'REQFLAGS=$(filter-out -I%,$(REQFLAGS))' >> $@
-	echo 'OPTFLAGS=$(OPTFLAGS)' >> $@
-	echo 'LDFLAGS=$(LDFLAGS)' >> $@
-	echo 'STRIP=$(STRIP)' >> $@
-	echo 'STRIPFLAGS=$(STRIPFLAGS)' >> $@
-	echo 'EMAIN=$(EMAIN)' >> $@
-	echo 'BITSIZE=$(BITSIZE)' >> $@
-	echo 'prefix=$(INSTALLDIR)' >> $@
-	echo 'bindir=$(INSTALLDIR)/$(KCROSS)bin' >> $@
-	echo 'libdir=$(INSTALLDIR)/$(KCROSS)lib' >> $@
-	echo 'includedir=$(INSTALLDIR)/$(KCROSS)include' >> $@
+# Build klcc - it is the first target
+klcc:
+	$(Q)$(MAKE) $(klibc)=klcc
 
-$(CROSS)klcc: klcc.in $(CROSS)klibc.config makeklcc.pl
-	$(PERL) makeklcc.pl klcc.in $(CROSS)klibc.config \
-		$(shell bash -c 'type -p $(PERL)') > $@ || ( rm -f $@ ; exit 1 )
-	chmod a+x $@
+klibc:
+	$(Q)$(MAKE) $(klibc)=.
 
-%: local-%
-	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $@; done
+test: klibc
+	$(Q)$(MAKE) $(klibc)=klibc/tests
 
-local-all: $(CROSS)klcc
+clean:
+	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.clean obj=.
 
-local-clean:
-	rm -f klibc.config klcc
-
-local-spotless: local-clean
-	rm -f klibc.spec *~ tags
-
-local-install: $(CROSS)klcc
-	mkdir -p $(INSTALLROOT)$(bindir)
-	mkdir -p $(INSTALLROOT)$(mandir)/man1
-	mkdir -p $(INSTALLROOT)$(SHLIBDIR)
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)
-	-rm -rf $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)lib
-	mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)bin
-	set -xe ; for d in linux scsi asm-$(ARCH) asm-generic $(ASMARCH); do \
-	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(CROSS)include/$$d ; \
-	  for r in $(KRNLSRC)/include $(KRNLOBJ)/include $(KRNLOBJ)/include2 ; do \
-	    [ ! -d $$r/$$d ] || \
-	      cp -rfL $$r/$$d/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/$$d/. ; \
-	  done ; \
-	done
-	cd $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include && ln -sf asm-$(ARCH) asm
-	cp -rf include/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/.
-	$(INSTALL_DATA) klcc.1 $(INSTALLROOT)$(mandir)/man1/$(KCROSS)klcc.1
-	$(INSTALL_EXEC) $(KCROSS)klcc $(INSTALLROOT)$(bindir)
+install: all
+	$(Q)$(MAKE) -f $(srctree)/scripts/Kbuild.install obj=.
 
 # This does all the prep work needed to turn a freshly exported git repository
 # into a release tarball tree
 release: klibc.spec
 	rm -f maketar.sh
-
--include MCONFIG

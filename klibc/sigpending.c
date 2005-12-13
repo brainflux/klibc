@@ -7,7 +7,7 @@
 
 #ifndef __NR_sigpending
 
-__extern __rt_sigpending(sigset_t *, size_t);
+__extern int __rt_sigpending(sigset_t *, size_t);
 
 int sigpending(sigset_t *set)
 {

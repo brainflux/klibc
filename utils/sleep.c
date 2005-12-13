@@ -1,23 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <errno.h>
 
 int main(int argc, char *argv[])
 {
-	unsigned long s;
+	struct timespec ts;
 	char *p;
 
 	if (argc != 2)
 		goto err;
 
-	s = strtoul(argv[1], &p, 10);
+	p = strtotimespec(argv[1], &ts);
 	if ( *p )
 		goto err;
 
-	sleep(s);
+	while ( nanosleep(&ts, &ts) == -1 && errno == EINTR )
+		;
 
 	return 0;
 
 err:
-	fprintf(stderr, "Usage: %s seconds\n", argv[0]);
+	fprintf(stderr, "Usage: %s seconds[.fraction]\n", argv[0]);
 	return 1; 
 }

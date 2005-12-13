@@ -82,8 +82,8 @@ install -m 444 klibc/arch/README %{buildroot}%{libdocdir}/README.klibc.arch
 
 install -m 444 gzip/COPYING %{buildroot}%{bindocdir}/COPYING.gzip
 install -m 444 gzip/README %{buildroot}%{bindocdir}/README.gzip
-install -m 444 ipconfig/README %{buildroot}%{bindocdir}/README.ipconfig
-install -m 444 kinit/README %{buildroot}%{bindocdir}/README.kinit
+install -m 444 usr/kinit/ipconfig/README %{buildroot}%{bindocdir}/README.ipconfig
+install -m 444 usr/kinit/README %{buildroot}%{bindocdir}/README.kinit
 
 %clean
 rm -rf $RPM_BUILD_ROOT

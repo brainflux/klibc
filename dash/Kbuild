@@ -1,0 +1,118 @@
+#
+# Kbuild file for dash
+#
+
+YACC = bison -y
+
+COMMON_CFLAGS :=
+COMMON_CPPFLAGS := \
+	-DBSD=1 -DSMALL -DSHELL \
+	-DGLOB_BROKEN -DFNMATCH_BROKEN -DIFS_BROKEN \
+	-DJOBS=0
+
+CFLAGS := $(COMMON_CFLAGS)
+CPPFLAGS := $(COMMON_CPPFLAGS)
+CFLAGS_FOR_BUILD := $(COMMON_CFLAGS) 
+CPPFLAGS_FOR_BUILD := $(COMMON_CPPFLAGS)
+YFLAGS = -d
+
+DEFS := -DHAVE_CONFIG_H
+DEFAULT_INCLUDES := -I$(srctree)/$(src) -include $(srctree)/$(src)/config.h
+
+EXTRA_KLIBCCFLAGS := $(DEFS) $(DEFAULT_INCLUDES) $(CPPFLAGS) $(CFLAGS)
+HOST_EXTRACFLAGS := $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) 
+YACCCOMPILE = $(YACC) $(YFLAGS)
+
+SRCS :=	alias.c arith_yylex.c cd.c error.c eval.c exec.c expand.c \
+	histedit.c input.c jobs.c mail.c main.c memalloc.c miscbltin.c \
+	mystring.c options.c parser.c redir.c show.c trap.c output.c \
+	bltin/printf.c system.c bltin/test.c bltin/times.c var.c
+
+OBJ1 :=	builtins.o init.o nodes.o signames.o syntax.o
+OBJ2 :=	alias.o arith.o arith_yylex.o cd.o \
+	error.o eval.o exec.o expand.o \
+	histedit.o input.o jobs.o \
+	mail.o main.o memalloc.o \
+	miscbltin.o mystring.o options.o \
+	parser.o redir.o show.o trap.o \
+	output.o bltin/printf.o system.o \
+	bltin/test.o bltin/times.o var.o
+
+OBJS :=	$(OBJ1) $(OBJ2)
+
+HELPERS = mkinit mksyntax mknodes mksignames
+BUILT_SOURCES = arith.h builtins.h nodes.h syntax.h token.h
+CLEANFILES = \
+	$(BUILT_SOURCES) $(patsubst %.o,%.c,$(OBJ1)) \
+	arith.c $(HELPERS) builtins.def
+
+static-y := sh
+
+sh-y := $(OBJS)
+
+# The shared binary
+shared-y    := sh.shared
+sh.shared-y := $(sh-y)
+
+hostprogs-y := $(HELPERS)
+
+# For cleaning
+targets := $(static-y) $(shared-y) $(CLEANFILES)
+
+# Generate token.h
+$(obj)/parser.o: $(obj)/token.h
+
+quiet_cmd_mktokens = GEN     $@
+      cmd_mktokens = cd $(obj); sh $(srctree)/$<
+$(obj)/token.h: $(src)/mktokens
+	$(call cmd,mktokens)
+
+# Generate builtins.def
+targets += builtins.def
+quiet_cmd_mkbuiltins_def = GEN     $@
+      cmd_mkbuiltins_def = $(HOSTCC) $(hostc_flags) -x c -E -o $@ $<
+$(obj)/builtins.def: $(src)/builtins.def.in $(src)/config.h
+	$(call cmd,mkbuiltins_def)
+
+# Generate builtins{.c + .h}
+quiet_cmd_mkbuiltins = GEN     $@
+      cmd_mkbuiltins = cd $(obj); sh $(srctree)/$(src)/mkbuiltins builtins.def
+$(obj)/builtins.h $(obj)/builtins.c: $(src)/mkbuiltins $(obj)/builtins.def
+	$(call cmd,mkbuiltins)
+
+# Generate init.c
+quiet_cmd_mkinit = GEN     $@
+      cmd_mkinit = cd $(obj); ./mkinit $(addprefix $(srctree)/$(src)/, $(SRCS))
+$(obj)/init.c: $(obj)/mkinit $(addprefix $(src)/, $(SRCS))
+	$(call cmd,mkinit)
+
+# Generate nodes{.c + .h}
+quiet_cmd_mknodes = GEN     $@
+      cmd_mknodes = cd $(obj); ./mknodes $(srctree)/$(src)/nodetypes \
+			       $(srctree)/$(src)/nodes.c.pat
+$(obj)/nodes.c $(obj)/nodes.h: $(obj)/mknodes $(src)/nodetypes \
+			       $(src)/nodes.c.pat
+	$(call cmd,mknodes)
+
+quiet_cmd_mksyntax = GEN     $@
+      cmd_mksyntax = cd $(obj); ./mksyntax
+$(obj)/syntax.c $(obj)/syntax.h: $(obj)/mksyntax
+	$(call cmd,mksyntax)
+
+quiet_cmd_mksignames = GEN     $@
+      cmd_mksignames = cd $(obj); ./mksignames
+$(obj)/signames.c: $(obj)/mksignames
+	$(call cmd,mksignames)
+
+
+$(obj)/arith_yylex.o: $(obj)/arith.h
+
+$(obj)/arith.h $(obj)/arith.c: $(src)/arith.y
+	cd $(obj); \
+		$(YACCCOMPILE) $(srctree)/$<; \
+		mv y.tab.c arith.c; \
+		mv y.tab.h arith.h
+
+
+# Targets to install
+install-y := sh.shared

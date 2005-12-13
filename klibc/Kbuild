@@ -9,7 +9,7 @@ libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  atoi.o atol.o atoll.o \
 	  strtol.o strtoll.o strtoul.o strtoull.o \
 	  strtoimax.o strtoumax.o \
-	  globals.o exitc.o atexit.o onexit.o \
+	  globals.o exit.o atexit.o onexit.o \
 	  execl.o execle.o execv.o execvpe.o execvp.o execlp.o execlpe.o \
 	  fork.o wait.o wait3.o waitpid.o system.o setpgrp.o getpgrp.o \
 	  daemon.o \
@@ -32,6 +32,7 @@ libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  gethostname.o getdomainname.o getcwd.o \
 	  seteuid.o setegid.o \
 	  getenv.o setenv.o putenv.o __put_env.o unsetenv.o \
+	  clearenv.o nullenv.o \
 	  getopt.o readdir.o \
 	  syslog.o closelog.o pty.o getpt.o isatty.o reboot.o \
 	  time.o utime.o llseek.o nice.o getpriority.o \
@@ -47,6 +48,9 @@ libc-$(CONFIG_KLIBC_ZLIB)    += \
 	zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/gzio.o \
 	zlib/uncompr.o zlib/deflate.o zlib/trees.o zlib/zutil.o \
 	zlib/inflate.o zlib/infback.o zlib/inftrees.o zlib/inffast.o
+
+# zlib specific flag
+EXTRA_CFLAGS := -DDYNAMIC_CRC_TABLE
 
 #####
 # Add any architecture-specific rules
@@ -66,6 +70,8 @@ SOLIB    := $(call objectify,$(SOLIB))
 SOHASH   := $(call objectify,$(SOHASH))
 CRT0     := $(call objectify,$(CRT0))
 INTERP_O := $(call objectify,$(INTERP_O))
+
+SOLIBHASH = $(shell cat $(SOLIB).hash)
 
 targets  := arch/$(ARCH)/crt0.o
 targets  += $(libc-y) $(ARCHOBJS)
@@ -95,10 +101,10 @@ libc-deps = $(call objectify, $(libc-y) $(ARCHOBJS)) \
 ######
 # Build static library: libc.a
 targets += libc.a __static_init.o
-quiet_cmd_libc = USERAR  $@
+quiet_cmd_libc = KLIBCAR $@
       cmd_libc = rm -f $@; \
-                 $(USERAR) cq $@ $(filter-out FORCE,$^); \
-                 $(USERRANLIB) $@
+                 $(KLIBCAR) cq $@ $(filter-out FORCE,$^); \
+                 $(KLIBCRANLIB) $@
 
 $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
 	$(call if_changed,libc)
@@ -107,9 +113,9 @@ $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
 # Build shared library
 targets += libc.so __shared_init.o
 
-quiet_cmd_libcso = LD      $@
-      cmd_libcso = $(USERLD) $(USERLDFLAGS) $(USERSHAREDFLAGS) \
-                             -o $@ $(filter-out FORCE,$^) $(USERLIBGCC)
+quiet_cmd_libcso = KLIBCLD $@
+      cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) \
+                             -o $@ $(filter-out FORCE,$^) $(KLIBCLIBGCC)
 
 $(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
 	$(call if_changed,libcso)
@@ -119,18 +125,19 @@ $(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
 # Build sha1 hash values
 targets     += klibc.so libc.so.hash
 hostprogs-y := sha1hash
+clean-files += klibc-???????????????????????????.so
 
 quiet_cmd_solibhash = HASH    $@
-      cmd_solibhash = $(USERNM) $< | egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
+      cmd_solibhash = $(KLIBCNM) $< | egrep '^[0-9a-fA-F]+ [ADRTW] ' | \
                                         sort | $(obj)/sha1hash > $@
 $(SOLIB).hash: $(SOLIB) $(obj)/sha1hash FORCE
 	$(call if_changed,solibhash)
 
 quiet_cmd_sohash = GEN     $@
       cmd_sohash = cat $< > $@;                                           \
-                     $(USERSTRIP) $(USERSTRIPFLAGS) $@;                   \
-                     rm -f $(obj)/klibc-??????????????????????.so;        \
-                     ln -f $@ $(obj)/klibc-`cat $(SOLIB).hash`.so
+                     $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@;                   \
+                     rm -f $(obj)/klibc-???????????????????????????.so;   \
+                     ln -f $@ $(obj)/klibc-$(SOLIBHASH).so
 $(SOHASH): $(SOLIB) $(SOLIB).hash
 	$(call cmd,sohash)
 
@@ -139,11 +146,23 @@ $(SOHASH): $(SOLIB) $(SOLIB).hash
 # build interp.o
 targets += interp.o
 
-quiet_cmd_interp = BUILD  $@
-      cmd_interp = $(USERCC) $(usercflags) -D__ASSEMBLY__     \
+quiet_cmd_interp = BUILD   $@
+      cmd_interp = $(KLIBCCC) $(klibccflags) -D__ASSEMBLY__     \
                              -DLIBDIR=\"$(SHLIBDIR)\"         \
-			     -DSOHASH=\"`cat $(SOLIB).hash`\" \
+			     -DSOHASH=\"$(SOLIBHASH)\" \
 			     -c -o $@ $<
 
 $(INTERP_O): $(obj)/interp.S $(SOLIB).hash
 	$(call if_changed,interp)
+
+#####
+# Install klibc
+install-rule:
+	@echo "  INSTALL klibc to $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib"
+	$(Q)$(foreach f, $(LIB) $(SOLIB) $(CRT0) $(INTERP_O), \
+	  $(shell $(install-data) $(f) \
+	          $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib))
+	$(Q)$(install-lib) $(obj)/klibc-$(SOLIBHASH).so \
+	                      $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib
+	$(Q)$(install-lib) $(obj)/klibc-$(SOLIBHASH).so \
+	                      $(INSTALLROOT)$(SHLIBDIR)

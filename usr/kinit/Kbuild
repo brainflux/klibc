@@ -1,0 +1,27 @@
+#
+# Kbuild file for kinit
+#
+
+static-y := kinit
+kinit-y  := kinit.o do_mounts.o nfsroot.o getintfile.o initrd.o
+kinit-y  += open.o readfile.o
+
+kinit-y  += ipconfig/
+kinit-y  += nfsmount/
+
+
+# kinit.c include ipconfig header file
+KLIBCCFLAGS_kinit.o   := -I$(srctree)/$(src)/ipconfig
+# So do nfsroot
+KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig -I$(srctree)/$(src)/nfsmount
+
+
+# TODO - stripped image
+
+# Cleaning
+targets := $(static-y) $(shared-y)
+subdir- := ipconfig nfsmount
+
+
+# install binary
+install-y := kinit

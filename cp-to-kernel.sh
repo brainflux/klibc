@@ -12,7 +12,7 @@ fi
 
 kernel=$1
 if [ ! -d $kernel ]; then
-	echo "$kernel is not a kernel directory"
+	echo "$kernel is not a directory"
 	exit 1
 fi
 
@@ -32,9 +32,38 @@ if [ -z $2 ]; then
 	cp -R include/* $kernel/usr/include
 fi
 
+echo "Copying gzip"
+if [ ! -d $kernel/usr/gzip ]; then
+	mkdir -p $kernel/usr/gzip
+fi
+cp -R gzip/* $kernel/usr/gzip
+
+echo "Copying kinit ipconfig and nfsmount"
+if [ ! -d $kernel/usr/kinit ]; then
+	mkdir -p $kernel/usr/kinit
+fi
+cp -R usr/kinit/* $kernel/usr/kinit
+
+
+echo "Copying dash"
+if [ ! -d $kernel/usr/dash ]; then
+	mkdir -p $kernel/usr/dash
+fi
+cp -R dash/* $kernel/usr/dash
+
+echo "Copying utils"
+if [ ! -d $kernel/usr/utils ]; then
+	mkdir -p $kernel/usr/utils
+fi
+cp -R utils/* $kernel/usr/utils
+
 echo "Copying kbuild files"
-cp kernel/Kbuild.*          $kernel/scripts
-cp kernel/Kbuild            $kernel/usr
+cp scripts/Kbuild.klibc       $kernel/scripts
+# Newer kernel versions have Kbuild.include, so do not overwrite it
+if [ ! -f $kernel/scripts/Kbuild.include ]; then
+	cp scripts/Kbuild.include $kernel/scripts
+fi
+cp usr/Kbuild               $kernel/usr
 cp klibc/Kbuild             $kernel/usr/klibc
 cp klibc/syscalls/Kbuild    $kernel/usr/klibc/syscalls
 cp klibc/socketcalls/Kbuild $kernel/usr/klibc/socketcalls
