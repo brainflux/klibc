@@ -17,8 +17,8 @@ __syscall_common:
 2:
 	ldgp	gp, 0(pv)
 	lda	a1, errno
+	stl	v0, 0(a1)
 	lda	v0, -1(zero)
-	stl	a3, 0(a1)
 1:
 	ret	zero,(ra),1
 
