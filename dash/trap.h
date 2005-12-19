@@ -49,3 +49,4 @@ int dotrap(void);
 void setinteractive(int);
 void exitshell(void) __attribute__((__noreturn__));
 int decode_signal(const char *, int);
+const char *signal_name(int);

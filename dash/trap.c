@@ -79,8 +79,6 @@ volatile sig_atomic_t pendingsigs;
 /* do we generate EXSIG events */
 int exsig;
 
-extern char *signal_names[];
-
 #ifdef mkinit
 INCLUDE <signal.h>
 INIT {
@@ -107,7 +105,7 @@ trapcmd(int argc, char **argv)
 				out1fmt(
 					"trap -- %s %s\n",
 					single_quote(trap[signo]),
-					signal_names[signo]
+					signal_name(signo)
 				);
 			}
 		}
@@ -372,23 +370,66 @@ out:
 	/* NOTREACHED */
 }
 
+/*
+ * Decode a signal name
+ */
 int decode_signal(const char *string, int minsig)
 {
-	int signo;
+	int i;
+	char *ep;
 
 	if (is_number(string)) {
-		signo = atoi(string);
-		if (signo >= NSIG) {
+		i = atoi(string);
+		if (i >= NSIG) {
 			return -1;
 		}
-		return signo;
+		return i;
 	}
 
-	for (signo = minsig; signo < NSIG; signo++) {
-		if (!strcasecmp(string, signal_names[signo])) {
-			return signo;
-		}
+	for ( i = minsig ; i < NSIG ; i++ ) {
+		if ( sys_sigabbrev[i] &&
+		     !strcasecmp(string, sys_sigabbrev[i]) )
+			return i;
+	}
+	
+	if ( !strncasecmp(string, "RTMIN", 5) ) {
+		if ( string[5] && string[5] != '+' )
+			return -1;
+		i = SIGRTMIN + strtol(string+5, &ep, 10);
+		if ( *ep || i < SIGRTMIN || i > SIGRTMAX )
+			return -1;
+		return i;
+	}
+
+	if ( !strncasecmp(string, "RTMAX", 5) ) {
+		if ( string[5] && string[5] != '-' )
+			return -1;
+		i = SIGRTMAX + strtol(string+5, &ep, 10);
+		if ( *ep || i < SIGRTMIN || i > SIGRTMAX )
+			return -1;
+		return i;
 	}
 
 	return -1;
+}
+
+/*
+ * Human-readable signal name
+ */
+const char *
+signal_name(int sig)
+{
+	static char buf[64];
+	
+	if ( sig < 0 || sig > NSIG )
+		return NULL;
+	else if ( sys_sigabbrev[sig] )
+		return sys_sigabbrev[sig];
+	else if ( sig >= SIGRTMIN && sig <= SIGRTMAX ) {
+		snprintf(buf, sizeof buf, "RTMIN+%d", sig);
+		return buf;
+	} else {
+		snprintf(buf, sizeof buf, "%d", sig);
+		return buf;
+	}
 }

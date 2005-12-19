@@ -26,7 +26,7 @@ SRCS :=	alias.c arith_yylex.c cd.c error.c eval.c exec.c expand.c \
 	mystring.c options.c parser.c redir.c show.c trap.c output.c \
 	bltin/printf.c system.c bltin/test.c bltin/times.c var.c
 
-OBJ1 :=	builtins.o init.o nodes.o signames.o syntax.o
+OBJ1 :=	builtins.o init.o nodes.o syntax.o
 OBJ2 :=	alias.o arith.o arith_yylex.o cd.o \
 	error.o eval.o exec.o expand.o \
 	histedit.o input.o jobs.o \

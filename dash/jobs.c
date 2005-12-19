@@ -243,7 +243,6 @@ killcmd(argc, argv)
 	int argc;
 	char **argv;
 {
-	extern char *signal_names[];
 	int signo = -1;
 	int list = 0;
 	int i;
@@ -301,7 +300,7 @@ usage:
 		if (!*argv) {
 			outstr("0\n", out);
 			for (i = 1; i < NSIG; i++) {
-				outfmt(out, snlfmt, signal_names[i]);
+				outfmt(out, snlfmt, signal_name(i));
 			}
 			return 0;
 		}
@@ -309,7 +308,7 @@ usage:
 		if (signo > 128)
 			signo -= 128;
 		if (0 < signo && signo < NSIG)
-			outfmt(out, snlfmt, signal_names[signo]);
+			outfmt(out, snlfmt, signal_name(signo));
 		else
 			sh_error("invalid signal number or exit status: %s",
 				 *argv);
