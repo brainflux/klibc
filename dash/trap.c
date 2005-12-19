@@ -426,7 +426,7 @@ signal_name(int sig)
 	else if ( sys_sigabbrev[sig] )
 		return sys_sigabbrev[sig];
 	else if ( sig >= SIGRTMIN && sig <= SIGRTMAX ) {
-		snprintf(buf, sizeof buf, "RTMIN+%d", sig);
+		snprintf(buf, sizeof buf, "RTMIN+%d", sig-SIGRTMIN);
 		return buf;
 	} else {
 		snprintf(buf, sizeof buf, "%d", sig);
