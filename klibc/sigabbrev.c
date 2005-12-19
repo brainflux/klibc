@@ -112,4 +112,10 @@ const char * const sys_sigabbrev[NSIG] = {
 #ifdef SIGXFSZ
   [SIGXFSZ] = "XFSZ",
 #endif
+#ifdef SIGTRAP
+  [SIGTRAP] = "TRAP",
+#endif
+#ifdef SIGCONT
+  [SIGCONT] = "CONT",
+#endif
 };

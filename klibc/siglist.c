@@ -112,4 +112,10 @@ const char * const sys_siglist[NSIG] = {
 #ifdef SIGXFSZ
   [SIGXFSZ] = "File size limit exceeded",
 #endif
+#ifdef SIGTRAP
+  [SIGTRAP] = "Trace/breakpoint trap",
+#endif
+#ifdef SIGCONT
+  [SIGCONT] = "Continue",
+#endif
 };
