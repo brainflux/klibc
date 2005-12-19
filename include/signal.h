@@ -42,7 +42,8 @@ typedef int sig_atomic_t;
 # undef SIGRTMAX
 #endif
 
-__extern const char * const sys_siglist[];
+__extern const char * const sys_siglist[_NSIG];
+__extern const char * const sys_sigabbrev[_NSIG];
 
 /* This assumes sigset_t is either an unsigned long or an array of such,
    and that _NSIG_BPW in the kernel is always LONG_BIT */
