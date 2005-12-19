@@ -2,8 +2,6 @@
 # Kbuild file for dash
 #
 
-YACC = bison -y
-
 COMMON_CFLAGS :=
 COMMON_CPPFLAGS := \
 	-DBSD=1 -DSMALL -DSHELL \
@@ -14,14 +12,14 @@ CFLAGS := $(COMMON_CFLAGS)
 CPPFLAGS := $(COMMON_CPPFLAGS)
 CFLAGS_FOR_BUILD := $(COMMON_CFLAGS) 
 CPPFLAGS_FOR_BUILD := $(COMMON_CPPFLAGS)
-YFLAGS = -d
 
 DEFS := -DHAVE_CONFIG_H
-DEFAULT_INCLUDES := -I$(srctree)/$(src) -include $(srctree)/$(src)/config.h
+DEFAULT_INCLUDES := \
+	-I$(srctree)/$(src) -I$(objtree)/$(obj) \
+	-include $(srctree)/$(src)/config.h
 
 EXTRA_KLIBCCFLAGS := $(DEFS) $(DEFAULT_INCLUDES) $(CPPFLAGS) $(CFLAGS)
 HOST_EXTRACFLAGS := $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) 
-YACCCOMPILE = $(YACC) $(YFLAGS)
 
 SRCS :=	alias.c arith_yylex.c cd.c error.c eval.c exec.c expand.c \
 	histedit.c input.c jobs.c mail.c main.c memalloc.c miscbltin.c \
@@ -40,9 +38,9 @@ OBJ2 :=	alias.o arith.o arith_yylex.o cd.o \
 
 OBJS :=	$(OBJ1) $(OBJ2)
 
-HELPERS = mkinit mksyntax mknodes mksignames
-BUILT_SOURCES = arith.h builtins.h nodes.h syntax.h token.h
-CLEANFILES = \
+HELPERS := mkinit mksyntax mknodes mksignames
+BUILT_SOURCES := arith.h builtins.h nodes.h syntax.h token.h
+CLEANFILES := \
 	$(BUILT_SOURCES) $(patsubst %.o,%.c,$(OBJ1)) \
 	arith.c $(HELPERS) builtins.def
 
@@ -59,9 +57,14 @@ hostprogs-y := $(HELPERS)
 # For cleaning
 targets := sh sh.g sh.shared sh.shared.g $(CLEANFILES)
 
-# Generate token.h
-$(obj)/parser.o: $(obj)/token.h
+$(addprefix $(obj)/, $(OBJS)): $(addprefix $(obj)/, $(BUILT_SOURCES) check)
 
+quiet_cmd_check = CHECK   $(obj)
+      cmd_check = mkdir -p $(obj)/bltin; touch $(obj)/check
+$(obj)/check:
+	$(call cmd,check)
+
+# Generate token.h
 quiet_cmd_mktokens = GEN     $@
       cmd_mktokens = cd $(obj); sh $(srctree)/$<
 $(obj)/token.h: $(src)/mktokens
@@ -90,9 +93,13 @@ $(obj)/init.c: $(obj)/mkinit $(addprefix $(src)/, $(SRCS))
 quiet_cmd_mknodes = GEN     $@
       cmd_mknodes = cd $(obj); ./mknodes $(srctree)/$(src)/nodetypes \
 			       $(srctree)/$(src)/nodes.c.pat
-$(obj)/nodes.c $(obj)/nodes.h: $(obj)/mknodes $(src)/nodetypes \
-			       $(src)/nodes.c.pat
+$(obj)/nodes.c: $(obj)/mknodes $(src)/nodetypes $(src)/nodes.c.pat
 	$(call cmd,mknodes)
+
+quiet_cmd_mknodes_h = GEN     $@
+      cmd_mknodes_h = :
+$(obj)/nodes.h: $(obj)/nodes.c
+	$(call cmd,mknodes_h)
 
 quiet_cmd_mksyntax = GEN     $@
       cmd_mksyntax = cd $(obj); ./mksyntax
@@ -105,13 +112,11 @@ $(obj)/signames.c: $(obj)/mksignames
 	$(call cmd,mksignames)
 
 
-$(obj)/arith_yylex.o: $(obj)/arith.h
+$(obj)/arith.c: $(src)/arith.y
+	bison -o $@ $<
 
-$(obj)/arith.h $(obj)/arith.c: $(src)/arith.y
-	cd $(obj); \
-		$(YACCCOMPILE) $(srctree)/$<; \
-		mv y.tab.c arith.c; \
-		mv y.tab.h arith.h
+$(obj)/arith.h: $(src)/arith.y
+	bison --defines=$@ -o /dev/null $<
 
 
 # Targets to install
