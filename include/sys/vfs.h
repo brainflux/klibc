@@ -13,7 +13,7 @@
 /* struct statfs64 -- there seems to be two standards -
    one for 32 and one for 64 bits, and they're incompatible... */
 
-#if _BITSIZE == 32 || defined(__s390__)
+#if !defined(__x86_64__) && !defined(__ia64__) && !defined(__sparc64__)
 
 struct statfs {
         uint32_t f_type;
