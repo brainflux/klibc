@@ -421,7 +421,7 @@ signal_name(int sig)
 {
 	static char buf[64];
 	
-	if ( sig < 0 || sig > NSIG )
+	if ( sig < 0 || sig >= NSIG )
 		return NULL;
 	else if ( sys_sigabbrev[sig] )
 		return sys_sigabbrev[sig];
