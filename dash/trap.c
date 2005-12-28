@@ -377,7 +377,6 @@ out:
 int decode_signal(const char *string, int minsig)
 {
 	int i;
-	char *ep;
 
 	if (is_number(string)) {
 		i = atoi(string);
