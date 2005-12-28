@@ -8,6 +8,7 @@ export KLIBCSRC := klibc
 export KLIBCINC := include
 export KLIBCOBJ := klibc
 export KLIBCKERNELSRC := linux/
+include scripts/Kbuild.include
 
 export CC      := gcc
 NOSTDINC_FLAGS := -nostdlib -nostdinc -isystem $(shell $(CC) -print-file-name=include)
@@ -89,8 +90,29 @@ klibc:
 test: klibc
 	$(Q)$(MAKE) $(klibc)=klibc/tests
 
+###
+# clean: remove generated files
+# mrproper does a full cleaning including .config and linux symlink
+FIND_IGNORE := \( -name .git \) -prune -o
+quiet_cmd_rmfiles = $(if $(wildcard $(rm-files)),RM     $(wildcard $(rm-files)))
+      cmd_rmfiles = rm -f $(rm-files)
 clean:
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.clean obj=.
+	$(Q)find . $(FIND_IGNORE) \
+		\( -name *.o -o -name *.a -o -name '.*.cmd' -o \
+		   -name '.*.d' -o -name '.*.tmp' \) \
+		-type f -print | xargs rm -f
+							
+rm-files := .config linux
+distclean mrproper: clean
+	 $(Q)find . $(FIND_IGNORE) \
+		\( -name '*.orig' -o -name '*.rej' -o -name '*~' \
+		-o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
+		-o -name '.*.rej' -o -size 0 \
+		-o -name '*%' -o -name '.*.cmd' -o -name 'core' \) \
+		-type f -print | xargs rm -f
+	$(call cmd,rmfiles)
+											 
 
 install: all
 	$(Q)$(MAKE) -f $(srctree)/scripts/Kbuild.install obj=.
