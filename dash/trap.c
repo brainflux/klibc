@@ -394,7 +394,7 @@ int decode_signal(const char *string, int minsig)
 	
 #ifdef SIGRTMIN
 	if ( !strncasecmp(string, "RTMIN", 5) ) {
-		char **ep;
+		char *ep;
 
 		if ( string[5] && string[5] != '+' )
 			return -1;
@@ -405,7 +405,7 @@ int decode_signal(const char *string, int minsig)
 	}
 
 	if ( !strncasecmp(string, "RTMAX", 5) ) {
-		char **ep;
+		char *ep;
 		
 		if ( string[5] && string[5] != '-' )
 			return -1;
