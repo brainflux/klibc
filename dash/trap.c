@@ -392,6 +392,7 @@ int decode_signal(const char *string, int minsig)
 			return i;
 	}
 	
+#ifdef SIGRTMIN
 	if ( !strncasecmp(string, "RTMIN", 5) ) {
 		if ( string[5] && string[5] != '+' )
 			return -1;
@@ -409,6 +410,7 @@ int decode_signal(const char *string, int minsig)
 			return -1;
 		return i;
 	}
+#endif
 
 	return -1;
 }
@@ -421,13 +423,15 @@ signal_name(int sig)
 {
 	static char buf[64];
 	
-	if ( sig < 0 || sig >= NSIG )
+	if ( sig < 0 || sig >= NSIG ) {
 		return NULL;
-	else if ( sys_sigabbrev[sig] )
+	} else if ( sys_sigabbrev[sig] ) {
 		return sys_sigabbrev[sig];
-	else if ( sig >= SIGRTMIN && sig <= SIGRTMAX ) {
+#ifdef SIGRTMIN
+	} else if ( sig >= SIGRTMIN && sig <= SIGRTMAX ) {
 		snprintf(buf, sizeof buf, "RTMIN+%d", sig-SIGRTMIN);
 		return buf;
+#endif
 	} else {
 		snprintf(buf, sizeof buf, "%d", sig);
 		return buf;
