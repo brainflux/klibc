@@ -48,7 +48,7 @@ include $(srctree)/scripts/Kbuild.include
 KLIBCREQFLAGS     :=
 KLIBCARCHREQFLAGS :=
 KLIBCOPTFLAGS     :=
-KLIBCWARNFLAGS    := -W -Wall -Wno-sign-compare
+KLIBCWARNFLAGS    := -W -Wall -Wno-sign-compare -Wno-unused-parameter
 KLIBCSHAREDFLAGS  := 
 KLIBCBITSIZE      :=
 KLIBCLDFLAGS      :=
@@ -56,11 +56,15 @@ KLIBCLDFLAGS      :=
 # Arch specific definitions for klibc
 include $(KLIBCSRC)/arch/$(ARCH)/MCONFIG
 
+# klibc version
+KLIBCMAJOR        := $(shell cut -d. -f1 $(srctree)/version)
+KLIBCMINOR        := $(shell cut -d. -f2 $(srctree)/version)
+
 # FIXME - backwards compatibility. Remove when all MCONFIGs are corrected
 KLIBCREQFLAGS     += $(REQFLAGS)
 KLIBCARCHREQFLAGS += $(ARCHREQFLAGS)
 KLIBCOPTFLAGS     += $(OPTFLAGS)
-KLIBCWARNFLAGS    += $(WARNFLAGS) -W -Wall -Wno-sign-compare
+KLIBCWARNFLAGS    += $(WARNFLAGS)
 KLIBCSHAREDFLAGS  += $(SHAREDFLAGS)
 KLIBCBITSIZE      := $(strip $(KLIBCBITSIZE) $(BITSIZE))
 KLIBCLDFLAGS      += $(LDFLAGS)
@@ -83,8 +87,10 @@ KLIBCCPPFLAGS    := -I$(KLIBCINC)/arch/$(ARCH)         \
 KLIBCCPPFLAGS    += -I$(KLIBCKERNELSRC)include                              \
                      $(if $(KBUILD_SRC),-Iinclude2 -I$(srctree)/include)
 # klibc definitions
-KLIBCCPPFLAGS    += -D__KLIBC__=1 -D__KLIBC_MINOR__=0                       \
-		    -DBITSIZE=$(KLIBCBITSIZE)
+KLIBCDEFS        := -D__KLIBC__=$(KLIBCMAJOR)          \
+		    -D__KLIBC_MINOR__=$(KLIBCMINOR)    \
+		    -D_BITSIZE=$(KLIBCBITSIZE)
+KLIBCCPPFLAGS    += $(KLIBCDEFS)
 KLIBCCFLAGS      := $(KLIBCCPPFLAGS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS)  \
                     $(KLIBCOPTFLAGS) $(KLIBCWARNFLAGS)
 KLIBCAFLAGS      := -D__ASSEMBLY__ $(KLIBCCFLAGS)
