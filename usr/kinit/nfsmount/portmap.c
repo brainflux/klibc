@@ -54,7 +54,7 @@ __u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
 		goto bail;
 
 	if (rpc.reply_len < sizeof(reply)) {
-		fprintf(stderr, "incomplete reply: %d < %d\n",
+		fprintf(stderr, "incomplete reply: %zu < %zu\n",
 			rpc.reply_len, sizeof(reply));
 		goto bail;
 	}
