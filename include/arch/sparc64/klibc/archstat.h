@@ -3,20 +3,26 @@
 
 /* No nsec fields?! */
 struct stat {
-	unsigned   st_dev;
+	unsigned long st_dev;
+	unsigned short __pad1;
 	ino_t   st_ino;
 	mode_t  st_mode;
-	short   st_nlink;
+	unsigned int st_nlink;
 	uid_t   st_uid;
 	gid_t   st_gid;
-	unsigned   st_rdev;
+	unsigned long st_rdev;
+	unsigned short __pad2;
 	off_t   st_size;
-	time_t  st_atime;
-	time_t  st_mtime;
-	time_t  st_ctime;
 	off_t   st_blksize;
 	off_t   st_blocks;
-	unsigned long  __unused4[2];
+	time_t  st_atime;
+	unsigned long __unused1;
+	time_t  st_mtime;
+	unsigned long __unused2;
+	time_t  st_ctime;
+	unsigned long __unused3;
+	unsigned long __unused4;
+	unsigned long __unused5;
 };
 
 #endif
