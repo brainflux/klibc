@@ -31,7 +31,7 @@ print "#!${perlpath}\n";
 open(KLIBCCONF, '<', $klibcconf) or die "$0: cannot open $klibcconf: $!\n";
 while ( defined($l = <KLIBCCONF>) ) {
     chomp $l;
-    if ( $l =~ /^([^=]+)\=(.*)$/ ) {
+    if ( $l =~ /^([^=]+)\=\s*(.*)$/ ) {
 	$n = $1;  $s = $2;
 
 	if ( $n eq 'CC' || $n eq 'LD' || $n eq 'STRIP' ) {
@@ -41,8 +41,15 @@ while ( defined($l = <KLIBCCONF>) ) {
 	}
 
 	print "\$$n = \"\Q$s\E\";\n";
-	print "\@$n = qw($s);\n";
 	print "\$conf{\'\L$n\E\'} = \\\$$n;\n";
+
+	print "\@$n = ("; $sep = '';
+	while ( $s =~ /^\s*(\S+)/ ) {
+	    print $sep, "\"\Q$1\E\"";
+	    $sep = ', ';
+	    $s = $';
+	}
+	print ");\n";
     }
 }
 close(KLIBCCONF);
