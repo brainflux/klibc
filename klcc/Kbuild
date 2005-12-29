@@ -21,7 +21,7 @@ $(obj)/$(KLIBCCROSS)klibc.config: $(src)/Kbuild \
 	$(Q)echo 'STRIPFLAGS=$(KLIBCSTRIPFLAGS)' >> $@
 	$(Q)echo 'EMAIN=$(KLIBCEMAIN)' >> $@
 	$(Q)echo 'BITSIZE=$(KLIBCBITSIZE)' >> $@
-	$(Q)echo 'VERSION=$(shell cat $(srctree)/version))' >> $@
+	$(Q)echo 'VERSION=$(shell cat $(srctree)/version)' >> $@
 	$(Q)echo 'prefix=$(INSTALLDIR)' >> $@
 	$(Q)echo 'bindir=$(INSTALLDIR)/$(KCROSS)bin' >> $@
 	$(Q)echo 'libdir=$(INSTALLDIR)/$(KCROSS)lib' >> $@
