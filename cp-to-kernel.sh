@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -xe
 
 # Copy klibc to kernel - integrating klibc with the kbuild infrastructure
 # Most files are located in the usr/ directory structure in the kernel
@@ -16,12 +16,12 @@ if [ ! -d $kernel ]; then
 	exit 1
 fi
 
+mkdir -p $kernel/usr $kernel/scripts
+
 if [ -z $2 ]; then
 	echo "Copying source files"
 	# 1) Copy all klibc source files
-	if [ ! -d $kernel/usr/klibc ]; then
-		mkdir $kernel/usr/klibc
-	fi
+	mkdir -p $kernel/usr/klibc
 	cp -R klibc/* $kernel/usr/klibc
 
 	echo "Copying header files"
