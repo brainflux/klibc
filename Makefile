@@ -8,6 +8,7 @@ export KLIBCSRC := klibc
 export KLIBCINC := include
 export KLIBCOBJ := klibc
 export KLIBCKERNELSRC := linux/
+export KLIBCKERNELOBJ := linux/
 include scripts/Kbuild.include
 
 export CC      := gcc
@@ -102,7 +103,7 @@ clean:
 		\( -name *.o -o -name *.a -o -name '.*.cmd' -o \
 		   -name '.*.d' -o -name '.*.tmp' \) \
 		-type f -print | xargs rm -f
-							
+
 rm-files := .config linux
 distclean mrproper: clean
 	 $(Q)find . $(FIND_IGNORE) \

@@ -16,3 +16,7 @@ BITSIZE  = 32
 # 256-16 MB - normal binaries start at 256 MB, and jumps are limited
 # to +/- 16 MB
 SHAREDFLAGS     = -Ttext 0x0f000200
+
+# The kernel so far has both asm-ppc* and asm-powerpc.
+KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(ARCH)/include
+
