@@ -97,6 +97,13 @@ typedef uint64_t __bitwise	__le64;
 typedef uint64_t __bitwise	__be64;
 
 /*
+ * Some headers seem to require this...
+ */
+#ifndef BITS_PER_LONG
+# define BITS_PER_LONG _BITSIZE
+#endif
+
+/*
  * Some apps want this in <sys/types.h>
  */
 #include <sys/sysmacros.h>
