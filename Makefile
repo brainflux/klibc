@@ -14,7 +14,7 @@ include scripts/Kbuild.include
 export CC      := gcc
 NOSTDINC_FLAGS := -nostdlib -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
-export ARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
+export ARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/parisc64/parisc/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 
 export HOSTCC     := gcc
 export HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
