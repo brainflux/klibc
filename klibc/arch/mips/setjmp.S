@@ -78,5 +78,3 @@ LEAF(longjmp)
 	jr	ra
 
 	END(longjmp)
-	
-	
