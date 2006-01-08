@@ -12,4 +12,4 @@ OPTFLAGS     = -Os
 BITSIZE      = 32
 
 # Extra linkflags when building the shared version of the library
-SHAREDFLAGS	= -T arch/$(ARCH)/klibc.ld
+SHAREDFLAGS	= -T $(src)/arch/$(ARCH)/klibc.ld
