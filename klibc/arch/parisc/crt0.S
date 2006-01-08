@@ -25,8 +25,8 @@ _start:
 	ldil	L%$global$, %dp
 	ldo	R%$global$(%dp), %dp
 
-/* Indicate that we don't need no stinkin' atexit callback */
-	ldi	0,%r25
+/* parisc abi puts the atexit pointer in %r23, see ELF_PLAT_INIT() */
+	copy	%r23, %r25
 
 /* branch to __libc_init */
 	bl	__libc_init,%r2
