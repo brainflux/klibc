@@ -34,7 +34,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
 
    The following is the last known status of various architectures:
 
-   alpha:	 Working static, shared untested
+   alpha:	 Working
    arm-thumb:	 Untested
    arm26:	 Not yet ported
    arm:		 Working
@@ -46,7 +46,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    m68k:	 Not yet ported
    mips64:	 Not yet ported
    mips:	 Working
-   parisc:	 Untested
+   parisc:	 Working
    ppc64:	 Working
    ppc:		 Working
    s390:	 Working static, shared untested
