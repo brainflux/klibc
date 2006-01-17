@@ -1,9 +1,6 @@
 /* Linker script for klibc.so, needed because of the the damned
    GNU ld script headers problem */
 
-OUTPUT_FORMAT("elf32-tradbigmips", "elf32-tradbigmips",
-	      "elf32-tradlittlemips")
-OUTPUT_ARCH(mips)
 ENTRY(__start)
 SECTIONS
 {
