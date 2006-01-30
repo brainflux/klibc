@@ -1,0 +1,13 @@
+#
+# Kbuild file for kinit/zlib
+#
+
+# common .o files
+objs := adler32.o compress.o crc32.o gzio.o infback.o inffast.o inflate.o \
+	zutil.o
+
+# zlib config flags
+KLIBCCFLAGS += -DDYNAMIC_CRC_TABLE -DNO_GZCOMPRESS
+
+# Create built-in.o with all object files
+lib-y := $(objs)
