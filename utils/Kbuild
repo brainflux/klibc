@@ -2,7 +2,7 @@
 # Kbuild file for klib utils
 #
 
-progs := chroot dd fstype mkdir mkfifo mount pivot_root umount
+progs := chroot dd mkdir mkfifo mount pivot_root umount
 progs += true false sleep ln nuke minips cat
 progs += insmod uname
 
