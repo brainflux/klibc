@@ -8,11 +8,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <alloca.h>
+#include <inttypes.h>
 
 #include "do_mounts.h"
 #include "kinit.h"
 
-#define BUF_SZ		4096
+#define BUF_SZ		65536
 
 static const int do_devfs; // FIXME
 
@@ -341,16 +342,59 @@ mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 	return ret;
 }
 
-void
+static void
 md_run_setup(void)
 {
 	/* Muck around with md device(s) if necessary */
 }
 
+static int
+ramdisk_load(int argc, char *argv[], dev_t root_dev)
+{
+        const char *arg_prompt_ramdisk = 
+		get_arg(argc, argv, "prompt_ramdisk=");
+	const char *arg_ramdisk_blocksize =
+		get_arg(argc, argv, "ramdisk_blocksize=");
+	const char *arg_ramdisk_start =
+		get_arg(argc, argv, "ramdisk_start=");
+	int prompt_ramdisk =
+		arg_prompt_ramdisk ? atoi(arg_prompt_ramdisk) : 0;
+	int ramdisk_blocksize =
+		arg_ramdisk_blocksize ? atoi(arg_ramdisk_blocksize) : 512;
+	off_t ramdisk_start =
+		arg_ramdisk_start
+		? strtoumax(arg_ramdisk_start, NULL, 10)*ramdisk_blocksize
+		: 0;
+	int rfd, wfd;
+	char buf[BUF_SZ];
+	ssize_t rv;
+
+	return 0;		/* Not yet implemented */
+
+	/* XXX: This should be better error checked. */
+	
+	mknod("/dev/rddev", S_IFBLK|0400, root_dev);
+	mknod("/dev/ram0", S_IFBLK|0600, Root_RAM0);
+	rfd = open("/dev/rddev", O_RDONLY);
+	wfd = open("/dev/ram0", O_WRONLY);
+	lseek(rfd, ramdisk_start, SEEK_SET);
+	
+	/* XXX: Check length of ramdisk; if compressed, we need zlib */
+
+	printf("Loading ramdisk...");
+
+	close(rfd);
+	close(wfd);
+	
+	return 1;
+}
+		
+
 int do_mounts(int argc, char *argv[])
 {
 	const char *root_dev_name = get_arg(argc, argv, "root=");
 	const char *root_delay = get_arg(argc, argv, "rootdelay=");
+	const char *load_ramdisk = get_arg(argc, argv, "load_ramdisk=");
 	dev_t root_dev = 0;
 
 	if (root_delay) {
@@ -374,8 +418,10 @@ int do_mounts(int argc, char *argv[])
 	if ( initrd_load(argc, argv, root_dev) )
 		return 0;
 
-	/* If it's a floppy(only?) and load_ramdisk is set, then load
-	   a non-initrd ramdisk */
+	if ( load_ramdisk && atoi(load_ramdisk) ) {
+		if (ramdisk_load(argc, argv, root_dev))
+			root_dev = Root_RAM0;
+	}
 
 	return mount_root(argc, argv, root_dev, root_dev_name);
 }
