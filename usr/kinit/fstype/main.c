@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	rv = identify_fs(fd, &fstype, &bytes);
+	rv = identify_fs(fd, &fstype, &bytes, 0);
 	if ( rv == -1 ) {
 		perror(file);
 		return 2;

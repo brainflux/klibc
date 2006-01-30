@@ -15,6 +15,9 @@
 #ifndef FSTYPE_H
 #define FSTYPE_H
 
-int identify_fs(int fd, const char **fstype, unsigned long long *bytes);
+#include <unistd.h>
+
+int identify_fs(int fd, const char **fstype,
+		unsigned long long *bytes, off_t offset);
 
 #endif

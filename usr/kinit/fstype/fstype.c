@@ -187,7 +187,8 @@ static struct imagetype images[] = {
 	{ 32,	"jfs",		jfs_image	}
 };
 
-int identify_fs(int fd, const char **fstype, unsigned long long *bytes)
+int identify_fs(int fd, const char **fstype,
+		unsigned long long *bytes, off_t offset)
 {
 	unsigned char buf[BLOCK_SIZE];
 	off_t cur_block = (off_t)-1;
@@ -203,7 +204,8 @@ int identify_fs(int fd, const char **fstype, unsigned long long *bytes)
 			 * Read block.
 			 */
 			cur_block = images[i].block;
-			ret = pread(fd, buf, BLOCK_SIZE, cur_block*BLOCK_SIZE);
+			ret = pread(fd, buf, BLOCK_SIZE,
+				    offset+cur_block*BLOCK_SIZE);
 			if (ret != BLOCK_SIZE)
 				return -1; /* error */
 		}
