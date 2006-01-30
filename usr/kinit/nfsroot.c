@@ -73,7 +73,7 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 			path = (char *) "/tftpboot/%s";
 	} else if (dev_bootpath && dev_bootpath[0] != '\0')
 		fprintf(stderr,
-			"nsfroot=%s overrides boot server bootpath %s\n",
+			"nfsroot=%s overrides boot server bootpath %s\n",
 			path, dev_bootpath);
 
 	if ((opts = strchr(path, ',')) != NULL) {
