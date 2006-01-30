@@ -447,59 +447,67 @@ static int parse_device(struct netdev *dev, const char *ip)
 {
 	char *cp;
 	int i, opt;
+	int is_ip = 0;
+
+	DEBUG(("IP-Config: parse_device: \"%s\"\n", ip));
 
 	if (strncmp(ip, "ip=", 3) == 0) {
 		ip += 3;
+		is_ip = 1;
 	}
 	else if (strncmp(ip, "nfsaddrs=", 9) == 0) {
 		ip += 9;
+		is_ip = 1;	/* Not sure about this...? */
 	}
 
-	if (strchr(ip, ':') == NULL) {
-		dev->name = ip;
-		goto done;
-	}
-
-	for (i = opt = 0; ip && *ip; ip = cp, opt++) {
-		if ((cp = strchr(ip, ':'))) {
-			*cp++ = '\0';
-		}
-		if (opt > 6) {
-			fprintf(stderr, "%s: too many options for %s\n",
-				progname, dev->name);
-			exit(1);
-		}
-
-		if (*ip == '\0')
-			continue;
-		DEBUG(("IP-Config: opt #%d: '%s'\n", opt, ip));
-		switch (opt) {
-		case 0:
-			parse_addr(&dev->ip_addr, ip);
-			dev->caps = 0;
-			break;
-		case 1:
-			parse_addr(&dev->ip_server, ip);
-			break;
-		case 2:
-			parse_addr(&dev->ip_gateway, ip);
-			break;
-		case 3:
-			parse_addr(&dev->ip_netmask, ip);
-			break;
-		case 4:
-			strncpy(dev->hostname, ip, SYS_NMLN - 1);
-			dev->hostname[SYS_NMLN - 1] = '\0';
-			break;
-		case 5:
-			dev->name = ip;
-			break;
-		case 6:
+	if ( !strchr(ip, ':') ) {
+		/* Only one option, e.g. "ip=dhcp", or it's an interface name */
+		if ( is_ip )
 			dev->caps = parse_proto(ip);
-			break;
+		else
+			dev->name = ip;
+	} else {
+		for (i = opt = 0; ip && *ip; ip = cp, opt++) {
+			if ((cp = strchr(ip, ':'))) {
+				*cp++ = '\0';
+			}
+			if (opt > 6) {
+				fprintf(stderr, "%s: too many options for %s\n",
+					progname, dev->name);
+				exit(1);
+			}
+			
+			if (*ip == '\0')
+				continue;
+			DEBUG(("IP-Config: opt #%d: '%s'\n", opt, ip));
+			switch (opt) {
+			case 0:
+				parse_addr(&dev->ip_addr, ip);
+				dev->caps = 0;
+				break;
+			case 1:
+				parse_addr(&dev->ip_server, ip);
+				break;
+			case 2:
+				parse_addr(&dev->ip_gateway, ip);
+				break;
+			case 3:
+				parse_addr(&dev->ip_netmask, ip);
+				break;
+			case 4:
+				strncpy(dev->hostname, ip, SYS_NMLN - 1);
+				dev->hostname[SYS_NMLN - 1] = '\0';
+				break;
+			case 5:
+				dev->name = ip;
+				break;
+			case 6:
+				dev->caps = parse_proto(ip);
+				break;
+			}
 		}
 	}
- done:
+
 	if (dev->name == NULL ||
 	    dev->name[0] == '\0' ||
 	    strcmp(dev->name, "all") == 0) {
