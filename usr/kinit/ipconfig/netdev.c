@@ -170,28 +170,32 @@ int netdev_init_if(struct netdev *dev)
 	if (cfd == -1)
 		cfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (cfd == -1) {
-		perror("socket(AF_INET)");
+		fprintf(stderr, "ipconfig: %s: socket(AF_INET): %s\n",
+			dev->name, strerror(errno));
 		return -1;
 	}
 
 	copy_name(dev, &ifr);
 
 	if (ioctl(cfd, SIOCGIFINDEX, &ifr) == -1) {
-		perror("SIOCGIFINDEX");
+		fprintf(stderr, "ipconfig: %s: SIOCGIFINDEX: %s\n",
+			dev->name, strerror(errno));
 		return -1;
 	}
 
 	dev->ifindex = ifr.ifr_ifindex;
 
 	if (ioctl(cfd, SIOCGIFMTU, &ifr) == -1) {
-		perror("SIOCGIFMTU");
+		fprintf(stderr, "ipconfig: %s: SIOCGIFMTU: %s\n",
+			dev->name, strerror(errno));
 		return -1;
 	}
 
 	dev->mtu = ifr.ifr_mtu;
 
 	if (ioctl(cfd, SIOCGIFHWADDR, &ifr) == -1) {
-		perror("SIOCGIFHWADDR");
+		fprintf(stderr, "ipconfig: %s: SIOCGIFHWADDR: %s\n",
+			dev->name, strerror(errno));
 		return -1;
 	}
 
@@ -220,7 +224,8 @@ int netdev_init_if(struct netdev *dev)
 	 */
 	if (dev->ip_addr == INADDR_NONE &&
 	    netdev_gif_addr(&ifr, SIOCGIFADDR, &dev->ip_addr) == -1) {
-		perror("SIOCGIFADDR");
+		fprintf(stderr, "ipconfig: %s: SIOCGIFADDR: %s\n",
+			dev->name, strerror(errno));
 		dev->ip_addr = 0;
 		dev->ip_broadcast = 0;
 		dev->ip_netmask = 0;
@@ -229,13 +234,15 @@ int netdev_init_if(struct netdev *dev)
 
 	if (dev->ip_broadcast == INADDR_NONE &&
 	    netdev_gif_addr(&ifr, SIOCGIFBRDADDR, &dev->ip_broadcast) == -1) {
-		perror("SIOCGIFBRDADDR");
+		fprintf(stderr, "ipconfig: %s: SIOCGIFBRDADDR: %s\n",
+			dev->name, strerror(errno));
 		dev->ip_broadcast = 0;
 	}
 
 	if (dev->ip_netmask == INADDR_NONE &&
 	    netdev_gif_addr(&ifr, SIOCGIFNETMASK, &dev->ip_netmask) == -1) {
-		perror("SIOCGIFNETMASK");
+		fprintf(stderr, "ipconfig: %s: SIOCGIFNETMASK: %s\n",
+			dev->name, strerror(errno));
 		dev->ip_netmask = 0;
 	}
 
