@@ -366,6 +366,9 @@ int do_mounts(int argc, char *argv[])
 		if (strncmp(root_dev_name, "/dev/", 5) == 0) {
 			root_dev_name += 5;
 		}
+	} else if (get_arg(argc, argv, "nfsroot=") ||
+		   get_arg(argc, argv, "nfsaddrs=")) {
+		root_dev = Root_NFS;
 	}
 
 	if ( initrd_load(argc, argv, root_dev) )
