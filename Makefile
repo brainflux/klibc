@@ -77,10 +77,6 @@ rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 klibc.spec: klibc.spec.in version
 	sed -e 's/@@VERSION@@/$(VERSION)/g' < $< > $@
 
-.PHONY: rpm
-rpm: klibc.spec
-	+$(rpmbuild) -bb klibc.spec --target=$(ARCH)
-
 # Build klcc - it is the first target
 klcc:
 	$(Q)$(MAKE) $(klibc)=klcc
@@ -113,7 +109,6 @@ distclean mrproper: clean
 		-o -name '*%' -o -name '.*.cmd' -o -name 'core' \) \
 		-type f -print | xargs rm -f
 	$(call cmd,rmfiles)
-											 
 
 install: all
 	$(Q)$(MAKE) -f $(srctree)/scripts/Kbuild.install obj=.
