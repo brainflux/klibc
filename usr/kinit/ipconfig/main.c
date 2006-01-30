@@ -30,6 +30,7 @@ static char do_not_config;
 static unsigned int default_caps = CAP_DHCP | CAP_BOOTP | CAP_RARP;
 static int loop_timeout = -1;
 static int configured;
+static int bringup_first = 0;
 
 struct state {
 	int		state;
@@ -320,9 +321,14 @@ static int loop(void)
 		int x;
 
 		for (s = slist; s; s = s->next) {
-			if (s->state == DEVST_COMPLETE)
-				continue;
+			if (s->state == DEVST_COMPLETE) {
+				if ( bringup_first )
+					break;
+				else
+					continue;
+			}
 
+			DEBUG(("Pending: %s: state = %d\n", s->dev->name, s->state));
 			pending++;
 
 			if (s->expire - now.tv_sec <= 0)
@@ -462,10 +468,12 @@ static int parse_device(struct netdev *dev, const char *ip)
 
 	if ( !strchr(ip, ':') ) {
 		/* Only one option, e.g. "ip=dhcp", or it's an interface name */
-		if ( is_ip )
+		if ( is_ip ) {
 			dev->caps = parse_proto(ip);
-		else
+			bringup_first = 1;
+		} else {
 			dev->name = ip;
+		}
 	} else {
 		for (i = opt = 0; ip && *ip; ip = cp, opt++) {
 			if ((cp = strchr(ip, ':'))) {
@@ -625,6 +633,8 @@ static int add_all_devices(struct netdev *template)
 		if ( !(flags & IFF_LOOPBACK) &&
 		     (flags & (IFF_BROADCAST|IFF_POINTOPOINT)) )
 		{
+			DEBUG(("Trying to bring up %s\n", de->d_name));
+
 			if ( !(dev = add_device(de->d_name)) )
 				continue;
 			bringup_one_dev(template, dev);
@@ -671,7 +681,7 @@ int ipconfig_main(int argc, char *argv[])
 	srand48(now.tv_usec ^ (now.tv_sec << 24));
 
 	do {
-		c = getopt(argc, argv, "c:d:np:t:");
+		c = getopt(argc, argv, "c:d:onp:t:");
 		if (c == EOF)
 			break;
 
@@ -698,6 +708,9 @@ int ipconfig_main(int argc, char *argv[])
 					progname, loop_timeout);
 				exit(1);
 			}
+			break;
+		case 'o':
+			bringup_first = 1;
 			break;
 		case 'n':
 			do_not_config = 1;
