@@ -3,7 +3,7 @@
 #
 
 progs := chroot dd fstype mkdir mkfifo mount pivot_root umount
-progs += true false sleep ln nuke minips run-init cat
+progs += true false sleep ln nuke minips cat
 progs += insmod uname
 
 static-y := $(addprefix static/, $(progs))
@@ -38,8 +38,6 @@ static/nuke-y       := nuke.o
 shared/nuke-y       := nuke.o
 static/minips-y     := minips.o
 shared/minips-y     := minips.o
-static/run-init-y   := run-init.o runinitlib.o
-shared/run-init-y   := run-init.o runinitlib.o
 static/cat-y        := cat.o
 shared/cat-y        := cat.o
 static/insmod-y     := insmod.o

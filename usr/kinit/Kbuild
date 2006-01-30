@@ -4,19 +4,17 @@
 
 static-y := kinit
 kinit-y  := kinit.o do_mounts.o nfsroot.o getintfile.o initrd.o
-kinit-y  += open.o readfile.o ../../utils/runinitlib.o
+kinit-y  += open.o readfile.o run-init/runinitlib.o
 
 kinit-y  += ipconfig/
 kinit-y  += nfsmount/
+kinit-y  += run-init/
 
-
-# kinit.c include ipconfig header file
-KLIBCCFLAGS_kinit.o   := -I$(srctree)/$(src)/ipconfig
-# So do nfsroot
-KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig -I$(srctree)/$(src)/nfsmount
-
-
-# TODO - stripped image
+# Additional include paths files
+KLIBCCFLAGS_kinit.o   := -I$(srctree)/$(src)/ipconfig \
+			 -I$(srctree)/$(src)/run-init
+KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig \
+			 -I$(srctree)/$(src)/nfsmount
 
 # Cleaning
 targets := kinit kinit.g

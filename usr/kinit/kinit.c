@@ -10,7 +10,7 @@
 
 #include "kinit.h"
 #include "ipconfig.h"
-#include "../../utils/run-init.h"
+#include "run-init.h"
 
 const char *progname = "kinit";
 int mnt_procfs;
