@@ -9,6 +9,7 @@ kinit-y  += open.o readfile.o run-init/runinitlib.o
 kinit-y  += ipconfig/
 kinit-y  += nfsmount/
 kinit-y  += run-init/
+kinit-y  += fstype/
 
 # Additional include paths files
 KLIBCCFLAGS_kinit.o   := -I$(srctree)/$(src)/ipconfig \
@@ -18,7 +19,7 @@ KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig \
 
 # Cleaning
 targets := kinit kinit.g
-subdir- := ipconfig nfsmount run-init
+subdir- := ipconfig nfsmount run-init fstype
 
 
 # install binary
