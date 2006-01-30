@@ -3,8 +3,8 @@
 #
 
 # common .o files
-objs := adler32.o compress.o crc32.o gzio.o infback.o inffast.o inflate.o \
-	zutil.o
+objs := adler32.o compress.o crc32.o gzio.o infback.o inffast.o \
+	inftrees.o inflate.o zutil.o
 
 # zlib config flags
 KLIBCCFLAGS += -DDYNAMIC_CRC_TABLE -DNO_GZCOMPRESS

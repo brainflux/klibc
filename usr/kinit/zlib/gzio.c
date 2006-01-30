@@ -183,6 +183,7 @@ local gzFile gz_open (path, mode, fd)
     if (s->file == NULL) {
         return destroy(s), (gzFile)Z_NULL;
     }
+#ifndef NO_GZCOMPRESS
     if (s->mode == 'w') {
         /* Write a very simple .gz header:
          */
@@ -194,7 +195,9 @@ local gzFile gz_open (path, mode, fd)
          * start anyway in write mode, so this initialization is not
          * necessary.
          */
-    } else {
+    } else 
+#endif
+      {
         check_header(s); /* skip the .gz header */
         s->start = ftell(s->file) - s->stream.avail_in;
     }
@@ -231,6 +234,8 @@ gzFile ZEXPORT gzdopen (fd, mode)
 /* ===========================================================================
  * Update the compression level and strategy
  */
+#ifndef NO_GZCOMPRESS
+
 int ZEXPORT gzsetparams (file, level, strategy)
     gzFile file;
     int level;
@@ -252,6 +257,7 @@ int ZEXPORT gzsetparams (file, level, strategy)
 
     return deflateParams (&(s->stream), level, strategy);
 }
+#endif
 
 /* ===========================================================================
      Read a byte from a gz_stream; update next_in and avail_in. Return EOF
