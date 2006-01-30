@@ -18,7 +18,7 @@ KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig \
 
 # Cleaning
 targets := kinit kinit.g
-subdir- := ipconfig nfsmount
+subdir- := ipconfig nfsmount run-init
 
 
 # install binary
