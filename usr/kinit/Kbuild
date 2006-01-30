@@ -10,16 +10,18 @@ kinit-y  += ipconfig/
 kinit-y  += nfsmount/
 kinit-y  += run-init/
 kinit-y  += fstype/
+kinit-y  += zlib/
 
 # Additional include paths files
-KLIBCCFLAGS_kinit.o   := -I$(srctree)/$(src)/ipconfig \
-			 -I$(srctree)/$(src)/run-init
-KLIBCCFLAGS_nfsroot.o := -I$(srctree)/$(src)/ipconfig \
-			 -I$(srctree)/$(src)/nfsmount
+KLIBCCFLAGS += -I$(srctree)/$(src)/ipconfig \
+  	       -I$(srctree)/$(src)/nfsmount \
+ 	       -I$(srctree)/$(src)/run-init \
+ 	       -I$(srctree)/$(src)/fstype \
+ 	       -I$(srctree)/$(src)/zlib
 
 # Cleaning
 targets := kinit kinit.g
-subdir- := ipconfig nfsmount run-init fstype
+subdir- := ipconfig nfsmount run-init fstype zlib
 
 
 # install binary
