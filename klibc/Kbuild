@@ -45,6 +45,10 @@ libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 
 libc-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 
+ifeq ($(CONFIG_KLIBC_ERRLIST),y)
+KLIBCCFLAGS_strerror.o += -DWITH_ERRLIST
+endif
+
 libc-$(CONFIG_KLIBC_ZLIB)    += \
 	zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/gzio.o \
 	zlib/uncompr.o zlib/deflate.o zlib/trees.o zlib/zutil.o \
@@ -90,7 +94,7 @@ $(obj)/socketcalls/socketcalls.o: $(obj)/socketcalls
 # Readable errormessages extracted from src..
 targets += errlist.c
 quiet_cmd_errlist = GEN     $@
-      cmd_errlist = $(PERL) $< $(LINUXINCLUDE) -errlist > $@ || rm -f $@
+      cmd_errlist = $(PERL) $< $(KLIBCCPPFLAGS) -errlist > $@ || rm -f $@
 
 $(obj)/errlist.c: $(srctree)/$(src)/makeerrlist.pl
 	$(call cmd,errlist)

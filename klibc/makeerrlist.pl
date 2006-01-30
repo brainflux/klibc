@@ -71,7 +71,7 @@ foreach $arg ( @ARGV ) {
     } elsif ( $arg =~ '^\-I' ) {
 	push(@includelist, "$'");
     } else {
- 	die "$0: Unknown option: $arg\n";
+	# Ignore
     }
 }
 

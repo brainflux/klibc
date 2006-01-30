@@ -30,7 +30,7 @@ export INSTALLROOT =
 
 # Create a fake .config as present in the kernel tree
 # But if it exists leave it alone
-$(if $(wildcard $(objtree)/.config),,$(shell echo CONFIG_KLIBC=y > .config))
+$(if $(wildcard $(objtree)/.config),,$(shell cp defconfig .config))
 
 # Prefix Make commands with $(Q) to silence them
 # Use quiet_cmd_xxx, cmd_xxx to create nice output
