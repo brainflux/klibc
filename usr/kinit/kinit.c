@@ -10,10 +10,17 @@
 
 #include "kinit.h"
 #include "ipconfig.h"
+#include "../../utils/run-init.h"
 
 const char *progname = "kinit";
 int mnt_procfs;
 int mnt_sysfs;
+
+void __attribute__((noreturn)) die(const char *msg)
+{
+	fprintf(stderr, "%s: %s: %s\n", progname, msg, strerror(errno));
+	exit(1);
+}
 
 void dump_args(int argc, char *argv[])
 {
@@ -189,7 +196,27 @@ static void check_path(const char *path)
 	}
 }
 
+static const char *find_init(const char *root)
+{
+	const char *init_paths[] = {
+		"/sbin/init", "/bin/init", "/etc/init", "/bin/sh", NULL 
+	};
+	const char **p;
+	
+	if ( chdir(root) ) {
+		perror("chdir");
+		exit(1);
+	}
+	for ( p = init_paths ; *p ; p++ ) {
+		if ( !access(*p+1, X_OK) )
+			break;
+	}
+	chdir("/");
+	return *p;
+}
+
 /* This is the argc and argv we pass to init */
+const char *init_path;
 int init_argc;
 char **init_argv;
 
@@ -198,17 +225,11 @@ extern ssize_t readfile(const char *, char **);
 int main(int argc, char *argv[])
 {
 	char **cmdv;
-	char *kinit = NULL;
 	char buf[1024];
 	char *cmdline;
 	int ret = 0;
 	int cmdc;
 	int fd;
-	
-	ret = readfile("/proc/cmdline", &cmdline);
-	printf("Got: len = %d data = \"%s\"\n", ret, cmdline);
-
-	exit(0);
 
 	/* Default parameters for anything init-like we execute */
 	init_argc = argc;
@@ -229,6 +250,8 @@ int main(int argc, char *argv[])
 		ret = 1;
 		goto bail;
 	}
+
+	ret = readfile("/proc/cmdline", &cmdline);
 
 	if ((mnt_sysfs = mount_sys_fs("/sys/bus", "/sys", "sysfs")) == -1) {
 		ret = 1;
@@ -256,42 +279,28 @@ int main(int argc, char *argv[])
 	/* do_mounts cd's to /root so below tests /root/old_root */
 	check_path("old_root");
 
-#ifndef INI_DEBUG
-	if (pivot_root(".", "old_root") == -1) {
-		perror("pivot_root");
-		ret = 2;
-		goto bail;
-	}
-	/* the below chdir() is recommended after a pivot_root() */
-	chdir("/");
-
 	if (mnt_procfs == 1)
 		umount2("/proc", 0);
 
 	if (mnt_sysfs == 1)
 		umount2("/sys", 0);
 
-	if ((kinit = get_arg(cmdc, cmdv, "kinit="))) {
-		char *s = strrchr(kinit, '/');
-		if (s) {
-			s++;
-		}
-		init_argv[0] = s;
-		execv(kinit, init_argv);
-	}
-	init_argv[0] = "init";
-	execv("/sbin/init", init_argv);
-	execv("/etc/init", init_argv);
-	execv("/bin/init", init_argv);
-	init_argv[0] = "sh";
-	execv("/bin/sh", init_argv);
+	init_path = find_init("/root");
 
-	fprintf(stderr, "%s: I give up - there's nothing to run.\n", progname);
+	if ( !init_path ) {
+		fprintf(stderr, "%s: init not found!\n", progname);
+		ret = 2;
+		goto done;
+	}
+
+	init_argv[0] = strrchr(init_path, '/')+1;
+	
+	run_init("/root", "/dev/console", init_path, init_argv);
+
+	/* run_init shouldn't fail; it rather calls die(). */
+	fprintf(stderr, "%s: failed to run init for unknown reason...\n", progname);
 	ret = 2;
 	goto done;
-#else
-	printf("%s: imagine pivot_root and exec\n", progname);
-#endif
 
  bail:
 	if (mnt_procfs == 1)
