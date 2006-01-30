@@ -6,4 +6,4 @@
 [ -z "$tmpdir" ] && export tmpdir=/var/tmp
 
 ./maketar.sh
-rpmbuild -ta klibc-`cat version`.tar.gz
+rpmbuild -ta $tmpdir/klibc-`cat version`.tar.gz
