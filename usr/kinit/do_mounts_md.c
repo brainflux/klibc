@@ -1,7 +1,20 @@
-
-#include <linux/raid/md.h>
+#include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <alloca.h>
+#include <inttypes.h>
+#include <sys/sysmacros.h>
+#include <sys/md.h>
 
 #include "do_mounts.h"
+
+#define  LEVEL_NONE              (-1000000)
 
 /*
  * When md (and any require personalities) are compiled into the kernel
@@ -12,7 +25,7 @@
  * The code for that is here.
  */
 
-static int __initdata raid_noautodetect, raid_autopart;
+static int raid_noautodetect, raid_autopart;
 
 static struct {
 	int minor;
@@ -20,9 +33,9 @@ static struct {
 	int level;
 	int chunk;
 	char *device_names;
-} md_setup_args[MAX_MD_DEVS] __initdata;
+} md_setup_args[MAX_MD_DEVS];
 
-static int md_setup_ents __initdata;
+static int md_setup_ents;
 
 extern int mdp_major;
 /*
@@ -45,7 +58,7 @@ extern int mdp_major;
  *		Shifted name_to_kdev_t() and related operations to md_set_drive()
  *		for later execution. Rewrote section to make devfs compatible.
  */
-static int __init md_setup(char *str)
+static int md_setup(char *str)
 {
 	int minor, level, factor, fault, partitioned = 0;
 	char *pername = "";
@@ -57,23 +70,23 @@ static int __init md_setup(char *str)
 		str++;
 	}
 	if (get_option(&str, &minor) != 2) {	/* MD Number */
-		printk(KERN_WARNING "md: Too few arguments supplied to md=.\n");
+		fprintf(stderr,"md: Too few arguments supplied to md=.\n");
 		return 0;
 	}
 	str1 = str;
 	if (minor >= MAX_MD_DEVS) {
-		printk(KERN_WARNING "md: md=%d, Minor device number too high.\n", minor);
+		fprintf(stderr,"md: md=%d, Minor device number too high.\n", minor);
 		return 0;
 	}
 	for (ent=0 ; ent< md_setup_ents ; ent++)
 		if (md_setup_args[ent].minor == minor &&
 		    md_setup_args[ent].partitioned == partitioned) {
-			printk(KERN_WARNING "md: md=%s%d, Specified more than once. "
+			fprintf(stderr,"md: md=%s%d, Specified more than once. "
 			       "Replacing previous definition.\n", partitioned?"d":"", minor);
 			break;
 		}
 	if (ent >= MAX_MD_DEVS) {
-		printk(KERN_WARNING "md: md=%s%d - too many md initialisations\n", partitioned?"d":"", minor);
+		fprintf(stderr,"md: md=%s%d - too many md initialisations\n", partitioned?"d":"", minor);
 		return 0;
 	}
 	if (ent >= md_setup_ents)
@@ -83,7 +96,7 @@ static int __init md_setup(char *str)
 		if (level == 0 || level == LEVEL_LINEAR) {
 			if (get_option(&str, &factor) != 2 ||	/* Chunk Size */
 					get_option(&str, &fault) != 2) {
-				printk(KERN_WARNING "md: Too few arguments supplied to md=.\n");
+				fprintf(stderr,"md: Too few arguments supplied to md=.\n");
 				return 0;
 			}
 			md_setup_args[ent].level = level;
@@ -103,7 +116,7 @@ static int __init md_setup(char *str)
 		pername="super-block";
 	}
 
-	printk(KERN_INFO "md: Will configure md%d (%s) from %s, below.\n",
+	fprintf(stderr,"md: Will configure md%d (%s) from %s, below.\n",
 		minor, pername, str);
 	md_setup_args[ent].device_names = str;
 	md_setup_args[ent].partitioned = partitioned;
@@ -114,7 +127,7 @@ static int __init md_setup(char *str)
 
 #define MdpMinorShift 6
 
-static void __init md_setup_drive(void)
+static void md_setup_drive(void)
 {
 	int minor, i, ent, partitioned;
 	dev_t dev;
@@ -134,14 +147,14 @@ static void __init md_setup_drive(void)
 		sprintf(name, "/dev/md%s%d", partitioned?"_d":"", minor);
 		sprintf(devfs_name, "/dev/md/%s%d", partitioned?"d":"", minor);
 		if (partitioned)
-			dev = MKDEV(mdp_major, minor << MdpMinorShift);
+			dev = makedev(mdp_major, minor << MdpMinorShift);
 		else
-			dev = MKDEV(MD_MAJOR, minor);
+			dev = makedev(MD_MAJOR, minor);
 		create_dev(name, dev, devfs_name);
 		for (i = 0; i < MD_SB_DISKS && devname != 0; i++) {
 			char *p;
 			char comp_name[64];
-			u32 rdev;
+			dev_t rdev;
 
 			p = strchr(devname, ',');
 			if (p)
@@ -155,7 +168,7 @@ static void __init md_setup_drive(void)
 			if (rdev)
 				dev = new_decode_dev(rdev);
 			if (!dev) {
-				printk(KERN_WARNING "md: Unknown device name: %s\n", devname);
+				fprintf(stderr,"md: Unknown device name: %s\n", devname);
 				break;
 			}
 
@@ -168,21 +181,21 @@ static void __init md_setup_drive(void)
 		if (!i)
 			continue;
 
-		printk(KERN_INFO "md: Loading md%s%d: %s\n",
+		fprintf(stderr,"md: Loading md%s%d: %s\n",
 			partitioned ? "_d" : "", minor,
 			md_setup_args[ent].device_names);
 
-		fd = sys_open(name, 0, 0);
+		fd = open(name, 0, 0);
 		if (fd < 0) {
-			printk(KERN_ERR "md: open failed - cannot start "
+			fprintf(stderr,"md: open failed - cannot start "
 					"array %s\n", name);
 			continue;
 		}
-		if (sys_ioctl(fd, SET_ARRAY_INFO, 0) == -EBUSY) {
-			printk(KERN_WARNING
+		if (ioctl(fd, SET_ARRAY_INFO, 0) == -EBUSY) {
+			fprintf(stderr,
 			       "md: Ignoring md=%d, already autodetected. (Use raid=noautodetect)\n",
 			       minor);
-			sys_close(fd);
+			close(fd);
 			continue;
 		}
 
@@ -201,7 +214,7 @@ static void __init md_setup_drive(void)
 			ainfo.state = (1 << MD_SB_CLEAN);
 			ainfo.layout = 0;
 			ainfo.chunk_size = md_setup_args[ent].chunk;
-			err = sys_ioctl(fd, SET_ARRAY_INFO, (long)&ainfo);
+			err = ioctl(fd, SET_ARRAY_INFO, &ainfo);
 			for (i = 0; !err && i <= MD_SB_DISKS; i++) {
 				dev = devices[i];
 				if (!dev)
@@ -209,9 +222,9 @@ static void __init md_setup_drive(void)
 				dinfo.number = i;
 				dinfo.raid_disk = i;
 				dinfo.state = (1<<MD_DISK_ACTIVE)|(1<<MD_DISK_SYNC);
-				dinfo.major = MAJOR(dev);
-				dinfo.minor = MINOR(dev);
-				err = sys_ioctl(fd, ADD_NEW_DISK, (long)&dinfo);
+				dinfo.major = major(dev);
+				dinfo.minor = minor(dev);
+				err = ioctl(fd, ADD_NEW_DISK, &dinfo);
 			}
 		} else {
 			/* persistent */
@@ -219,30 +232,30 @@ static void __init md_setup_drive(void)
 				dev = devices[i];
 				if (!dev)
 					break;
-				dinfo.major = MAJOR(dev);
-				dinfo.minor = MINOR(dev);
-				sys_ioctl(fd, ADD_NEW_DISK, (long)&dinfo);
+				dinfo.major = major(dev);
+				dinfo.minor = minor(dev);
+				ioctl(fd, ADD_NEW_DISK, &dinfo);
 			}
 		}
 		if (!err)
-			err = sys_ioctl(fd, RUN_ARRAY, 0);
+			err = ioctl(fd, RUN_ARRAY, 0);
 		if (err)
-			printk(KERN_WARNING "md: starting md%d failed\n", minor);
+			fprintf(stderr,"md: starting md%d failed\n", minor);
 		else {
 			/* reread the partition table.
 			 * I (neilb) and not sure why this is needed, but I cannot
 			 * boot a kernel with devfs compiled in from partitioned md
 			 * array without it
 			 */
-			sys_close(fd);
-			fd = sys_open(name, 0, 0);
-			sys_ioctl(fd, BLKRRPART, 0);
+			close(fd);
+			fd = open(name, 0, 0);
+			ioctl(fd, BLKRRPART, 0);
 		}
-		sys_close(fd);
+		close(fd);
 	}
 }
 
-static int __init raid_setup(char *str)
+static int raid_setup(char *str)
 {
 	int len, pos;
 
@@ -267,20 +280,31 @@ static int __init raid_setup(char *str)
 	return 1;
 }
 
-__setup("raid=", raid_setup);
-__setup("md=", md_setup);
-
-void __init md_run_setup(void)
+static void md_run_setup(void)
 {
-	create_dev("/dev/md0", MKDEV(MD_MAJOR, 0), "md/0");
+	create_dev("/dev/md0", makedev(MD_MAJOR, 0), "md/0");
 	if (raid_noautodetect)
-		printk(KERN_INFO "md: Skipping autodetection of RAID arrays. (raid=noautodetect)\n");
+		fprintf(stderr, "md: Skipping autodetection of RAID arrays. (raid=noautodetect)\n");
 	else {
-		int fd = sys_open("/dev/md0", 0, 0);
+		int fd = open("/dev/md0", 0, 0);
 		if (fd >= 0) {
-			sys_ioctl(fd, RAID_AUTORUN, raid_autopart);
-			sys_close(fd);
+			ioctl(fd, RAID_AUTORUN, raid_autopart);
+			close(fd);
 		}
 	}
 	md_setup_drive();
+}
+
+void md_run(int argc, char *argv[])
+{
+	char **p;
+
+	for (p = argv; *p; p++) {
+		if (!strncmp(argv[i],"raid=",5))
+			raid_setup(argv[i]+5);
+		else if (!strncmp(argv[i],"md=",3))
+			md_setup(argv[i]+3);
+	}
+
+	md_run_setup();
 }
