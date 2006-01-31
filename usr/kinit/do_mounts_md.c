@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <sys/sysmacros.h>
 #include <sys/md.h>
+#include <linux/major.h>
 
 #include "do_mounts.h"
 
@@ -129,7 +130,7 @@ static int md_setup(char *str)
 
 static void md_setup_drive(void)
 {
-	int minor, i, ent, partitioned;
+	int dev_minor, i, ent, partitioned;
 	dev_t dev;
 	dev_t devices[MD_SB_DISKS+1];
 
@@ -140,16 +141,16 @@ static void md_setup_drive(void)
 		mdu_disk_info_t dinfo;
 		char name[16], devfs_name[16];
 
-		minor = md_setup_args[ent].minor;
+		dev_minor = md_setup_args[ent].minor;
 		partitioned = md_setup_args[ent].partitioned;
 		devname = md_setup_args[ent].device_names;
 
-		sprintf(name, "/dev/md%s%d", partitioned?"_d":"", minor);
-		sprintf(devfs_name, "/dev/md/%s%d", partitioned?"d":"", minor);
+		sprintf(name, "/dev/md%s%d", partitioned?"_d":"", dev_minor);
+		sprintf(devfs_name, "/dev/md/%s%d", partitioned?"d":"", dev_minor);
 		if (partitioned)
-			dev = makedev(mdp_major, minor << MdpMinorShift);
+			dev = makedev(mdp_major, dev_minor << MdpMinorShift);
 		else
-			dev = makedev(MD_MAJOR, minor);
+			dev = makedev(MD_MAJOR, dev_minor);
 		create_dev(name, dev, devfs_name);
 		for (i = 0; i < MD_SB_DISKS && devname != 0; i++) {
 			char *p;
@@ -182,7 +183,7 @@ static void md_setup_drive(void)
 			continue;
 
 		fprintf(stderr,"md: Loading md%s%d: %s\n",
-			partitioned ? "_d" : "", minor,
+			partitioned ? "_d" : "", dev_minor,
 			md_setup_args[ent].device_names);
 
 		fd = open(name, 0, 0);
@@ -194,7 +195,7 @@ static void md_setup_drive(void)
 		if (ioctl(fd, SET_ARRAY_INFO, 0) == -EBUSY) {
 			fprintf(stderr,
 			       "md: Ignoring md=%d, already autodetected. (Use raid=noautodetect)\n",
-			       minor);
+			       dev_minor);
 			close(fd);
 			continue;
 		}
@@ -208,7 +209,7 @@ static void md_setup_drive(void)
 			ainfo.raid_disks =0;
 			while (devices[ainfo.raid_disks])
 				ainfo.raid_disks++;
-			ainfo.md_minor =minor;
+			ainfo.md_minor =dev_minor;
 			ainfo.not_persistent = 1;
 
 			ainfo.state = (1 << MD_SB_CLEAN);
@@ -240,7 +241,7 @@ static void md_setup_drive(void)
 		if (!err)
 			err = ioctl(fd, RUN_ARRAY, 0);
 		if (err)
-			fprintf(stderr,"md: starting md%d failed\n", minor);
+			fprintf(stderr,"md: starting md%d failed\n", dev_minor);
 		else {
 			/* reread the partition table.
 			 * I (neilb) and not sure why this is needed, but I cannot
@@ -288,7 +289,7 @@ static void md_run_setup(void)
 	else {
 		int fd = open("/dev/md0", 0, 0);
 		if (fd >= 0) {
-			ioctl(fd, RAID_AUTORUN, raid_autopart);
+			ioctl(fd, RAID_AUTORUN, (void *)(intptr_t)raid_autopart);
 			close(fd);
 		}
 	}
@@ -297,13 +298,13 @@ static void md_run_setup(void)
 
 void md_run(int argc, char *argv[])
 {
-	char **p;
+	char **pp, *p;
 
-	for (p = argv; *p; p++) {
-		if (!strncmp(argv[i],"raid=",5))
-			raid_setup(argv[i]+5);
-		else if (!strncmp(argv[i],"md=",3))
-			md_setup(argv[i]+3);
+	for (pp = argv; (p = *pp); pp++) {
+		if (!strncmp(p,"raid=",5))
+			raid_setup(p+5);
+		else if (!strncmp(p,"md=",3))
+			md_setup(p+3);
 	}
 
 	md_run_setup();
