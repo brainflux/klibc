@@ -6,8 +6,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <sys/stat.h>
 
 #include "kinit.h"
+#include "do_mounts.h"
 #include "fstype.h"
 #include "zlib.h"
 
@@ -35,7 +37,7 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 	char buf[BUF_SZ];
 	const char *fstype;
 	unsigned long long fssize;
-	int is_gzip;
+	int is_gzip = 0;
 	ssize_t bytes = 0;
 
 	if (prompt_ramdisk) {
