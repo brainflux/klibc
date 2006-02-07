@@ -7,6 +7,7 @@
 
 #include <sys/types.h>
 #include <sys/sysmacros.h>
+#include <sys/stat.h>
 
 #define	Root_RAM0	makedev(1,0)
 #define Root_NFS	makedev(0,255)
@@ -28,5 +29,16 @@ mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name);
 int do_mounts(int argc, char *argv[]);
 
 int initrd_load(int argc, char *argv[], dev_t root_dev);
+
+static inline dev_t bstat(const char *name)
+{
+	struct stat st;
+
+	if (stat(name, &st) != 0)
+		return 0;
+	if (!S_ISBLK(st.st_mode))
+		return 0;
+	return st.st_rdev;
+}
 
 #endif /* DO_MOUNTS_H */
