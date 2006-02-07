@@ -7,7 +7,7 @@
  *  FSSIZE - filesystem size (if known)
  *
  * We currently detect (in order):
- *  gzip, cramfs, romfs, xfs, minix, ext3, ext2, reiserfs, jfs
+ *  gzip, cramfs, romfs, xfs, luks, minix, ext3, ext2, reiserfs, jfs
  *
  * MINIX, ext3 and Reiserfs bits are currently untested.
  */
@@ -29,6 +29,7 @@
 #include "ext2_fs.h"
 #include "ext3_fs.h"
 #include "xfs_sb.h"
+#include "luks_fs.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -168,6 +169,19 @@ static int jfs_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
+static int luks_image(const unsigned char *buf, unsigned long long *blocks)
+{
+	const struct luks_partition_header *lph =
+		(const struct luks_partition_header *)buf;
+
+	if (!memcmp(lph->magic, LUKS_MAGIC, LUKS_MAGIC_L)) {
+		/* FSSIZE is dictated by the underlying fs, not by LUKS */
+		*blocks = 0;
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t		block;
 	const char	name[12];
@@ -179,6 +193,7 @@ static struct imagetype images[] = {
 	{ 0,	"cramfs",	cramfs_image	},
 	{ 0,	"romfs",	romfs_image	},
 	{ 0,	"xfs",		xfs_image	},
+	{ 0,	"luks",		luks_image	},
 	{ 1,	"minix",	minix_image	},
 	{ 1,	"ext3",		ext3_image	},
 	{ 1,	"ext2",		ext2_image	},
