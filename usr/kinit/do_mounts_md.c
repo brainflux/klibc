@@ -196,8 +196,6 @@ static void md_setup_drive(void)
 		create_dev(name, dev, devfs_name);
 		for (i = 0; i < MD_SB_DISKS && devname != 0; i++) {
 			char *p;
-			char comp_name[64];
-			dev_t rdev;
 
 			p = strchr(devname, ',');
 			if (p)
