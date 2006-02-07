@@ -92,7 +92,7 @@ fail:
  *	is mounted on rootfs /sys.
  */
 
-static dev_t
+dev_t
 name_to_dev_t(const char *name)
 {
 	char *p;

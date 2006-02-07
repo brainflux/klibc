@@ -14,6 +14,9 @@
 int
 create_dev(const char *name, dev_t dev, const char *devfs_name);
 
+dev_t
+name_to_dev_t(const char *name);
+
 const char *
 mount_block(const char *source, const char *target,
 	    const char *type, unsigned long flags,
