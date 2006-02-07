@@ -204,12 +204,6 @@ static void md_setup_drive(void)
 				*p++ = 0;
 
 			dev = name_to_dev_t(devname);
-			if (strncmp(devname, "/dev/", 5) == 0)
-				devname += 5;
-			snprintf(comp_name, 63, "/dev/%s", devname);
-			rdev = bstat(comp_name);
-			if (rdev)
-				dev = new_decode_dev(rdev);
 			if (!dev) {
 				fprintf(stderr,"md: Unknown device name: %s\n", devname);
 				break;
