@@ -20,7 +20,6 @@
 #include <endian.h>
 #include <netinet/in.h>
 #include <sys/vfs.h>
-#include <asm/page.h>
 
 #define cpu_to_be32(x) __cpu_to_be32(x)	/* Needed by romfs_fs.h */
 
@@ -217,7 +216,8 @@ static struct imagetype images[] = {
 	{ 8,		"reiserfs",	reiserfs_image	},
 	{ 64,		"reiserfs",	reiserfs_image	},
 	{ 32,		"jfs",		jfs_image	},
-	{ SWAP_OFFSET,	"swap",		swap_image	}
+	{ -1,		"swap",		swap_image	},
+	{ 0,		"",		NULL 		}
 };
 
 int identify_fs(int fd, const char **fstype,
@@ -225,26 +225,31 @@ int identify_fs(int fd, const char **fstype,
 {
 	unsigned char buf[BLOCK_SIZE];
 	off_t cur_block = (off_t)-1;
+	struct imagetype *ip;
 	int i;
 	int ret;
 
 	*fstype = NULL;
 	*bytes = 0;
 
-	for (i = 0; i < ARRAY_SIZE(images); i++) {
-		if (cur_block != images[i].block) {
+	for (ip = images; ip->identify; ip++) {
+		/* Hack for swap, which apparently is dependent on page size */
+		if (ip->block == -1)
+			ip->block = SWAP_OFFSET();
+
+		if (cur_block != ip->block) {
 			/*
 			 * Read block.
 			 */
-			cur_block = images[i].block;
+			cur_block = ip->block;
 			ret = pread(fd, buf, BLOCK_SIZE,
 				    offset+cur_block*BLOCK_SIZE);
 			if (ret != BLOCK_SIZE)
 				return -1; /* error */
 		}
 
-		if (images[i].identify(buf, bytes)) {
-			*fstype = images[i].name;
+		if (ip->identify(buf, bytes)) {
+			*fstype = ip->name;
 			return 0;
 		}
 	}
