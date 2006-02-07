@@ -7,7 +7,7 @@
  *  FSSIZE - filesystem size (if known)
  *
  * We currently detect (in order):
- *  gzip, cramfs, romfs, xfs, luks, minix, ext3, ext2, reiserfs, jfs
+ *  gzip, cramfs, romfs, xfs, luks, minix, ext3, ext2, reiserfs, jfs, swap
  *
  * MINIX, ext3 and Reiserfs bits are currently untested.
  */
@@ -20,6 +20,7 @@
 #include <endian.h>
 #include <netinet/in.h>
 #include <sys/vfs.h>
+#include <asm/page.h>
 
 #define cpu_to_be32(x) __cpu_to_be32(x)	/* Needed by romfs_fs.h */
 
@@ -48,6 +49,9 @@
 #define ARRAY_SIZE(x)	(sizeof(x) / sizeof(x[0]))
 
 #define BLOCK_SIZE 1024
+
+/* Swap needs the definition of block size */
+#include "swap_fs.h"
 
 static int gzip_image(const unsigned char *buf, unsigned long long *bytes)
 {
@@ -182,6 +186,19 @@ static int luks_image(const unsigned char *buf, unsigned long long *blocks)
 	return 0;
 }
 
+static int swap_image(const unsigned char *buf, unsigned long long *blocks)
+{
+	const struct swap_super_block *ssb =
+		(const struct swap_super_block *)buf;
+
+	if (!memcmp(ssb->magic, SWAP_MAGIC_1, SWAP_MAGIC_L) ||
+	    !memcmp(ssb->magic, SWAP_MAGIC_2, SWAP_MAGIC_L)) {
+		*blocks = 0;
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t		block;
 	const char	name[12];
@@ -189,17 +206,18 @@ struct imagetype {
 };
 
 static struct imagetype images[] = {
-	{ 0,	"gzip",		gzip_image	},
-	{ 0,	"cramfs",	cramfs_image	},
-	{ 0,	"romfs",	romfs_image	},
-	{ 0,	"xfs",		xfs_image	},
-	{ 0,	"luks",		luks_image	},
-	{ 1,	"minix",	minix_image	},
-	{ 1,	"ext3",		ext3_image	},
-	{ 1,	"ext2",		ext2_image	},
-	{ 8,	"reiserfs",	reiserfs_image	},
-	{ 64,	"reiserfs",	reiserfs_image	},
-	{ 32,	"jfs",		jfs_image	}
+	{ 0,		"gzip",		gzip_image	},
+	{ 0,		"cramfs",	cramfs_image	},
+	{ 0,		"romfs",	romfs_image	},
+	{ 0,		"xfs",		xfs_image	},
+	{ 0,		"luks",		luks_image	},
+	{ 1,		"minix",	minix_image	},
+	{ 1,		"ext3",		ext3_image	},
+	{ 1,		"ext2",		ext2_image	},
+	{ 8,		"reiserfs",	reiserfs_image	},
+	{ 64,		"reiserfs",	reiserfs_image	},
+	{ 32,		"jfs",		jfs_image	},
+	{ SWAP_OFFSET,	"swap",		swap_image	}
 };
 
 int identify_fs(int fd, const char **fstype,
