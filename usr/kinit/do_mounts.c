@@ -101,11 +101,20 @@ name_to_dev_t(const char *name)
 	int part;
 	struct stat st;
 	int len;
+	const char *devname;
 
-	if ( name[0] == '/' && !stat(name, &st) && S_ISBLK(st.st_mode) )
+	if ( name[0] == '/' )
+		devname = name;
+	else {
+		char *dname = alloca(strlen(name) + 6);
+		sprintf(dname, "/dev/%s", name);
+		devname = dname;
+	}
+
+	if (!stat(devname, &st) && S_ISBLK(st.st_mode))
 		return st.st_rdev;
 	
-	if ( strncmp(name, "/dev/", 5) ) {
+	if (strncmp(name, "/dev/", 5)) {
 		res = (dev_t) strtoul(name, &p, 16);
 		if (*p)
 			return 0;
