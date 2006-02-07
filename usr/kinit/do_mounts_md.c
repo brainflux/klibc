@@ -1,3 +1,12 @@
+/*
+ * usr/kinit/do_mounts_md.c
+ *
+ * Handle autoconfiguration of md devices.  This is ugly, partially since
+ * it still relies on a sizable kernel component.
+ *
+ * This file is derived from the Linux kernel.
+ */
+
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -37,6 +46,37 @@ static struct {
 } md_setup_args[MAX_MD_DEVS];
 
 static int md_setup_ents;
+
+/**
+ *	get_option - Parse integer from an option string
+ *	@str: option string
+ *	@pint: (output) integer value parsed from @str
+ *
+ *	Read an int from an option string; if available accept a subsequent
+ *	comma as well.
+ *
+ *	Return values:
+ *	0 : no int in string
+ *	1 : int found, no subsequent comma
+ *	2 : int found including a subsequent comma
+ */
+
+static int get_option (char **str, int *pint)
+{
+	char *cur = *str;
+
+	if (!cur || !(*cur))
+		return 0;
+	*pint = strtol(cur, str, 0);
+	if (cur == *str)
+		return 0;
+	if (**str == ',') {
+		(*str)++;
+		return 2;
+	}
+
+	return 1;
+}
 
 /*
  * Find the partitioned md device major number... of course this *HAD*
