@@ -38,7 +38,49 @@ static struct {
 
 static int md_setup_ents;
 
-extern int mdp_major;
+/*
+ * Find the partitioned md device major number... of course this *HAD*
+ * to be done dynamically instead of using a registered number.
+ * Sigh.  Double sigh.
+ */
+static int mdp_major(void)
+{
+	static int found = 0;
+	FILE *f;
+	char line[512], *p;
+	int is_blk, major_no;
+
+	if (found)
+		return found;
+
+	f = fopen("/proc/devices", "r");
+	is_blk = 0;
+	while (fgets(line, sizeof line, f)) {
+		if (!strcmp(line, "Block devices:\n"))
+			is_blk = 1;
+		if (is_blk) {
+			major_no = strtol(line, &p, 10);
+			while (*p && isspace(*p))
+				p++;
+			
+			if (major_no == 0) /* Not a number */
+				is_blk = 0;
+			else if (major_no > 0 && !strcmp(p, "mdp")) {
+				found = major_no;
+				break;
+			}
+		}
+	}
+	fclose(f);
+
+	if (!found) {
+		fprintf(stderr, "Error: mdp devices detected but no mdp device found!\n");
+		exit(1);
+	}
+
+	return found;
+}
+
 /*
  * Parse the command-line parameters given our kernel, but do not
  * actually try to invoke the MD device now; that is handled by
@@ -148,7 +190,7 @@ static void md_setup_drive(void)
 		sprintf(name, "/dev/md%s%d", partitioned?"_d":"", dev_minor);
 		sprintf(devfs_name, "/dev/md/%s%d", partitioned?"d":"", dev_minor);
 		if (partitioned)
-			dev = makedev(mdp_major, dev_minor << MdpMinorShift);
+			dev = makedev(mdp_major(), dev_minor << MdpMinorShift);
 		else
 			dev = makedev(MD_MAJOR, dev_minor);
 		create_dev(name, dev, devfs_name);
