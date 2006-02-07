@@ -34,7 +34,7 @@ static inline dev_t bstat(const char *name)
 {
 	struct stat st;
 
-	if (stat(name, &st) != 0)
+	if (stat(name, &st))
 		return 0;
 	if (!S_ISBLK(st.st_mode))
 		return 0;
