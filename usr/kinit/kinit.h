@@ -9,7 +9,7 @@ int do_mounts(int argc, char *argv[]);
 int mount_nfs_root(int argc, char *argv[], int flags);
 char *get_arg(int argc, char *argv[], const char *name);
 int ramdisk_load(int argc, char *argv[], dev_t root_dev);
-void md_run_setup(int argc, char *argv[]);
+void md_run(int argc, char *argv[]);
 
 extern int mnt_procfs;
 extern int mnt_sysfs;

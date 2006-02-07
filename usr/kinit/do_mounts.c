@@ -366,7 +366,7 @@ int do_mounts(int argc, char *argv[])
 		sleep(delay);
 	}
 
-	md_run_setup(argc, argv);
+	md_run(argc, argv);
 
 	if (root_dev_name) {
 		root_dev = name_to_dev_t(root_dev_name);
