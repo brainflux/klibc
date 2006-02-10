@@ -11,7 +11,9 @@ ARCHOBJS = \
 	arch/$(ARCH)/socketcall.o \
 	arch/$(ARCH)/setjmp.o \
 	arch/$(ARCH)/syscall.o \
+	arch/$(ARCH)/varsyscall.o \
 	arch/$(ARCH)/open.o \
+	arch/$(ARCH)/openat.o \
 	arch/$(ARCH)/sigreturn.o \
 	arch/$(ARCH)/libgcc/__ashldi3.o \
 	arch/$(ARCH)/libgcc/__ashrdi3.o \

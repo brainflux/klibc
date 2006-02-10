@@ -39,6 +39,7 @@
    a varadic function changes its calling convention on some architectures. */
 #ifndef _KLIBC_IN_OPEN_C
 __extern int open(const char *, int, ...);
+__extern int openat(int, const char *, int, ...);
 #endif
 
 __extern int fcntl(int, int, ...);

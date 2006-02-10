@@ -15,16 +15,10 @@ sub make_sysstub($$$$$@) {
     print OUT "\t.globl ${fname}\n";
     print OUT "${fname}:\n";
 
-    if ( $stype eq 'varadic' ) {
-	print OUT "#ifdef _REGPARM\n";
-	print OUT "\tmovl  4(%esp),%eax\n";
-	print OUT "\tmovl  8(%esp),%edx\n";
-	print OUT "\tmovl 12(%esp),%ecx\n";
-	print OUT "#endif\n";
-    }
+    $stype = 'common' if ( $stype eq '' );
 
     print OUT "\tpushl \$__NR_${sname}\n";
-    print OUT "\tjmp __syscall_common\n";
+    print OUT "\tjmp __syscall_$stype\n";
     print OUT "\t.size ${fname},.-${fname}\n";
     close(OUT);
 }

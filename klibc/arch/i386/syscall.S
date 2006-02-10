@@ -1,8 +1,7 @@
 /*
  * arch/i386/syscall.S
  *
- * Common tail-handling code for system calls.  Because of __syscalldecl
- * we are using the stack even on if we are compiling with regparm.
+ * Common tail-handling code for system calls.
  *
  * The arguments are on the stack; the system call number in %eax.
  */
@@ -38,6 +37,8 @@ __syscall_common:
 	movl	ARG(4),%edi
 	movl	ARG(5),%ebp
 #endif
+	.globl __syscall_common_tail
+__syscall_common_tail:
 	int	$0x80
 
 	cmpl	$-4096,%eax

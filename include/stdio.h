@@ -121,5 +121,6 @@ __extern int vsscanf(const char *, const char *, va_list);
 __extern void perror(const char *);
 
 __extern int rename(const char *, const char *);
+__extern int renameat(int, const char *, int, const char *);
 
 #endif /* _STDIO_H */
