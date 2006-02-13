@@ -2,6 +2,9 @@
  * kinit/kinit.h
  */
 
+#ifndef KINIT_H
+#define KINIT_H
+
 #include <stddef.h>
 
 void dump_args(int argc, char *argv[]);
@@ -23,6 +26,24 @@ int getintfile(const char *path, long *val);
 ssize_t readfile(const char *path, char **pptr);
 ssize_t freadfile(FILE *f, char **pptr);
 
+/*
+ * min()/max() macros that also do
+ * strict type-checking.. See the
+ * "unnecessary" pointer comparison.
+ * From the Linux kernel.
+ */
+#define min(x,y) ({ \
+        typeof(x) _x = (x);     \
+        typeof(y) _y = (y);     \
+        (void) (&_x == &_y);            \
+        _x < _y ? _x : _y; })
+
+#define max(x,y) ({ \
+        typeof(x) _x = (x);     \
+        typeof(y) _y = (y);     \
+        (void) (&_x == &_y);            \
+        _x > _y ? _x : _y; })
+
 #undef INI_DEBUG
 
 #undef DEBUG
@@ -31,3 +52,5 @@ ssize_t freadfile(FILE *f, char **pptr);
 #else
 #define DEBUG(x) do { } while (0)
 #endif
+
+#endif /* KINIT_H */

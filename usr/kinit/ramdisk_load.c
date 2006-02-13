@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <sys/stat.h>
+#include <linux/fs.h>
 
 #include "kinit.h"
 #include "do_mounts.h"
@@ -14,6 +15,112 @@
 #include "zlib.h"
 
 #define BUF_SZ		65536
+
+static int
+load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
+{
+	uint64_t ramdisk_size;
+	int disk = 1;
+	ssize_t bytes;
+	int rv;
+	unsigned char in_buf[BUF_SZ], out_buf[BUF_SZ];
+
+	z_stream zs;
+
+	zs.zalloc = Z_NULL;	/* Use malloc() */
+	zs.zfree = Z_NULL;	/* Use free() */
+	zs.next_in = Z_NULL;	/* No data read yet */
+	zs.avail_in = 0;
+	zs.next_out = out_buf;
+	zs.avail_out = BUF_SZ;
+
+	if (inflateInit(&zs) != Z_OK)
+		goto err1;
+
+	/* Set to the size of the medium, or "infinite" */
+	if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
+		ramdisk_size = ~(uint64_t)0;
+
+	while ((rv = inflate(&zs, Z_NO_FLUSH)) == Z_OK ||
+		rv == Z_BUF_ERROR) {
+		if (zs.avail_in == 0) {
+			if (ramdisk_start >= ramdisk_size) {
+				fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", ++disk);
+				while ( getc(stdin) != '\n' );
+				if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
+					ramdisk_size = ~(uint64_t)0;
+				ramdisk_start = 0;
+			}
+			do {
+				bytes = min(ramdisk_start-ramdisk_size, (uint64_t)BUF_SZ);
+				bytes = pread(rfd, in_buf, bytes, ramdisk_start);
+			} while ( bytes == -1 && errno == EINTR );
+			if (bytes <= 0)
+				goto err2;
+			ramdisk_start += bytes;
+			zs.next_in = in_buf;
+			zs.avail_in = bytes;
+			putc('.', stderr);
+		}
+		if (zs.avail_out == 0) {
+			_fwrite(out_buf, BUF_SZ, wfd);
+			zs.next_out = out_buf;
+			zs.avail_out = BUF_SZ;
+		}
+	}
+	if (rv != Z_STREAM_END)
+		goto err2;
+
+	/* Write the last */
+	_fwrite(out_buf, BUF_SZ-zs.avail_out, wfd);
+
+	inflateEnd(&zs);
+	return 0;
+	
+err2:
+	inflateEnd(&zs);
+err1:
+	return 1;
+}
+
+
+static int
+load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fssize)
+{
+	uint64_t ramdisk_size;
+	int disk = 1;
+	ssize_t bytes;
+	unsigned char buf[BUF_SZ];
+
+	/* Set to the size of the medium, or "infinite" */
+	if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
+		ramdisk_size = ~(uint64_t)0;
+
+	while (fssize) {
+		if (ramdisk_start >= ramdisk_size) {
+			fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", disk++);
+			while ( getc(stdin) != '\n' );
+			if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
+				ramdisk_size = ~(uint64_t)0;
+			lseek(rfd, 0L, SEEK_SET);
+			ramdisk_start = 0;
+		}
+		
+		do {
+			bytes = min(ramdisk_start-ramdisk_size,
+				    min((uint64_t)fssize, (uint64_t)BUF_SZ));
+			bytes = pread(rfd, buf, bytes, ramdisk_start);
+		} while (bytes == -1 && errno == EINTR);
+		if (bytes <= 0)
+			break;
+		_fwrite(buf, bytes, wfd);
+		putc('.', stderr);
+		ramdisk_start += bytes;
+	}
+
+	return !!fssize;
+}
+
 
 int
 ramdisk_load(int argc, char *argv[], dev_t root_dev)
@@ -34,15 +141,14 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 		: 0;
 	int rfd;
 	FILE *wfd;
-	char buf[BUF_SZ];
 	const char *fstype;
 	unsigned long long fssize;
 	int is_gzip = 0;
-	ssize_t bytes = 0;
+	int err;
 
 	if (prompt_ramdisk) {
-		fprintf(stderr, "Please insert disk for ramdisk and press Enter...\n");
-		getc(stdin);
+		fprintf(stderr, "Please insert disk for ramdisk and press Enter...");
+		while (getc(stdin) != '\n');
 	}
 
 	/* XXX: This should be better error checked. */
@@ -59,36 +165,19 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 		return 0;
 	}
 
-	lseek(rfd, ramdisk_start, SEEK_SET);
-
 	fprintf(stderr, "Loading ramdisk...");
-	if (is_gzip) {
-		gzFile gzf = gzdopen(rfd, "r");
 
-		while ( (bytes = gzread(gzf, buf, BUF_SZ)) ) {
-			if (bytes < 0)
-				break;
-			_fwrite(buf, bytes, wfd);
-			putc('.', stderr);
-		}
+	if (is_gzip)
+		err = load_ramdisk_compressed(rfd, wfd, ramdisk_start);
+	else
+		err = load_ramdisk_raw(rfd, wfd, ramdisk_start, fssize);
 
-		gzclose(gzf);
-	} else {
-		while (fssize) {
-			bytes = (fssize > BUF_SZ) ? BUF_SZ : (int)fssize;
-			bytes = read(rfd, buf, bytes);
-			if (bytes < 0)
-				break;
-			_fwrite(buf, bytes, wfd);
-			putc('.', stderr);
-		}
-		
-		close(rfd);
-	}
-
+	close(rfd);
+	fclose(wfd);
+	
 	putc('\n', stderr);
 
-	if (bytes < 0) {
+	if (err) {
 		perror("Failure loading ramdisk");
 		return 0;
 	}
