@@ -122,6 +122,7 @@ load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fss
 		_fwrite(buf, bytes, wfd);
 		putc('.', stderr);
 		ramdisk_start += bytes;
+		fssize -= bytes;
 	}
 
 	return !!fssize;
