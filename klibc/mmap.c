@@ -7,7 +7,6 @@
 #include <sys/syscall.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include <asm/page.h>		/* For PAGE_SHIFT */
 #include <bitsize.h>
 
 /*
