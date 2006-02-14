@@ -41,12 +41,21 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 	if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
 		ramdisk_size = ~(uint64_t)0;
 
-	while ((rv = inflate(&zs, Z_NO_FLUSH)) == Z_OK ||
-		rv == Z_BUF_ERROR) {
-		if (zs.avail_in == 0) {
+	do {
+		/* Purge the output preferentially over reading new
+		   input, so we don't end up overrunning the input by
+		   accident and demanding a new disk which doesn't
+		   exist... */
+		if (zs.avail_out == 0) {
+			_fwrite(out_buf, BUF_SZ, wfd);
+			zs.next_out = out_buf;
+			zs.avail_out = BUF_SZ;
+			putc('.', stderr);
+		} else if (zs.avail_in == 0) {
 			if (ramdisk_start >= ramdisk_size) {
 				fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", ++disk);
-				while ( getc(stdin) != '\n' );
+				while (getc(stdin) != '\n')
+					;
 				if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
 					ramdisk_size = ~(uint64_t)0;
 				ramdisk_start = 0;
@@ -54,20 +63,16 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 			do {
 				bytes = min(ramdisk_start-ramdisk_size, (uint64_t)BUF_SZ);
 				bytes = pread(rfd, in_buf, bytes, ramdisk_start);
-			} while ( bytes == -1 && errno == EINTR );
+			} while (bytes == -1 && errno == EINTR);
 			if (bytes <= 0)
 				goto err2;
 			ramdisk_start += bytes;
 			zs.next_in = in_buf;
 			zs.avail_in = bytes;
-			putc('.', stderr);
 		}
-		if (zs.avail_out == 0) {
-			_fwrite(out_buf, BUF_SZ, wfd);
-			zs.next_out = out_buf;
-			zs.avail_out = BUF_SZ;
-		}
-	}
+		rv = inflate(&zs, Z_NO_FLUSH);
+	} while (rv == Z_OK || rv == Z_BUF_ERROR);
+
 	if (rv != Z_STREAM_END)
 		goto err2;
 
@@ -98,8 +103,9 @@ load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fss
 
 	while (fssize) {
 		if (ramdisk_start >= ramdisk_size) {
-			fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", disk++);
-			while ( getc(stdin) != '\n' );
+			fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", ++disk);
+			while (getc(stdin) != '\n')
+				;
 			if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
 				ramdisk_size = ~(uint64_t)0;
 			lseek(rfd, 0L, SEEK_SET);
