@@ -6,8 +6,8 @@ LEAF(pipe)
 	li	v0, __NR_pipe
 	syscall
 	bnez	a3, 1f
-	sw	v0, (a0)
-	sw	v1, (a1)
+	sw	v0,  (a0)
+	sw	v1, 4(a0)
 	li	v0, 0
 	b	2f
 1:	sw	v0, errno
