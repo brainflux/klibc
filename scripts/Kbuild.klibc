@@ -98,7 +98,7 @@ KLIBCCFLAGS      := $(KLIBCCPPFLAGS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS)  \
 KLIBCAFLAGS      := -D__ASSEMBLY__ $(KLIBCCFLAGS)
 KLIBCSTRIPFLAGS  := --strip-all -R .comment -R .note
 
-KLIBCLIBGCC      := $(shell $(KLIBCCC) --print-libgcc)
+KLIBCLIBGCC      := $(shell $(KLIBCCC) $(KLIBCCFLAGS) --print-libgcc)
 KLIBCCRT0        := $(KLIBCOBJ)/arch/$(ARCH)/crt0.o
 KLIBCLIBC        := $(KLIBCOBJ)/libc.a
 KLIBCCRTSHARED   := $(KLIBCOBJ)/interp.o
