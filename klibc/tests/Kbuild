@@ -40,4 +40,6 @@ testrand48.shared-y    := testrand48.o
 testvsnp.shared-y      := testvsnp.o
 
 # Cleaning
-clean-files := $(static-y) $(shared-y) $(test-files:.c=.o)
+clean-files := $(static-y) $(shared-y) \
+	$(addsuffix .g, $(static-y) $(shared-y)) \
+	$(test-files:.c=.o)
