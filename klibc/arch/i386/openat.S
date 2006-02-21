@@ -10,7 +10,9 @@
 
 /* <asm/fcntl.h>, despite the name, isn't assembly-safe */
 #define O_LARGEFILE     0100000
-	
+
+#ifdef __NR_openat		/* Don't build if kernel headers too old */
+		
 	.globl	openat
 	.type	openat,@function
 
@@ -20,3 +22,5 @@ openat:
 	jmp	__syscall_varadic
 
 	.size	openat,.-openat
+
+#endif
