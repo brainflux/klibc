@@ -11,10 +11,11 @@
 
 /*
  * MMAP2_SHIFT is definitely *NOT* equal to getpageshift() for
- * many 32-bit architectures.  Supposedly this is fixed to 12
- * for all 32-bit architectures.  CHECK THIS!!!
+ * at least some architectures...
  */
+#if defined(__i386__) || defined( __sparc__) || defined(__arm__)
 # define MMAP2_SHIFT	12	/* Fixed by syscall definition */
+#endif
 
 /*
  * Set in SYSCALLS whether or not we should use an unadorned mmap() system
@@ -30,8 +31,14 @@ extern void *__mmap2(void *, size_t, int, int, int, size_t);
 
 void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset)
 {
+#ifdef MMAP2_SHIFT
   const int mmap2_shift = MMAP2_SHIFT;
   const unsigned long mmap2_mask = (1UL << mmap2_shift) - 1;
+#else
+  extern int __page_size, __page_shift;
+  const int mmap2_shift = __page_shift;
+  const unsigned long mmap2_mask = (unsigned long)__page_size - 1;
+#endif
 
   if ( offset & mmap2_mask ) {
     errno = EINVAL;
