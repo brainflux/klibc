@@ -35,7 +35,7 @@ void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset
   const int mmap2_shift = MMAP2_SHIFT;
   const unsigned long mmap2_mask = (1UL << mmap2_shift) - 1;
 #else
-  extern int __page_size, __page_shift;
+  extern unsigned int __page_size, __page_shift;
   const int mmap2_shift = __page_shift;
   const unsigned long mmap2_mask = (unsigned long)__page_size - 1;
 #endif
