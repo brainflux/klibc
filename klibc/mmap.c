@@ -20,7 +20,7 @@
  * current page size.  This, of course, isn't documented or even
  * #define'd anywhere.
  */
-#if defined(__cris__) || defined(__m68k__) || defined(__mips__)
+#if defined(__cris__) || defined(__m68k__)
 /* Use the current page size */
 #else
 # define MMAP2_SHIFT	12	/* Fixed by syscall definition */
