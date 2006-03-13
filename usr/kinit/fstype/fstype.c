@@ -52,16 +52,20 @@
 /* Swap needs the definition of block size */
 #include "swap_fs.h"
 
-static int gzip_image(const unsigned char *buf, unsigned long long *bytes)
+static int gzip_image(const void *buf, unsigned long long *bytes)
 {
-	if (buf[0] == 037 && (buf[1] == 0213 || buf[1] == 0236)) {
-		*bytes = 0;	/* Can only be determined by processing the whole file */
+	const unsigned char *p = buf;
+
+	if (p[0] == 037 && (p[1] == 0213 || p[1] == 0236)) {
+		/* The length of a gzip stream can only be determined
+		   by processing the whole stream */
+		*bytes = 0ULL;
 		return 1;
 	}
 	return 0;
 }
 
-static int cramfs_image(const unsigned char *buf, unsigned long long *bytes)
+static int cramfs_image(const void *buf, unsigned long long *bytes)
 {
 	const struct cramfs_super *sb =
 		(const struct cramfs_super *)buf;
@@ -76,7 +80,7 @@ static int cramfs_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int romfs_image(const unsigned char *buf, unsigned long long *bytes)
+static int romfs_image(const void *buf, unsigned long long *bytes)
 {
         const struct romfs_super_block *sb =
 		(const struct romfs_super_block *)buf;
@@ -88,7 +92,7 @@ static int romfs_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int minix_image(const unsigned char *buf, unsigned long long *bytes)
+static int minix_image(const void *buf, unsigned long long *bytes)
 {
 	const struct minix_super_block *sb =
 		(const struct minix_super_block *)buf;
@@ -102,7 +106,7 @@ static int minix_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int ext3_image(const unsigned char *buf, unsigned long long *bytes)
+static int ext3_image(const void *buf, unsigned long long *bytes)
 {
 	const struct ext3_super_block *sb =
 		(const struct ext3_super_block *)buf;
@@ -116,7 +120,7 @@ static int ext3_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int ext2_image(const unsigned char *buf, unsigned long long *bytes)
+static int ext2_image(const void *buf, unsigned long long *bytes)
 {
 	const struct ext2_super_block *sb =
 		(const struct ext2_super_block *)buf;
@@ -129,7 +133,7 @@ static int ext2_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int reiserfs_image(const unsigned char *buf, unsigned long long *bytes)
+static int reiserfs_image(const void *buf, unsigned long long *bytes)
 {
 	const struct reiserfs_super_block *sb =
 		(const struct reiserfs_super_block *)buf;
@@ -147,7 +151,7 @@ static int reiserfs_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int xfs_image(const unsigned char *buf, unsigned long long *bytes)
+static int xfs_image(const void *buf, unsigned long long *bytes)
 {
 	const struct xfs_sb *sb =
 		(const struct xfs_sb *)buf;
@@ -160,7 +164,7 @@ static int xfs_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int jfs_image(const unsigned char *buf, unsigned long long *bytes)
+static int jfs_image(const void *buf, unsigned long long *bytes)
 {
 	const struct jfs_superblock *sb =
 		(const struct jfs_superblock *)buf;
@@ -172,7 +176,7 @@ static int jfs_image(const unsigned char *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int luks_image(const unsigned char *buf, unsigned long long *blocks)
+static int luks_image(const void *buf, unsigned long long *blocks)
 {
 	const struct luks_partition_header *lph =
 		(const struct luks_partition_header *)buf;
@@ -185,7 +189,7 @@ static int luks_image(const unsigned char *buf, unsigned long long *blocks)
 	return 0;
 }
 
-static int swap_image(const unsigned char *buf, unsigned long long *blocks)
+static int swap_image(const void *buf, unsigned long long *blocks)
 {
 	const struct swap_super_block *ssb =
 		(const struct swap_super_block *)buf;
@@ -201,7 +205,7 @@ static int swap_image(const unsigned char *buf, unsigned long long *blocks)
 struct imagetype {
 	off_t		block;
 	const char	name[12];
-	int		(*identify)(const unsigned char *, unsigned long long *);
+	int		(*identify)(const void *, unsigned long long *);
 };
 
 static struct imagetype images[] = {
@@ -223,7 +227,7 @@ static struct imagetype images[] = {
 int identify_fs(int fd, const char **fstype,
 		unsigned long long *bytes, off_t offset)
 {
-	unsigned char buf[BLOCK_SIZE];
+	uint64_t buf[BLOCK_SIZE>>3]; /* 64-bit worst case alignment */
 	off_t cur_block = (off_t)-1;
 	struct imagetype *ip;
 	int ret;
