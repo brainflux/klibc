@@ -317,28 +317,30 @@ static int loop(void)
 	while (1) {
 		int timeout = 60;
 		int pending = 0;
+		int done = 0;
 		int timeout_ms;
 		int x;
 
 		for (s = slist; s; s = s->next) {
+			DEBUG(("%s: state = %d\n", s->dev->name, s->state));
+
 			if (s->state == DEVST_COMPLETE) {
-				if ( bringup_first )
-					break;
-				else
-					continue;
+				done++;
+				continue;
 			}
 
-			DEBUG(("Pending: %s: state = %d\n", s->dev->name, s->state));
 			pending++;
 
-			if (s->expire - now.tv_sec <= 0)
+			if (s->expire - now.tv_sec <= 0) {
+				DEBUG(("timeout\n"));
 				process_timeout_event(s, now.tv_sec);
+			}
 
 			if (timeout > s->expire - now.tv_sec)
 				timeout = s->expire - now.tv_sec;
 		}
 
-		if (pending == 0)
+		if (pending == 0 || (bringup_first && done))
 			break;
 
 		timeout_ms = timeout * 1000;
