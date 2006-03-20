@@ -36,34 +36,32 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
 
    alpha:	 Working
    arm-thumb:	 Untested
-   arm26:	 Not yet ported
    arm:		 Working
+   arm26:	 Not yet ported
    cris:	 Working
    h8300:	 Not yet ported
    i386:	 Working
    ia64:	 Working
    m32r:	 Untested
    m68k:	 Not yet ported
-   mips64:	 Not yet ported
    mips:	 Working
+   mips64:	 Not yet ported
    parisc:	 Working
-   ppc64:	 Working
+   parisc64:	 Not yet ported
    ppc:		 Working
+   ppc64:	 Working
    s390:	 Working static, shared untested
    s390x:	 Working
    sh:		 Untested
-   sparc64:	 Untested
+   sh64:	 Not yet ported
    sparc:	 Working
+   sparc64:	 Untested
    v850:	 Not yet ported
    x86-64:	 Working
+   xtensa:	 Not yet ported
    
    Shared library support requires recent binutils on many
    architectures.
-
-   "Need sysstub.ph" means the architectural changes first implemented
-   in klibc-0.117 has not yet been implemented; klibc-0.116 did,
-   however, work.  "Not yet ported" means no porting work has been
-   done on this architecture.
 
    Note that even the "working" ones likely have bugs.  Please report
    them if you run into them.
