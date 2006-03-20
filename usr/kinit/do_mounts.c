@@ -26,6 +26,7 @@ try_name(char *name, int part)
 	char path[BUF_SZ];
 	char buf[BUF_SZ];
 	int range;
+	unsigned int major, minor;
 	dev_t res;
 	char *s;
 	int len;
@@ -42,9 +43,13 @@ try_name(char *name, int part)
 	if (len <= 0 || len == BUF_SZ || buf[len - 1] != '\n')
 		goto fail;
 	buf[len - 1] = '\0';
-	res = (dev_t) strtoul(buf, &s, 16);
+	major = strtoul(buf, &s, 10);
+	if (*s != ':')
+		goto fail;
+	minor = strtoul(s+1, &s, 10);
 	if (*s)
 		goto fail;
+	res = makedev(major, minor);
 
 	/* if it's there and we are not looking for a partition - that's it */
 	if (!part)
