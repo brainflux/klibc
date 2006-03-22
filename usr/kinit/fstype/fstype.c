@@ -7,7 +7,7 @@
  *  FSSIZE - filesystem size (if known)
  *
  * We currently detect (in order):
- *  gzip, cramfs, romfs, xfs, luks, minix, ext3, ext2, reiserfs, jfs, swap
+ *  gzip, cramfs, romfs, xfs, luks, lvm2, minix, ext3, ext2, reiserfs, jfs, swap
  *
  * MINIX, ext3 and Reiserfs bits are currently untested.
  */
@@ -30,6 +30,7 @@
 #include "ext3_fs.h"
 #include "xfs_sb.h"
 #include "luks_fs.h"
+#include "lvm2_sb.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -202,6 +203,26 @@ static int swap_image(const void *buf, unsigned long long *blocks)
 	return 0;
 }
 
+static int lvm2_image(const void *buf, unsigned long long *blocks)
+{
+	const struct lvm2_super_block *lsb;
+	int i;
+
+	/* We must check every 512 byte sector */
+	for (i = 0; i < BLOCK_SIZE; i += 0x200) {
+		lsb = (const struct lvm2_super_block *)(buf + i);
+
+		if (!memcmp(lsb->magic, LVM2_MAGIC, LVM2_MAGIC_L) &&
+		    !memcmp(lsb->type,  LVM2_TYPE,  LVM2_TYPE_L)) {
+			/* This is just one of possibly many PV's */
+			*blocks = 0;
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 struct imagetype {
 	off_t		block;
 	const char	name[12];
@@ -214,6 +235,8 @@ static struct imagetype images[] = {
 	{ 0,		"romfs",	romfs_image	},
 	{ 0,		"xfs",		xfs_image	},
 	{ 0,		"luks",		luks_image	},
+	{ 0,		"lvm2",		lvm2_image	},
+	{ 1,		"lvm2",		lvm2_image	},
 	{ 1,		"minix",	minix_image	},
 	{ 1,		"ext3",		ext3_image	},
 	{ 1,		"ext2",		ext2_image	},
