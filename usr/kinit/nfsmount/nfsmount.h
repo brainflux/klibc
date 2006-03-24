@@ -4,7 +4,7 @@
 
 #include <linux/nfs_mount.h>
 
-extern __u32 nfs_port;
+extern int nfs_port;
 
 extern int nfsmount_main(int argc, char *argv[]);
 int nfs_mount(const char *rem_name, const char *hostname,
