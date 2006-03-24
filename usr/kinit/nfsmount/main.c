@@ -36,7 +36,7 @@ static struct nfs_mount_data mount_data = {
 	.namlen = NAME_MAX,
 };
 
-__u32 nfs_port;
+int nfs_port;
 
 static struct int_opts {
 	char *name;
