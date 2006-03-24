@@ -73,7 +73,7 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 
 	/* Write the current "real root device" out to procfs */
 	fp = fopen("/proc/sys/kernel/real-root-dev", "w");
-	fprintf(fp, "%lu", (unsigned long)root_dev);
+	fprintf(fp, "%u", root_dev);
 	fclose(fp);
 
 	mkdir("/old", 0700);
