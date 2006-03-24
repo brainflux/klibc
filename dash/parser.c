@@ -846,7 +846,7 @@ readtoken1(int firstc, char const *syntax, char *eofmark, int striptabs)
 	int parenlevel;	/* levels of parens in arithmetic */
 	int dqvarnest;	/* levels of variables expansion within double quotes */
 	int oldstyle;
-	char const *prevsyntax;	/* syntax before arithmetic */
+	char const *prevsyntax = NULL; /* syntax before arithmetic */
 #if __GNUC__
 	/* Avoid longjmp clobbering */
 	(void) &out;
@@ -1269,7 +1269,7 @@ parsebackq: {
 	struct jmploc jmploc;
 	struct jmploc *volatile savehandler;
 	size_t savelen;
-	int saveprompt;
+	int saveprompt = 0;
 #ifdef __GNUC__
 	(void) &saveprompt;
 #endif
