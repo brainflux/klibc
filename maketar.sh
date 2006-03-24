@@ -18,4 +18,3 @@ rm -f klibc-$version.tar*
 tar cvvf klibc-$version.tar klibc-$version
 gzip -9 klibc-$version.tar
 rm -rf klibc-$version
-

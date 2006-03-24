@@ -84,4 +84,3 @@ typedef struct flock {
 #define F_LINUX_SPECIFIC_BASE	1024
 
 #endif /* _KLIBC_ARCHFCNTL_H */
-

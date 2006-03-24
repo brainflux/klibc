@@ -16,7 +16,3 @@ int open_cloexec(const char *path, int flags, mode_t mode)
 
   return fd;
 }
-
-
-
-

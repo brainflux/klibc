@@ -20,5 +20,3 @@ __extern unsigned int inet_nsap_addr(const char *, unsigned char *, int);
 __extern char *inet_nsap_ntoa(int, const unsigned char *, char *);
 
 #endif /* _ARPA_INET_H */
-
-

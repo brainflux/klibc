@@ -24,4 +24,3 @@ To use it:
 	# We need the loopback device to be up before we do this!
 	ipconfig 127.0.0.1:::::lo:none
 	nfsroot -p pmap_file -o lock server:/pathname /realpath
-

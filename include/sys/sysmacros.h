@@ -28,4 +28,3 @@ static __inline__ dev_t makedev(int __ma, int __mi)
 }
 
 #endif /* _SYS_SYSMACROS_H */
-

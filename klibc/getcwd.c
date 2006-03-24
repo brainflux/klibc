@@ -13,4 +13,3 @@ char *getcwd(char *buf, size_t size)
 {
   return ( __getcwd(buf, size) < 0 ) ? NULL : buf;
 }
-

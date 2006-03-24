@@ -143,4 +143,3 @@ int main(int argc, char *argv[])
   return dummy_portmap();
 }
 #endif
-

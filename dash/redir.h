@@ -47,4 +47,3 @@ void popredir(int);
 void clearredir(int);
 int copyfd(int, int);
 int redirectsafe(union node *, int);
-

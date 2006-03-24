@@ -22,4 +22,3 @@ _start:
 	bl	__libc_init
 
 	.size _start, .-_start
-

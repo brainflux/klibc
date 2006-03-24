@@ -58,4 +58,3 @@ $(obj)/arch/$(ARCH)/__reml.ss:  FILE_CFLAGS := -DSIGNED=1 -DREM=1 -DBITS=32
 
 targets     += $(DIVOBJS:.o=.S) $(DIVOBJS:.o=.ss)
 clean-files += $(DIVOBJS:.o=.S) $(DIVOBJS:.o=.ss)
-

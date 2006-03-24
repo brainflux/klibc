@@ -18,4 +18,3 @@ int isatty(int fd)
 
   return istty;
 }
-

@@ -331,4 +331,3 @@ endif
 # Usage:
 # $(Q)$(MAKE) $(klibc)=dir
 klibc := -rR -f $(if $(KBUILD_SRC),$(srctree)/)scripts/Kbuild.klibc obj
-

@@ -33,5 +33,3 @@ $(obj)/socketcalls.mk: $(KLIBCSRC)/socketcalls.pl                   \
                        $(KLIBCSRC)/SOCKETCALLS.def                  \
                        $(KLIBCSRC)/socketcommon.h
 	$(call cmd,socketcalls)
-
-

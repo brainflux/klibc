@@ -33,4 +33,3 @@ SHAREDFLAGS     = -Ttext 0x00200200
 
 # Additional asm- directories needed during installation
 ASMARCH = asm-i386
-

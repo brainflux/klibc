@@ -30,4 +30,3 @@
 #include <linux/raid/md_p.h>
 
 #endif /* _SYS_MD_H */
-

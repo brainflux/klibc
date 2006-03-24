@@ -28,6 +28,3 @@ int getintfile(const char *path, long *val)
 	else
 		return 0;
 }
-
-
-

@@ -25,4 +25,3 @@ _start:
 	jump	__libc_init
 
 	.size _start, .-_start
-

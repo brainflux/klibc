@@ -8,4 +8,3 @@
 
 int bind_portmap(void);
 int dummy_portmap(int sock, FILE *portmap_file);
-

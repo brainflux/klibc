@@ -14,4 +14,3 @@ BITSIZE  = 64
 # 7 GB - normal binaries start at 4.5 GB, and the stack is below
 # the binary.
 SHAREDFLAGS	= -Ttext 0x1c0000200
-

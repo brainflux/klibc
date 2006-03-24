@@ -96,5 +96,3 @@ if ( $type eq '-errlist' ) {
 } elsif ( $type eq '-maxerr' ) {
     print $maxerr, "\n";
 }
-
-

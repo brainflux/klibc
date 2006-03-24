@@ -73,5 +73,3 @@ longjmp:
 
 	.size longjmp,.-longjmp
 	.end longjmp
-
-

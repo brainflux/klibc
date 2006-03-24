@@ -11,4 +11,3 @@ long lrand48(void)
 {
   return (uint32_t)jrand48(__rand48_seed) >> 1;
 }
-

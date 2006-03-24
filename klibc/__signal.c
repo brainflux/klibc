@@ -18,5 +18,3 @@ __sighandler_t __signal(int signum, __sighandler_t handler, int flags)
     return (__sighandler_t)sa.sa_handler;
   }
 }
-
-

@@ -34,5 +34,3 @@ int daemon(int nochdir, int noclose)
 
   return setsid();
 }
-
-

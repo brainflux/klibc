@@ -19,4 +19,3 @@ extern void __assert_fail(const char *, const char *,
 #endif
 
 #endif /* _ASSERT_H */
-

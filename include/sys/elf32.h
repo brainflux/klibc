@@ -112,4 +112,3 @@ typedef struct elf32_note {
 } Elf32_Nhdr;
 
 #endif /* _SYS_ELF32_H */
-

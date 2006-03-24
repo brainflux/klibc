@@ -32,5 +32,3 @@ typedef unsigned long int	uintptr_t;
 #define __PRIPTR_RANK	"l"
 
 #endif /* _BITSIZE_STDINT_H */
-
-

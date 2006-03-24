@@ -49,4 +49,3 @@ const char *inet_ntop(int af, const void *cp, char *buf, size_t len)
 
   return buf;
 }
-

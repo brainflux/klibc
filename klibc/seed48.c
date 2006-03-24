@@ -16,4 +16,3 @@ unsigned short *seed48(const unsigned short xsubi[3])
 
   return oldseed;
 }
-

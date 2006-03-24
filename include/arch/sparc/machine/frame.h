@@ -135,4 +135,3 @@ struct frame64 {
  * detect it by testing the register for an odd value.  Why 2K-1 I don't know.
  */
 #define BIAS	(2048-1)
-

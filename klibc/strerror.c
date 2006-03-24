@@ -31,4 +31,3 @@ char *strerror(int errnum)
 
   return message;
 }
-

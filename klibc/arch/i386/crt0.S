@@ -29,4 +29,3 @@ _start:
 	hlt
 
 	.size _start, .-_start
-

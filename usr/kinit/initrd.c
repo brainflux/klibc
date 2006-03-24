@@ -151,6 +151,3 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 
 	return 0;
 }
-
-
-

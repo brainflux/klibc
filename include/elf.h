@@ -9,4 +9,3 @@
 #include <sys/elf64.h>
 
 #endif /* _ELF_H */
-

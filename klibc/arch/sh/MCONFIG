@@ -16,4 +16,3 @@ BITSIZE      = 32
 # calls, and work on the memory models for this architecture
 # 2 MB -- the normal starting point for text is 4 MB.
 SHAREDFLAGS	= -Ttext 0x00200200
-

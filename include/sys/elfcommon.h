@@ -185,4 +185,3 @@
 #define ELFOSABI_LINUX  3
 
 #endif /* _SYS_ELFCOMMON_H */
-

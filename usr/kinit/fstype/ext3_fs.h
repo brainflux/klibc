@@ -77,4 +77,3 @@ struct ext3_super_block {
         __u16   s_reserved_word_pad;
         __u32   s_reserved[192];        /* Padding to the end of the block */
 };
-

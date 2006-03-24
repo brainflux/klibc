@@ -356,4 +356,3 @@ int nfs_mount(const char *pathname, const char *hostname,
 
 	return ret;
 }
-

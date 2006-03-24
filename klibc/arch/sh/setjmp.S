@@ -62,4 +62,3 @@ longjmp:
 	 nop
 
 	.size longjmp,.-longjmp
-

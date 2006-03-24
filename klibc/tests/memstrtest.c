@@ -26,4 +26,3 @@ int main(void)
     printf("memcmp r = %d\n", r);
     return 0;
 }
-

@@ -38,5 +38,3 @@ __socketcall_common:
 	.size __socketcall_common,.-__socketcall_common
 
 #endif
-
-

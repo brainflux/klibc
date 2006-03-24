@@ -296,4 +296,3 @@ extern int inflate OF((void));
 #ifndef BITS
 #  define BITS 16
 #endif
-

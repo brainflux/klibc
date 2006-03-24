@@ -67,5 +67,3 @@ cp usr/Kbuild               $kernel/usr
 cp klibc/Kbuild             $kernel/usr/klibc
 cp klibc/syscalls/Kbuild    $kernel/usr/klibc/syscalls
 cp klibc/socketcalls/Kbuild $kernel/usr/klibc/socketcalls
-
-

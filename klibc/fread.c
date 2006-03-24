@@ -31,6 +31,3 @@ size_t _fread(void *buf, size_t count, FILE *f)
 
   return bytes;
 }
-
-
-

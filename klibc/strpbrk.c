@@ -11,4 +11,3 @@ strpbrk(const char *s, const char *accept)
 
   return *ss ? (char *)ss : NULL;
 }
-
