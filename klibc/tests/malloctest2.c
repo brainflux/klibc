@@ -41,7 +41,7 @@ int main(void)
 	if ( i != j && q ) {
 	  sq = s[j].size;
 	  eq = q+sq;
-	  
+
 	  if ( (p < q && ep > q) || (p >= q && p < eq) ) {
 	    ok = 0;
 	    err = 1;

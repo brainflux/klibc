@@ -90,7 +90,7 @@ sub mysystem(@) {
 
 #
 # Initialization
-# 
+#
 open(NULL, '+<', '/dev/null') or die "$0: cannot open /dev/null\n";
 
 #

@@ -109,7 +109,7 @@ int netdev_setmtu(struct netdev *dev)
 	ifr.ifr_mtu = dev->mtu;
 
 	return ioctl(cfd, SIOCSIFMTU, &ifr);
-}	
+}
 
 static int netdev_gif_addr(struct ifreq *ifr, int cmd, __u32 *ptr)
 {

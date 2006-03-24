@@ -185,7 +185,7 @@ void copy_block(buf, len, header)
     bi_windup();              /* align on byte boundary */
 
     if (header) {
-        put_short((ush)len);   
+        put_short((ush)len);
         put_short((ush)~len);
 #ifdef DEBUG
         bits_sent += 2*16;

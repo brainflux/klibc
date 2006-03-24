@@ -24,7 +24,7 @@ int daemon(int nochdir, int noclose)
       return -1;
     close(nullfd);
   }
-  
+
   f = fork();
   if ( f < 0 )
     return -1;
@@ -35,4 +35,4 @@ int daemon(int nochdir, int noclose)
   return setsid();
 }
 
-  
+

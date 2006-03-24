@@ -62,7 +62,7 @@ struct rpc_call
 	__u32 vrf_len;
 };
 
-struct rpc_reply 
+struct rpc_reply
 {
 	struct rpc_header hdr;
 	__u32 reply_state;

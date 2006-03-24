@@ -10,7 +10,7 @@
 
 /* <asm/fcntl.h>, despite the name, isn't assembly-safe */
 #define O_LARGEFILE     0100000
-	
+
 	.globl	open
 	.type	open,@function
 

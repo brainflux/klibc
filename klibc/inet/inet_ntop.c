@@ -28,7 +28,7 @@ const char *inet_ntop(int af, const void *cp, char *buf, size_t len)
   case AF_INET6:
     {
       const struct in6_addr *s = (const struct in6_addr *)cp;
-      
+
       xlen = snprintf(buf, len, "%x:%x:%x:%x:%x:%x:%x:%x",
 		      ntohs(s->s6_addr16[0]), ntohs(s->s6_addr16[1]),
 		      ntohs(s->s6_addr16[2]), ntohs(s->s6_addr16[3]),

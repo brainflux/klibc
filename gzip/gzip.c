@@ -39,7 +39,7 @@ static char  *license_msg[] = {
  * example, foo.txt -> foo.tgz (.tgz must be reserved as shorthand for
  * tar.gz). Similarly, foo.dir and foo.doc would both be mapped to foo.dgz.
  * I also considered 12345678.txt -> 12345txt.gz but this truncates the name
- * too heavily. There is no ideal solution given the MSDOS 8+3 limitation. 
+ * too heavily. There is no ideal solution given the MSDOS 8+3 limitation.
  *
  * For the meaning of all compilation flags, see comments in Makefile.in.
  */
@@ -535,7 +535,7 @@ local void treat_file(iname)
     if (!save_orig_name) save_orig_name = !no_name;
 
     if (verbose) {
-	fprintf(stderr, "%s:\t%s", ifname, (int)strlen(ifname) >= 15 ? 
+	fprintf(stderr, "%s:\t%s", ifname, (int)strlen(ifname) >= 15 ?
 		"" : ((int)strlen(ifname) >= 7 ? "\t" : "\t\t"));
     }
 

@@ -18,7 +18,7 @@ __strxspn(const char *s, const char *map, int parity)
   memset(matchmap, 0, sizeof matchmap);
   while ( *map )
     matchmap[(unsigned char) *map++] = 1;
-  
+
   /* Make sure the null character never matches */
   matchmap[0] = parity;
 

@@ -28,7 +28,7 @@ int inet_pton(int af, const char *src, void *dst)
   switch ( af ) {
   case AF_INET:
     return inet_aton(src, (struct in_addr *)dst);
-    
+
   case AF_INET6:
     {
       struct in6_addr *d = (struct in6_addr *)dst;

@@ -26,10 +26,10 @@ char * NAME (const char *str, TIMEX *ts)
 
     fs = strntoumax(s0, &s, 10, DECIMALS);
     n = s-s0;
-    
+
     while ( isdigit(*s) )
       s++;
-    
+
     for ( ; n < DECIMALS ; n++ )
       fs *= 10;
   }

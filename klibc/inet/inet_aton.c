@@ -20,4 +20,4 @@ int inet_aton(const char *str, struct in_addr *addr)
   }
 }
 
-    
+

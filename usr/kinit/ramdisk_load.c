@@ -81,7 +81,7 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 
 	inflateEnd(&zs);
 	return 0;
-	
+
 err2:
 	inflateEnd(&zs);
 err1:
@@ -111,7 +111,7 @@ load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fss
 			lseek(rfd, 0L, SEEK_SET);
 			ramdisk_start = 0;
 		}
-		
+
 		do {
 			bytes = min(ramdisk_start-ramdisk_size,
 				    min((uint64_t)fssize, (uint64_t)BUF_SZ));
@@ -132,7 +132,7 @@ load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fss
 int
 ramdisk_load(int argc, char *argv[], dev_t root_dev)
 {
-        const char *arg_prompt_ramdisk = 
+        const char *arg_prompt_ramdisk =
 		get_arg(argc, argv, "prompt_ramdisk=");
 	const char *arg_ramdisk_blocksize =
 		get_arg(argc, argv, "ramdisk_blocksize=");
@@ -159,12 +159,12 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 	}
 
 	/* XXX: This should be better error checked. */
-	
+
 	mknod("/dev/rddev", S_IFBLK|0400, root_dev);
 	mknod("/dev/ram0", S_IFBLK|0600, Root_RAM0);
 	rfd = open("/dev/rddev", O_RDONLY);
 	wfd = fopen("/dev/ram0", "w");
-	
+
 	/* Check filesystem type */
 	if (identify_fs(rfd, &fstype, &fssize, ramdisk_start) ||
 	    (fssize == 0 && !(is_gzip = !strcmp(fstype, "gzip")))) {
@@ -181,15 +181,15 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 
 	close(rfd);
 	fclose(wfd);
-	
+
 	putc('\n', stderr);
 
 	if (err) {
 		perror("Failure loading ramdisk");
 		return 0;
 	}
-			
+
 	return 1;
 }
-		
+
 

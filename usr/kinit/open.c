@@ -10,13 +10,13 @@
 int open_cloexec(const char *path, int flags, mode_t mode)
 {
   int fd = open(path, flags, mode);
-  
+
   if ( fd >= 0 )
     fcntl(fd, F_SETFD, FD_CLOEXEC);
 
   return fd;
 }
 
-    
 
-  
+
+

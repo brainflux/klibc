@@ -26,7 +26,7 @@ static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
   struct free_arena_header *nfp, *na;
 
   fsize = fp->a.size;
-  
+
   /* We need the 2* to account for the larger requirements of a free block */
   if ( fsize >= size+2*sizeof(struct arena_header) ) {
     /* Bigger block than required -- split block */
@@ -43,7 +43,7 @@ static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
     nfp->a.next = na;
     na->a.prev = nfp;
     fp->a.next = nfp;
-    
+
     /* Replace current block on free chain */
     nfp->next_free = fp->next_free;
     nfp->prev_free = fp->prev_free;
@@ -57,7 +57,7 @@ static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
     fp->next_free->prev_free = fp->prev_free;
     fp->prev_free->next_free = fp->next_free;
   }
-  
+
   return (void *)(&fp->a + 1);
 }
 

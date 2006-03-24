@@ -20,7 +20,7 @@ int32_t __divsi3(int32_t num, int32_t den)
     den = -den;
     minus ^= 1;
   }
-  
+
   v = __udivmodsi4(num, den, NULL);
   if ( minus )
     v = -v;

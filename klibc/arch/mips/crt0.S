@@ -16,7 +16,7 @@ NESTED(__start, 32, sp)
 
 	lui	gp, %hi(_gp)		# Initialize gp
 	addiu	gp, gp, _gp
-	
+
 	addiu	a0, sp, 32		# Pointer to ELF entry structure
 	move	a1, v0			# Kernel-provided atexit() pointer
 

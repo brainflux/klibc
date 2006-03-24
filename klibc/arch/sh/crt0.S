@@ -12,7 +12,7 @@
 	.align 2
 	.type _start,#function
 	.globl _start
-	
+
 _start:
 	mov	r15, r4
 	mov	#0, r5

@@ -233,7 +233,7 @@ growstackblock(void)
 
 		/*
 		 * Stack marks pointing to the start of the old block
-		 * must be relocated to point to the new block 
+		 * must be relocated to point to the new block
 		 */
 		xmark = markp;
 		while (xmark != NULL && xmark->stackp == oldstackp) {

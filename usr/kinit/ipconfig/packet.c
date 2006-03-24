@@ -33,7 +33,7 @@ int packet_open(void)
 
 	if (pkt_fd != -1)
 		return pkt_fd;
-	
+
 	/*
 	 * Get a PACKET socket for IP traffic.
 	 */
@@ -131,7 +131,7 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 		ipudp_hdrs.udp.source = htons(cfg_local_port);
 		ipudp_hdrs.udp.dest = htons(cfg_remote_port);
 	}
-	
+
 	DEBUG(("\n   udp src %d dst %d", ntohs(ipudp_hdrs.udp.source),
 	       ntohs(ipudp_hdrs.udp.dest)));
 
@@ -163,7 +163,7 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 	ipudp_hdrs.udp.len      = htons(len - sizeof(struct iphdr));
 
 	DEBUG(("\n   bytes %d\n", len));
-	
+
 	return sendmsg(pkt_fd, &msg, 0);
 }
 
@@ -201,7 +201,7 @@ void packet_discard(void)
 	struct iphdr iph;
 	struct sockaddr_ll sll;
 	socklen_t sllen = sizeof(sll);
-	
+
 	recvfrom(pkt_fd, &iph, sizeof(iph), 0,
 		 (struct sockaddr *) &sll, &sllen);
 }
@@ -263,7 +263,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 
 	DEBUG(("\n   udp src %d dst %d ", ntohs(udp->source),
 	       ntohs(udp->dest)));
-	
+
 	if (udp->source != htons(cfg_remote_port) ||
 	    udp->dest != htons(cfg_local_port))
 		goto free_pkt;

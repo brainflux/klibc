@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------- *
- *   
+ *
  *   Copyright 2004-2006 H. Peter Anvin - All Rights Reserved
  *
  *   Permission is hereby granted, free of charge, to any person
@@ -10,10 +10,10 @@
  *   sell copies of the Software, and to permit persons to whom
  *   the Software is furnished to do so, subject to the following
  *   conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall
  *   be included in all copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -100,7 +100,7 @@ static int nuke_dir(const char *what)
 
   if ( lstat(what, &st) )
     return errno;
-  
+
   if ( !S_ISDIR(st.st_mode) )
     return ENOTDIR;
 
@@ -109,21 +109,21 @@ static int nuke_dir(const char *what)
        if not, the rmdir() in nuke() will trigger an error. */
     return (errno == EACCES) ? 0 : errno;
   }
-  
+
   while ( (d = readdir(dir)) ) {
     /* Skip . and .. */
     if ( d->d_name[0] == '.' &&
 	 (d->d_name[1] == '\0' ||
 	  (d->d_name[1] == '.' && d->d_name[2] == '\0')) )
       continue;
-    
+
     err = nuke_dirent(len, what, d->d_name, st.st_dev);
     if ( err ) {
       closedir(dir);
       return err;
     }
   }
-  
+
   closedir(dir);
 
   return 0;
@@ -175,7 +175,7 @@ int run_init(const char *realroot, const char *console,
 
   if ( rst.st_dev == cst.st_dev )
     die("current directory on the same filesystem as the root");
-  
+
   /* The initramfs should have /init */
   if ( stat("/init", &ist) || !S_ISREG(ist.st_mode) )
     die("can't find /init on initramfs");
@@ -195,7 +195,7 @@ int run_init(const char *realroot, const char *console,
   /* Overmount the root */
   if ( mount(".", "/", NULL, MS_MOVE, NULL) )
     die("overmounting root");
-  
+
   /* chroot, chdir */
   if ( chroot(".") || chdir("/") )
     die("chroot");

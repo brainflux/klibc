@@ -10,7 +10,7 @@ COMMON_CPPFLAGS := \
 
 CFLAGS := $(COMMON_CFLAGS)
 CPPFLAGS := $(COMMON_CPPFLAGS)
-CFLAGS_FOR_BUILD := $(COMMON_CFLAGS) 
+CFLAGS_FOR_BUILD := $(COMMON_CFLAGS)
 CPPFLAGS_FOR_BUILD := $(COMMON_CPPFLAGS)
 
 DEFS := -DHAVE_CONFIG_H
@@ -19,7 +19,7 @@ DEFAULT_INCLUDES := \
 	-include $(srctree)/$(src)/config.h
 
 EXTRA_KLIBCCFLAGS := $(DEFS) $(DEFAULT_INCLUDES) $(CPPFLAGS) $(CFLAGS)
-HOST_EXTRACFLAGS := $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) 
+HOST_EXTRACFLAGS := $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD)
 
 SRCS :=	alias.c arith_yylex.c cd.c error.c eval.c exec.c expand.c \
 	histedit.c input.c jobs.c mail.c main.c memalloc.c miscbltin.c \

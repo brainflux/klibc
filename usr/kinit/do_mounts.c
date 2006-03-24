@@ -113,7 +113,7 @@ name_to_dev_t(const char *name)
 
 	if (!stat(devname, &st) && S_ISBLK(st.st_mode))
 		return st.st_rdev;
-	
+
 	if (strncmp(name, "/dev/", 5)) {
 		res = (dev_t) strtoul(name, &p, 16);
 		if (*p)
@@ -160,7 +160,7 @@ find_in_devfs(char *path, dev_t dev)
 {
 	(void) path;
 	(void) dev;
-	
+
 #ifdef CONFIG_DEVFS_FS
 	// Leftover crap from the kernel.  Ugh.
 
@@ -269,7 +269,7 @@ mount_block(const char *source, const char *target,
 		*p++ = '\0';
 		if (*type != '\t')/* We can't mount a block device as a "nodev" fs */
 			continue;
-		
+
 		type++;
 		rp = mount_block(source, target, type, flags, data);
 		if ( rp )
@@ -302,7 +302,7 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 		if ( errno != EINVAL )
 			goto bad;
 	}
-	
+
 	if ( !errno && (rp = mount_block("/dev/root", "/root", NULL, flags, data)) )
 		goto ok;
 
@@ -349,7 +349,7 @@ mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 	if (ret == 0) {
 		chdir("/root");
 	}
-	
+
 	return ret;
 }
 

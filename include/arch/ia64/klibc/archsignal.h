@@ -1,6 +1,6 @@
 /*
  * arch/ia64/include/klibc/archsignal.h
- * 
+ *
  * Architecture-specific signal definitions.
  *
  */

@@ -151,7 +151,7 @@ evalcmd(int argc, char **argv)
                         p = grabstackstr(concat);
                 }
                 evalstring(p, ~SKIPEVAL);
-                
+
         }
         return exitstatus;
 }
@@ -802,7 +802,7 @@ evalcommand(union node *cmd, int flags)
 			if (cmdentry.cmdtype != CMDBUILTIN)
 				break;
 			if (spclbltin < 0)
-				spclbltin = 
+				spclbltin =
 					cmdentry.u.cmd->flags &
 					BUILTIN_SPECIAL
 				;

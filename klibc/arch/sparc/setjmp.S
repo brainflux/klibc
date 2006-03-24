@@ -14,7 +14,7 @@
 !   sp
 !   fp
 !   pc
-!	
+!
 ENTRY(setjmp)
 	st	%sp,[%o0+0]	! Callers stack pointer
 	st	%o7,[%o0+4]	! Return pc

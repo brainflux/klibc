@@ -123,7 +123,7 @@ STATIC size_t strtodest(const char *, const char *, int);
 STATIC void memtodest(const char *, size_t, const char *, int);
 STATIC ssize_t varvalue(char *, int, int);
 STATIC void recordregion(int, int, int);
-STATIC void removerecordregions(int); 
+STATIC void removerecordregions(int);
 STATIC void ifsbreakup(char *, struct arglist *);
 STATIC void ifsfree(void);
 STATIC void expandmeta(struct strlist *, int);
@@ -437,7 +437,7 @@ lose:
 }
 
 
-STATIC void 
+STATIC void
 removerecordregions(int endoff)
 {
 	if (ifslastp == NULL)
@@ -460,7 +460,7 @@ removerecordregions(int endoff)
 		}
 		return;
 	}
-	
+
 	ifslastp = &ifsfirst;
 	while (ifslastp->next && ifslastp->next->begoff < endoff)
 		ifslastp=ifslastp->next;
@@ -795,9 +795,9 @@ vsplus:
 			if (subevalvar(p, var, 0, subtype, startloc,
 				       varflags, 0)) {
 				varflags &= ~VSNUL;
-				/* 
-				 * Remove any recorded regions beyond 
-				 * start of variable 
+				/*
+				 * Remove any recorded regions beyond
+				 * start of variable
 				 */
 				removerecordregions(startloc);
 				goto again;

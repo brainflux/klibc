@@ -8,9 +8,9 @@
  */
 
 #ifdef	_REGPARM
-	
+
 #define ARG(n)	(4*n+20)(%esp)
-	
+
 	.text
 	.align	4
 	.globl	__syscall_varadic

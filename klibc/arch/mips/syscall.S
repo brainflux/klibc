@@ -3,7 +3,7 @@
 #include <asm/unistd.h>
 
 	.set noreorder
-	
+
 LEAF(__syscall_common)
 	syscall
         beqz    a3, 1f

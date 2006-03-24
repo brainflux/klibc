@@ -13,7 +13,7 @@
 #
 
 #include <machine/asm.h>
-	
+
 	.text
 	.align	3
 	.type	setjmp,@function

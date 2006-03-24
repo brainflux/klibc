@@ -619,7 +619,7 @@ local ulg deflate_fast()
                      * the next lookahead bytes will be emitted as literals.
                      */
                 } while (--match_length != 0);
-	        strstart++; 
+	        strstart++;
             } else {
 	        strstart += match_length;
 	        match_length = 0;
@@ -634,7 +634,7 @@ local ulg deflate_fast()
             Tracevv((stderr,"%c",window[strstart]));
             flush = ct_tally (0, window[strstart]);
             lookahead--;
-	    strstart++; 
+	    strstart++;
         }
         if (flush) FLUSH_BLOCK(0), block_start = strstart;
 

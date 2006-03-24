@@ -18,5 +18,5 @@ _start:
 	call __libc_init
 	# We should never get here...
 	hlt
-		
+
 	.size _start,.-_start

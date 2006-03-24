@@ -3,7 +3,7 @@
 #
 
 #include <asm/unistd.h>
-	
+
 	.text
 	.align	32
 	.proc	__syscall_error

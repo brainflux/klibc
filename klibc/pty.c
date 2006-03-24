@@ -17,9 +17,9 @@ char *ptsname(int fd)
 
   if ( ioctl(fd, TIOCGPTN, &ptyno) )
     return NULL;
-  
+
   snprintf(buffer, sizeof buffer, "/dev/pts/%u", ptyno);
-  
+
   return buffer;
 }
 

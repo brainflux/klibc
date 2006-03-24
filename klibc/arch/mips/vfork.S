@@ -7,7 +7,7 @@
 #define SIGCHLD		18
 
 	.set noreorder
-	
+
 LEAF(vfork)
 	li	a0, CLONE_VFORK | CLONE_VM | SIGCHLD
 	li	a1, 0

@@ -122,5 +122,5 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Jul 6 2004 H. Peter Anvin <hpa@zytor.com>
 - Update to use kernel-source RPM for the kernel symlink.
 
-* Sat Nov 29 2003 Bryan O'Sullivan <bos@serpentine.com> - 
+* Sat Nov 29 2003 Bryan O'Sullivan <bos@serpentine.com> -
 - Initial build.

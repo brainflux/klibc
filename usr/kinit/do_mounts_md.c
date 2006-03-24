@@ -102,7 +102,7 @@ static int mdp_major(void)
 			major_no = strtol(line, &p, 10);
 			while (*p && isspace(*p))
 				p++;
-			
+
 			if (major_no == 0) /* Not a number */
 				is_blk = 0;
 			else if (major_no > 0 && !strcmp(p, "mdp")) {

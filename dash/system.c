@@ -94,7 +94,7 @@ char *strsignal(int sig)
 
 	if ((unsigned)sig < NSIG && sys_siglist[sig])
 		return (char *)sys_siglist[sig];
-	fmtstr(buf, sizeof(buf), "Signal %d", sig); 
+	fmtstr(buf, sizeof(buf), "Signal %d", sig);
 	return buf;
 }
 #endif

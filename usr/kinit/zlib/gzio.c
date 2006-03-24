@@ -195,7 +195,7 @@ local gzFile gz_open (path, mode, fd)
          * start anyway in write mode, so this initialization is not
          * necessary.
          */
-    } else 
+    } else
 #endif
       {
         check_header(s); /* skip the .gz header */

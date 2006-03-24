@@ -27,7 +27,7 @@ setjmp:
 
 
        	.globl	longjmp
-	.type	longjmp, @function	
+	.type	longjmp, @function
 longjmp:
 	mov	%o1, %g4	! save return value
 	mov	%o0, %g1	! save target
@@ -41,7 +41,7 @@ longjmp:
 
 .Lbotch:
 	unimp	0		! ... error ...
-	
+
 2:
        	cmp	%o2, %sp	! %sp must not decrease
 	bl	.Lbotch

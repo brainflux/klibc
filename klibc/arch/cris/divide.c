@@ -53,7 +53,7 @@ xnum NAME (unum num, unum den)
   unum quot = 0, qbit = 1;
   int minus = 0;
   xnum v;
-  
+
   if ( den == 0 ) {
     raise(SIGFPE);
     return 0;			/* If signal ignored... */

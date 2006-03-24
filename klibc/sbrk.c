@@ -20,7 +20,7 @@ static inline void *align_up(void *p, uintptr_t a)
 void *sbrk(ptrdiff_t increment)
 {
   char *start, *end, *new_brk;
-  
+
   if (!__current_brk)
     __current_brk = __brk(NULL);
 

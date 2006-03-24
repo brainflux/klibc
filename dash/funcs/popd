@@ -38,7 +38,7 @@
 
 pushd () {
 	SAVE=`pwd`
-	if [ "$1" = "" ] 
+	if [ "$1" = "" ]
 	then	if [ "$DSTACK" = "" ]
 		then	echo "pushd: directory stack empty."
 			return 1
@@ -54,7 +54,7 @@ pushd () {
 }
 
 popd () {
-	if [ "$DSTACK" = "" ] 
+	if [ "$DSTACK" = "" ]
 	then	echo "popd: directory stack empty."
 		return 1
 	fi

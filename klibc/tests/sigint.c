@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 {
   struct sigaction act, oact;
   pid_t f;
-  
+
   (void)argc;
 
   memset(&act, 0x00, sizeof(struct sigaction));

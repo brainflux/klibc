@@ -49,7 +49,7 @@ static __inline__ pid_t tcgetsid(int __fd)
 {
   pid_t __p;
   return ioctl(__fd, TIOCGSID, &__p) ? (pid_t)-1 : __p;
-}  
+}
 
 static __inline__ int tcsendbreak(int __fd, int __duration)
 {

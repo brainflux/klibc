@@ -84,7 +84,7 @@ sed -e 's/"/\\"/g' \
 echo '};
 '
 sed 's/"//g' /tmp/ka$$ | awk '
-/TNOT/{print "#define KWDOFFSET " NR-1; print ""; 
+/TNOT/{print "#define KWDOFFSET " NR-1; print "";
       print "STATIC const char *const parsekwd[] = {"}
 /TNOT/,/neverfound/{if (last) print "	\"" last "\","; last = $3}
 END{print "	\"" last "\"\n};"}'

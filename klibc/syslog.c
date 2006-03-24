@@ -29,14 +29,14 @@ void openlog(const char *ident, int option, int facility)
   int fd;
 
   (void)option; (void)facility;	/* Unused */
-  
+
   if ( __syslog_fd == -1 ) {
     __syslog_fd = fd = open(LOGDEV, O_WRONLY);
     if ( fd == -1 )
       return;
     fcntl(fd, F_SETFD, (long)FD_CLOEXEC);
   }
-  
+
   syslog_flags = option;
 
   strncpy(id, ident?ident:"", MAXID);

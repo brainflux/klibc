@@ -40,7 +40,7 @@ int rd_copy_image(int ffd)
 	while ( bytes ) {
 		ssize_t blocksize = ((bytes-1) & ~(BUF_SIZE-1))+1;
 		off_t offset = bytes-blocksize;
-		
+
 		if ( pread(ffd, buffer, blocksize, offset) != blocksize ||
 		     pwrite(dfd, buffer, blocksize, offset) != blocksize )
 			goto barf;
@@ -79,7 +79,7 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	mkdir("/old", 0700);
 	root_fd = open_cloexec("/", O_RDONLY|O_DIRECTORY, 0);
 	old_fd = open_cloexec("/old", O_RDONLY|O_DIRECTORY, 0);
-	
+
 	if ( root_fd < 0 || old_fd < 0 )
 		return -errno;
 
@@ -106,7 +106,7 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	     fchdir(root_fd) ||
 	     chroot(".") )
 		return -errno;
-	
+
 	close(root_fd);
 	close(old_fd);
 
@@ -137,13 +137,13 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 	initrd_fd = open("/initrd.image", O_RDWR);
 	if ( initrd_fd < 0 )
 		return 0;
-	
+
 	create_dev("/dev/ram0", Root_RAM0, NULL);
-	
+
 	if ( rd_copy_image(initrd_fd) ||
 	     unlink("/initrd.image") )
 		return 0;
-	
+
 	if ( root_dev != Root_RAM0 ) {
 		run_linuxrc(argc, argv, root_dev);
 		return 1;
@@ -151,6 +151,6 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 
 	return 0;
 }
-					
 
-	
+
+

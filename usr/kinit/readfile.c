@@ -35,7 +35,7 @@ ssize_t freadfile(FILE *f, char **pp)
 
   if ( !buffer )
     return -1;
-  
+
   for (;;) {
     errno = 0;
 
@@ -43,7 +43,7 @@ ssize_t freadfile(FILE *f, char **pp)
       bu += rv;
       bf -= rv;
     }
-  
+
     if ( errno && errno != EINTR && errno != EAGAIN ) {
       /* error */
       free(buffer);

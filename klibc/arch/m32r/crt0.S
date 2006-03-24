@@ -18,7 +18,7 @@ _start:
 
 	/* atexit() function (assume null) */
 	xor	r1, r1
-	
+
 	bl	__libc_init
 
 	.size _start, .-_start

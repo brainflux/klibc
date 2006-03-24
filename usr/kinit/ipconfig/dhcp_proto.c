@@ -181,7 +181,7 @@ int dhcp_send_discover(struct netdev *dev)
 	dev->ip_gateway = INADDR_ANY;
 
 	DEBUG(("-> dhcp discover "));
-	
+
 	return dhcp_send(dev, dhcp_discover_iov, 5);
 }
 

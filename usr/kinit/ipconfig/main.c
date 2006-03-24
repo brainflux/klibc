@@ -486,7 +486,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 					progname, dev->name);
 				exit(1);
 			}
-			
+
 			if (*ip == '\0')
 				continue;
 			DEBUG(("IP-Config: opt #%d: '%s'\n", opt, ip));

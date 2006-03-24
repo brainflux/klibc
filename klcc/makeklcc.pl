@@ -17,7 +17,7 @@ sub pathsearch($) {
     if ( $file =~ /\// ) {
 	return File::Spec->rel2abs($file);
     }
-    
+
     foreach $p ( split(/\:/, $ENV{'PATH'}) ) {
 	$pp = File::Spec->rel2abs(File::Spec->catpath(undef, $p, $file));
 	return $pp if ( -x $pp );

@@ -11,7 +11,7 @@
 #	Note that r14 is the return address register and
 #	r15 is the stack pointer.
 #
-	
+
 	.text
 	.balign 4
 	.globl	setjmp

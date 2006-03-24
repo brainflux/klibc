@@ -17,7 +17,7 @@ size_t _fwrite(const void *buf, size_t count, FILE *f)
     if ( rv == -1 ) {
       if ( errno == EINTR ) {
 	errno = 0;
-	continue; 
+	continue;
       } else
 	break;
     } else if ( rv == 0 ) {
@@ -32,5 +32,5 @@ size_t _fwrite(const void *buf, size_t count, FILE *f)
   return bytes;
 }
 
-    
-      
+
+

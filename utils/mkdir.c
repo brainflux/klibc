@@ -100,7 +100,7 @@ static int make_dir(char *dir)
 		fprintf(stderr, "%s: ", progname);
 		perror(dir);
 		return -1;
-	}		
+	}
 	return 0;
 }
 

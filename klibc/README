@@ -59,7 +59,7 @@ b) If you're cross-compiling, change ARCH in the main MCONFIG file to
    v850:	 Not yet ported
    x86-64:	 Working
    xtensa:	 Not yet ported
-   
+
    Shared library support requires recent binutils on many
    architectures.
 

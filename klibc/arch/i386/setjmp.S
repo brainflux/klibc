@@ -23,7 +23,7 @@ setjmp:
 	movl %eax,%edx
 #else
 	movl 4(%esp),%edx
-#endif	
+#endif
 	popl %ecx			# Return address, and adjust the stack
 	xorl %eax,%eax			# Return value
 	movl %ebx,(%edx)

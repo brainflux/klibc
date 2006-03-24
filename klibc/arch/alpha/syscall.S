@@ -3,7 +3,7 @@
 #
 
 #include <machine/asm.h>
-	
+
 	.text
 	.align	3
 	.type	__syscall_common,@function
@@ -13,7 +13,7 @@ __syscall_common:
 	.frame	sp,0,ra,0
 	callsys
 	beq	a3, 1f
-	br	pv, 2f			# pv <- pc  
+	br	pv, 2f			# pv <- pc
 2:
 	ldgp	gp, 0(pv)
 	lda	a1, errno

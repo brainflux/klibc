@@ -75,7 +75,7 @@ _start:
 
 ! On entry, the kernel leaves room for one register frame, but
 ! the C API wants more free space.  Thus, we need to drop the stack
-! pointer additionally.   
+! pointer additionally.
 
 #if TARGET_PTR_SIZE == 32
 	sub	%sp, 32, %sp		! make room for incoming arguments

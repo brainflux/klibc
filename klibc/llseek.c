@@ -22,7 +22,7 @@ off_t lseek(int fd, off_t offset, int whence)
 
   rv = __llseek(fd, (unsigned long)(offset >> 32), (unsigned long)offset,
 		&result, whence);
-  
+
   return rv ? (off_t)-1 : result;
 }
 

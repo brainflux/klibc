@@ -15,8 +15,8 @@ _start:
 
 	lda	$16, 0($30)		# ELF data structure
 	lda	$17, 0($0)		# atexit pointer
-	
+
 	jsr	$26, __libc_init
-	
+
 	.size	_start,.-_start
 	.end	_start

@@ -6,7 +6,7 @@
 #    /* Divine up argc, argv, and envp */
 #    environ = envp;
 #    exit(main(argc, argv, envp));
-# } 
+# }
 #
 
 	.section ".toc","aw"

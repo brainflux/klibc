@@ -38,10 +38,10 @@ int bind_portmap(void)
 {
 	int sock = socket(PF_INET, SOCK_DGRAM, 0);
 	struct sockaddr_in sin;
-	
+
 	if ( sock < 0 )
 		return -1;
-	
+
 	memset(&sin, 0, sizeof sin);
 	sin.sin_family      = AF_INET;
 	sin.sin_addr.s_addr = htonl(0x7f000001); /* 127.0.0.1 */
@@ -52,7 +52,7 @@ int bind_portmap(void)
 		errno = err;
 		return -1;
 	}
-	
+
 	return sock;
 }
 
@@ -65,31 +65,31 @@ int dummy_portmap(int sock, FILE *portmap_file)
 		unsigned char b[65536];	/* Max UDP packet size */
 	} pkt;
 	struct portmap_reply rply;
-	
+
 	for(;;) {
 		addrlen = sizeof sin;
 		pktlen = recvfrom(sock, &pkt.c.rpc.hdr.udp, sizeof pkt, 0,
 				  (struct sockaddr *)&sin, &addrlen);
-		
+
 		if ( pktlen < 0 ) {
 			if ( errno == EINTR )
 				continue;
-			
+
 			return -1;
 		}
-		
+
 		/* +4 to skip the TCP fragment header */
 		if ( pktlen+4 < sizeof(struct portmap_call) )
 			continue;			/* Bad packet */
-		
+
 		if ( pkt.c.rpc.hdr.udp.msg_type != htonl(RPC_CALL) )
 			continue;			/* Bad packet */
-		
+
 		memset(&rply, 0, sizeof rply);
-		
+
 		rply.rpc.hdr.udp.xid      = pkt.c.rpc.hdr.udp.xid;
 		rply.rpc.hdr.udp.msg_type = htonl(RPC_REPLY);
-		
+
 		if ( pkt.c.rpc.rpc_vers != htonl(2) ) {
 			rply.rpc.reply_state = htonl(REPLY_DENIED);
 			/* state <- RPC_MISMATCH == 0 */
@@ -128,12 +128,12 @@ int dummy_portmap(int sock, FILE *portmap_file)
 				break;
 			}
 		}
-		
+
 		sendto(sock, &rply.rpc.hdr.udp, sizeof rply - 4, 0,
 		       (struct sockaddr *)&sin, addrlen);
 	}
 }
-      
+
 #ifdef TEST
 int main(int argc, char *argv[])
 {

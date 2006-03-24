@@ -59,7 +59,7 @@ sub parse_file($) {
     close($fh);
     print STDERR "closing $file\n" unless ( $quiet );
 }
-	 
+
 $v = $ENV{'KBUILD_VERBOSE'};
 $quiet = defined($v) ? !$v : 0;
 
@@ -97,4 +97,4 @@ if ( $type eq '-errlist' ) {
     print $maxerr, "\n";
 }
 
-    
+

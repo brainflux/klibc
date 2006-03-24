@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
 	   (long)ts.tv_sec, (long)ts.tv_nsec, rs,
 	   (long)tv.tv_sec, (long)tv.tv_usec, rv);
   }
-  
+
   return 0;
 }
 
-	   
+

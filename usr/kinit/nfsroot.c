@@ -35,7 +35,7 @@ static char *sub_client(__u32 client, char *path, size_t len)
 int mount_nfs_root(int argc, char *argv[], int flags)
 {
 	(void) flags; // FIXME - don't ignore this
-	
+
 	struct in_addr addr = { INADDR_NONE };
 	__u32 client = INADDR_NONE;
 	const int len = 1024;

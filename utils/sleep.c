@@ -22,5 +22,5 @@ int main(int argc, char *argv[])
 
 err:
 	fprintf(stderr, "Usage: %s seconds[.fraction]\n", argv[0]);
-	return 1; 
+	return 1;
 }

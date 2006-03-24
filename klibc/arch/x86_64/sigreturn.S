@@ -3,7 +3,7 @@
  */
 
 #include <asm/unistd.h>
-	
+
 	.text
 	.align	4
 	.globl	__sigreturn

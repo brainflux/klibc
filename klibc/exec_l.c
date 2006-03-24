@@ -30,8 +30,8 @@ int NAME (const char *path, const char *arg0, ...)
   } while ( arg );
 
   va_end(cap);
-  
-  /* Allocate memory for the pointer array */ 
+
+  /* Allocate memory for the pointer array */
   argp = argv = alloca(argc*sizeof(const char *));
   if ( !argv ) {
     va_end(ap);

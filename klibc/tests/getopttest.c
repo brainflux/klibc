@@ -25,7 +25,7 @@ int main(int argc, char * const *argv)
 	   (c == EOF) ? "EOF" : showchar,
 	   optind, argv[optind], optarg, optopt);
   } while ( c != -1 );
-  
+
   return 0;
 }
 

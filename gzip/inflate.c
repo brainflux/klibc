@@ -43,7 +43,7 @@
    chunks), otherwise the dynamic method is used.  In the latter case, the
    codes are customized to the probabilities in the current block, and so
    can code it much better than the pre-determined fixed codes.
- 
+
    The Huffman codes themselves are decoded using a mutli-level table
    lookup, in order to maximize the speed of decoding plus the speed of
    building the decoding tables.  See the comments below that precede the
@@ -171,7 +171,7 @@ static ush cpdext[] = {         /* Extra bits for distance codes */
 
 /* Macros for inflate() bit peeking and grabbing.
    The usage is:
-   
+
         NEEDBITS(j)
         x = b & mask_bits[j];
         DUMPBITS(j)
@@ -303,7 +303,7 @@ int *m;                 /* maximum lookup bits, returns actual */
   memzero(c, sizeof(c));
   p = b;  i = n;
   do {
-    Tracecv(*p, (stderr, (n-i >= ' ' && n-i <= '~' ? "%c %d\n" : "0x%x %d\n"), 
+    Tracecv(*p, (stderr, (n-i >= ' ' && n-i <= '~' ? "%c %d\n" : "0x%x %d\n"),
 	    n-i, *p));
     c[*p]++;                    /* assume all entries <= BMAX */
     p++;                      /* Can't combine with above line (Solaris bug) */
@@ -478,7 +478,7 @@ struct huft *t;         /* table to free */
     q = (--p)->v.t;
     free((char*)p);
     p = q;
-  } 
+  }
   return 0;
 }
 

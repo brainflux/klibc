@@ -109,7 +109,7 @@ FUNC(.mul)
 	bge	1f
 	rd	%y, %o0
 
-	! %o0 was indeed negative; fix upper 32 bits of result by subtracting 
+	! %o0 was indeed negative; fix upper 32 bits of result by subtracting
 	! %o1 (i.e., return %o4 - %o1 in %o1).
 	retl
 	sub	%o4, %o1, %o1

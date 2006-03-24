@@ -108,7 +108,7 @@ static int split_cmdline(int *cmdc, char *cmdv[],
 	return *cmdc = v;
 }
 
-static int mount_sys_fs(const char *check, const char *fsname, 
+static int mount_sys_fs(const char *check, const char *fsname,
 			const char *fstype)
 {
 	struct stat st;
@@ -199,10 +199,10 @@ static void check_path(const char *path)
 static const char *find_init(const char *root)
 {
 	const char *init_paths[] = {
-		"/sbin/init", "/bin/init", "/etc/init", "/bin/sh", NULL 
+		"/sbin/init", "/bin/init", "/etc/init", "/bin/sh", NULL
 	};
 	const char **p;
-	
+
 	if ( chdir(root) ) {
 		perror("chdir");
 		exit(1);
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
 		dup2(fd, STDIN_FILENO);
 		dup2(fd, STDOUT_FILENO);
 		dup2(fd, STDERR_FILENO);
-	
+
 		if (fd > STDERR_FILENO) {
 			close(fd);
 		}
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
 	}
 
 	init_argv[0] = strrchr(init_path, '/')+1;
-	
+
 	run_init("/root", "/dev/console", init_path, init_argv);
 
 	/* run_init shouldn't fail; it rather calls die(). */

@@ -9,7 +9,7 @@
 #
 
 #include <machine/asm.h>
-	
+
 	.text
 	.align	3
 	.type	__syscall_dual1,@function
@@ -20,7 +20,7 @@ __syscall_dual1:
 	callsys
 	mov	v0, a4
 	beq	a3, 1f
-	br	pv, 2f			# pv <- pc  
+	br	pv, 2f			# pv <- pc
 2:
 	ldgp	gp, 0(pv)
 	lda	a1, errno

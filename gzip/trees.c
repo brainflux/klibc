@@ -342,7 +342,7 @@ void ct_init(attr, methodp)
     file_type = attr;
     file_method = methodp;
     compressed_len = input_len = 0L;
-        
+
     if (static_dtree[0].Len != 0) return; /* ct_init already called */
 
     /* Initialize the mapping length (0..255) -> length code (0..28) */

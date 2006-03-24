@@ -22,7 +22,7 @@ clean-files += *.S *.c *.o
 # Create reloctable composite object file
 $(obj)/socketcalls.o: $(call objectify,$(socketcall-objs)) FORCE
 	$(call if_changed,klibcld)
-	
+
 quiet_cmd_socketcalls = GEN     $@
       cmd_socketcalls = $(PERL) $(KLIBCSRC)/socketcalls.pl          \
                                 $(KLIBCSRC)/SOCKETCALLS.def         \
@@ -31,7 +31,7 @@ quiet_cmd_socketcalls = GEN     $@
 # Generate socketcall stubs
 $(obj)/socketcalls.mk: $(KLIBCSRC)/socketcalls.pl                   \
                        $(KLIBCSRC)/SOCKETCALLS.def                  \
-                       $(KLIBCSRC)/socketcommon.h 
+                       $(KLIBCSRC)/socketcommon.h
 	$(call cmd,socketcalls)
 
 

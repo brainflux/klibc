@@ -19,7 +19,7 @@ struct stat {
 	unsigned int		st_pad1[3]; /* Reserved for st_rdev expansion */
 
 	off_t			st_size;
-  
+
 	struct timespec		st_atim;
 	struct timespec		st_mtim;
 	struct timespec		st_ctim;

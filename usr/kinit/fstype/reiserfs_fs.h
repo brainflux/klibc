@@ -61,7 +61,7 @@ struct reiserfs_super_block
 #define REISERFS_SUPER_MAGIC_STRING "ReIsErFs"
 #define REISER2FS_SUPER_MAGIC_STRING "ReIsEr2Fs"
 #define REISER2FS_JR_SUPER_MAGIC_STRING "ReIsEr3Fs"
- 
+
 #define SB_V1_DISK_SUPER_BLOCK(s) (&((s)->s_v1))
 #define REISERFS_BLOCKSIZE(s) \
         __le32_to_cpu((SB_V1_DISK_SUPER_BLOCK(s)->s_blocksize))

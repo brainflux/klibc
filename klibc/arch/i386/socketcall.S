@@ -22,13 +22,13 @@ __socketcall_common:
 	leal	8(%esp),%ecx	# Argument pointer
 	movl	$__NR_socketcall,%eax
 	int	$0x80
-	
+
 	cmpl	$-4096,%eax	# Error return?
-	
+
 	popl	%ebx
-	
+
 	jb	1f
-	
+
 	negl	%eax
 	movl	%eax,errno
 	orl	$-1,%eax	# Return -1
@@ -36,7 +36,7 @@ __socketcall_common:
 	ret
 
 	.size __socketcall_common,.-__socketcall_common
-	
+
 #endif
 
-	
+

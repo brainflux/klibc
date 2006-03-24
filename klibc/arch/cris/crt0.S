@@ -18,7 +18,7 @@ _start:
 
 	/* atexit() function (assume null) */
 	moveq	0,$r11
-	
+
 	/* Set up a dummy stack frame to keep gcc from getting confused */
 	push	$r11
 	push	$r11

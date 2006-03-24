@@ -17,8 +17,8 @@ __syscall_common:
         mvncs	r0, #0
         strcs	r2, [r3]
 	ldmfd	sp!,{r4,r5,pc}
-	
-	.align 4	
+
+	.align 4
 1:
 	.word	errno
 
@@ -36,7 +36,7 @@ __syscall_common:
 	bcc	1f
 	ldr	r1, 3f
 	neg	r2, r0
-	mvn	r0, #0	
+	mvn	r0, #0
 	str	r2, [r1]
 1:
 	pop	{r4,r5,r7,pc}

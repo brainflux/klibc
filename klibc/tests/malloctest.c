@@ -4121,7 +4121,7 @@ int main(void)
 	q = pointers[j];
 	sq = sizes[j];
 	eq = q+sq;
-	
+
 	if ( (p < q && ep > q) || (p >= q && p < eq) ) {
 	  ok = 0;
 	  err = 1;
@@ -4133,7 +4133,7 @@ int main(void)
       if ( p )
 	memset(p, 0xee, sp);	/* Poison this memory */
     }
-    
+
     for ( i = 0 ; i < NCYCLES ; i++ ) {
       free(pointers[i]);
       printf("Freed %6d bytes at %p\n", sizes[i], pointers[i]);

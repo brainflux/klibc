@@ -36,7 +36,7 @@ int execvpe(const char *file, char * const *argv, char * const *envp)
   searchpath = getenv("PATH");
   if ( !searchpath )
     searchpath = DEFAULT_PATH;
-  
+
   errno = ENOENT; /* Default errno, if execve() doesn't change it */
 
   do {
@@ -45,7 +45,7 @@ int execvpe(const char *file, char * const *argv, char * const *envp)
       prefixlen = esp-searchpath;
     else
       prefixlen = strlen(searchpath);
-    
+
     if ( prefixlen == 0 || searchpath[prefixlen-1] == '/' ) {
       totallen = prefixlen+filelen;
       if ( totallen >= PATH_MAX )
@@ -61,12 +61,12 @@ int execvpe(const char *file, char * const *argv, char * const *envp)
       memcpy(path+prefixlen+1, file, filelen);
     }
     path[totallen] = '\0';
-    
+
     execve(path, argv, envp);
     if ( errno == E2BIG || errno == ENOEXEC ||
 	 errno == ENOMEM || errno == ETXTBSY )
       break;			/* Report this as an error, no more search */
-    
+
     searchpath = esp+1;
   } while ( esp );
 

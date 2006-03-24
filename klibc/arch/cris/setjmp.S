@@ -33,5 +33,5 @@ longjmp:
 	move.d	[$r10+],$sp
 	jump	[$r10]
 	move.d $r11,$r10
-	
+
 	.size longjmp,.-longjmp

@@ -21,7 +21,7 @@ xint NAME (uint num, uint den)
   uint quot = 0, qbit = 1;
   int minus = 0;
   xint v;
-  
+
   if ( den == 0 ) {
     /* This is really $16, but $16 and $24 are exchanged by a script */
     register unsigned long cause asm("$24") = GEN_INTDIV;

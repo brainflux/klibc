@@ -129,7 +129,7 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
 				memcpy(&dev->nisdomainname, ext, len);
 				dev->nisdomainname[len] = '\0';
 				break;
-			}				
+			}
 
 			ext += len;
 		}
@@ -191,7 +191,7 @@ int bootp_init_if(struct netdev *dev)
 		dev->caps &= ~(CAP_BOOTP | CAP_DHCP);
 		return 0;
 	}
-	
+
 	/*
 	 * Get a random XID
 	 */

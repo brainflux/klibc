@@ -7,7 +7,7 @@
 # See __static_init.c or __shared_init.c for the expected
 # arguments.
 #
-	
+
 	.text
 	.align 4
 	.type _start,@function
@@ -25,8 +25,8 @@ _start:
 	push %eax		# ELF array
 #endif
 	call __libc_init
-	# If __libc_init returns, problem...	
+	# If __libc_init returns, problem...
 	hlt
-	
+
 	.size _start, .-_start
 

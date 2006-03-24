@@ -1,6 +1,6 @@
 /*
  * arch/parisc/syscall.S
- * 
+ *
  * %r20 contains the system call number, %r2 contains whence we came
  *
  */
@@ -11,7 +11,7 @@
 	.type	__syscall_common,@function
 __syscall_common:
 	ldo 		0x40(%sp),%sp
-	stw 		%rp,-0x54(%sp)		; save return pointer	
+	stw 		%rp,-0x54(%sp)		; save return pointer
 
 	ldw 		-0x74(%sp),%r22		; %arg4
 	ldw 		-0x78(%sp),%r21		; %arg5

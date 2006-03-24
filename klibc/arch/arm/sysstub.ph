@@ -11,7 +11,7 @@ sub make_sysstub($$$$$@) {
 
     open(OUT, '>', "${outputdir}/${fname}.S");
     print  OUT "#include <asm/unistd.h>\n";
-	
+
     print  OUT "\t.text\n";
     print  OUT "\t.type\t${fname}, #function\n";
     print  OUT "\t.globl ${fname}\n";
@@ -35,7 +35,7 @@ sub make_sysstub($$$$$@) {
     print  OUT "\tpush\t{r4,r5,r7,pc}\n";
     print  OUT "\tmov\tr7, # __NR_${sname}\n";
     print  OUT "\tb\t__syscall_common\n";
-    
+
     print  OUT "#endif\n";
 
     print  OUT "\t.size\t__syscall${i},.-__syscall${i}\n";

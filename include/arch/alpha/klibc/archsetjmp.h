@@ -16,7 +16,7 @@ struct __jmp_buf {
   unsigned long __ra;
   unsigned long __gp;
   unsigned long __sp;
-  
+
   unsigned long __f2;
   unsigned long __f3;
   unsigned long __f4;

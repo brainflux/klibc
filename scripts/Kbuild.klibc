@@ -5,7 +5,7 @@
 # To create a kbuild file for a userspace program do the following:
 #
 # Kbuild:
-# 
+#
 # static-y := cat
 # # This will compile a file named cat.c -> the executable 'cat'
 # # The executable will be linked statically
@@ -49,7 +49,7 @@ KLIBCREQFLAGS     :=
 KLIBCARCHREQFLAGS :=
 KLIBCOPTFLAGS     :=
 KLIBCWARNFLAGS    := -W -Wall -Wno-sign-compare -Wno-unused-parameter
-KLIBCSHAREDFLAGS  := 
+KLIBCSHAREDFLAGS  :=
 KLIBCBITSIZE      :=
 KLIBCLDFLAGS      :=
 
@@ -139,7 +139,7 @@ klibc-objs += $(foreach p, $(klibc-multi), $($(p)-y))
 # objects build in this dir
 klibc-real-objs := $(patsubst %/,,$(klibc-objs))
 # Directories we need to visit before klibc-objs are up-to-date
-klibc-dirs :=  $(patsubst %/,%,$(filter %/, $(klibc-objs))) 
+klibc-dirs :=  $(patsubst %/,%,$(filter %/, $(klibc-objs)))
 # replace all dir/ with dir/lib.a
 klibc-objs := $(patsubst %/, %/lib.a, $(klibc-objs))
 
@@ -189,7 +189,7 @@ __build: $(subdir-y) $(lib-target) $(always)
 # ---------------------------------------------------------------------------
 
 quiet_cmd_cc_s_c = KLIBCCC $@
-      cmd_cc_s_c = $(KLIBCCC) $(klibccflags) -S -o $@ $< 
+      cmd_cc_s_c = $(KLIBCCC) $(klibccflags) -S -o $@ $<
 
 %.s: %.c FORCE
 	$(call if_changed_dep,cc_s_c)
@@ -246,7 +246,7 @@ $(sort $(addsuffix /lib.a,$(klibc-dirs))): $(klibc-dirs) ;
 
 stripobj  = $(subst $(obj)/,,$@)
 addliba   = $(addprefix $(obj)/, $(patsubst %/, %/lib.a, $(1)))
-link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o) 
+link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o)
 
 quiet_cmd_ld-static = KLIBCLD $@
       cmd_ld-static = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@    \
@@ -256,7 +256,7 @@ quiet_cmd_ld-static = KLIBCLD $@
                        $(KLIBCLIBC) $(KLIBCLIBGCC);       \
                        cp -f $@ $@.g;                     \
                        $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
-		       
+
 
 $(static-y): $(klibc-objs) $(lib-target) FORCE
 	$(call if_changed,ld-static)
@@ -269,11 +269,11 @@ quiet_cmd_ld-shared = KLIBCLD $@
                        -R $(KLIBCLIBCSHARED) $(KLIBCLIBGCC);\
                        cp -f $@ $@.g;                     \
                        $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
- 
-		       
+
+
 $(shared-y): $(klibc-objs) $(lib-target) FORCE
 	$(call if_changed,ld-shared)
-	
+
 targets += $(klibc-real-objs)
 endif
 
@@ -314,7 +314,7 @@ quiet_cmd_ln = LN      $@
 # Strip target (remove all debugging info)
 quiet_cmd_strip = STRIP   $@
       cmd_strip = $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $< -o $@
- 
+
 
 # Read all saved command lines and dependencies for the $(targets) we
 # may be building above, using $(if_changed{,_dep}). As an

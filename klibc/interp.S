@@ -4,7 +4,7 @@
 #
 # NOTE: The .interp section needs to be "a", or it doesnt work...
 #
-	
+
         .section ".interp","a"
         .ascii LIBDIR
 	.ascii "/klibc-"

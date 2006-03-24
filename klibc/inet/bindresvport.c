@@ -28,11 +28,11 @@ int bindresvport(int sd, struct sockaddr_in *sin)
 		errno = EPFNOSUPPORT;
 		return -1;
 	}
-	
+
 	if (port == 0) {
 		port = START_PORT + (getpid() % NUM_PORTS);
 	}
-	
+
 	for (i = 0; i < NUM_PORTS; i++, port++) {
 		if (port == END_PORT)
 			port = START_PORT;

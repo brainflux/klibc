@@ -16,7 +16,7 @@ typedef ptrdiff_t ssize_t;
 #include <asm/types.h>
 
 /* Keeps linux/types.h from getting included elsewhere */
-#define _LINUX_TYPES_H		
+#define _LINUX_TYPES_H
 
 typedef __kernel_fd_set		fd_set;
 typedef uint32_t		dev_t;

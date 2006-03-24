@@ -109,7 +109,7 @@ char optlist[NOPTS];
 STATIC void options(int);
 STATIC void minus_o(char *, int);
 STATIC void setoption(int, int);
-STATIC int getopts(char *, char *, char **, int *, int *); 
+STATIC int getopts(char *, char *, char **, int *, int *);
 
 
 /*

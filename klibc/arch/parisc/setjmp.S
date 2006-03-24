@@ -2,7 +2,7 @@
  * parisc specific setjmp/longjmp routines
  *
  */
-        
+
         .text
         .align 4
         .global setjmp

@@ -16,4 +16,4 @@ void abort(void)
   raise(SIGABRT);
   _exit(255);			/* raise() should have killed us */
 }
-  
+

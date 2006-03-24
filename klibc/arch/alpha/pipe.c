@@ -15,7 +15,7 @@ int pipe(int *fds)
   asm volatile("callsys" : "=r" (sc_0), "=r" (sc_19), "=r" (sc_20)
 	       : "0" (sc_0)
 	       : _syscall_clobbers);
-  
+
   if ( sc_19 ) {
     errno = sc_19;
     return -1;

@@ -14,7 +14,7 @@
 #
 
 #include <machine/asm.h>
-	
+
 LEAF(setjmp)
 	sw	s0,  0(a0)
 	sw	s1,  4(a0)
@@ -44,7 +44,7 @@ LEAF(setjmp)
 	sw	t0,96(a0)
 	move	v0,zero
 	jr	ra
-	
+
 	END(setjmp)
 
 LEAF(longjmp)

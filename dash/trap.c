@@ -391,7 +391,7 @@ int decode_signal(const char *string, int minsig)
 		     !strcasecmp(string, sys_sigabbrev[i]) )
 			return i;
 	}
-	
+
 #ifdef SIGRTMIN
 	if ( !strncasecmp(string, "RTMIN", 5) ) {
 		char *ep;
@@ -406,7 +406,7 @@ int decode_signal(const char *string, int minsig)
 
 	if ( !strncasecmp(string, "RTMAX", 5) ) {
 		char *ep;
-		
+
 		if ( string[5] && string[5] != '-' )
 			return -1;
 		i = SIGRTMAX + strtol(string+5, &ep, 10);
@@ -426,7 +426,7 @@ const char *
 signal_name(int sig)
 {
 	static char buf[64];
-	
+
 	if ( sig < 0 || sig >= NSIG ) {
 		return NULL;
 	} else if ( sys_sigabbrev[sig] ) {

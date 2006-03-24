@@ -3,7 +3,7 @@
 #
 
 static-y := static/nfsmount
-#FIXME - build is broken static-y := dummypmap 
+#FIXME - build is broken static-y := dummypmap
 shared-y := shared/nfsmount
 
 objs := main.o mount.o portmap.o dummypmap.o sunrpc.o

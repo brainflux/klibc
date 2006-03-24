@@ -1,12 +1,12 @@
 
 #include <asm/fpu.h>
-	
+
 	.align 32
 	.global _start
 
 	.proc _start
 	.type _start,@function
-_start:	
+_start:
 	.prologue
 	.save rp, r0
 

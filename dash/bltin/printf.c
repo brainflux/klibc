@@ -99,9 +99,9 @@ int printfcmd(int argc, char *argv[])
 		/*
 		 * Basic algorithm is to scan the format string for conversion
 		 * specifications -- once one is found, find out if the field
-		 * width or precision is a '*'; if it is, gather up value. 
+		 * width or precision is a '*'; if it is, gather up value.
 		 * Note, format strings are reused as necessary to use up the
-		 * provided arguments, arguments of zero/null string are 
+		 * provided arguments, arguments of zero/null string are
 		 * provided to use up the format string.
 		 */
 
@@ -215,7 +215,7 @@ err:
 
 
 /*
- * Print SysV echo(1) style escape string 
+ * Print SysV echo(1) style escape string
  *	Halts processing string if a \c escape is encountered.
  */
 static char *
@@ -242,10 +242,10 @@ conv_escape_str(char *str)
 			continue;
 		}
 
-		/* 
+		/*
 		 * %b string octal constants are not like those in C.
-		 * They start with a \0, and are followed by 0, 1, 2, 
-		 * or 3 octal digits. 
+		 * They start with a \0, and are followed by 0, 1, 2,
+		 * or 3 octal digits.
 		 */
 		if (ch == '0') {
 			unsigned char i;
@@ -271,7 +271,7 @@ conv_escape_str(char *str)
 }
 
 /*
- * Print "standard" escape characters 
+ * Print "standard" escape characters
  */
 static char *
 conv_escape(char *str, int *conv_ch)
@@ -317,7 +317,7 @@ static char *
 mklong(const char *str, const char *ch)
 {
 	char *copy;
-	size_t len;	
+	size_t len;
 
 	len = ch - str + 3;
 	STARTSTACKSTR(copy);
@@ -326,7 +326,7 @@ mklong(const char *str, const char *ch)
 	copy[len - 3] = 'j';
 	copy[len - 2] = *ch;
 	copy[len - 1] = '\0';
-	return (copy);	
+	return (copy);
 }
 
 static int

@@ -1,6 +1,6 @@
 #ident "$Id: nuke.c,v 1.3 2004/06/08 06:39:44 hpa Exp $"
 /* ----------------------------------------------------------------------- *
- *   
+ *
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
  *
  *   Permission is hereby granted, free of charge, to any person
@@ -11,10 +11,10 @@
  *   sell copies of the Software, and to permit persons to whom
  *   the Software is furnished to do so, subject to the following
  *   conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall
  *   be included in all copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -67,27 +67,27 @@ static int nuke_dir(const char *what)
   DIR *dir;
   struct dirent *d;
   int err = 0;
-  
+
   if ( !(dir = opendir(what)) ) {
     /* EACCES means we can't read it.  Might be empty and removable;
        if not, the rmdir() in nuke() will trigger an error. */
     return (errno == EACCES) ? 0 : errno;
   }
-  
+
   while ( (d = readdir(dir)) ) {
     /* Skip . and .. */
     if ( d->d_name[0] == '.' &&
 	 (d->d_name[1] == '\0' ||
 	  (d->d_name[1] == '.' && d->d_name[2] == '\0')) )
       continue;
-    
+
     err = nuke_dirent(len, what, d->d_name);
     if ( err ) {
       closedir(dir);
       return err;
     }
   }
-  
+
   closedir(dir);
 
   return 0;
