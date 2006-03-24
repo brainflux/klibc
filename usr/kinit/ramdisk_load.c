@@ -19,7 +19,7 @@
 static int
 load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 {
-	uint64_t ramdisk_size;
+	unsigned long long ramdisk_size, ramdisk_left;
 	int disk = 1;
 	ssize_t bytes;
 	int rv;
@@ -61,8 +61,11 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 				ramdisk_start = 0;
 			}
 			do {
-				bytes = min(ramdisk_start-ramdisk_size, (uint64_t)BUF_SZ);
-				bytes = pread(rfd, in_buf, bytes, ramdisk_start);
+				ramdisk_left = ramdisk_size-ramdisk_start;
+				bytes = min(ramdisk_left,
+					    (unsigned long long)BUF_SZ);
+				bytes = pread(rfd, in_buf, bytes,
+					      ramdisk_start);
 			} while (bytes == -1 && errno == EINTR);
 			if (bytes <= 0)
 				goto err2;
@@ -92,7 +95,7 @@ err1:
 static int
 load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fssize)
 {
-	uint64_t ramdisk_size;
+	unsigned long long ramdisk_size, ramdisk_left;
 	int disk = 1;
 	ssize_t bytes;
 	unsigned char buf[BUF_SZ];
@@ -113,8 +116,8 @@ load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fss
 		}
 
 		do {
-			bytes = min(ramdisk_start-ramdisk_size,
-				    min((uint64_t)fssize, (uint64_t)BUF_SZ));
+			ramdisk_left = min(ramdisk_size-ramdisk_start, fssize);
+			bytes = min(ramdisk_left, (unsigned long long)BUF_SZ);
 			bytes = pread(rfd, buf, bytes, ramdisk_start);
 		} while (bytes == -1 && errno == EINTR);
 		if (bytes <= 0)
