@@ -15,6 +15,7 @@
 #include <sys/wait.h>
 #include "do_mounts.h"
 #include "kinit.h"
+#include "xpio.h"
 
 #define BUF_SIZE	65536	/* Should be a power of 2 */
 
@@ -22,7 +23,7 @@
  * Copy the initrd to /dev/ram0, copy from the end to the beginning
  * to avoid taking 2x the memory.
  */
-int rd_copy_image(int ffd)
+static int rd_copy_image(int ffd)
 {
 	int dfd = open("/dev/ram0", O_RDWR);
 	char buffer[BUF_SIZE];
@@ -30,7 +31,7 @@ int rd_copy_image(int ffd)
 	off_t bytes;
 	int rv = -1;
 
-	if ( ffd < 0 || dfd < 0 )
+	if (ffd < 0 || dfd < 0)
 		goto barf;
 
 	if ( fstat(ffd, &st) || !S_ISREG(st.st_mode) ||
@@ -41,8 +42,8 @@ int rd_copy_image(int ffd)
 		ssize_t blocksize = ((bytes-1) & ~(BUF_SIZE-1))+1;
 		off_t offset = bytes-blocksize;
 
-		if ( pread(ffd, buffer, blocksize, offset) != blocksize ||
-		     pwrite(dfd, buffer, blocksize, offset) != blocksize )
+		if ( xpread(ffd, buffer, blocksize, offset) != blocksize ||
+		     xpwrite(dfd, buffer, blocksize, offset) != blocksize )
 			goto barf;
 
 		ftruncate(ffd, offset); /* Free up memory */
@@ -51,8 +52,10 @@ int rd_copy_image(int ffd)
 	rv = 0;			/* Done! */
 
  barf:
-	close(ffd);
-	close(dfd);
+	if (dfd >= 0)
+		close(dfd);
+	if (ffd >= 0)
+		close(ffd);
 	return rv;
 }
 
