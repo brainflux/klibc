@@ -91,4 +91,3 @@ fi
 
 AC_SUBST(KLIBC)
 ])# AC_CHECK_KLIBC
-
