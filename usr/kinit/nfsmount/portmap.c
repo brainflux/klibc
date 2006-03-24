@@ -23,9 +23,11 @@ struct portmap_reply
 };
 
 static struct portmap_call call = {
-	.rpc.program   = __constant_htonl(RPC_PMAP_PROGRAM),
-	.rpc.prog_vers = __constant_htonl(RPC_PMAP_VERSION),
-	.rpc.proc      = __constant_htonl(PMAP_PROC_GETPORT),
+	.rpc = {
+		.program   = __constant_htonl(RPC_PMAP_PROGRAM),
+		.prog_vers = __constant_htonl(RPC_PMAP_VERSION),
+		.proc      = __constant_htonl(PMAP_PROC_GETPORT),
+	}
 };
 
 __u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
