@@ -3,7 +3,7 @@
 #
 
 # common .o files
-objs := adler32.o crc32.o gzio.o infback.o inffast.o \
+objs := adler32.o crc32.o infback.o inffast.o \
 	inftrees.o inflate.o zutil.o
 
 # zlib config flags
