@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <poll.h>
 #include <limits.h>
+#include <setjmp.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -26,6 +27,7 @@
 
 static const char sysfs_class_net[] = "/sys/class/net";
 static const char *progname;
+static jmp_buf abort_buf;
 static char do_not_config;
 static unsigned int default_caps = CAP_DHCP | CAP_BOOTP | CAP_RARP;
 static int loop_timeout = -1;
@@ -419,7 +421,7 @@ static void parse_addr(__u32 *addr, const char *ip)
 	if (inet_aton(ip, &in) == 0) {
 		fprintf(stderr, "%s: can't parse IP address '%s'\n",
 			progname, ip);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 	*addr = in.s_addr;
 }
@@ -443,7 +445,7 @@ static unsigned int parse_proto(const char *ip)
 	else {
 		fprintf(stderr, "%s: invalid protocol '%s'\n",
 			progname, ip);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
  bail:
 	return caps;
@@ -484,7 +486,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 			if (opt > 6) {
 				fprintf(stderr, "%s: too many options for %s\n",
 					progname, dev->name);
-				exit(1);
+				longjmp(abort_buf, 1);
 			}
 
 			if (*ip == '\0')
@@ -567,7 +569,7 @@ static struct netdev *add_device(const char *info)
 	dev = malloc(sizeof(struct netdev));
 	if (dev == NULL) {
 		fprintf(stderr, "%s: out of memory\n", progname);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 
 	memset(dev, 0, sizeof(struct netdev));
@@ -661,7 +663,7 @@ static int check_autoconfig(void)
 		if (configured == 0) {
 			fprintf(stderr, "%s: no devices to configure\n",
 				progname);
-			exit(1);
+			longjmp(abort_buf, 1);
 		}
 	}
 
@@ -674,13 +676,19 @@ int main(int argc, char *argv[])
 int ipconfig_main(int argc, char *argv[])
 {
 	struct netdev *dev;
-	struct timeval now;
 	int c, port;
+	int err;
 
-	progname = argv[0];
+	/* If progname is set we're invoked from another program */
+	if (!progname) {
+		struct timeval now;
+		progname = argv[0];
+		gettimeofday(&now, NULL);
+		srand48(now.tv_usec ^ (now.tv_sec << 24));
+	}
 
-	gettimeofday(&now, NULL);
-	srand48(now.tv_usec ^ (now.tv_sec << 24));
+	if ( (err = setjmp(abort_buf)) )
+		return err;
 
 	do {
 		c = getopt(argc, argv, "c:d:onp:t:");
@@ -697,7 +705,7 @@ int ipconfig_main(int argc, char *argv[])
 				fprintf(stderr,
 					"%s: invalid port number %d\n",
 					progname, port);
-				exit(1);
+				longjmp(abort_buf, 1);
 			}
 			cfg_local_port = port;
 			cfg_remote_port = cfg_local_port - 1;
@@ -708,7 +716,7 @@ int ipconfig_main(int argc, char *argv[])
 				fprintf(stderr,
 					"%s: invalid timeout %d\n",
 					progname, loop_timeout);
-				exit(1);
+				longjmp(abort_buf, 1);
 			}
 			break;
 		case 'o':
@@ -725,7 +733,7 @@ int ipconfig_main(int argc, char *argv[])
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
-			exit(1);
+			longjmp(abort_buf, 1);
 		}
 	} while (1);
 

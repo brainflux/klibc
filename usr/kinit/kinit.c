@@ -230,6 +230,10 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	int cmdc;
 	int fd;
+	struct timeval now;
+
+	gettimeofday(&now, NULL);
+	srand48(now.tv_usec ^ (now.tv_sec << 24));
 
 	/* Default parameters for anything init-like we execute */
 	init_argc = argc;

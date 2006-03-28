@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <setjmp.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -21,6 +22,7 @@
 #include "dummypmap.h"
 
 static char *progname;
+static jmp_buf abort_buf;
 
 static struct nfs_mount_data mount_data = {
 	.version = NFS_MOUNT_VERSION,
@@ -89,7 +91,7 @@ static int parse_int(const char *val, const char *ctx)
 	ret = (int) strtoul(val, &end, 0);
 	if (*val == '\0' || *end != '\0') {
 		fprintf(stderr, "%s: invalid value for %s\n", val, ctx);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 	return ret;
 }
@@ -111,7 +113,7 @@ static void parse_opts(char *opts)
 			else {
 				fprintf(stderr, "%s: bad option '%s'\n",
 					progname, cp);
-				exit(1);
+				longjmp(abort_buf, 1);
 			}
 		} else {
 			struct bool_opts *opts = bool_opts;
@@ -123,7 +125,7 @@ static void parse_opts(char *opts)
 			} else {
 				fprintf(stderr, "%s: bad option '%s'\n",
 					progname, cp);
-				exit(1);
+				longjmp(abort_buf, 1);
 			}
 		}
 	}
@@ -135,7 +137,7 @@ static __u32 parse_addr(const char *ip)
 	if (inet_aton(ip, &in) == 0) {
 		fprintf(stderr, "%s: can't parse IP address '%s'\n",
 			progname, ip);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 	return in.s_addr;
 }
@@ -146,12 +148,12 @@ static void check_path(const char *path)
 
 	if (stat(path, &st) == -1) {
 		perror("stat");
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 	else if (!S_ISDIR(st.st_mode)) {
 		fprintf(stderr, "%s: '%s' not a directory\n",
 			progname, path);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 }
 
@@ -160,7 +162,6 @@ int main(int argc, char *argv[])
 
 int nfsmount_main(int argc, char *argv[])
 {
-	struct timeval now;
 	__u32 server = 0;
 	char *rem_name;
 	char *rem_path;
@@ -169,11 +170,18 @@ int nfsmount_main(int argc, char *argv[])
 	int c;
 	int spoof_portmap = 0;
 	FILE *portmap_file = NULL;
+	int err;
 
-	progname = argv[0];
+	/* If progname is set we're invoked from another program */
+	if (!progname) {
+		struct timeval now;
+		progname = argv[0];
+		gettimeofday(&now, NULL);
+		srand48(now.tv_usec ^ (now.tv_sec << 24));
+	}
 
-	gettimeofday(&now, NULL);
-	srand48(now.tv_usec ^ (now.tv_sec << 24));
+	if ( (err = setjmp(abort_buf)) )
+	     return err;
 
 	while ((c = getopt(argc, argv, "o:p:")) != EOF) {
 		switch (c) {
@@ -187,32 +195,32 @@ int nfsmount_main(int argc, char *argv[])
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
-			exit(1);
+			longjmp(abort_buf, 1);
 		}
 	}
 
 	if (optind == argc) {
 		fprintf(stderr, "%s: need a path\n", progname);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 
 	hostname = rem_path = argv[optind];
 
 	if ((rem_name = strdup(rem_path)) == NULL) {
 		perror("strdup");
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 
 	if ((rem_path = strchr(rem_path, ':')) == NULL) {
 		fprintf(stderr, "%s: need a server\n", progname);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 
 	*rem_path++ = '\0';
 
 	if (*rem_path != '/') {
 		fprintf(stderr, "%s: need a path\n", progname);
-		exit(1);
+		longjmp(abort_buf, 1);
 	}
 
 	server = parse_addr(hostname);
@@ -235,13 +243,13 @@ int nfsmount_main(int argc, char *argv[])
 				fprintf(stderr,
 					"%s: portmap spoofing failed\n",
 					progname);
-				exit(1);
+				longjmp(abort_buf, 1);
 			}
 		} else {
 			spoof_portmap = fork();
 			if ( spoof_portmap == -1 ) {
 				fprintf(stderr, "%s: cannot fork\n", progname);
-				exit(1);
+				longjmp(abort_buf, 1);
 			} else if ( spoof_portmap == 0 ) {
 				/* Child process */
 				dummy_portmap(sock, portmap_file);
