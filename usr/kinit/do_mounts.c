@@ -173,8 +173,6 @@ name_to_dev_t(const char *name)
 int
 create_dev(const char *name, dev_t dev)
 {
-	char path[BUF_SZ];
-
 	unlink(name);
 	return mknod(name, S_IFBLK|0600, dev);
 }

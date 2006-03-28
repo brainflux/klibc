@@ -172,7 +172,7 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 
 	DEBUG(("kinit: initrd found\n"));
 
-	create_dev("/dev/ram0", Root_RAM0, NULL);
+	create_dev("/dev/ram0", Root_RAM0);
 
 	if ( rd_copy_image(initrd_fd) ||
 	     unlink("/initrd.image") ) {

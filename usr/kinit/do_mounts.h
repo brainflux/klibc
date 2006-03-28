@@ -13,7 +13,7 @@
 #define Root_NFS	makedev(0,255)
 
 int
-create_dev(const char *name, dev_t dev)
+create_dev(const char *name, dev_t dev);
 
 dev_t
 name_to_dev_t(const char *name);
@@ -34,9 +34,7 @@ static inline dev_t bstat(const char *name)
 {
 	struct stat st;
 
-	if (stat(name, &st))
-		return 0;
-	if (!S_ISBLK(st.st_mode))
+	if (stat(name, &st) || !S_ISBLK(st.st_mode))
 		return 0;
 	return st.st_rdev;
 }
