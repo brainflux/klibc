@@ -14,7 +14,7 @@
 #include "fstype.h"
 #include "zlib.h"
 
-#define BUF_SZ		(1 << 20)
+#define BUF_SZ		65536
 
 /* Also used in initrd.c */
 int load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
