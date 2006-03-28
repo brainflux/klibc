@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdint.h>
-#include <sys/syscall.h>
+#include <fcntl.h>
 
 static void make_test_file(int fd)
 {
@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
   void *foo;
   char *test_file = (argc > 1) ? argv[1] : "/tmp/mmaptest.tmp";
   int rv, fd;
-  unsigned long q;
   
   /* Important case, this is how we get memory for malloc() */
   errno = 0;
