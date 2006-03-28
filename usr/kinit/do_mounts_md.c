@@ -221,19 +221,20 @@ static void md_setup_drive(void)
 		int err = 0;
 		char *devname;
 		mdu_disk_info_t dinfo;
-		char name[16], devfs_name[16];
+		char name[16];
 
 		dev_minor = md_setup_args[ent].minor;
 		partitioned = md_setup_args[ent].partitioned;
 		devname = md_setup_args[ent].device_names;
 
-		sprintf(name, "/dev/md%s%d", partitioned?"_d":"", dev_minor);
-		sprintf(devfs_name, "/dev/md/%s%d", partitioned?"d":"", dev_minor);
+		snprintf(name, sizeof name,
+			 "/dev/md%s%d", partitioned?"_d":"", dev_minor);
+
 		if (partitioned)
 			dev = makedev(mdp_major(), dev_minor << MdpMinorShift);
 		else
 			dev = makedev(MD_MAJOR, dev_minor);
-		create_dev(name, dev, devfs_name);
+		create_dev(name, dev);
 		for (i = 0; i < MD_SB_DISKS && devname != 0; i++) {
 			char *p;
 
@@ -243,7 +244,8 @@ static void md_setup_drive(void)
 
 			dev = name_to_dev_t(devname);
 			if (!dev) {
-				fprintf(stderr,"md: Unknown device name: %s\n", devname);
+				fprintf(stderr, "md: Unknown device name: %s\n",
+					devname);
 				break;
 			}
 
@@ -357,7 +359,7 @@ static int raid_setup(char *str)
 
 static void md_run_setup(void)
 {
-	create_dev("/dev/md0", makedev(MD_MAJOR, 0), "md/0");
+	create_dev("/dev/md0", makedev(MD_MAJOR, 0));
 	if (raid_noautodetect)
 		fprintf(stderr, "md: Skipping autodetection of RAID arrays. (raid=noautodetect)\n");
 	else {

@@ -13,7 +13,7 @@
 #define Root_NFS	makedev(0,255)
 
 int
-create_dev(const char *name, dev_t dev, const char *devfs_name);
+create_dev(const char *name, dev_t dev)
 
 dev_t
 name_to_dev_t(const char *name);

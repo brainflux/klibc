@@ -17,8 +17,6 @@
 
 #define BUF_SZ		65536
 
-static const int do_devfs = 0; // FIXME
-
 /* Find dev_t for e.g. "hda,NULL" or "hdb,2" */
 static dev_t
 try_name(char *name, int part)
@@ -173,27 +171,12 @@ name_to_dev_t(const char *name)
 
 /* Create the device node "name" */
 int
-create_dev(const char *name, dev_t dev, const char *devfs_name)
+create_dev(const char *name, dev_t dev)
 {
 	char path[BUF_SZ];
 
 	unlink(name);
-	if (!do_devfs)
-		return mknod(name, S_IFBLK|0600, dev);
-
-	if (devfs_name && devfs_name[0]) {
-		if (strncmp(devfs_name, "/dev/", 5) == 0)
-			devfs_name += 5;
-		snprintf(path, BUF_SZ, "/dev/%s", devfs_name);
-		if (access(path, 0) == 0)
-			return symlink(devfs_name, name);
-	}
-	if (!dev)
-		return -1;
-
-	strcpy(path, "/dev");
-
-	return symlink(path + 5, name);
+	return mknod(name, S_IFBLK|0600, dev);
 }
 
 /* mount a filesystem, possibly trying a set of different types */
@@ -257,7 +240,7 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 	const char *rp;
 
 	data = get_arg(argc, argv, "rootflags=");
-	create_dev("/dev/root", root_dev, root_dev_name);
+	create_dev("/dev/root", root_dev);
 
 	errno = 0;
 
