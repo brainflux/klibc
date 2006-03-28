@@ -14,10 +14,10 @@
 #include "fstype.h"
 #include "zlib.h"
 
-#define BUF_SZ		65536
+#define BUF_SZ		(1 << 20)
 
-static int
-load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
+/* Also used in initrd.c */
+int load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 {
 	unsigned long long ramdisk_size, ramdisk_left;
 	int disk = 1;
@@ -34,12 +34,12 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 	zs.next_out = out_buf;
 	zs.avail_out = BUF_SZ;
 
-	if (inflateInit(&zs) != Z_OK)
+	if (inflateInit2(&zs, 32+15) != Z_OK)
 		goto err1;
 
 	/* Set to the size of the medium, or "infinite" */
 	if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
-		ramdisk_size = ~(uint64_t)0;
+		ramdisk_size = ~0ULL;
 
 	do {
 		/* Purge the output preferentially over reading new
@@ -47,6 +47,7 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 		   accident and demanding a new disk which doesn't
 		   exist... */
 		if (zs.avail_out == 0) {
+			DEBUG(("kinit: writing %d bytes\n", BUF_SZ));
 			_fwrite(out_buf, BUF_SZ, wfd);
 			zs.next_out = out_buf;
 			zs.avail_out = BUF_SZ;
@@ -54,10 +55,10 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 		} else if (zs.avail_in == 0) {
 			if (ramdisk_start >= ramdisk_size) {
 				fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", ++disk);
-				while (getc(stdin) != '\n')
+				while (getchar() != '\n')
 					;
 				if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
-					ramdisk_size = ~(uint64_t)0;
+					ramdisk_size = ~0ULL;
 				ramdisk_start = 0;
 			}
 			do {
@@ -72,15 +73,19 @@ load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start)
 			ramdisk_start += bytes;
 			zs.next_in = in_buf;
 			zs.avail_in = bytes;
+			DEBUG(("kinit: read %d bytes\n", bytes));
 		}
-		rv = inflate(&zs, Z_NO_FLUSH);
+		rv = inflate(&zs, Z_SYNC_FLUSH);
 	} while (rv == Z_OK || rv == Z_BUF_ERROR);
+
+	DEBUG(("kinit: inflate returned %d\n", rv));
 
 	if (rv != Z_STREAM_END)
 		goto err2;
 
 	/* Write the last */
 	_fwrite(out_buf, BUF_SZ-zs.avail_out, wfd);
+	DEBUG(("kinit: writing %d bytes\n", BUF_SZ-zs.avail_out));
 
 	inflateEnd(&zs);
 	return 0;
@@ -107,7 +112,7 @@ load_ramdisk_raw(int rfd, FILE *wfd, off_t ramdisk_start, unsigned long long fss
 	while (fssize) {
 		if (ramdisk_start >= ramdisk_size) {
 			fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", ++disk);
-			while (getc(stdin) != '\n')
+			while (getchar() != '\n')
 				;
 			if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
 				ramdisk_size = ~(uint64_t)0;
@@ -158,7 +163,8 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 
 	if (prompt_ramdisk) {
 		fprintf(stderr, "Please insert disk for ramdisk and press Enter...");
-		while (getc(stdin) != '\n');
+		while (getchar() != '\n')
+			;
 	}
 
 	/* XXX: This should be better error checked. */

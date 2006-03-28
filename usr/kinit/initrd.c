@@ -23,39 +23,55 @@
  * Copy the initrd to /dev/ram0, copy from the end to the beginning
  * to avoid taking 2x the memory.
  */
-static int rd_copy_image(int ffd)
+static int rd_copy_uncompressed(int ffd, int dfd)
 {
-	int dfd = open("/dev/ram0", O_RDWR);
+	DEBUG(("kinit: uncompressed initrd\n"));
 	char buffer[BUF_SIZE];
-	struct stat st;
 	off_t bytes;
-	int rv = -1;
-
-	if (ffd < 0 || dfd < 0)
-		goto barf;
+	struct stat st;
 
 	if ( fstat(ffd, &st) || !S_ISREG(st.st_mode) ||
 	     (bytes = st.st_size) == 0 )
-		goto barf;
+		return -1;
 
 	while ( bytes ) {
-		ssize_t blocksize = ((bytes-1) & ~(BUF_SIZE-1))+1;
+		ssize_t blocksize = ((bytes-1) & (BUF_SIZE-1))+1;
 		off_t offset = bytes-blocksize;
+
+		DEBUG(("kinit: copying %u bytes at offset %llu\n", blocksize, offset));
 
 		if ( xpread(ffd, buffer, blocksize, offset) != blocksize ||
 		     xpwrite(dfd, buffer, blocksize, offset) != blocksize )
-			goto barf;
+			return -1;
 
 		ftruncate(ffd, offset); /* Free up memory */
 		bytes = offset;
 	}
-	rv = 0;			/* Done! */
+	return 0;
+}
+
+static int rd_copy_image(int ffd)
+{
+	int dfd = open("/dev/ram0", O_WRONLY);
+	int rv = -1;
+	unsigned char gzip_magic[2];
+
+	if ( ffd < 0 || dfd < 0 )
+		goto barf;
+	
+	if ( xpread(ffd, gzip_magic, 2, 0) == 2 &&
+	     gzip_magic[0] == 037 && gzip_magic[1] == 0213 ) {
+		FILE *wfd = fdopen(dfd, "w");
+		rv = load_ramdisk_compressed(ffd, wfd, 0);
+	} else {
+		rv = rd_copy_uncompressed(ffd, dfd);
+	}
 
  barf:
-	if (dfd >= 0)
-		close(dfd);
 	if (ffd >= 0)
 		close(ffd);
+	if (dfd >= 0)
+		close(dfd);
 	return rv;
 }
 
@@ -71,10 +87,13 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	const char *ramdisk_name = "/dev/ram0";
 	FILE *fp;
 
-	if ( !mount_block(ramdisk_name, "/", NULL, MS_VERBOSE, NULL) )
+	DEBUG(("kinit: mounting initrd\n"));
+	mkdir("/root", 0700);
+	if ( !mount_block(ramdisk_name, "/root", NULL, MS_VERBOSE, NULL) )
 		return -errno;
 
 	/* Write the current "real root device" out to procfs */
+	DEBUG(("kinit: real_root_dev = %#x\n", root_dev));
 	fp = fopen("/proc/sys/kernel/real-root-dev", "w");
 	fprintf(fp, "%u", root_dev);
 	fclose(fp);
@@ -99,7 +118,9 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 		execl("/linuxrc", "linuxrc", NULL);
 		_exit(255);
 	} else if ( pid > 0 ) {
+		DEBUG(("kinit: Waiting for linuxrc to complete...\n"));
 		while ( waitpid(pid, NULL, 0) != pid );
+		DEBUG(("kinit: linuxrc done\n"));
 	} else {
 		return -errno;
 	}
@@ -114,21 +135,29 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	close(old_fd);
 
 	getintfile("/proc/sys/kernel/real-root-dev", &realroot);
-	mount_root(argc, argv, (dev_t)realroot, NULL);
 
-	/* If /root/initrd exists, move the initrd there, otherwise discard */
-	if ( !mount("/old", "/root/initrd", NULL, MS_MOVE, NULL) ) {
-		/* We're good */
+	/* If realroot is Root_RAM0, then the initrd did any necessary work */
+	if (realroot == Root_RAM0) {
+		if ( mount("/old", "/root", NULL, MS_MOVE, NULL) )
+			return -errno;
 	} else {
-		int olddev = open(ramdisk_name, O_RDWR);
-		umount2("/old", MNT_DETACH);
-		if ( olddev < 0 ||
-		     ioctl(olddev, BLKFLSBUF, (long)0) ||
-		     close(olddev) ) {
-			fprintf(stderr, "%s: Cannot flush initrd contents\n", progname);
+		mount_root(argc, argv, (dev_t)realroot, NULL);
+
+		/* If /root/initrd exists, move the initrd there, otherwise discard */
+		if ( !mount("/old", "/root/initrd", NULL, MS_MOVE, NULL) ) {
+			/* We're good */
+		} else {
+			int olddev = open(ramdisk_name, O_RDWR);
+			umount2("/old", MNT_DETACH);
+			if ( olddev < 0 ||
+			     ioctl(olddev, BLKFLSBUF, (long)0) ||
+			     close(olddev) ) {
+				fprintf(stderr, "%s: Cannot flush initrd contents\n", progname);
+			}
 		}
 	}
 
+	rmdir("/old");
 	return 0;
 }
 
@@ -139,18 +168,30 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 
 	initrd_fd = open("/initrd.image", O_RDWR);
 	if ( initrd_fd < 0 )
-		return 0;
+		return 0;	/* No initrd */
+
+	DEBUG(("kinit: initrd found\n"));
 
 	create_dev("/dev/ram0", Root_RAM0, NULL);
 
 	if ( rd_copy_image(initrd_fd) ||
-	     unlink("/initrd.image") )
-		return 0;
-
-	if ( root_dev != Root_RAM0 ) {
-		run_linuxrc(argc, argv, root_dev);
-		return 1;
+	     unlink("/initrd.image") ) {
+		fprintf(stderr, "%s: initrd installation failed (too big?)\n",
+			progname);
+		return 0;	/* Failed to copy initrd */
 	}
 
-	return 0;
+	DEBUG(("kinit: initrd copied\n"));
+
+	if (root_dev != Root_RAM0) {
+		int err;
+		DEBUG(("kinit: running linuxrc\n"));
+		err = run_linuxrc(argc, argv, root_dev);
+		if (err)
+			fprintf(stderr, "%s: running linuxrc: %s\n", progname, strerror(-err));
+	} else {
+		DEBUG(("kinit: permament (or pivoting) initrd, not running linuxrc\n"));
+	}
+
+	return 1;		/* initrd is root, or run_linuxrc took care of it */
 }

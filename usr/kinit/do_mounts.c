@@ -70,8 +70,10 @@ try_name(char *name, int part)
 		goto fail;
 
 	/* if partition is within range - we got it */
-	if (part < range)
+	if (part < range) {
+		DEBUG(("kinit: try_name %s,%d = %#x\n", name, part, res+part));
 		return res + part;
+	}
 
 fail:
 	return (dev_t) 0;
@@ -97,8 +99,8 @@ fail:
  *	is mounted on rootfs /sys.
  */
 
-dev_t
-name_to_dev_t(const char *name)
+static inline dev_t
+name_to_dev_t_real(const char *name)
 {
 	char *p;
 	dev_t res = 0;
@@ -160,54 +162,13 @@ name_to_dev_t(const char *name)
 	return (dev_t)0;
 }
 
-static int
-find_in_devfs(char *path, dev_t dev)
+dev_t
+name_to_dev_t(const char *name)
 {
-	(void) path;
-	(void) dev;
+	dev_t dev = name_to_dev_t_real(name);
 
-#ifdef CONFIG_DEVFS_FS
-	// Leftover crap from the kernel.  Ugh.
-
-	struct stat buf;
-	char *end = path + strlen(path);
-	int rest = path + 64 - end;
-	int size;
-	char *p = read_dir(path, &size);
-	char *s;
-
-	if (!p)
-		return -1;
-	for (s = p; s < p + size; s += ((struct linux_dirent64 *)s)->d_reclen) {
-		struct linux_dirent64 *d = (struct linux_dirent64 *)s;
-		if (strlen(d->d_name) + 2 > rest)
-			continue;
-		switch (d->d_type) {
-			case DT_BLK:
-				sprintf(end, "/%s", d->d_name);
-				if (sys_newstat(path, &buf) < 0)
-					break;
-				if (!S_ISBLK(buf.st_mode))
-					break;
-				if (buf.st_rdev != dev)
-					break;
-				kfree(p);
-				return 0;
-			case DT_DIR:
-				if (strcmp(d->d_name, ".") == 0)
-					break;
-				if (strcmp(d->d_name, "..") == 0)
-					break;
-				sprintf(end, "/%s", d->d_name);
-				if (find_in_devfs(path, dev) < 0)
-					break;
-				kfree(p);
-				return 0;
-		}
-	}
-	kfree(p);
-#endif
-	return -1;
+	DEBUG(("kinit: name_to_dev_t(%s) = %#x\n", name, dev));
+	return dev;
 }
 
 /* Create the device node "name" */
@@ -231,8 +192,6 @@ create_dev(const char *name, dev_t dev, const char *devfs_name)
 		return -1;
 
 	strcpy(path, "/dev");
-	if (find_in_devfs(path, dev) < 0)
-		return -1;
 
 	return symlink(path + 5, name);
 }
@@ -248,6 +207,8 @@ mount_block(const char *source, const char *target,
 	ssize_t fsbytes;
 
 	if ( type ) {
+		DEBUG(("kinit: trying to mount %s on %s with type %s\n",
+		       source, target, type));
 		int rv = mount(source, target, type, flags, data);
 		/* Mount readonly if necessary */
 		if ( rv == -1 && errno == EACCES && !(flags & MS_RDONLY) )
@@ -365,6 +326,8 @@ int do_mounts(int argc, char *argv[])
 	const char *load_ramdisk = get_arg(argc, argv, "load_ramdisk=");
 	dev_t root_dev = 0;
 
+	DEBUG(("kinit: do_mounts\n"));
+
 	if (root_delay) {
 		int delay = atoi(root_delay);
 		fprintf(stderr, "Waiting %d s before mounting root device...\n", delay);
@@ -383,8 +346,12 @@ int do_mounts(int argc, char *argv[])
 		root_dev = Root_NFS;
 	}
 
-	if ( initrd_load(argc, argv, root_dev) )
+	DEBUG(("kinit: root_dev = %#x\n", root_dev));
+	
+	if ( initrd_load(argc, argv, root_dev) ) {
+		DEBUG(("initrd loaded\n"));
 		return 0;
+	}
 
 	if ( load_ramdisk && atoi(load_ramdisk) ) {
 		if (ramdisk_load(argc, argv, root_dev))

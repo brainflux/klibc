@@ -41,4 +41,6 @@ static inline dev_t bstat(const char *name)
 	return st.st_rdev;
 }
 
+int load_ramdisk_compressed(int rfd, FILE *wfd, off_t ramdisk_start);
+
 #endif /* DO_MOUNTS_H */
