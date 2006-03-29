@@ -39,7 +39,8 @@ static int rd_copy_uncompressed(int ffd, int dfd)
 		ssize_t blocksize = ((bytes-1) & (BUF_SIZE-1))+1;
 		off_t offset = bytes-blocksize;
 
-		DEBUG(("kinit: copying %u bytes at offset %llu\n", blocksize, offset));
+		DEBUG(("kinit: copying %zd bytes at offset %llu\n",
+		       blocksize, offset));
 
 		if ( xpread(ffd, buffer, blocksize, offset) != blocksize ||
 		     xpwrite(dfd, buffer, blocksize, offset) != blocksize )
