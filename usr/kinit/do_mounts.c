@@ -280,10 +280,8 @@ mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 	unsigned long flags = MS_RDONLY|MS_VERBOSE;
 	int ret;
 
-	if (get_arg(argc, argv, "ro")) {
-		flags |= MS_RDONLY;
-	}
-	if (get_arg(argc, argv, "rw")) {
+	if (get_flag(argc, argv, "rw")) {
+		DEBUG(("kinit: rw flag specified\n"));
 		flags &= ~MS_RDONLY;
 	}
 

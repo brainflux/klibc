@@ -158,7 +158,18 @@ static char *get_kernel_cmdline(char *buf, int len)
 	return buf;
 }
 
-/* Was this argument passed? */
+/* Was this boolean argument passed? */
+int get_flag(int argc, char *argv[], const char *name)
+{
+	char **p;
+	for (p = argv+1; *p; p++) {
+		if (!strcmp(*p, name))
+			return 1;
+	}
+	return 0;
+}
+
+/* Was this parameter passed? */
 char *get_arg(int argc, char *argv[], const char *name)
 {
 	int len = strlen(name);
@@ -196,23 +207,34 @@ static void check_path(const char *path)
 	}
 }
 
-static const char *find_init(const char *root)
+static const char *find_init(const char *root, const char *user)
 {
 	const char *init_paths[] = {
 		"/sbin/init", "/bin/init", "/etc/init", "/bin/sh", NULL
 	};
 	const char **p;
+	const char *path;
 
 	if ( chdir(root) ) {
 		perror("chdir");
 		exit(1);
 	}
-	for ( p = init_paths ; *p ; p++ ) {
-		if ( !access(*p+1, X_OK) )
-			break;
+
+	if (user)
+		DEBUG(("Checking for init: %s\n", user));
+
+	if (user && user[0] == '/' && !access(user+1, X_OK)) {
+		path = user;
+	} else {
+		for (p = init_paths; *p; p++) {
+			DEBUG(("Checking for init: %s\n", *p));
+			if ( !access(*p+1, X_OK) )
+				break;
+		}
+		path = *p;
 	}
 	chdir("/");
-	return *p;
+	return path;
 }
 
 /* This is the argc and argv we pass to init */
@@ -289,8 +311,7 @@ int main(int argc, char *argv[])
 	if (mnt_sysfs == 1)
 		umount2("/sys", 0);
 
-	init_path = find_init("/root");
-
+	init_path = find_init("/root", get_arg(cmdc, cmdv, "init="));
 	if ( !init_path ) {
 		fprintf(stderr, "%s: init not found!\n", progname);
 		ret = 2;

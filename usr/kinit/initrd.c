@@ -25,12 +25,13 @@
  */
 static int rd_copy_uncompressed(int ffd, int dfd)
 {
-	DEBUG(("kinit: uncompressed initrd\n"));
 	char buffer[BUF_SIZE];
 	off_t bytes;
 	struct stat st;
 
-	if ( fstat(ffd, &st) || !S_ISREG(st.st_mode) ||
+	DEBUG(("kinit: uncompressed initrd\n"));
+
+	if ( ffd < 0 || fstat(ffd, &st) || !S_ISREG(st.st_mode) ||
 	     (bytes = st.st_size) == 0 )
 		return -1;
 
@@ -50,28 +51,33 @@ static int rd_copy_uncompressed(int ffd, int dfd)
 	return 0;
 }
 
-static int rd_copy_image(int ffd)
+static int rd_copy_image(const char *path)
 {
-	int dfd = open("/dev/ram0", O_WRONLY);
+	int ffd = open(path, O_RDONLY);
 	int rv = -1;
 	unsigned char gzip_magic[2];
 
-	if ( ffd < 0 || dfd < 0 )
+	if ( ffd < 0 )
 		goto barf;
 	
 	if ( xpread(ffd, gzip_magic, 2, 0) == 2 &&
 	     gzip_magic[0] == 037 && gzip_magic[1] == 0213 ) {
-		FILE *wfd = fdopen(dfd, "w");
-		rv = load_ramdisk_compressed(ffd, wfd, 0);
+		FILE *wfd = fopen("/dev/ram0", "w");
+		if (!wfd)
+			goto barf;
+		rv = load_ramdisk_compressed(path, wfd, 0);
+		fclose(wfd);
 	} else {
+		int dfd = open("/dev/ram0", O_WRONLY);
+		if (dfd < 0)
+			goto barf;
 		rv = rd_copy_uncompressed(ffd, dfd);
+		close(dfd);
 	}
 
- barf:
+barf:
 	if (ffd >= 0)
 		close(ffd);
-	if (dfd >= 0)
-		close(dfd);
 	return rv;
 }
 
@@ -164,18 +170,14 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 
 int initrd_load(int argc, char *argv[], dev_t root_dev)
 {
-	int initrd_fd;
-
-	initrd_fd = open("/initrd.image", O_RDWR);
-	if ( initrd_fd < 0 )
+	if ( access("/initrd.image", R_OK) )
 		return 0;	/* No initrd */
 
 	DEBUG(("kinit: initrd found\n"));
 
 	create_dev("/dev/ram0", Root_RAM0);
 
-	if ( rd_copy_image(initrd_fd) ||
-	     unlink("/initrd.image") ) {
+	if ( rd_copy_image("/initrd.image") || unlink("/initrd.image") ) {
 		fprintf(stderr, "%s: initrd installation failed (too big?)\n",
 			progname);
 		return 0;	/* Failed to copy initrd */
