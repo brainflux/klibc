@@ -32,6 +32,7 @@
  * SUCH DAMAGE.
  */
 
+#include <alloca.h>
 #include <stdlib.h>
 
 #include "shell.h"
@@ -76,7 +77,6 @@ struct heredoc {
 
 
 struct heredoc *heredoclist;	/* list of here documents to read */
-int parsebackquote;		/* nonzero if we are inside backquotes */
 int doprompt;			/* if set, prompt the user */
 int needprompt;			/* true if interactive and at start of line */
 int lasttoken;			/* last token read */
@@ -847,19 +847,6 @@ readtoken1(int firstc, char const *syntax, char *eofmark, int striptabs)
 	int dqvarnest;	/* levels of variables expansion within double quotes */
 	int oldstyle;
 	char const *prevsyntax = NULL; /* syntax before arithmetic */
-#if __GNUC__
-	/* Avoid longjmp clobbering */
-	(void) &out;
-	(void) &quotef;
-	(void) &dblquote;
-	(void) &varnest;
-	(void) &arinest;
-	(void) &parenlevel;
-	(void) &dqvarnest;
-	(void) &oldstyle;
-	(void) &prevsyntax;
-	(void) &syntax;
-#endif
 
 	startlinno = plinno;
 	dblquote = 0;
@@ -1019,7 +1006,7 @@ quotemark:
 endword:
 	if (syntax == ARISYNTAX)
 		synerror("Missing '))'");
-	if (syntax != BASESYNTAX && ! parsebackquote && eofmark == NULL)
+	if (syntax != BASESYNTAX && eofmark == NULL)
 		synerror("Unterminated quoted string");
 	if (varnest != 0) {
 		startlinno = plinno;
@@ -1263,35 +1250,17 @@ badsub:			synerror("Bad substitution");
 
 parsebackq: {
 	struct nodelist **nlpp;
-	int savepbq;
 	union node *n;
-	char *volatile str;
-	struct jmploc jmploc;
-	struct jmploc *volatile savehandler;
+	char *str;
 	size_t savelen;
-	int saveprompt = 0;
-#ifdef __GNUC__
-	(void) &saveprompt;
-#endif
+	int saveprompt;
 
-	savepbq = parsebackquote;
-	if (setjmp(jmploc.loc)) {
-		if (str)
-			ckfree(str);
-		parsebackquote = 0;
-		handler = savehandler;
-		longjmp(handler->loc, 1);
-	}
-	INTOFF;
 	str = NULL;
 	savelen = out - (char *)stackblock();
 	if (savelen > 0) {
-		str = ckmalloc(savelen);
+		str = alloca(savelen);
 		memcpy(str, stackblock(), savelen);
 	}
-	savehandler = handler;
-	handler = &jmploc;
-	INTON;
         if (oldstyle) {
                 /* We must read until the closing backquote, giving special
                    treatment to some slashes, and then push the string and
@@ -1360,7 +1329,6 @@ done:
 		nlpp = &(*nlpp)->next;
 	*nlpp = (struct nodelist *)stalloc(sizeof (struct nodelist));
 	(*nlpp)->next = NULL;
-	parsebackquote = oldstyle;
 
 	if (oldstyle) {
 		saveprompt = doprompt;
@@ -1391,13 +1359,7 @@ done:
 	if (str) {
 		memcpy(out, str, savelen);
 		STADJUST(savelen, out);
-		INTOFF;
-		ckfree(str);
-		str = NULL;
-		INTON;
 	}
-	parsebackquote = savepbq;
-	handler = savehandler;
 	if (arinest || dblquote)
 		USTPUTC(CTLBACKQ | CTLQUOTE, out);
 	else
