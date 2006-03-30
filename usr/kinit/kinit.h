@@ -14,6 +14,7 @@ char *get_arg(int argc, char *argv[], const char *name);
 int get_flag(int argc, char *argv[], const char *name);
 int ramdisk_load(int argc, char *argv[], dev_t root_dev);
 void md_run(int argc, char *argv[]);
+int do_resume(int argc, char *argv[]);
 
 extern int mnt_procfs;
 extern int mnt_sysfs;

@@ -326,7 +326,7 @@ int do_mounts(int argc, char *argv[])
 	}
 
 	DEBUG(("kinit: root_dev = %#x\n", root_dev));
-	
+
 	if ( initrd_load(argc, argv, root_dev) ) {
 		DEBUG(("initrd loaded\n"));
 		return 0;

@@ -298,6 +298,11 @@ int main(int argc, char *argv[])
 		goto bail;
 	}
 
+	/* Resume from suspend-to-disk, if appropriate */
+	/* If successful, does not return */
+	do_resume(cmdc, cmdv);
+
+	/* Initialize networking, if applicable */
 	do_ipconfig(cmdc, cmdv);
 
 	check_path("/root");
