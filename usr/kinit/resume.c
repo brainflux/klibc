@@ -17,6 +17,10 @@
 #include "kinit.h"
 #include "do_mounts.h"
 
+#ifndef CONFIG_PM_STD_PARTITION
+# define CONFIG_PM_STD_PARTITION ""
+#endif
+
 int do_resume(int argc, char *argv[])
 {
 	const char *resume_file = CONFIG_PM_STD_PARTITION;
