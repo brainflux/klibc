@@ -202,7 +202,7 @@ static void check_path(const char *path)
 		}
 	}
 	else if (!S_ISDIR(st.st_mode)) {
-		fprintf(stderr, "NFS-Root: '%s' not a directory\n", path);
+		fprintf(stderr, "%s: '%s' not a directory\n", progname, path);
 		exit(1);
 	}
 }
