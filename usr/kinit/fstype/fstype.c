@@ -229,6 +229,11 @@ struct imagetype {
 	int		(*identify)(const void *, unsigned long long *);
 };
 
+/*
+ * Note:
+ * Minix test needs to come after ext3/ext2, since it's possible for
+ * ext3/ext2 to look like minix by pure random chance.
+ */
 static struct imagetype images[] = {
 	{ 0,		"gzip",		gzip_image	},
 	{ 0,		"cramfs",	cramfs_image	},
@@ -237,9 +242,9 @@ static struct imagetype images[] = {
 	{ 0,		"luks",		luks_image	},
 	{ 0,		"lvm2",		lvm2_image	},
 	{ 1,		"lvm2",		lvm2_image	},
-	{ 1,		"minix",	minix_image	},
 	{ 1,		"ext3",		ext3_image	},
 	{ 1,		"ext2",		ext2_image	},
+	{ 1,		"minix",	minix_image	},
 	{ 8,		"reiserfs",	reiserfs_image	},
 	{ 64,		"reiserfs",	reiserfs_image	},
 	{ 32,		"jfs",		jfs_image	},
