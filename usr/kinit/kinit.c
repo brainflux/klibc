@@ -307,8 +307,6 @@ int main(int argc, char *argv[])
 
 	check_path("/root");
 	do_mounts(cmdc, cmdv);
-	/* do_mounts cd's to /root so below tests /root/old_root */
-	check_path("old_root");
 
 	if (mnt_procfs == 1)
 		umount2("/proc", 0);
