@@ -87,6 +87,14 @@ klibc:
 test: klibc
 	$(Q)$(MAKE) $(klibc)=klibc/tests
 
+
+###
+# allow one to say make dir/file.o
+# Caveat: works only for .c files where we have a Kbuild file in same dir
+%.o: %.c FORCE
+	 $(Q)$(MAKE) $(klibc)=$(dir $<) $(dir $<)$(notdir $@)
+
+FORCE: ;
 ###
 # clean: remove generated files
 # mrproper does a full cleaning including .config and linux symlink
