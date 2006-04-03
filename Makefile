@@ -94,6 +94,12 @@ test: klibc
 %.o: %.c FORCE
 	 $(Q)$(MAKE) $(klibc)=$(dir $<) $(dir $<)$(notdir $@)
 
+%.s: %.c FORCE
+	 $(Q)$(MAKE) $(klibc)=$(dir $<) $(dir $<)$(notdir $@)
+
+%.i: %.c FORCE
+	 $(Q)$(MAKE) $(klibc)=$(dir $<) $(dir $<)$(notdir $@)
+
 FORCE: ;
 ###
 # clean: remove generated files
