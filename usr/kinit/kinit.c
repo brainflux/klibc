@@ -249,6 +249,7 @@ int main(int argc, char *argv[])
 	char **cmdv;
 	char buf[1024];
 	char *cmdline;
+	const char *errmsg;
 	int ret = 0;
 	int cmdc;
 	int fd;
@@ -308,35 +309,38 @@ int main(int argc, char *argv[])
 	check_path("/root");
 	do_mounts(cmdc, cmdv);
 
-	if (mnt_procfs == 1)
+	if (mnt_procfs) {
 		umount2("/proc", 0);
+		mnt_procfs = 0;
+	}
 
-	if (mnt_sysfs == 1)
+	if (mnt_sysfs) {
 		umount2("/sys", 0);
+		mnt_sysfs = 0;
+	}
 
 	init_path = find_init("/root", get_arg(cmdc, cmdv, "init="));
 	if ( !init_path ) {
 		fprintf(stderr, "%s: init not found!\n", progname);
 		ret = 2;
-		goto done;
+		goto bail;
 	}
 
 	init_argv[0] = strrchr(init_path, '/')+1;
 
-	run_init("/root", "/dev/console", init_path, init_argv);
+	errmsg = run_init("/root", "/dev/console", init_path, init_argv);
 
-	/* run_init shouldn't fail; it rather calls die(). */
-	fprintf(stderr, "%s: failed to run init for unknown reason...\n", progname);
+	/* If run_init returned, something went bad */
+	fprintf(stderr, "%s: %s: %s\n", progname, errmsg, strerror(errno));
 	ret = 2;
-	goto done;
+	goto bail;
 
  bail:
-	if (mnt_procfs == 1)
+	if (mnt_procfs)
 		umount2("/proc", 0);
 
-	if (mnt_sysfs == 1)
+	if (mnt_sysfs)
 		umount2("/sys", 0);
 
- done:
 	exit(ret);
 }

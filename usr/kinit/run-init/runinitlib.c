@@ -38,6 +38,8 @@
  * - Chroots;
  * - Opens /dev/console;
  * - Spawns the specified init program (with arguments.)
+ *
+ * On failure, returns a human-readable error message.
  */
 
 #include <alloca.h>
@@ -139,7 +141,8 @@ static int nuke(const char *what)
     if ( errno == EISDIR ) {
       /* It's a directory. */
       err = nuke_dir(what);
-      if ( !err ) err = rmdir(what) ? errno : err;
+      if ( !err )
+	err = rmdir(what) ? errno : err;
     } else {
       err = errno;
     }
@@ -147,15 +150,14 @@ static int nuke(const char *what)
 
   if ( err ) {
     errno = err;
-    die(what);
+    return err;
   } else {
     return 0;
   }
 }
 
-
-int run_init(const char *realroot, const char *console,
-	     const char *init, char **initargs)
+const char *run_init(const char *realroot, const char *console,
+		     const char *init, char **initargs)
 {
   struct stat   rst, cst, ist;
   struct statfs sfs;
@@ -163,7 +165,7 @@ int run_init(const char *realroot, const char *console,
 
   /* First, change to the new root directory */
   if ( chdir(realroot) )
-    die("chdir to new root");
+    return "chdir to new root";
 
   /* This is a potentially highly destructive program.  Take some
      extra precautions. */
@@ -171,38 +173,38 @@ int run_init(const char *realroot, const char *console,
   /* Make sure the current directory is not on the same filesystem
      as the root directory */
   if ( stat("/", &rst) || stat(".", &cst) )
-    die("stat");
+    return "stat";
 
   if ( rst.st_dev == cst.st_dev )
-    die("current directory on the same filesystem as the root");
+    return "current directory on the same filesystem as the root";
 
   /* The initramfs should have /init */
   if ( stat("/init", &ist) || !S_ISREG(ist.st_mode) )
-    die("can't find /init on initramfs");
+    return "can't find /init on initramfs";
 
   /* Make sure we're on a ramfs */
   if ( statfs("/", &sfs) )
-    die("statfs /");
+    return "statfs /";
   if ( sfs.f_type != RAMFS_MAGIC && sfs.f_type != TMPFS_MAGIC )
-    die("rootfs not a ramfs or tmpfs");
+    return "rootfs not a ramfs or tmpfs";
 
   /* Okay, I think we should be safe... */
 
   /* Delete rootfs contents */
   if ( nuke_dir("/") )
-    die("nuking initramfs contents");
+    return "nuking initramfs contents";
 
   /* Overmount the root */
   if ( mount(".", "/", NULL, MS_MOVE, NULL) )
-    die("overmounting root");
+    return "overmounting root";
 
   /* chroot, chdir */
   if ( chroot(".") || chdir("/") )
-    die("chroot");
+    return "chroot";
 
   /* Open /dev/console */
   if ( (confd = open(console, O_RDWR)) < 0 )
-    die("opening console");
+    return "opening console";
   dup2(confd, 0);
   dup2(confd, 1);
   dup2(confd, 2);
@@ -210,5 +212,5 @@ int run_init(const char *realroot, const char *console,
 
   /* Spawn init */
   execv(init, initargs);
-  die(init);			/* Failed to spawn init */
+  return init;			/* Failed to spawn init */
 }

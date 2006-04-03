@@ -49,12 +49,6 @@
 
 static const char *program;
 
-void __attribute__((noreturn)) die(const char *msg)
-{
-  fprintf(stderr, "%s: %s: %s\n", program, msg, strerror(errno));
-  exit(1);
-}
-
 static void __attribute__((noreturn)) usage(void)
 {
   fprintf(stderr, "Usage: exec %s [-c consoledev] /real-root /sbin/init [args]\n", program);
@@ -68,6 +62,7 @@ int main(int argc, char *argv[])
   const char *console = "/dev/console";
   const char *realroot;
   const char *init;
+  const char *error;
   char **initargs;
 
   /* Variables... */
@@ -91,5 +86,9 @@ int main(int argc, char *argv[])
   init     = argv[optind+1];
   initargs = argv+optind+1;
 
-  return run_init(realroot, console, init, initargs);
+  error = run_init(realroot, console, init, initargs);
+  
+  /* If run_init returns, something went wrong */
+  fprintf(stderr, "%s: %s: %s\n", program, error, strerror(errno));
+  return 1;
 }
