@@ -16,12 +16,6 @@ const char *progname = "kinit";
 int mnt_procfs;
 int mnt_sysfs;
 
-void __attribute__((noreturn)) die(const char *msg)
-{
-	fprintf(stderr, "%s: %s: %s\n", progname, msg, strerror(errno));
-	exit(1);
-}
-
 void dump_args(int argc, char *argv[])
 {
 	(void) argc;
