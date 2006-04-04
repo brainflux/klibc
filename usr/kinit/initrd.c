@@ -60,7 +60,7 @@ static int rd_copy_image(const char *path)
 
 	if ( ffd < 0 )
 		goto barf;
-	
+
 	if ( xpread(ffd, gzip_magic, 2, 0) == 2 &&
 	     gzip_magic[0] == 037 && gzip_magic[1] == 0213 ) {
 		FILE *wfd = fopen("/dev/ram0", "w");

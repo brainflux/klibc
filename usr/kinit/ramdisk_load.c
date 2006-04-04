@@ -42,7 +42,7 @@ static int change_disk(const char *devpath, int rfd, int disk)
 
 	fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", disk);
 	wait_for_key();
-	
+
 	return open(devpath, O_RDONLY);
 }
 
@@ -175,7 +175,7 @@ load_ramdisk_raw(const char *devpath, FILE *wfd, off_t ramdisk_start,
 		if (bytes <= 0)
 			break;
 		_fwrite(buf, bytes, wfd);
-		
+
 		ramdisk_start += bytes;
 		fssize -= bytes;
 
