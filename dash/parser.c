@@ -1253,7 +1253,7 @@ parsebackq: {
 	union node *n;
 	char *str;
 	size_t savelen;
-	int saveprompt;
+	int saveprompt = 0;
 
 	str = NULL;
 	savelen = out - (char *)stackblock();
