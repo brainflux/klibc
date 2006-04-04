@@ -162,15 +162,23 @@ int main(int argc, char *argv[])
 
 int nfsmount_main(int argc, char *argv[])
 {
-	__u32 server = 0;
+	__u32 server;
 	char *rem_name;
 	char *rem_path;
 	char *hostname;
 	char *path;
 	int c;
-	int spoof_portmap = 0;
-	FILE *portmap_file = NULL;
+	int spoof_portmap;
+	FILE *portmap_file;
 	int err;
+
+	if ( (err = setjmp(abort_buf)) )
+	     return err;
+
+	/* Set these here to avoid longjmp warning */
+	spoof_portmap = 0;
+	portmap_file = NULL;
+	server = 0;
 
 	/* If progname is set we're invoked from another program */
 	if (!progname) {
@@ -179,9 +187,6 @@ int nfsmount_main(int argc, char *argv[])
 		gettimeofday(&now, NULL);
 		srand48(now.tv_usec ^ (now.tv_sec << 24));
 	}
-
-	if ( (err = setjmp(abort_buf)) )
-	     return err;
 
 	while ((c = getopt(argc, argv, "o:p:")) != EOF) {
 		switch (c) {
