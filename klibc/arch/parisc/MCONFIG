@@ -7,6 +7,6 @@
 # accordingly.
 #
 
-OPTFLAGS = -Os -fomit-frame-pointer
-BITSIZE  = 32
-SHAREDFLAGS	= -Ttext 0x40001000
+KLIBCOPTFLAGS = -Os -fomit-frame-pointer
+KLIBCBITSIZE  = 32
+KLIBCSHAREDFLAGS	= -Ttext 0x40001000

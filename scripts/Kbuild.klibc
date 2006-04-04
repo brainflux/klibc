@@ -60,16 +60,6 @@ include $(KLIBCSRC)/arch/$(ARCH)/MCONFIG
 KLIBCMAJOR        := $(shell cut -d. -f1 $(srctree)/version)
 KLIBCMINOR        := $(shell cut -d. -f2 $(srctree)/version)
 
-# FIXME - backwards compatibility. Remove when all MCONFIGs are corrected
-KLIBCREQFLAGS     += $(REQFLAGS)
-KLIBCARCHREQFLAGS += $(ARCHREQFLAGS)
-KLIBCOPTFLAGS     += $(OPTFLAGS)
-KLIBCWARNFLAGS    += $(WARNFLAGS)
-KLIBCSHAREDFLAGS  += $(SHAREDFLAGS)
-KLIBCBITSIZE      := $(strip $(KLIBCBITSIZE) $(BITSIZE))
-KLIBCLDFLAGS      += $(LDFLAGS)
-KLIBCROSS        := $(CROSS_COMPILE)
-
 # binutils
 KLIBCLD          := $(KLIBCROSS)ld
 KLIBCCC          := $(KLIBCROSS)gcc

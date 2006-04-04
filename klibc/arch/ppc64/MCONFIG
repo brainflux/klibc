@@ -7,17 +7,17 @@
 # accordingly.
 #
 
-ARCHREQFLAGS = -m64 -mcall-aixdesc
-OPTFLAGS     = -Os
-BITSIZE      = 64
-LDFLAGS      = -m elf64ppc
+KLIBCARCHREQFLAGS = -m64 -mcall-aixdesc
+KLIBCOPTFLAGS     = -Os
+KLIBCBITSIZE      = 64
+KLIBCLDFLAGS      = -m elf64ppc
 
 # Extra linkflags when building the shared version of the library
 # This address needs to be reachable using normal inter-module
 # calls, and work on the memory models for this architecture
 # 256-16 MB - normal binaries start at 256 MB, and jumps are limited
 # to +/- 16 MB
-SHAREDFLAGS     = -Ttext 0x0f000200
+KLIBCSHAREDFLAGS     = -Ttext 0x0f000200
 
 # The kernel so far has both asm-ppc* and asm-powerpc.
 KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(ARCH)/include

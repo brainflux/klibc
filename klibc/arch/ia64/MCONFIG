@@ -7,5 +7,5 @@
 # accordingly.
 #
 
-OPTFLAGS = -Os
-BITSIZE  = 64
+KLIBCOPTFLAGS = -Os
+KLIBCBITSIZE  = 64
