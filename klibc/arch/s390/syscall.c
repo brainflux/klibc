@@ -11,6 +11,6 @@ long int __syscall_common(long int err)
 {
 	if ((unsigned long)(err) < (unsigned long)(-125))
 		return err;
-	errno = err;
+	errno = -err;
 	return -1;
 }
