@@ -136,7 +136,7 @@ klibc-objs := $(patsubst %/, %/lib.a, $(klibc-objs))
 targets += $(static-y) $(shared-y)
 
 # $(output-dirs) are a list of directories that contain object files
-output-dirs := $(dir $(klibc-dirs))
+output-dirs := $(dir $(klibc-dirs) $(klibc-objs))
 output-dirs += $(foreach f, $(hostprogs-y) $(targets), \
                $(if $(dir $(f)), $(dir $(f))))
 output-dirs := $(strip $(sort $(filter-out ./,$(output-dirs))))
