@@ -9,12 +9,12 @@ $(obj)/$(KLIBCCROSS)klibc.config: $(src)/Kbuild \
                                   $(srctree)/scripts/Kbuild.klibc
 	@echo "  GEN     $@"
 	$(Q)rm -f $@
-	$(Q)echo 'ARCH=$(ARCH)' >> $@
+	$(Q)echo 'ARCH=$(KLIBCARCH)' >> $@
 	$(Q)echo 'CROSS=$(KLIBCCROSS)' >> $@
 	$(Q)echo 'KCROSS=$(KCROSS)' >> $@
 	$(Q)echo 'CC=$(KLIBCCC)' >> $@
 	$(Q)echo 'LD=$(KLIBCLD)' >> $@
-	$(Q)echo 'REQFLAGS=$(filter-out -I%,$(KLIBCDEFS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS))' >> $@
+	$(Q)echo 'REQFLAGS=$(filter-out -I%,$(KLIBCDEFS) $(KLIBCREQFLAGS) $(KLIBCKLIBCARCHREQFLAGS))' >> $@
 	$(Q)echo 'OPTFLAGS=$(KLIBCOPTFLAGS)' >> $@
 	$(Q)echo 'LDFLAGS=$(KLIBCLDFLAGS)' >> $@
 	$(Q)echo 'STRIP=$(KLIBCSTRIP)' >> $@

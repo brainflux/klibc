@@ -7,7 +7,7 @@
 # accordingly.
 #
 
-KLIBCARCHREQFLAGS = -m64 -mcall-aixdesc
+KLIBCKLIBCARCHREQFLAGS = -m64 -mcall-aixdesc
 KLIBCOPTFLAGS     = -Os
 KLIBCBITSIZE      = 64
 KLIBCLDFLAGS      = -m elf64ppc
@@ -20,4 +20,4 @@ KLIBCLDFLAGS      = -m elf64ppc
 KLIBCSHAREDFLAGS     = -Ttext 0x0f000200
 
 # The kernel so far has both asm-ppc* and asm-powerpc.
-KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(ARCH)/include
+KLIBCKLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(KLIBCARCH)/include

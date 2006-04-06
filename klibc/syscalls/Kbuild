@@ -49,14 +49,14 @@ $(obj)/syscalls.nrs: $(KLIBCINC)/sys/syscall.h FORCE
 quiet_cmd_syscalls = GEN     $@
       cmd_syscalls = mkdir -p $(KLIBCINC)/klibc/;                           \
                      $(PERL) $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i      \
-                             $(KLIBCSRC)/arch/$(ARCH)/sysstub.ph            \
-                             $(ARCH) $(KLIBCBITSIZE) $(obj)/syscalls.nrs    \
+                             $(KLIBCSRC)/arch/$(KLIBCARCH)/sysstub.ph            \
+                             $(KLIBCARCH) $(KLIBCBITSIZE) $(obj)/syscalls.nrs    \
                              $(obj)                                         \
                              $(KLIBCINC)/klibc/havesyscall.h > $@           \
                              || rm -f $@
 
 $(obj)/syscalls.mk: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
-                    $(KLIBCSRC)/arch/$(ARCH)/sysstub.ph       \
+                    $(KLIBCSRC)/arch/$(KLIBCARCH)/sysstub.ph       \
                     $(call objectify, $(syscall-objs:.o=.S))  \
                     $(KLIBCSRC)/syscommon.h $(obj)/syscalls.nrs
 	$(call cmd,syscalls)

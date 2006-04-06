@@ -61,12 +61,12 @@ EOF
 mkdir -p %{buildroot}
 
 %build
-make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
+make  KLIBCARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 	INSTALLDIR=%{klibcdir} mandir=%{_mandir} INSTALLROOT=%{buildroot}
 
 %install
 rm -rf %{buildroot}
-make  ARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
+make  KLIBCARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 	INSTALLDIR=%{klibcdir} mandir=%{_mandir} INSTALLROOT=%{buildroot} \
 	install
 

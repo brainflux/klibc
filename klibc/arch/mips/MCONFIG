@@ -7,9 +7,9 @@
 # accordingly.
 #
 
-KLIBCARCHREQFLAGS = -fno-pic -mno-abicalls -G 0
+KLIBCKLIBCARCHREQFLAGS = -fno-pic -mno-abicalls -G 0
 KLIBCOPTFLAGS     = -Os
 KLIBCBITSIZE      = 32
 
 # Extra linkflags when building the shared version of the library
-KLIBCSHAREDFLAGS	= -T $(src)/arch/$(ARCH)/klibc.ld
+KLIBCSHAREDFLAGS	= -T $(src)/arch/$(KLIBCARCH)/klibc.ld

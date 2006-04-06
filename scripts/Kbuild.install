@@ -95,7 +95,7 @@ header:
 	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
 	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)lib
 	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)bin
-	$(Q)set -e ; for d in linux scsi asm-$(ARCH) asm-generic $(ASMARCH); do \
+	$(Q)set -e ; for d in linux scsi asm-$(KLIBCARCH) asm-generic $(ASMKLIBCARCH); do \
 	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)include/$$d ; \
 	  for r in $(KLIBCKERNELSRC)/include $(KLIBCKERNELOBJ)/include \
 	           $(KLIBCKERNELOBJ)/include2 ; do \
@@ -104,7 +104,7 @@ header:
 	          $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/$$d/. ; \
 	  done ; \
 	done
-	$(Q)cd $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include && ln -sf asm-$(ARCH) asm
+	$(Q)cd $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include && ln -sf asm-$(KLIBCARCH) asm
 	$(Q)cp -rf include/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/.
 	$(Q)$(install-data) $(srctree)/klcc/klcc.1 $(INSTALLROOT)$(mandir)/man1/$(KCROSS)klcc.1
 	$(Q)$(install-bin) $(objtree)/klcc/$(KCROSS)klcc $(INSTALLROOT)$(bindir)

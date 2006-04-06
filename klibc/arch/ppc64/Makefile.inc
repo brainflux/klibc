@@ -7,11 +7,11 @@
 # accordingly.
 #
 
-ARCHOBJS = \
-	arch/$(ARCH)/setjmp.o \
-	arch/$(ARCH)/syscall.o
+KLIBCARCHOBJS = \
+	arch/$(KLIBCARCH)/setjmp.o \
+	arch/$(KLIBCARCH)/syscall.o
 
-ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
+KLIBCARCHSOOBJS = $(patsubst %.o,%.lo,$(KLIBCARCHOBJS))
 
 INTERP_O = interp1.o
 

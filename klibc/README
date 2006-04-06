@@ -16,13 +16,13 @@ a) In the source root directory (the directory above the one in which
    a "make config" or any of its variants on the kernel tree is
    question, followed by a "make dep" (2.4) or "make prepare" (2.6).
 
-b) If you're cross-compiling, change ARCH in the main MCONFIG file to
+b) If you're cross-compiling, change KLIBCARCH in the main MCONFIG file to
    the appropriate architecture, and set CROSS to your toolchain
    prefix.
 
    IMPORTANT: if you're on a 64-bit machine with a 32-bit userland
    (ia64, mips64, ppc64 sparc64, s390x or x86_64), and you want to
-   build the 32-bit version: you need to set ARCH to the 32-bit
+   build the 32-bit version: you need to set KLIBCARCH to the 32-bit
    architecture as well as set up the linux/include/asm symlink to
    point to the 32-bit architecture.  Building the 32-bit architecture
    usually (but not always) produces smaller binaries, and is likely

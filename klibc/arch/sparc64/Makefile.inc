@@ -7,9 +7,9 @@
 # accordingly.
 #
 
-ARCHOBJS = \
-	arch/$(ARCH)/setjmp.o \
-	arch/$(ARCH)/syscall.o \
-	arch/$(ARCH)/sysfork.o
+KLIBCARCHOBJS = \
+	arch/$(KLIBCARCH)/setjmp.o \
+	arch/$(KLIBCARCH)/syscall.o \
+	arch/$(KLIBCARCH)/sysfork.o
 
 archclean:

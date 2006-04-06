@@ -26,7 +26,7 @@ $(obj)/socketcalls.o: $(call objectify,$(socketcall-objs)) FORCE
 quiet_cmd_socketcalls = GEN     $@
       cmd_socketcalls = $(PERL) $(KLIBCSRC)/socketcalls.pl          \
                                 $(KLIBCSRC)/SOCKETCALLS.def         \
-                                $(ARCH) $(obj) > $@ || rm -f $@
+                                $(KLIBCARCH) $(obj) > $@ || rm -f $@
 
 # Generate socketcall stubs
 $(obj)/socketcalls.mk: $(KLIBCSRC)/socketcalls.pl                   \

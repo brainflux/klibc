@@ -7,9 +7,9 @@
 # accordingly.
 #
 
-ARCHOBJS = \
-	arch/$(ARCH)/setjmp.o \
-	arch/$(ARCH)/syscall.o \
+KLIBCARCHOBJS = \
+	arch/$(KLIBCARCH)/setjmp.o \
+	arch/$(KLIBCARCH)/syscall.o \
 	libgcc/__divdi3.o \
 	libgcc/__moddi3.o \
 	libgcc/__udivdi3.o \

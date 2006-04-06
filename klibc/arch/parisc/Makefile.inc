@@ -7,10 +7,10 @@
 # accordingly.
 #
 
-ARCHOBJS = \
-	arch/$(ARCH)/setjmp.o \
-	arch/$(ARCH)/syscall.o
+KLIBCARCHOBJS = \
+	arch/$(KLIBCARCH)/setjmp.o \
+	arch/$(KLIBCARCH)/syscall.o
 
-ARCHOOBJS = $(patsubst %o,%.lo,%(ARCHOBJS))
+KLIBCARCHOOBJS = $(patsubst %o,%.lo,%(KLIBCARCHOBJS))
 
 archclean:

@@ -59,14 +59,14 @@ KLIBCCFLAGS += -DDYNAMIC_CRC_TABLE
 
 #####
 # Add any architecture-specific rules
-include $(obj)/arch/$(ARCH)/Makefile.inc
+include $(obj)/arch/$(KLIBCARCH)/Makefile.inc
 
 #####
 # Shared definitions
 LIB      := libc.a
 SOLIB    := libc.so
 SOHASH   := klibc.so
-CRT0     := arch/$(ARCH)/crt0.o
+CRT0     := arch/$(KLIBCARCH)/crt0.o
 INTERP_O := interp.o
 
 always   := $(CRT0) $(LIB) $(SOLIB) $(SOHASH) $(INTERP_O)
@@ -78,8 +78,8 @@ INTERP_O := $(call objectify,$(INTERP_O))
 
 SOLIBHASH = $(shell cat $(SOLIB).hash)
 
-targets  := arch/$(ARCH)/crt0.o
-targets  += $(libc-y) $(ARCHOBJS)
+targets  := arch/$(KLIBCARCH)/crt0.o
+targets  += $(libc-y) $(KLIBCARCHOBJS)
 
 # Generate syscall stubs
 subdir-y += syscalls
@@ -100,7 +100,7 @@ $(obj)/errlist.c: $(srctree)/$(src)/makeerrlist.pl
 	$(call cmd,errlist)
 
 # full list of dependencies for klibc
-libc-deps = $(call objectify, $(libc-y) $(ARCHOBJS)) \
+libc-deps = $(call objectify, $(libc-y) $(KLIBCARCHOBJS)) \
             $(call objectify, syscalls/syscalls.o socketcalls/socketcalls.o)
 
 ######
