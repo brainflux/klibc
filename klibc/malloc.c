@@ -135,7 +135,7 @@ void *malloc(size_t size)
   /* Nothing found... need to request a block from the kernel */
   fsize = (size+MALLOC_CHUNK_MASK) & ~MALLOC_CHUNK_MASK;
 
-#ifdef MALLOC_USING_SBRK
+#if _KLIBC_MALLOC_USES_SBRK
   fp = (struct free_arena_header *) sbrk(fsize);
 #else
   fp = (struct free_arena_header *)

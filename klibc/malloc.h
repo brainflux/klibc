@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <klibc/sysconfig.h>
 
+
+
 /*
  * This structure should be a power of two.  This becomes the
  * alignment unit.
@@ -30,6 +32,8 @@ struct arena_header {
 #define ARENA_TYPE_FREE 1
 #define ARENA_TYPE_HEAD 2
 #endif
+
+#define MALLOC_CHUNK_MASK (_KLIBC_MALLOC_CHUNK_SIZE-1)
 
 #define ARENA_SIZE_MASK (~(sizeof(struct arena_header)-1))
 

@@ -4,8 +4,9 @@
 
 #include <signal.h>
 #include <sys/syscall.h>
+#include <klibc/sysconfig.h>
 
-#ifndef __NR_sigpending
+#if _KLIBC_USE_RT_SIG
 
 __extern int __rt_sigpending(sigset_t *, size_t);
 

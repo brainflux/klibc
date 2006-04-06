@@ -4,6 +4,7 @@
 
 #include <signal.h>
 #include <sys/syscall.h>
+#include <klibc/sysconfig.h>
 
 __extern void __sigreturn(void);
 __extern int __sigaction(int, const struct sigaction *, struct sigaction *);
@@ -13,8 +14,7 @@ int sigaction(int sig, const struct sigaction *act, struct sigaction *oact)
 {
   int rv;
 
-#if defined(__i386__) || defined(__x86_64__)
-  /* x86-64, and the Fedora i386 kernel, are broken without SA_RESTORER */
+#if _KLIBC_NEEDS_SA_RESTORER
   struct sigaction sa;
 
   if ( act && !(act->sa_flags & SA_RESTORER) ) {
@@ -27,14 +27,13 @@ int sigaction(int sig, const struct sigaction *act, struct sigaction *oact)
   }
 #endif
 
-#ifdef __NR_sigaction
-  rv = __sigaction(sig, act, oact);
-#else
+#if _KLIBC_USE_RT_SIG
   rv = __rt_sigaction(sig, act, oact, sizeof(sigset_t));
+#else
+  rv = __sigaction(sig, act, oact);
 #endif
 
-
-#if defined(__i386__) || defined(__x86_64__)
+#if _KLIBC_NEEDS_SA_RESTORER
   if ( oact && (oact->sa_restorer == &__sigreturn) ) {
     oact->sa_flags &= ~SA_RESTORER;
   }

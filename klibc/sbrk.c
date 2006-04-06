@@ -24,7 +24,7 @@ void *sbrk(ptrdiff_t increment)
   if (!__current_brk)
     __current_brk = __brk(NULL);
 
-  start = align_up(__current_brk, SBRK_ALIGNMENT);
+  start = align_up(__current_brk, _KLIBC_SBRK_ALIGNMENT);
   end   = start + increment;
 
   new_brk = __brk(end);

@@ -11,6 +11,7 @@
 ;
 
 #include <asm/unistd.h>
+#include <klibc/sysconfig.h>
 #include <bitsize.h>
 
 ;
@@ -163,26 +164,17 @@ ssize_t pwrite64,pwrite::pwrite(int, void *, size_t, off_t)
 ; Signal operations
 ;
 ; We really should get rid of the non-rt_* of these, but that takes
-; sanitizing <signal.h> for all architectures, sigh.
-#ifdef __NR_sigaction
-int sigaction::__sigaction(int, const struct sigaction *, struct sigaction *)
-#else
+; sanitizing <signal.h> for all architectures, sigh.  See <klibc/config.h>.
+#if _KLIBC_USE_RT_SIG
 int rt_sigaction::__rt_sigaction(int, const struct sigaction *, struct sigaction *, size_t)
-#endif
-#ifdef __NR_sigsuspend
-int sigsuspend(const sigset_t *)
-#else
 int rt_sigsuspend::__rt_sigsuspend(const sigset_t *, size_t)
-#endif
-#ifdef __NR_sigpending
-int sigpending(sigset_t *)
-#else
 int rt_sigpending::__rt_sigpending(sigset_t *, size_t)
-#endif
-#ifdef __NR_sigprocmask
-int sigprocmask(int, const sigset_t *, sigset_t *)
-#else
 int rt_sigprocmask::__rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t)
+#else
+int sigaction::__sigaction(int, const struct sigaction *, struct sigaction *)
+int sigsuspend(const sigset_t *)
+int sigpending(sigset_t *)
+int sigprocmask(int, const sigset_t *, sigset_t *)
 #endif
 int kill(pid_t, int)
 <?> unsigned int alarm(unsigned int)
@@ -203,20 +195,22 @@ int nanosleep(const struct timespec *, struct timespec *)
 ; Memory
 ;
 void * brk::__brk(void *)
+#if !_KLIBC_NO_MMU
 int munmap(void *, size_t)
 void * mremap(void *, size_t, size_t, unsigned long)
 int msync(const void *, size_t, int)
 int mprotect(const void *, size_t, int)
-#if (_BITSIZE == 32 && defined(__NR_mmap2)) || \
+# if (_BITSIZE == 32 && defined(__NR_mmap2)) || \
     (_BITSIZE == 64 && !defined(__NR_mmap))
 <!s390> void * mmap2::__mmap2(void *, size_t, int, int, int, long)
-#else
+# else
 <!s390x> void * mmap(void *, size_t, int, int, int, long)
-#endif
+# endif
 int mlockall(int)
 int munlockall()
 int mlock(const void *, size_t)
 int munlock(const void *, size_t)
+#endif
 
 ;
 ; System stuff
