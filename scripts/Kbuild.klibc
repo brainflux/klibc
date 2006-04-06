@@ -61,12 +61,12 @@ KLIBCMAJOR        := $(shell cut -d. -f1 $(srctree)/version)
 KLIBCMINOR        := $(shell cut -d. -f2 $(srctree)/version)
 
 # binutils
-KLIBCLD          := $(KLIBCROSS)ld
-KLIBCCC          := $(KLIBCROSS)gcc
-KLIBCAR          := $(KLIBCROSS)ar
-KLIBCRANLIB      := $(KLIBCROSS)ranlib
-KLIBCSTRIP       := $(KLIBCROSS)strip
-KLIBCNM          := $(KLIBCROSS)nm
+KLIBCLD          := $(LD)
+KLIBCCC          := $(CC)
+KLIBCAR          := $(AR)
+KLIBCRANLIB      := $(RANLIB)
+KLIBCSTRIP       := $(STRIP)
+KLIBCNM          := $(NM)
 
 
 # klibc include paths

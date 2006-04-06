@@ -11,7 +11,15 @@ export KLIBCKERNELSRC := linux/
 export KLIBCKERNELOBJ := linux/
 include scripts/Kbuild.include
 
-export CC      := gcc
+KLIBCROSS	?= $(CROSS_COMPILE)
+export KLIBCROSS
+export CC	:= $(KLIBCROSS)gcc
+export LD	:= $(KLIBCROSS)ld
+export AR	:= $(KLIBCROSS)ar
+export RANLIB	:= $(KLIBCROSS)ranlib
+export STRIP	:= $(KLIBCROSS)strip
+export NM	:= $(KLIBCROSS)nm
+
 NOSTDINC_FLAGS := -nostdlib -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
 ARCH	          := $(shell uname -m | sed -e s/i.86/i386/ -e s/parisc64/parisc/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)

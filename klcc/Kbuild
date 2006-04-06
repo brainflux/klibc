@@ -10,7 +10,7 @@ $(obj)/$(KLIBCCROSS)klibc.config: $(src)/Kbuild \
 	@echo "  GEN     $@"
 	$(Q)rm -f $@
 	$(Q)echo 'ARCH=$(KLIBCARCH)' >> $@
-	$(Q)echo 'CROSS=$(KLIBCCROSS)' >> $@
+	$(Q)echo 'CROSS=$(KLIBCROSS)' >> $@
 	$(Q)echo 'KCROSS=$(KCROSS)' >> $@
 	$(Q)echo 'CC=$(KLIBCCC)' >> $@
 	$(Q)echo 'LD=$(KLIBCLD)' >> $@
