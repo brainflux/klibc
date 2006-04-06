@@ -69,7 +69,7 @@ TBEGIN	0	"{"
 TEND	1	"}"
 !
 nl=`wc -l /tmp/ka$$`
-exec > token.h
+
 awk '{print "#define " $1 " " NR-1}' /tmp/ka$$
 echo '
 /* Array indicating which tokens mark the end of a list */

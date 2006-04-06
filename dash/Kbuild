@@ -66,7 +66,7 @@ $(obj)/check:
 
 # Generate token.h
 quiet_cmd_mktokens = GEN     $@
-      cmd_mktokens = cd $(obj); sh $(srctree)/$<
+      cmd_mktokens = sh $< > $@
 $(obj)/token.h: $(src)/mktokens
 	$(call cmd,mktokens)
 
