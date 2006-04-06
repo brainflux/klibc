@@ -67,7 +67,8 @@ KLIBCAR          := $(AR)
 KLIBCRANLIB      := $(RANLIB)
 KLIBCSTRIP       := $(STRIP)
 KLIBCNM          := $(NM)
-
+KLIBCOBJCOPY	 := $(OBJCOPY)
+KLIBCOBJDUMP	 := $(OBJDUMP)
 
 # klibc include paths
 KLIBCCPPFLAGS    := -I$(KLIBCINC)/arch/$(KLIBCARCH)         \

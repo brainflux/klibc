@@ -19,6 +19,8 @@ export AR	:= $(KLIBCROSS)ar
 export RANLIB	:= $(KLIBCROSS)ranlib
 export STRIP	:= $(KLIBCROSS)strip
 export NM	:= $(KLIBCROSS)nm
+export OBJCOPY  := $(KLIBCROSS)objcopy
+export OBJDUMP  := $(KLIBCROSS)objdump
 
 NOSTDINC_FLAGS := -nostdlib -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
