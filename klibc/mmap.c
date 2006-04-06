@@ -8,6 +8,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <bitsize.h>
+#include <klibc/sysconfig.h>
 
 /*
  * Set in SYSCALLS whether or not we should use an unadorned mmap() system
