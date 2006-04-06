@@ -32,6 +32,35 @@
 
 
 /*
+ * _KLIBC_USE_MMAP2:
+ *
+ *	Indicates that this architecture should use sys_mmap2 instead
+ *	of sys_mmap.  This is the default on 32-bit architectures, assuming
+ *	sys_mmap2 exists.
+ */
+#ifndef _KLIBC_USE_MMAP2
+# if (_BITSIZE == 32 && defined(__NR_mmap2)) || \
+     (_BITSIZE == 64 && !defined(__NR_mmap))
+#  define _KLIBC_USE_MMAP2 1
+# else
+#  define _KLIBC_USE_MMAP2 0
+# endif
+#endif
+
+/*
+ * _KLIBC_MMAP2_SHIFT:
+ *
+ *	Indicate the shift of the offset parameter in sys_mmap2.
+ *	On most architectures, this is always 12, but on some
+ *	architectures it can be a different number, or the current
+ *	page size.  If this is dependent on the page size, define
+ *	this to an expression which includes __getpagesize().
+ */
+#ifndef _KLIBC_MMAP2_SHIFT
+# define _KLIBC_MMAP2_SHIFT 12
+#endif
+
+/*
  * _KLIBC_MALLOC_USES_SBRK:
  *
  *	Indicates that malloc() should use sbrk() to obtain raw memory

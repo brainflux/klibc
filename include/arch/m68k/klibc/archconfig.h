@@ -9,6 +9,7 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* All defaults */
+/* On m68k, sys_mmap2 uses the current page size as the shift factor */
+#define _KLIBC_MMAP2_SHIFT	__getpageshift()
 
 #endif /* _KLIBC_ARCHCONFIG_H */
