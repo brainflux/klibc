@@ -25,9 +25,13 @@
  *	has no mmap(), munmap(), mremap(), msync(), mprotect(), or any
  *	of the mlock family.
  */
-/* Default to having an MMU */
+/* Default to having an MMU if we can find any mmap system call */
 #ifndef _KLIBC_NO_MMU
-# define _KLIBC_NO_MMU 0
+# if defined(__NR_mmap) || defined(__NR_mmap2)
+#  define _KLIBC_NO_MMU 0
+# else
+#  define _KLIBC_NO_MMU 1
+# endif
 #endif
 
 
