@@ -7,7 +7,7 @@
 # accordingly.
 #
 
-KLIBCKLIBCARCHREQFLAGS = -fno-pic -mno-abicalls -G 0
+KLIBCARCHREQFLAGS = -fno-pic -mno-abicalls -G 0
 KLIBCOPTFLAGS     = -Os
 KLIBCBITSIZE      = 32
 

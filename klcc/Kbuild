@@ -14,7 +14,7 @@ $(obj)/$(KLIBCCROSS)klibc.config: $(src)/Kbuild \
 	$(Q)echo 'KCROSS=$(KCROSS)' >> $@
 	$(Q)echo 'CC=$(KLIBCCC)' >> $@
 	$(Q)echo 'LD=$(KLIBCLD)' >> $@
-	$(Q)echo 'REQFLAGS=$(filter-out -I%,$(KLIBCDEFS) $(KLIBCREQFLAGS) $(KLIBCKLIBCARCHREQFLAGS))' >> $@
+	$(Q)echo 'REQFLAGS=$(filter-out -I%,$(KLIBCDEFS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS))' >> $@
 	$(Q)echo 'OPTFLAGS=$(KLIBCOPTFLAGS)' >> $@
 	$(Q)echo 'LDFLAGS=$(KLIBCLDFLAGS)' >> $@
 	$(Q)echo 'STRIP=$(KLIBCSTRIP)' >> $@

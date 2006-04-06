@@ -8,7 +8,7 @@
 #
 
 # Special CFLAGS for the divide code
-DIVCFLAGS = $(KLIBCREQFLAGS) $(KLIBCKLIBCARCHREQFLAGS) \
+DIVCFLAGS = $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS) \
 	-O3 -fomit-frame-pointer -fcall-saved-1 -fcall-saved-2 \
 	-fcall-saved-3 -fcall-saved-4 -fcall-saved-5 -fcall-saved-6 \
 	-fcall-saved-7 -fcall-saved-8 -ffixed-15 -fcall-saved-16 \

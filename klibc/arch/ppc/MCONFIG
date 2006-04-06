@@ -18,4 +18,4 @@ KLIBCBITSIZE  = 32
 KLIBCSHAREDFLAGS     = -Ttext 0x0f000200
 
 # The kernel so far has both asm-ppc* and asm-powerpc.
-KLIBCKLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(KLIBCARCH)/include
+KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(KLIBCARCH)/include
