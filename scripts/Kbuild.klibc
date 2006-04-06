@@ -39,6 +39,9 @@ targets :=
 .phony: __build
 __build:
 
+# Read .config if it exist, otherwise ignore
+-include .config
+
 # Generic Kbuild routines
 include $(srctree)/scripts/Kbuild.include
 
