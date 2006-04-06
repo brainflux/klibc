@@ -93,7 +93,7 @@ __noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
   /* unsigned int is 32 bits on all our architectures */
   page_shift = __builtin_clz(page_size) ^ 31;
 #elif defined(__i386__) || defined(__x86_64__)
-  asm("bsrl %1,%0" : "=r" (page_shift) : "rm" (page_size));
+  asm("bsrl %1,%0" : "=r" (page_shift) : "r" (page_size));
 #else
   while ( page_size > 1 ) {
     page_shift++;
