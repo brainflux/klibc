@@ -31,5 +31,5 @@ quiet_cmd_socketcalls = GEN     $@
 # Generate socketcall stubs
 $(obj)/socketcalls.mk: $(KLIBCSRC)/socketcalls.pl                   \
                        $(KLIBCSRC)/SOCKETCALLS.def                  \
-                       $(KLIBCSRC)/socketcommon.h
+                       $(src)/socketcommon.h
 	$(call cmd,socketcalls)
