@@ -506,7 +506,7 @@ int main(void)
 		return 0;
 	}
 
-	p = (char *) &servaddr;
+	p = (unsigned char *) &servaddr;
 	sprintf(nfs_data.hostname, "%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
 
 #ifdef NFSROOT_DEBUG
