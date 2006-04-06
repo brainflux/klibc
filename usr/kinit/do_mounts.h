@@ -9,8 +9,11 @@
 #include <sys/sysmacros.h>
 #include <sys/stat.h>
 
-#define	Root_RAM0	makedev(1,0)
-#define Root_NFS	makedev(0,255)
+#define	Root_RAM0	__makedev(1,0)
+
+/* These device numbers are only used internally */
+#define Root_NFS	__makedev(0,255)
+#define Root_MTD	__makedev(0,254)
 
 int
 create_dev(const char *name, dev_t dev);
@@ -18,13 +21,15 @@ create_dev(const char *name, dev_t dev);
 dev_t
 name_to_dev_t(const char *name);
 
-const char *
-mount_block(const char *source, const char *target,
-	    const char *type, unsigned long flags,
-	    const void *data);
+const char *mount_block(const char *source, const char *target,
+			const char *type, unsigned long flags,
+			const void *data);
 
-int
-mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name);
+int mount_root(int argc, char *argv[], dev_t root_dev,
+	       const char *root_dev_name);
+
+int mount_mtd_root(int argc, char *argv[], const char *root_dev_name,
+		   const char *type, unsigned long flags);
 
 int do_mounts(int argc, char *argv[]);
 

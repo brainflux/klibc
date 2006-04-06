@@ -121,13 +121,17 @@ name_to_dev_t_real(const char *name)
 
 	if (strncmp(name, "/dev/", 5)) {
 		res = (dev_t) strtoul(name, &p, 16);
-		if (*p)
-			return 0;
-		return res;
+		if (!*p)
+			return res;
+	} else {
+		name += 5;
 	}
-	name += 5;
-	if (strcmp(name, "nfs") == 0)
+
+	if (!strcmp(name, "nfs"))
 		return Root_NFS;
+
+	if (!strncmp(name, "mtd", 3))
+		return Root_MTD;
 
 	len = strlen(name);
 	s = alloca(len+1);
@@ -232,17 +236,15 @@ mount_block(const char *source, const char *target,
 /* mount the root filesystem from a block device */
 static int
 mount_block_root(int argc, char *argv[], dev_t root_dev,
-		 const char *root_dev_name, unsigned long flags)
+		 const char *type, unsigned long flags)
 {
-	const char *data, *type;
-	const char *rp;
+	const char *data, *rp;
 
 	data = get_arg(argc, argv, "rootflags=");
 	create_dev("/dev/root", root_dev);
 
 	errno = 0;
 
-	type = get_arg(argc, argv, "rootfstype=");
 	if ( type ) {
 		if ( (rp = mount_block("/dev/root", "/root", type, flags, data)) )
 			goto ok;
@@ -279,21 +281,34 @@ mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 {
 	unsigned long flags = MS_RDONLY|MS_VERBOSE;
 	int ret;
+	const char *type = get_arg(argc, argv, "rootfstype=");
 
 	if (get_flag(argc, argv, "rw")) {
 		DEBUG(("kinit: rw flag specified\n"));
 		flags &= ~MS_RDONLY;
 	}
 
-	if (root_dev == Root_NFS) {
-		ret = mount_nfs_root(argc, argv, flags);
-	} else {
-		ret = mount_block_root(argc, argv, root_dev, root_dev_name, flags);
+	if (type) {
+		if (!strcmp(type, "nfs"))
+			root_dev = Root_NFS;
+		else if (!strcmp(type, "jffs2") && !major(root_dev))
+			root_dev = Root_MTD;
 	}
 
-	if (ret == 0) {
-		chdir("/root");
+	switch (root_dev) {
+	case Root_NFS:
+		ret = mount_nfs_root(argc, argv, flags);
+		break;
+	case Root_MTD:
+		ret = mount_mtd_root(argc, argv, root_dev_name, type, flags);
+		break;
+	default:
+		ret = mount_block_root(argc, argv, root_dev, type, flags);
+		break;
 	}
+
+	if (!ret)
+		chdir("/root");
 
 	return ret;
 }
@@ -317,9 +332,6 @@ int do_mounts(int argc, char *argv[])
 
 	if (root_dev_name) {
 		root_dev = name_to_dev_t(root_dev_name);
-		if (strncmp(root_dev_name, "/dev/", 5) == 0) {
-			root_dev_name += 5;
-		}
 	} else if (get_arg(argc, argv, "nfsroot=") ||
 		   get_arg(argc, argv, "nfsaddrs=")) {
 		root_dev = Root_NFS;
