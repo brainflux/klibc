@@ -58,7 +58,7 @@
  *	On most architectures, this is always 12, but on some
  *	architectures it can be a different number, or the current
  *	page size.  If this is dependent on the page size, define
- *	this to an expression which includes __getpagesize().
+ *	this to an expression which includes __getpageshift().
  */
 #ifndef _KLIBC_MMAP2_SHIFT
 # define _KLIBC_MMAP2_SHIFT 12
