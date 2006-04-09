@@ -34,6 +34,9 @@
  *	@(#)expand.h	8.2 (Berkeley) 5/4/95
  */
 
+#ifndef DASH_STRLIST_H
+#define DASH_STRLIST_H
+
 struct strlist {
 	struct strlist *next;
 	char *text;
@@ -76,3 +79,5 @@ void arith_lex_reset(void);
 #define arith_lex_reset()
 #endif
 int yylex(void);
+
+#endif		/* DASH_STRLIST_H */
