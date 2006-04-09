@@ -96,20 +96,20 @@ quiet_cmd_mknodes = GEN     $@
 $(obj)/nodes.c: $(obj)/mknodes $(src)/nodetypes $(src)/nodes.c.pat
 	$(call cmd,mknodes)
 
-quiet_cmd_mknodes_h = GEN     $@
+quiet_cmd_mknodes_h = DUMMY   $@
       cmd_mknodes_h = :
 $(obj)/nodes.h: $(obj)/nodes.c
 	$(call cmd,mknodes_h)
 
 quiet_cmd_mksyntax = GEN     $@
-      cmd_mksyntax = cd $(obj); ./mksyntax
-$(obj)/syntax.c $(obj)/syntax.h: $(obj)/mksyntax
+      cmd_mksyntax = cd $(obj); %<
+$(obj)/syntax.c: $(obj)/mksyntax
 	$(call cmd,mksyntax)
 
-quiet_cmd_mksignames = GEN     $@
-      cmd_mksignames = cd $(obj); ./mksignames
-$(obj)/signames.c: $(obj)/mksignames
-	$(call cmd,mksignames)
+quiet_cmd_mksyntax_h = DUMMY   $@
+      cmd_mksyntax_h = :
+$(obj)/syntax.h: $(obj)/syntax.c
+	$(call cmd,mksyntax_h)
 
 BISON := bison
 
