@@ -79,19 +79,19 @@ $(obj)/builtins.def: $(src)/builtins.def.in $(src)/config.h
 
 # Generate builtins{.c + .h}
 quiet_cmd_mkbuiltins = GEN     $@
-      cmd_mkbuiltins = cd $(obj); sh $(srctree)/$(src)/mkbuiltins builtins.def
+      cmd_mkbuiltins = cd $(obj) && sh $(srctree)/$(src)/mkbuiltins builtins.def
 $(obj)/builtins.h $(obj)/builtins.c: $(src)/mkbuiltins $(obj)/builtins.def
 	$(call cmd,mkbuiltins)
 
 # Generate init.c
 quiet_cmd_mkinit = GEN     $@
-      cmd_mkinit = cd $(obj); ./mkinit $(addprefix $(srctree)/$(src)/, $(SRCS))
+      cmd_mkinit = cd $(obj) && ./mkinit $(addprefix $(srctree)/$(src)/, $(SRCS))
 $(obj)/init.c: $(obj)/mkinit $(addprefix $(src)/, $(SRCS))
 	$(call cmd,mkinit)
 
 # Generate nodes{.c + .h}
 quiet_cmd_mknodes = GEN     $@
-      cmd_mknodes = cd $(obj); ./mknodes $(srctree)/$(src)/nodetypes \
+      cmd_mknodes = cd $(obj) && ./mknodes $(srctree)/$(src)/nodetypes \
 			       $(srctree)/$(src)/nodes.c.pat
 $(obj)/nodes.c: $(obj)/mknodes $(src)/nodetypes $(src)/nodes.c.pat
 	$(call cmd,mknodes)
@@ -102,7 +102,7 @@ $(obj)/nodes.h: $(obj)/nodes.c
 	$(call cmd,mknodes_h)
 
 quiet_cmd_mksyntax = GEN     $@
-      cmd_mksyntax = cd $(obj); %<
+      cmd_mksyntax = cd $(obj) && ./mksyntax
 $(obj)/syntax.c: $(obj)/mksyntax
 	$(call cmd,mksyntax)
 
