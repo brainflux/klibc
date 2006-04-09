@@ -9,6 +9,7 @@
 #define _KLIBC_SYSCONFIG_H
 
 #include <klibc/archconfig.h>
+#include <asm/unistd.h>
 
 /*
  * These are the variables that can be defined in <klibc/archconfig.h>.
