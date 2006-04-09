@@ -111,13 +111,15 @@ quiet_cmd_mksignames = GEN     $@
 $(obj)/signames.c: $(obj)/mksignames
 	$(call cmd,mksignames)
 
+BISON := bison
 
-$(obj)/arith.c: $(src)/arith.y
-	bison -o $@ $<
+quiet_cmd_bison	= BISON   $@
+      cmd_bison = $(BISON) -d -o $@ $<
 
-$(obj)/arith.h: $(src)/arith.y
-	bison --defines=$@ -o /dev/null $<
+$(obj)/%.c %(obj)/%.h: $(src)/%.y
+	$(call cmd,bison)
 
+$(obj)/arith.c $(obj)/arith.h: $(src)/arith.y
 
 # Targets to install
 install-y := sh.shared
