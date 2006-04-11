@@ -23,6 +23,7 @@ targets += $(syscall-objs)
 
 # Side effect of running syscalls.pl
 clean-files += $(objtree)/$(KLIBCINC)/klibc/havesyscall.h
+clean-files += $(KLIBCINC)/klibc/havesyscall.h
 # All the syscall stubs
 clean-files += *.o *.S *.c
 
