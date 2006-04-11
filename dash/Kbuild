@@ -57,12 +57,7 @@ hostprogs-y := $(HELPERS)
 # For cleaning
 targets := sh sh.g sh.shared sh.shared.g $(CLEANFILES)
 
-$(addprefix $(obj)/, $(OBJS)): $(addprefix $(obj)/, $(BUILT_SOURCES) check)
-
-quiet_cmd_check = CHECK   $(obj)
-      cmd_check = mkdir -p $(obj)/bltin; touch $(obj)/check
-$(obj)/check:
-	$(call cmd,check)
+$(addprefix $(obj)/, $(OBJS)): $(addprefix $(obj)/, $(BUILT_SOURCES))
 
 # Generate token.h
 quiet_cmd_mktokens = GEN     $@
@@ -79,7 +74,8 @@ $(obj)/builtins.def: $(src)/builtins.def.in $(src)/config.h
 
 # Generate builtins{.c + .h}
 quiet_cmd_mkbuiltins = GEN     $@
-      cmd_mkbuiltins = cd $(obj) && sh $(srctree)/$(src)/mkbuiltins builtins.def
+      cmd_mkbuiltins = mkdir -p $(obj)/bltin && cd $(obj) && \
+                       sh $(srctree)/$(src)/mkbuiltins builtins.def
 $(obj)/builtins.h $(obj)/builtins.c: $(src)/mkbuiltins $(obj)/builtins.def
 	$(call cmd,mkbuiltins)
 
