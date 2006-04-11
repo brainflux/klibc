@@ -2,6 +2,9 @@
 # Kbuild file for klibc
 #
 
+# Tell that we are building klibc
+klibc-build := y
+
 libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  asprintf.o vasprintf.o \
 	  vsscanf.o sscanf.o ctypes.o \

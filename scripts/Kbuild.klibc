@@ -257,7 +257,7 @@ quiet_cmd_ld-static = KLIBCLD $@
                        $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
 
-$(static-y): $(klibc-objs) $(lib-target) FORCE
+$(static-y): $(klibc-objs) $(lib-target) $(KLIBCCRT0) $(KLIBCLIBC) FORCE
 	$(call if_changed,ld-static)
 
 quiet_cmd_ld-shared = KLIBCLD $@
@@ -270,8 +270,17 @@ quiet_cmd_ld-shared = KLIBCLD $@
                        $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
 
-$(shared-y): $(klibc-objs) $(lib-target) FORCE
+$(shared-y): $(klibc-objs) $(lib-target) $(KLIBCCRTSHARED) \
+                                         $(KLIBCLIBCSHARED) FORCE
 	$(call if_changed,ld-shared)
+
+# Do not try to build KLIBC libaries if we are building klibc
+ifeq ($(klibc-build),)
+$(KLIBCCRT0) $(KLIBCLIBC):
+	echo fisk
+$(KLIBCCRTSHARED) $(KLIBCLIBCSHARED):
+	echo fisk
+endif
 
 targets += $(klibc-real-objs)
 endif
