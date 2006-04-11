@@ -19,6 +19,8 @@ targets     += socketcalls.mk
 targets     += $(socketcall-objs)
 clean-files += *.S *.c *.o
 
+EXTRA_KLIBCCFLAGS := -I$(srctree)/$(src)
+
 # Create reloctable composite object file
 $(obj)/socketcalls.o: $(call objectify,$(socketcall-objs)) FORCE
 	$(call if_changed,klibcld)
