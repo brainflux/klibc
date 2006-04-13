@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   initargs = argv+optind+1;
 
   error = run_init(realroot, console, init, initargs);
-  
+
   /* If run_init returns, something went wrong */
   fprintf(stderr, "%s: %s: %s\n", program, error, strerror(errno));
   return 1;

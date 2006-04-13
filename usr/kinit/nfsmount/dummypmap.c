@@ -156,7 +156,7 @@ pid_t start_dummy_portmap(const char *file)
 	FILE *portmap_filep;
 	int sock;
 	pid_t spoof_portmap;
-	
+
 	portmap_filep = fopen(file, "w");
 	if (!portmap_filep) {
 		fprintf(stderr, "%s: cannot write portmap file: %s\n",
@@ -188,4 +188,4 @@ pid_t start_dummy_portmap(const char *file)
 		close(sock);
 		return spoof_portmap;
 	}
-}	
+}
