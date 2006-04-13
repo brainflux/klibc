@@ -79,45 +79,47 @@ $(obj)/builtins.def: $(src)/builtins.def.in $(src)/config.h
 
 # Generate builtins{.c + .h}
 quiet_cmd_mkbuiltins = GEN     $@
-      cmd_mkbuiltins = cd $(obj); sh $(srctree)/$(src)/mkbuiltins builtins.def
+      cmd_mkbuiltins = cd $(obj) && sh $(srctree)/$(src)/mkbuiltins builtins.def
 $(obj)/builtins.h $(obj)/builtins.c: $(src)/mkbuiltins $(obj)/builtins.def
 	$(call cmd,mkbuiltins)
 
 # Generate init.c
 quiet_cmd_mkinit = GEN     $@
-      cmd_mkinit = cd $(obj); ./mkinit $(addprefix $(srctree)/$(src)/, $(SRCS))
+      cmd_mkinit = cd $(obj) && ./mkinit $(addprefix $(srctree)/$(src)/, $(SRCS))
 $(obj)/init.c: $(obj)/mkinit $(addprefix $(src)/, $(SRCS))
 	$(call cmd,mkinit)
 
 # Generate nodes{.c + .h}
 quiet_cmd_mknodes = GEN     $@
-      cmd_mknodes = cd $(obj); ./mknodes $(srctree)/$(src)/nodetypes \
+      cmd_mknodes = cd $(obj) && ./mknodes $(srctree)/$(src)/nodetypes \
 			       $(srctree)/$(src)/nodes.c.pat
 $(obj)/nodes.c: $(obj)/mknodes $(src)/nodetypes $(src)/nodes.c.pat
 	$(call cmd,mknodes)
 
-quiet_cmd_mknodes_h = GEN     $@
+quiet_cmd_mknodes_h = DUMMY   $@
       cmd_mknodes_h = :
 $(obj)/nodes.h: $(obj)/nodes.c
 	$(call cmd,mknodes_h)
 
 quiet_cmd_mksyntax = GEN     $@
-      cmd_mksyntax = cd $(obj); ./mksyntax
-$(obj)/syntax.c $(obj)/syntax.h: $(obj)/mksyntax
+      cmd_mksyntax = cd $(obj) && ./mksyntax
+$(obj)/syntax.c: $(obj)/mksyntax
 	$(call cmd,mksyntax)
 
-quiet_cmd_mksignames = GEN     $@
-      cmd_mksignames = cd $(obj); ./mksignames
-$(obj)/signames.c: $(obj)/mksignames
-	$(call cmd,mksignames)
+quiet_cmd_mksyntax_h = DUMMY   $@
+      cmd_mksyntax_h = :
+$(obj)/syntax.h: $(obj)/syntax.c
+	$(call cmd,mksyntax_h)
 
+BISON := bison
 
-$(obj)/arith.c: $(src)/arith.y
-	bison -o $@ $<
+quiet_cmd_bison	= BISON   $@
+      cmd_bison = $(BISON) -d -o $@ $<
 
-$(obj)/arith.h: $(src)/arith.y
-	bison --defines=$@ -o /dev/null $<
+$(obj)/%.c %(obj)/%.h: $(src)/%.y
+	$(call cmd,bison)
 
+$(obj)/arith.c $(obj)/arith.h: $(src)/arith.y
 
 # Targets to install
 install-y := sh.shared

@@ -5,6 +5,7 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include "malloc.h"
 
