@@ -117,16 +117,17 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	     chroot(".") )
 		return -errno;
 
-	pid = fork();
+	pid = vfork();
 	if ( pid == 0 ) {
 		setsid();
-		/* Looks like linuxrc doesn't get the init environment or parameters.
-		   Weird, but so is the whole linuxrc bit. */
+		/* Looks like linuxrc doesn't get the init environment
+		   or parameters.  Weird, but so is the whole linuxrc bit. */
 		execl("/linuxrc", "linuxrc", NULL);
 		_exit(255);
 	} else if ( pid > 0 ) {
 		DEBUG(("kinit: Waiting for linuxrc to complete...\n"));
-		while ( waitpid(pid, NULL, 0) != pid );
+		while ( waitpid(pid, NULL, 0) != pid )
+			;
 		DEBUG(("kinit: linuxrc done\n"));
 	} else {
 		return -errno;
