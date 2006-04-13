@@ -4,7 +4,10 @@
  * Functions for the portmap spoofer
  */
 
-#include <stdio.h>
+#ifndef KINIT_DUMMYPORTMAP_H
+#define KINIT_DUMMYPORTMAP_H
 
-int bind_portmap(void);
-int dummy_portmap(int sock, FILE *portmap_file);
+#include <unistd.h>
+pid_t start_dummy_portmap(const char *file);
+
+#endif /* KINIT_DUMMYPORTMAP_H */

@@ -14,6 +14,7 @@
 #include <setjmp.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <klibc/sysconfig.h>	/* For _KLIBC_NO_MMU */
 
 #include <linux/nfs_mount.h>
 
@@ -21,7 +22,7 @@
 #include "sunrpc.h"
 #include "dummypmap.h"
 
-static char *progname;
+const char *progname;
 static jmp_buf abort_buf;
 
 static struct nfs_mount_data mount_data = {
@@ -168,16 +169,16 @@ int nfsmount_main(int argc, char *argv[])
 	char *hostname;
 	char *path;
 	int c;
-	int spoof_portmap;
-	FILE *portmap_file;
+	const char *portmap_file;
+	pid_t spoof_portmap;
 	int err;
 
 	if ( (err = setjmp(abort_buf)) )
 	     return err;
 
 	/* Set these here to avoid longjmp warning */
-	spoof_portmap = 0;
 	portmap_file = NULL;
+	spoof_portmap = 0;
 	server = 0;
 
 	/* If progname is set we're invoked from another program */
@@ -194,87 +195,68 @@ int nfsmount_main(int argc, char *argv[])
 			parse_opts(optarg);
 			break;
 		case 'p':
-			spoof_portmap = 1;
-			portmap_file  = fopen(optarg, "w");
+			portmap_file  = optarg;
 			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
-			longjmp(abort_buf, 1);
+			return 1;
 		}
 	}
 
 	if (optind == argc) {
 		fprintf(stderr, "%s: need a path\n", progname);
-		longjmp(abort_buf, 1);
+		return 1;
 	}
 
 	hostname = rem_path = argv[optind];
 
 	if ((rem_name = strdup(rem_path)) == NULL) {
 		perror("strdup");
-		longjmp(abort_buf, 1);
+		return 1;
 	}
 
 	if ((rem_path = strchr(rem_path, ':')) == NULL) {
 		fprintf(stderr, "%s: need a server\n", progname);
-		longjmp(abort_buf, 1);
+		return 1;
 	}
 
 	*rem_path++ = '\0';
 
 	if (*rem_path != '/') {
 		fprintf(stderr, "%s: need a path\n", progname);
-		longjmp(abort_buf, 1);
+		return 1;
 	}
 
 	server = parse_addr(hostname);
 
-	if (optind <= argc - 2) {
+	if (optind <= argc - 2)
 		path = argv[optind + 1];
-	} else {
+	else
 		path = "/nfs_root";
-	}
 
 	check_path(path);
 
-	if ( spoof_portmap ) {
-		int sock = bind_portmap();
+#if! _KLIBC_NO_MMU
+	/* Note: uClinux can't fork(), so the spoof portmapper is not
+	   available on uClinux. */
+	if (portmap_file)
+		spoof_portmap = start_dummy_portmap(portmap_file);
 
-		if ( sock == -1 ) {
-			if ( errno == EINVAL || errno == EADDRINUSE )
-				spoof_portmap = 0; /* Assume not needed */
-			else {
-				fprintf(stderr,
-					"%s: portmap spoofing failed\n",
-					progname);
-				longjmp(abort_buf, 1);
-			}
-		} else {
-			spoof_portmap = fork();
-			if ( spoof_portmap == -1 ) {
-				fprintf(stderr, "%s: cannot fork\n", progname);
-				longjmp(abort_buf, 1);
-			} else if ( spoof_portmap == 0 ) {
-				/* Child process */
-				dummy_portmap(sock, portmap_file);
-				_exit(255); /* Error */
-			} else {
-				/* Parent process */
-				close(sock);
-			}
-		}
-	}
+	if (spoof_portmap == -1)
+		return 1;
+#endif
 
 	if (nfs_mount(rem_name, hostname, server, rem_path, path,
 		      &mount_data) != 0)
 		return 1;
 
 	/* If we set up the spoofer, tear it down now */
-	if ( spoof_portmap ) {
+	if (spoof_portmap) {
 		kill(SIGTERM, spoof_portmap);
-		while ( waitpid(spoof_portmap, NULL, 0) == -1 &&
-			errno == EINTR );
+		while (waitpid(spoof_portmap, NULL, 0) == -1 &&
+		       errno == EINTR)
+			;
 	}
 
 	free(rem_name);

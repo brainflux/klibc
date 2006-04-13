@@ -19,6 +19,8 @@
 
 #include "sunrpc.h"
 
+extern const char *progname;
+
 struct portmap_call
 {
         struct rpc_call rpc;
@@ -34,7 +36,7 @@ struct portmap_reply
         __u32 port;
 };
 
-int bind_portmap(void)
+static int bind_portmap(void)
 {
 	int sock = socket(PF_INET, SOCK_DGRAM, 0);
 	struct sockaddr_in sin;
@@ -56,7 +58,19 @@ int bind_portmap(void)
 	return sock;
 }
 
-int dummy_portmap(int sock, FILE *portmap_file)
+static const char *protoname(__u32 proto)
+{
+	switch (ntohl(proto)) {
+	case IPPROTO_TCP:
+		return "tcp";
+	case IPPROTO_UDP:
+		return "udp";
+	default:
+		return NULL;
+	}
+}
+
+static int dummy_portmap(int sock, FILE *portmap_file)
 {
 	struct sockaddr_in sin;
 	int pktlen, addrlen;
@@ -99,7 +113,8 @@ int dummy_portmap(int sock, FILE *portmap_file)
 			rply.rpc.reply_state = htonl(PROG_MISMATCH);
 		} else if ( pkt.c.rpc.cred_len != 0 ||
 			    pkt.c.rpc.vrf_len != 0 ) {
-			/* Can't deal with credentials data; the kernel won't send them */
+			/* Can't deal with credentials data; the kernel
+			   won't send them */
 			rply.rpc.reply_state = htonl(SYSTEM_ERR);
 		} else {
 			switch ( ntohl(pkt.c.rpc.proc) ) {
@@ -109,9 +124,11 @@ int dummy_portmap(int sock, FILE *portmap_file)
 				if ( pkt.c.proto == htonl(IPPROTO_TCP) ||
 				     pkt.c.proto == htonl(IPPROTO_UDP) ) {
 					if ( portmap_file )
-						fprintf(portmap_file, "%u %u %s %u\n",
-							ntohl(pkt.c.program), ntohl(pkt.c.version),
-							pkt.c.proto == htonl(IPPROTO_TCP) ? "tcp" : "udp",
+						fprintf(portmap_file,
+							"%u %u %s %u\n",
+							ntohl(pkt.c.program),
+							ntohl(pkt.c.version),
+							protoname(pkt.c.proto),
 							ntohl(pkt.c.port));
 					rply.port = htonl(1);	/* TRUE = success */
 				}
@@ -134,12 +151,41 @@ int dummy_portmap(int sock, FILE *portmap_file)
 	}
 }
 
-#ifdef TEST
-int main(int argc, char *argv[])
+pid_t start_dummy_portmap(const char *file)
 {
-  if ( argc > 1 )
-    portmap_file = fopen(argv[1], "a");
+	FILE *portmap_filep;
+	int sock;
+	pid_t spoof_portmap;
+	
+	portmap_filep = fopen(file, "w");
+	if (!portmap_filep) {
+		fprintf(stderr, "%s: cannot write portmap file: %s\n",
+			progname, file);
+		return -1;
+	}
 
-  return dummy_portmap();
-}
-#endif
+	sock = bind_portmap();
+	if (sock == -1) {
+		if ( errno == EINVAL || errno == EADDRINUSE )
+			return 0; /* Assume not needed */
+		else {
+			fprintf(stderr, "%s: portmap spoofing failed\n",
+				progname);
+			return -1;
+		}
+	}
+
+	spoof_portmap = fork();
+	if ( spoof_portmap == -1 ) {
+		fprintf(stderr, "%s: cannot fork\n", progname);
+		return -1;
+	} else if ( spoof_portmap == 0 ) {
+		/* Child process */
+		dummy_portmap(sock, portmap_filep);
+		_exit(255); /* Error */
+	} else {
+		/* Parent process */
+		close(sock);
+		return spoof_portmap;
+	}
+}	
