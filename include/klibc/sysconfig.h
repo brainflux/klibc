@@ -23,15 +23,31 @@
  * _KLIBC_NO_MMU:
  *
  *	Indicates this architecture doesn't have an MMU, and therefore
- *	has no mmap(), munmap(), mremap(), msync(), mprotect(), or any
- *	of the mlock family.
+ *	does not have the sys_fork and sys_brk system calls.
  */
-/* Default to having an MMU if we can find any mmap system call */
+/* Default to having an MMU if we can find the fork system call */
 #ifndef _KLIBC_NO_MMU
-# if defined(__NR_mmap) || defined(__NR_mmap2)
+# if defined(__NR_fork)
 #  define _KLIBC_NO_MMU 0
 # else
 #  define _KLIBC_NO_MMU 1
+# endif
+#endif
+
+
+/*
+ * _KLIBC_REAL_VFORK:
+ *
+ *	Indicates that this architecture has a real vfork() system call.
+ *	This is the default if sys_vfork exists; if there is an
+ *	architecture-dependent implementation of vfork(), define this
+ *	symbol.
+ */
+#ifndef _KLIBC_REAL_VFORK
+# if defined(__NR_vfork)
+#  define _KLIBC_REAL_VFORK 1
+# else
+#  define _KLIBC_REAL_VFORK 0
 # endif
 #endif
 
@@ -52,6 +68,7 @@
 # endif
 #endif
 
+
 /*
  * _KLIBC_MMAP2_SHIFT:
  *
@@ -65,16 +82,16 @@
 # define _KLIBC_MMAP2_SHIFT 12
 #endif
 
+
 /*
  * _KLIBC_MALLOC_USES_SBRK:
  *
  *	Indicates that malloc() should use sbrk() to obtain raw memory
- *	from the system, rather than mmap().  This is the default if
- *	_KLIBC_NO_MMU is enabled.
+ *	from the system, rather than mmap().
  */
-/* Use sbrk if we have no MMU, otherwise mmap */
+/* Default to get memory using mmap() */
 #ifndef _KLIBC_MALLOC_USES_SBRK
-# define _KLIBC_MALLOC_USES_SBRK _KLIBC_NO_MMU
+# define _KLIBC_MALLOC_USES_SBRK 0
 #endif
 
 

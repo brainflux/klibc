@@ -9,6 +9,9 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* All defaults */
+/* IA64 doesn't have sys_fork, but it does have an MMU */
+#define _KLIBC_NO_MMU 0
+/* IA64 doesn't have sys_vfork, it has architecture-specific code */
+#define _KLIBC_REAL_VFORK 1
 
 #endif /* _KLIBC_ARCHCONFIG_H */

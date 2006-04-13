@@ -9,8 +9,9 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sched.h>
+#include <klibc/sysconfig.h>
 
-#ifndef __NR_fork
+#if !_KLIBC_NO_MMU && !defined(__NR_fork)
 
 pid_t fork(void)
 {

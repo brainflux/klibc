@@ -9,6 +9,8 @@
 #include <errno.h>
 #include "malloc.h"
 
+#if !_KLIBC_NO_MMU		/* uClinux doesn't have brk() */
+
 char *__current_brk;		/* Common with brk.c */
 
 /* p is an address,  a is alignment; must be a power of 2 */
@@ -39,3 +41,5 @@ void *sbrk(ptrdiff_t increment)
   __current_brk = new_brk;
   return start;
 }
+
+#endif /* !_KLIBC_NO_MMU */

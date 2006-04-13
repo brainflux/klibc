@@ -9,6 +9,7 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* All defaults */
+/* MIPS has architecture-specific code for vfork() */
+#define _KLIBC_REAL_VFORK 1
 
 #endif /* _KLIBC_ARCHCONFIG_H */
