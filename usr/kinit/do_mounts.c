@@ -261,12 +261,12 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 		 * Allow the user to distinguish between failed open
 		 * and bad superblock on root device.
 		 */
-		fprintf(stderr, "%s: Cannot open root device \"%04x\"\n",
-			progname, root_dev);
+		fprintf(stderr, "%s: Cannot open root device %s\n",
+			progname, bdevname(root_dev));
 		return -errno;
 	} else {
-		fprintf(stderr, "%s: Unable to mount root fs on \"%04x\"\n",
-			progname, root_dev);
+		fprintf(stderr, "%s: Unable to mount root fs on device %s\n",
+			progname, bdevname(root_dev));
 		return -ESRCH;
 	}
 
@@ -337,7 +337,7 @@ int do_mounts(int argc, char *argv[])
 		root_dev = Root_NFS;
 	}
 
-	DEBUG(("kinit: root_dev = %#x\n", root_dev));
+	DEBUG(("kinit: root_dev = %s\n", bdevname(root_dev)));
 
 	if ( initrd_load(argc, argv, root_dev) ) {
 		DEBUG(("initrd loaded\n"));

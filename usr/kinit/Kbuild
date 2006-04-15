@@ -3,8 +3,9 @@
 #
 
 static-y := kinit
-kinit-y  := kinit.o do_mounts.o getintfile.o initrd.o open.o readfile.o xpio.o
-kinit-y  += do_mounts_md.o do_mounts_mtd.o nfsroot.o resume.o ramdisk_load.o
+kinit-y  := kinit.o do_mounts.o ramdisk_load.o initrd.o
+kinit-y	 += devname.o getintfile.o open.o readfile.o xpio.o
+kinit-y  += do_mounts_md.o do_mounts_mtd.o nfsroot.o resume.o
 
 kinit-y  += ipconfig/
 kinit-y  += nfsmount/
