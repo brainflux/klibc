@@ -16,8 +16,8 @@ a) In the source root directory (the directory above the one in which
    a "make config" or any of its variants on the kernel tree is
    question, followed by a "make dep" (2.4) or "make prepare" (2.6).
 
-b) If you're cross-compiling, change KLIBCARCH in the main MCONFIG file to
-   the appropriate architecture, and set CROSS to your toolchain
+b) If you're cross-compiling, you need to set KLIBCARCH to the
+   appropriate architecture, and set CROSS_COMPILE to your toolchain
    prefix.
 
    IMPORTANT: if you're on a 64-bit machine with a 32-bit userland
