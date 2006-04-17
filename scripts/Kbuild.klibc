@@ -204,7 +204,7 @@ quiet_cmd_cc_o_c = KLIBCCC $@
 %.o: %.c FORCE
 	$(call if_changed_dep,cc_o_c)
 
-quiet_cmd_cc_i_c = CPP $(quiet_modtag) $@
+quiet_cmd_cc_i_c = CPP     $@
       cmd_cc_i_c = $(KLIBCCC) -E $(klibccflags) -o $@ $<
 %.i: %.c FORCE
 	$(call if_changed_dep,cc_i_c)
