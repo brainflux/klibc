@@ -4,7 +4,7 @@
 
 # klibc definitions - to be moved to top-level Makefile later
 export KLIBCSRC := $(srctree)/$(src)/klibc
-export KLIBCINC := $(srctree)/$(src)/include
+export KLIBCINC := $(src)/include
 export KLIBCOBJ := $(objtree)/$(obj)/klibc
 CONFIG_KLIBC := 1
 
