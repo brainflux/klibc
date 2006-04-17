@@ -4,7 +4,7 @@
 
 # klibc definitions - to be moved to top-level Makefile later
 export KLIBCSRC := $(srctree)/$(src)/klibc
-export KLIBCINC := $(src)/include
+export KLIBCINC := $(srctree)/$(src)/include
 export KLIBCOBJ := $(objtree)/$(obj)/klibc
 CONFIG_KLIBC := 1
 
@@ -53,14 +53,14 @@ $(obj)/initramfs_data.o: $(obj)/initramfs_data.cpio.gz FORCE
 # Generate the initramfs cpio archive
 
 hostprogs-y := gen_init_cpio
-ginitramfs   := $(CONFIG_SHELL) $(srctree)/scripts/gen_initramfs_list.sh
+ginitramfs  := $(CONFIG_SHELL) $(srctree)/scripts/gen_initramfs_list.sh
+ramfs-def   := $(srctree)/$(src)/initramfs.default
 ramfs-input := $(shell echo $(CONFIG_INITRAMFS_SOURCE))
-ramfs-input := $(if $(ramfs-input), $(ramfs-input), -d)
+ramfs-input := $(if $(ramfs-input), $(ramfs-input), $(ramfs-def))
 
 ramfs-args  := \
         $(if $(CONFIG_INITRAMFS_ROOT_UID), -u $(CONFIG_INITRAMFS_ROOT_UID)) \
-        $(if $(CONFIG_INITRAMFS_ROOT_GID), -g $(CONFIG_INITRAMFS_ROOT_GID)) \
-        $(ramfs-input)
+        $(if $(CONFIG_INITRAMFS_ROOT_GID), -g $(CONFIG_INITRAMFS_ROOT_GID))
 
 quiet_cmd_initfs = GEN     $@
       cmd_initfs = $(ginitramfs) -o $@ $(ramfs-args) $(ramfs-input)
