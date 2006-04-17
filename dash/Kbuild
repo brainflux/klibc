@@ -76,8 +76,12 @@ $(obj)/builtins.def: $(src)/builtins.def.in $(src)/config.h
 quiet_cmd_mkbuiltins = GEN     $@
       cmd_mkbuiltins = mkdir -p $(obj)/bltin && cd $(obj) && \
                        sh $(srctree)/$(src)/mkbuiltins builtins.def
-$(obj)/builtins.h $(obj)/builtins.c: $(src)/mkbuiltins $(obj)/builtins.def
+$(obj)/builtins.c: $(src)/mkbuiltins $(obj)/builtins.def
 	$(call cmd,mkbuiltins)
+
+# side effect..
+$(obj)/builtins.h: $(obj)/builtins.c
+	$(Q):
 
 # Generate init.c
 quiet_cmd_mkinit = GEN     $@
@@ -102,10 +106,9 @@ quiet_cmd_mksyntax = GEN     $@
 $(obj)/syntax.c: $(obj)/mksyntax
 	$(call cmd,mksyntax)
 
-quiet_cmd_mksyntax_h = DUMMY   $@
-      cmd_mksyntax_h = :
+# side effect..
 $(obj)/syntax.h: $(obj)/syntax.c
-	$(call cmd,mksyntax_h)
+	$(Q):
 
 BISON := bison
 
