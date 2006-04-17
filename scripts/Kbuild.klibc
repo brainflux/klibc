@@ -276,10 +276,8 @@ $(shared-y): $(klibc-objs) $(lib-target) $(KLIBCCRTSHARED) \
 
 # Do not try to build KLIBC libaries if we are building klibc
 ifeq ($(klibc-build),)
-$(KLIBCCRT0) $(KLIBCLIBC):
-	echo fisk
-$(KLIBCCRTSHARED) $(KLIBCLIBCSHARED):
-	echo fisk
+$(KLIBCCRT0) $(KLIBCLIBC): ;
+$(KLIBCCRTSHARED) $(KLIBCLIBCSHARED): ;
 endif
 
 targets += $(klibc-real-objs)
