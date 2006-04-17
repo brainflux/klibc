@@ -336,6 +336,10 @@ int do_mounts(int argc, char *argv[])
 	} else if (get_arg(argc, argv, "nfsroot=") ||
 		   get_arg(argc, argv, "nfsaddrs=")) {
 		root_dev = Root_NFS;
+	} else {
+		long rootdev;
+		getintfile("/proc/sys/kernel/real-root-dev", &rootdev);
+		root_dev = (dev_t)rootdev;
 	}
 
 	DEBUG(("kinit: root_dev = %s\n", bdevname(root_dev)));
