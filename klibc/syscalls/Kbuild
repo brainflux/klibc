@@ -8,8 +8,8 @@ ifeq ($(clean),)
 -include $(obj)/syscalls.mk
 endif
 
-# Composite object containing all .o file
-always := syscalls.o
+# Listing of all .o files
+always := syscalls.list
 
 
 #####
@@ -25,11 +25,14 @@ targets += $(syscall-objs)
 clean-files += $(objtree)/$(KLIBCINC)/klibc/havesyscall.h
 clean-files += $(KLIBCINC)/klibc/havesyscall.h
 # All the syscall stubs
-clean-files += *.o *.S *.c
+clean-files += *.o *.S *.c *.list
 
-# Create reloctable composite object file
-$(obj)/syscalls.o: $(call objectify,$(syscall-objs)) FORCE
-	$(call if_changed,klibcld)
+quiet_cmd_makelist = LIST    $@
+      cmd_makelist = echo '$(filter-out FORCE,$^)' > $@
+
+# Create list of all files
+$(obj)/syscalls.list: $(call objectify,$(syscall-objs)) FORCE
+	$(call if_changed,makelist)
 
 # Generate assembler file (.i)
 # We pass -ansi to keep cpp from define e.g. "i386" as well as "__i386__"

@@ -90,8 +90,8 @@ subdir-y += syscalls
 subdir-y += socketcalls
 
 # Tell make to descend before building libs
-$(obj)/syscalls/syscalls.o: $(obj)/syscalls
-$(obj)/socketcalls/socketcalls.o: $(obj)/socketcalls
+$(obj)/syscalls/syscalls.list: $(obj)/syscalls
+$(obj)/socketcalls/socketcalls.list: $(obj)/socketcalls
 
 #####
 # Readable errormessages extracted from src..
@@ -104,14 +104,15 @@ $(obj)/errlist.c: $(srctree)/$(src)/makeerrlist.pl
 
 # full list of dependencies for klibc
 libc-deps = $(call objectify, $(libc-y) $(KLIBCARCHOBJS)) \
-            $(call objectify, syscalls/syscalls.o socketcalls/socketcalls.o)
+            $(call objectify, syscalls/syscalls.list socketcalls/socketcalls.list)
 
 ######
 # Build static library: libc.a
 targets += libc.a __static_init.o
 quiet_cmd_libc = KLIBCAR $@
       cmd_libc = rm -f $@; \
-                 $(KLIBCAR) cq $@ $(filter-out FORCE,$^); \
+                 $(KLIBCAR) cq $@ \
+		 	$(patsubst %.list,@%.list,$(filter-out FORCE,$^)); \
                  $(KLIBCRANLIB) $@
 
 $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
@@ -122,8 +123,9 @@ $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
 targets += libc.so __shared_init.o
 
 quiet_cmd_libcso = KLIBCLD $@
-      cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) \
-                             -o $@ $(filter-out FORCE,$^) $(KLIBCLIBGCC)
+      cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) -o $@ \
+			$(patsubst %.list,@%.list,$(filter-out FORCE,$^)) \
+			$(KLIBCLIBGCC)
 
 $(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
 	$(call if_changed,libcso)
