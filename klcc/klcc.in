@@ -3,7 +3,7 @@
 use IPC::Open3;
 
 # Standard includes
-@includes = ("-I${prefix}/${KCROSS}include/arch/${KLIBCARCH}",
+@includes = ("-I${prefix}/${KCROSS}include/arch/${ARCH}",
 	     "-I${prefix}/${KCROSS}include/bits${BITSIZE}",
 	     "-I${prefix}/${KCROSS}include");
 
