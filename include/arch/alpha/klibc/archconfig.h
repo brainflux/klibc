@@ -9,6 +9,6 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* All defaults */
+#define _KLIBC_USE_RT_SIG 1
 
 #endif /* _KLIBC_ARCHCONFIG_H */
