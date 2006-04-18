@@ -231,10 +231,10 @@ struct imagetype {
 
 /*
  * Note:
- * 
+ *
  * Minix test needs to come after ext3/ext2, since it's possible for
  * ext3/ext2 to look like minix by pure random chance.
- * 
+ *
  * LVM comes after all other filesystems since it's possible
  * that an old lvm signature is left on the disk if pvremove
  * is not used before creating the new fs.
