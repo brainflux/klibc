@@ -23,33 +23,25 @@ KLIBCARCHOBJS = \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o
 
-arch/$(KLIBCARCH)/sdiv.o: arch/$(KLIBCARCH)/sdiv.S
-
-klibc/arch/$(KLIBCARCH)/sdiv.S: klibc/arch/$(KLIBCARCH)/divrem.m4
+arch/$(KLIBCARCH)/sdiv.S: arch/$(KLIBCARCH)/divrem.m4
 	@echo 'building $@ from $^'
 	@(echo "define(NAME,\`.div')define(OP,\`div')define(S,\`true')"; \
 	 cat $^) | m4 > $@
 	@chmod 444 $@
 
-arch/$(KLIBCARCH)/udiv.o: arch/$(KLIBCARCH)/udiv.S
-
-klibc/arch/$(KLIBCARCH)/udiv.S: klibc/arch/$(KLIBCARCH)/divrem.m4
+arch/$(KLIBCARCH)/udiv.S: arch/$(KLIBCARCH)/divrem.m4
 	@echo 'building $@ from $^'
 	@(echo "define(NAME,\`.udiv')define(OP,\`div')define(S,\`false')"; \
 	 cat $^) | m4 > $@
 	@chmod 444 $@
 
-arch/$(KLIBCARCH)/srem.o: arch/$(KLIBCARCH)/srem.S
-
-klibc/arch/$(KLIBCARCH)/srem.S: klibc/arch/$(KLIBCARCH)/divrem.m4
+arch/$(KLIBCARCH)/srem.S: arch/$(KLIBCARCH)/divrem.m4
 	@echo 'building $@ from $^'
 	@(echo "define(NAME,\`.rem')define(OP,\`rem')define(S,\`true')"; \
 	 cat $^) | m4 > $@
 	@chmod 444 $@
 
-arch/$(KLIBCARCH)/urem.S: klibc/arch/$(KLIBCARCH)/urem.S
-
-klibc/arch/$(KLIBCARCH)/urem.S: klibc/arch/$(KLIBCARCH)/divrem.m4
+arch/$(KLIBCARCH)/urem.S: arch/$(KLIBCARCH)/divrem.m4
 	@echo 'building $@ from $^'
 	@(echo "define(NAME,\`.urem')define(OP,\`rem')define(S,\`false')"; \
 	 cat $^) | m4 > $@
