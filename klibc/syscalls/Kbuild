@@ -31,7 +31,7 @@ quiet_cmd_makelist = LIST    $@
       cmd_makelist = echo '$(filter-out FORCE,$^)' > $@
 
 # Create list of all files
-$(obj)/syscalls.list: $(call objectify,$(syscall-objs)) FORCE
+$(obj)/syscalls.list: $(call objectify,$(syscall-objs))
 	$(call if_changed,makelist)
 
 # Generate assembler file (.i)
