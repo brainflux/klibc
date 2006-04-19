@@ -112,7 +112,7 @@ targets += libc.a __static_init.o
 quiet_cmd_libc = KLIBCAR $@
       cmd_libc = rm -f $@; \
                  $(KLIBCAR) cq $@ \
-		 	$(patsubst %.list,@%.list,$(filter-out FORCE,$^)); \
+		 	$(patsubst %.list,`cat %.list`,$(filter-out FORCE,$^)); \
                  $(KLIBCRANLIB) $@
 
 $(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
@@ -124,7 +124,7 @@ targets += libc.so __shared_init.o
 
 quiet_cmd_libcso = KLIBCLD $@
       cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) -o $@ \
-			$(patsubst %.list,@%.list,$(filter-out FORCE,$^)) \
+			$(patsubst %.list,`cat %.list`,$(filter-out FORCE,$^)) \
 			$(KLIBCLIBGCC)
 
 $(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
