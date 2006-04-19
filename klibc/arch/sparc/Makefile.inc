@@ -7,11 +7,10 @@
 # accordingly.
 #
 
-KLIBCARCHOBJS = \
-	arch/$(KLIBCARCH)/sdiv.o \
-	arch/$(KLIBCARCH)/udiv.o \
-	arch/$(KLIBCARCH)/srem.o \
-	arch/$(KLIBCARCH)/urem.o \
+m4-targets := arch/$(KLIBCARCH)/sdiv.o arch/$(KLIBCARCH)/srem.o \
+              arch/$(KLIBCARCH)/udiv.o arch/$(KLIBCARCH)/urem.o
+
+KLIBCARCHOBJS = $(m4-targets) \
 	arch/$(KLIBCARCH)/smul.o \
 	arch/$(KLIBCARCH)/umul.o \
 	arch/$(KLIBCARCH)/setjmp.o \
@@ -23,29 +22,20 @@ KLIBCARCHOBJS = \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o
 
-arch/$(KLIBCARCH)/sdiv.S: arch/$(KLIBCARCH)/divrem.m4
-	@echo 'building $@ from $^'
-	@(echo "define(NAME,\`.div')define(OP,\`div')define(S,\`true')"; \
-	 cat $^) | m4 > $@
-	@chmod 444 $@
+adir := $(obj)/arch/$(KLIBCARCH)
 
-arch/$(KLIBCARCH)/udiv.S: arch/$(KLIBCARCH)/divrem.m4
-	@echo 'building $@ from $^'
-	@(echo "define(NAME,\`.udiv')define(OP,\`div')define(S,\`false')"; \
-	 cat $^) | m4 > $@
-	@chmod 444 $@
+$(adir)/sdiv.S: m4 := define(NAME,\`.div')define(OP,\`div')define(S,\`true')
+$(adir)/srem.S: m4 := define(NAME,\`.rem')define(OP,\`rem')define(S,\`true')
+$(adir)/udiv.S: m4 := define(NAME,\`.udiv')define(OP,\`div')define(S,\`false')
+$(adir)/urem.S: m4 := define(NAME,\`.urem')define(OP,\`rem')define(S,\`false')
 
-arch/$(KLIBCARCH)/srem.S: arch/$(KLIBCARCH)/divrem.m4
-	@echo 'building $@ from $^'
-	@(echo "define(NAME,\`.rem')define(OP,\`rem')define(S,\`true')"; \
-	 cat $^) | m4 > $@
-	@chmod 444 $@
+targets += $(m4-targets) $(m4-targets:.o=.S)
 
-arch/$(KLIBCARCH)/urem.S: arch/$(KLIBCARCH)/divrem.m4
-	@echo 'building $@ from $^'
-	@(echo "define(NAME,\`.urem')define(OP,\`rem')define(S,\`false')"; \
-	 cat $^) | m4 > $@
-	@chmod 444 $@
+quiet_cmd_m4 = M4      $@
+      cmd_m4 = (echo "$(m4)"; cat $^) | m4 > $@
 
-archclean:
-	rm -f arch/$(KLIBCARCH)/?div.S arch/$(KLIBCARCH)/?rem.S
+# build .o from .S
+$(addprefix $(obj)/,$(m4-targets)): $(adir)/%.o : $(adir)/%.S
+# build .S from .m4
+$(addprefix $(obj)/,$(m4-targets:.o=.S)): $(src)/arch/$(KLIBCARCH)/divrem.m4
+	$(call if_changed,m4)

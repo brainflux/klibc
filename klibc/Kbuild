@@ -81,7 +81,7 @@ INTERP_O := $(call objectify,$(INTERP_O))
 
 SOLIBHASH = $(shell cat $(SOLIB).hash)
 
-targets  := arch/$(KLIBCARCH)/crt0.o
+targets  += arch/$(KLIBCARCH)/crt0.o
 targets  += $(libc-y) $(KLIBCARCHOBJS)
 
 # Generate syscall stubs
