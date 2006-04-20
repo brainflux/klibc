@@ -20,7 +20,7 @@ int pselect(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 		    timeout, sigmask, sizeof *sigmask);
 }
 
-#else
+#elif defined(__NR_pselect6)
 
 struct __pselect6 {
   const sigset_t *sigmask;
