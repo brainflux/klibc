@@ -155,7 +155,15 @@ int dup2(int, int)
 int ioctl(int, int, void *)
 int flock(int, int)
 int _newselect,select::select(int, fd_set *, fd_set *, fd_set *, struct timeval *)
+#if defined(__NR_pselect) && !_KLIBC_USE_RT_SIG
+int pselect(int, fd_set *, fd_set *, fd_set *, const struct timespec *, const sigset_t *)
+#elif defined(__NR_pselect7)
+int pselect7::__pselect7(int, fd_set *, fd_set *, fd_set *, struct timespec *, const sigset_t *, size_t)
+#elif defined(__NR_pselect6)
+int pselect6::__pselect6(int, fd_set *, fd_set *, fd_set *, struct timespec *, const struct __pselect6 *)
+#endif
 int poll(struct pollfd *, nfds_t, long)
+<?> int ppoll::__ppoll(struct pollfd *, nfds_t, struct timespec *, const sigset_t *, size_t)
 int fsync(int)
 int fdatasync,fsync::fdatasync(int)
 int readv(int, const struct iovec *, int)
@@ -163,6 +171,9 @@ int writev(int, const struct iovec *, int)
 int ftruncate64,ftruncate::ftruncate(int, off_t)
 ssize_t pread64,pread::pread(int, void *, size_t, off_t)
 ssize_t pwrite64,pwrite::pwrite(int, void *, size_t, off_t)
+int sync_file_range,fdatasync,fsync::sync_file_range(int, off_t, off_t, unsigned int)
+<?> int splice(int, off_t *, int, off_t *, size_t, unsigned int)
+<?> int tee(int, int, size_t, unsigned int)
 
 ;
 ; Signal operations

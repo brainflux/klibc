@@ -81,8 +81,6 @@ __extern int fchown(int, uid_t, gid_t);
 __extern int lchown(const char *, uid_t, gid_t);
 __extern char *getcwd(char *, size_t);
 
-__extern int sync(void);
-
 /* Also in <fcntl.h> */
 #ifndef _KLIBC_IN_OPEN_C
 __extern int open(const char *, int, ...);
@@ -105,9 +103,19 @@ __extern int dup2(int, int);
 __extern int fcntl(int, int, ...);
 __extern int ioctl(int, int, void *);
 __extern int flock(int, int);
+__extern int ftruncate(int, off_t);
+
+/*
+ * Macros for sync_file_range()
+ */
+#define SYNC_FILE_RANGE_WAIT_BEFORE     1
+#define SYNC_FILE_RANGE_WRITE           2
+#define SYNC_FILE_RANGE_WAIT_AFTER      4
+
+__extern int sync(void);
 __extern int fsync(int);
 __extern int fdatasync(int);
-__extern int ftruncate(int, off_t);
+__extern int sync_file_range(int, off_t, off_t, unsigned int);
 
 __extern int pause(void);
 __extern unsigned int alarm(unsigned int);
