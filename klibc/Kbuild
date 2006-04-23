@@ -45,7 +45,12 @@ libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  lrand48.o jrand48.o mrand48.o nrand48.o srand48.o seed48.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
 	  inet/inet_ntop.o inet/inet_pton.o inet/bindresvport.o \
-	  send.o recv.o
+	  send.o recv.o \
+	  ctype/isalnum.o ctype/isalpha.o ctype/isascii.o \
+	  ctype/isblank.o ctype/iscntrl.o ctype/isdigit.o \
+	  ctype/isgraph.o ctype/islower.o ctype/isprint.o \
+	  ctype/ispunct.o ctype/isspace.o ctype/isupper.o \
+	  ctype/isxdigit.o ctype/tolower.o ctype/toupper.o
 
 libc-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 
