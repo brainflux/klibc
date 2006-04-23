@@ -49,7 +49,10 @@ __extern int setenv(const char *, const char *, int);
 __extern int unsetenv(const char *);
 __extern int clearenv(void);
 
-__extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+typedef int (*__comparefunc_t)(const void *, const void *);
+__extern void *bsearch(const void *, const void *, size_t, size_t,
+		       __comparefunc_t);
+__extern void qsort(void *, size_t, size_t, __comparefunc_t);
 
 
 __extern long jrand48(unsigned short *);
