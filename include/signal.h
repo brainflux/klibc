@@ -41,6 +41,14 @@ typedef int sig_atomic_t;
 # undef SIGRTMAX
 #endif
 
+/* The kernel header files are inconsistent whether or not
+   SIGRTMAX is inclusive or exclusive.  POSIX seems to state that
+   it's inclusive, however. */
+#if SIGRTMAX >= _NSIG
+# undef  SIGRTMAX
+# define SIGRTMAX (_NSIG-1)
+#endif
+
 __extern const char * const sys_siglist[_NSIG];
 __extern const char * const sys_sigabbrev[_NSIG];
 

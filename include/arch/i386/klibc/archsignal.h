@@ -57,7 +57,7 @@ typedef struct {
 #define SIGUNUSED       31
 
 #define SIGRTMIN        32
-#define SIGRTMAX        _NSIG
+#define SIGRTMAX        (_NSIG-1)
 
 /*
  * SA_FLAGS values:
