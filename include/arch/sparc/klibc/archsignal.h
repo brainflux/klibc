@@ -8,6 +8,7 @@
 #ifndef _KLIBC_ARCHSIGNAL_H
 #define _KLIBC_ARCHSIGNAL_H
 
+#include <asm/signal.h>
 /* Hidden definitions */
 
 struct __new_sigaction {

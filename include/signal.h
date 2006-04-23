@@ -10,9 +10,8 @@
 #include <string.h>		/* For memset() */
 #include <limits.h>		/* For LONG_BIT */
 #include <sys/types.h>
-#include <asm/signal.h>
 
-#include <klibc/archsignal.h>
+#include <klibc/archsignal.h>	/* Includes <asm/signal.h> if appropriate */
 
 /* glibc seems to use sig_atomic_t as "int" pretty much on all architectures.
    Do the same, but allow the architecture to override. */
