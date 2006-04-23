@@ -7,6 +7,8 @@
 #ifndef _CTYPE_H
 #define _CTYPE_H
 
+#include <klibc/extern.h>
+
 /*
  * This relies on the following definitions:
  *
@@ -110,12 +112,17 @@ static inline int __ctype_tolower(int __c)
   return __ctype_isupper(__c) ? _tolower(__c) : __c;
 }
 
-#ifndef __CTYPE_NO_INLINE
+#ifdef __CTYPE_NO_INLINE
+# define __CTYPEFUNC(X) \
+  __extern int X(int);
+#else
 #define __CTYPEFUNC(X) \
-  extern inline int X(int __c)			\
+  __extern inline int X(int __c)		\
   {						\
     return __ctype_##X(__c); 			\
   }
+#endif
+
 __CTYPEFUNC(isalnum)
 __CTYPEFUNC(isalpha)
 __CTYPEFUNC(isascii)
@@ -131,6 +138,5 @@ __CTYPEFUNC(isupper)
 __CTYPEFUNC(isxdigit)
 __CTYPEFUNC(toupper)
 __CTYPEFUNC(tolower)
-#endif /* __CTYPE_NO_INLINE */
 
 #endif /* _CTYPE_H */
