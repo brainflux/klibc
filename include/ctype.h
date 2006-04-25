@@ -7,11 +7,7 @@
 #ifndef _CTYPE_H
 #define _CTYPE_H
 
-#ifndef __CTYPE_NO_INLINE
-# define __ctype_inline extern __inline__
-#else
-# define __ctype_inline
-#endif
+#include <klibc/extern.h>
 
 /*
  * This relies on the following definitions:
@@ -34,70 +30,70 @@ enum {
 
 extern const unsigned char __ctypes[];
 
-__ctype_inline int isalnum(int __c)
+static inline int __ctype_isalnum(int __c)
 {
   return __ctypes[__c+1] &
     (__ctype_upper|__ctype_lower|__ctype_digit);
 }
 
-__ctype_inline int isalpha(int __c)
+static inline int __ctype_isalpha(int __c)
 {
   return __ctypes[__c+1] &
     (__ctype_upper|__ctype_lower);
 }
 
-__ctype_inline int isascii(int __c)
+static inline int __ctype_isascii(int __c)
 {
   return !(__c & ~0x7f);
 }
 
-__ctype_inline int isblank(int __c)
+static inline int __ctype_isblank(int __c)
 {
   return (__c == '\t') || (__c == ' ');
 }
 
-__ctype_inline int iscntrl(int __c)
+static inline int __ctype_iscntrl(int __c)
 {
   return __ctypes[__c+1] & __ctype_cntrl;
 }
 
-__ctype_inline int isdigit(int __c)
+static inline int __ctype_isdigit(int __c)
 {
   return ((unsigned)__c - '0') <= 9;
 }
 
-__ctype_inline int isgraph(int __c)
+static inline int __ctype_isgraph(int __c)
 {
   return __ctypes[__c+1] &
     (__ctype_upper|__ctype_lower|__ctype_digit|__ctype_punct);
 }
 
-__ctype_inline int islower(int __c)
+static inline int __ctype_islower(int __c)
 {
   return __ctypes[__c+1] & __ctype_lower;
 }
 
-__ctype_inline int isprint(int __c)
+static inline int __ctype_isprint(int __c)
 {
   return __ctypes[__c+1] & __ctype_print;
 }
 
-__ctype_inline int ispunct(int __c)
+static inline int __ctype_ispunct(int __c)
 {
   return __ctypes[__c+1] & __ctype_punct;
 }
 
-__ctype_inline int isspace(int __c)
+static inline int __ctype_isspace(int __c)
 {
   return __ctypes[__c+1] & __ctype_space;
 }
 
-__ctype_inline int isupper(int __c)
+static inline int __ctype_isupper(int __c)
 {
   return __ctypes[__c+1] & __ctype_upper;
 }
 
-__ctype_inline int isxdigit(int __c)
+static inline int __ctype_isxdigit(int __c)
 {
   return __ctypes[__c+1] & __ctype_xdigit;
 }
@@ -106,14 +102,41 @@ __ctype_inline int isxdigit(int __c)
 #define _toupper(__c) ((__c) & ~32)
 #define _tolower(__c) ((__c) | 32)
 
-__ctype_inline int toupper(int __c)
+static inline int __ctype_toupper(int __c)
 {
-  return islower(__c) ? _toupper(__c) : __c;
+  return __ctype_islower(__c) ? _toupper(__c) : __c;
 }
 
-__ctype_inline int tolower(int __c)
+static inline int __ctype_tolower(int __c)
 {
-  return isupper(__c) ? _tolower(__c) : __c;
+  return __ctype_isupper(__c) ? _tolower(__c) : __c;
 }
+
+#ifdef __CTYPE_NO_INLINE
+# define __CTYPEFUNC(X) \
+  __extern int X(int);
+#else
+#define __CTYPEFUNC(X) \
+  __extern inline int X(int __c)		\
+  {						\
+    return __ctype_##X(__c); 			\
+  }
+#endif
+
+__CTYPEFUNC(isalnum)
+__CTYPEFUNC(isalpha)
+__CTYPEFUNC(isascii)
+__CTYPEFUNC(isblank)
+__CTYPEFUNC(iscntrl)
+__CTYPEFUNC(isdigit)
+__CTYPEFUNC(isgraph)
+__CTYPEFUNC(islower)
+__CTYPEFUNC(isprint)
+__CTYPEFUNC(ispunct)
+__CTYPEFUNC(isspace)
+__CTYPEFUNC(isupper)
+__CTYPEFUNC(isxdigit)
+__CTYPEFUNC(toupper)
+__CTYPEFUNC(tolower)
 
 #endif /* _CTYPE_H */

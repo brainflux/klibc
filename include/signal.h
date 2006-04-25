@@ -10,9 +10,8 @@
 #include <string.h>		/* For memset() */
 #include <limits.h>		/* For LONG_BIT */
 #include <sys/types.h>
-#include <asm/signal.h>
 
-#include <klibc/archsignal.h>
+#include <klibc/archsignal.h>	/* Includes <asm/signal.h> if appropriate */
 
 /* glibc seems to use sig_atomic_t as "int" pretty much on all architectures.
    Do the same, but allow the architecture to override. */
@@ -40,6 +39,14 @@ typedef int sig_atomic_t;
 #if SIGRTMAX <= SIGRTMIN
 # undef SIGRTMIN
 # undef SIGRTMAX
+#endif
+
+/* The kernel header files are inconsistent whether or not
+   SIGRTMAX is inclusive or exclusive.  POSIX seems to state that
+   it's inclusive, however. */
+#if SIGRTMAX >= _NSIG
+# undef  SIGRTMAX
+# define SIGRTMAX (_NSIG-1)
 #endif
 
 __extern const char * const sys_siglist[_NSIG];

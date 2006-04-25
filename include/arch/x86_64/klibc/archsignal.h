@@ -8,6 +8,7 @@
 #ifndef _KLIBC_ARCHSIGNAL_H
 #define _KLIBC_ARCHSIGNAL_H
 
+#include <asm/signal.h>
 /* The x86-64 headers defines NSIG 32, but it's actually 64 */
 #undef  _NSIG
 #undef  NSIG

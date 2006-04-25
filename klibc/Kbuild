@@ -29,7 +29,7 @@ libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  brk.o sbrk.o malloc.o realloc.o calloc.o mmap.o \
 	  memcpy.o memcmp.o memset.o memccpy.o memmem.o memswap.o \
 	  memmove.o memchr.o memrchr.o \
-	  strcasecmp.o strncasecmp.o strndup.o strerror.o \
+	  strcasecmp.o strncasecmp.o strndup.o strerror.o strsignal.o \
 	  strcat.o strchr.o strcmp.o strcpy.o strdup.o strlen.o strnlen.o \
 	  strncat.o strlcpy.o strlcat.o \
 	  strstr.o strncmp.o strncpy.o strrchr.o \
@@ -38,14 +38,19 @@ libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  seteuid.o setegid.o \
 	  getenv.o setenv.o putenv.o __put_env.o unsetenv.o \
 	  clearenv.o nullenv.o \
-	  getopt.o readdir.o \
+	  getopt.o readdir.o remove.o \
 	  syslog.o closelog.o pty.o getpt.o isatty.o reboot.o \
 	  time.o utime.o llseek.o nice.o getpriority.o \
-	  qsort.o \
+	  qsort.o bsearch.o \
 	  lrand48.o jrand48.o mrand48.o nrand48.o srand48.o seed48.o \
 	  inet/inet_ntoa.o inet/inet_aton.o inet/inet_addr.o \
 	  inet/inet_ntop.o inet/inet_pton.o inet/bindresvport.o \
-	  send.o recv.o
+	  send.o recv.o \
+	  ctype/isalnum.o ctype/isalpha.o ctype/isascii.o \
+	  ctype/isblank.o ctype/iscntrl.o ctype/isdigit.o \
+	  ctype/isgraph.o ctype/islower.o ctype/isprint.o \
+	  ctype/ispunct.o ctype/isspace.o ctype/isupper.o \
+	  ctype/isxdigit.o ctype/tolower.o ctype/toupper.o
 
 libc-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 

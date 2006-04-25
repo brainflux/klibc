@@ -2,7 +2,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to 1 if you have the `bsearch' function. */
-/* #undef HAVE_BSEARCH */
+#define HAVE_BSEARCH 1
 
 /* Define to 1 if you have the `getpwnam' function. */
 /* #undef HAVE_GETPWNAM */
@@ -11,7 +11,7 @@
 /* #undef HAVE_GETRLIMIT */
 
 /* Define to 1 if you have the `isalpha' function. */
-/* #undef HAVE_ISALPHA */
+#define HAVE_ISALPHA 1
 
 /* Define to 1 if you have the `killpg' function. */
 /* #undef HAVE_KILLPG */
@@ -29,7 +29,7 @@
 /* #undef HAVE_STRCHRNUL */
 
 /* Define to 1 if you have the `strsignal' function. */
-/* #undef HAVE_STRSIGNAL */
+#define HAVE_STRSIGNAL 1
 
 /* Define to 1 if you have the `strtod' function. */
 /* #undef HAVE_STRTOD */

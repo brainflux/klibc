@@ -4,6 +4,8 @@
 
 #include <sys/poll.h>
 
+#ifndef __NR_ppoll
+
 __extern int __ppoll(struct pollfd *, nfds_t, struct timespec *,
 		     const sigset_t *, size_t);
 
@@ -12,3 +14,5 @@ int ppoll(struct pollfd *ufds, nfds_t nfds, struct timespec *timeout,
 {
   return __ppoll(ufds, nfds, timeout, sigmask, sizeof *sigmask);
 }
+
+#endif

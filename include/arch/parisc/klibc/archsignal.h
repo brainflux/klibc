@@ -8,6 +8,7 @@
 #ifndef _KLIBC_ARCHSIGNAL_H
 #define _KLIBC_ARCHSIGNAL_H
 
+#include <asm/signal.h>
 #define _NSIG    64
 #define _NSIG_SZ (_NSIG / LONG_BIT)
 
