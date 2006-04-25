@@ -7,4 +7,8 @@
 # accordingly.
 #
 
+KLIBCARCHOBJS = \
+	arch/$(KLIBCARCH)/setjmp.o \
+	arch/$(KLIBCARCH)/syscall.o
+
 archclean:
