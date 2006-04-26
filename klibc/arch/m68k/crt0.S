@@ -14,14 +14,14 @@
 	.globl _start
 _start:
 	# Zero out the frame pointer to be nice to the debugger
-	moveq	#0, %a6
+	movea.l	#0,%a6
 	# Save the address of the ELF argument array
 	move.l	%a7, %d0
 	# Push a zero on the stack in lieu of atexit pointer
-	move.l	%a6, -(%a7)	| %a6 == 0
+	clr.l	-(%sp)	
 	# Push ELF argument pointer on the stack
 	move.l	%d0, -(%a7)
 		
-	bsr.l	___libc_init
+	jbsr	___libc_init
 
 	.size _start, .-_start

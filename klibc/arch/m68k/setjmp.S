@@ -16,12 +16,13 @@
 	.globl setjmp
 	.type setjmp, @function
 setjmp:
-	move.l	(%a7), %d0		| Return address
-	move.l	4(%a7), %a0		| Buffer address
+	move.l	(%sp), %d0		| Return address
+	movea.l	4(%sp), %a0		| Buffer address
+	| Postincrement mode is not permitted here...
 	movem.l	%d2-%d7/%a2-%a7, (%a0)
-	move.l	%d0, 56(%a0)		| Return address
-	moveq	#0, %d0
-	moveq	#0, %a0			| Redundant return...
+	move.l	%d0, 48(%a0)		| Return address
+	clr.l	%d0			| Return value
+	movea.l	%d0, %a0		| Redundant return...
 	rts
 
 	.size setjmp,.-setjmp
@@ -31,11 +32,11 @@ setjmp:
 	.globl longjmp
 	.type longjmp, @function
 longjmp:
-	move.l	4(%a7), %a0		| Buffer address
-	move.l	8(%a7), %d0		| Return value
-	movem.l	(%a0), %d2-%d7/%a2-%a7,
-	move.l	56(%a0), %a1
-	move.l	%d0, %a0		| Redundant return...
+	move.l	4(%sp), %a0		| Buffer address
+	move.l	8(%sp), %d0		| Return value
+	movem.l	(%a0)+, %d2-%d7/%a2-%a7
+	movea.l	(%a0), %a1
+	movea.l	%d0, %a0		| Redundant return...
 	jmp.l	(%a1)
 
 	.size longjmp,.-longjmp
