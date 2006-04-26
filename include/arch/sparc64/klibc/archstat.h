@@ -1,28 +1,30 @@
 #ifndef _KLIBC_ARCHSTAT_H
 #define _KLIBC_ARCHSTAT_H
 
-/* No nsec fields?! */
+#include <klibc/stathelp.h>
+
+#define _STATBUF_ST_NSEC
+
 struct stat {
-	unsigned long st_dev;
-	unsigned short __pad1;
-	ino_t   st_ino;
-	mode_t  st_mode;
-	unsigned int st_nlink;
-	uid_t   st_uid;
-	gid_t   st_gid;
-	unsigned long st_rdev;
-	unsigned short __pad2;
-	off_t   st_size;
-	off_t   st_blksize;
-	off_t   st_blocks;
-	time_t  st_atime;
-	unsigned long __unused1;
-	time_t  st_mtime;
-	unsigned long __unused2;
-	time_t  st_ctime;
-	unsigned long __unused3;
-	unsigned long __unused4;
-	unsigned long __unused5;
+	__stdev64	(st_dev);
+	unsigned long	st_ino;
+	unsigned long	st_nlink;
+
+	unsigned int	st_mode;
+	unsigned int	st_uid;
+	unsigned int	st_gid;
+	unsigned int	__pad0;
+
+	__stdev64 (st_rdev);
+	long		st_size;
+	long		st_blksize;
+	long		st_blocks;
+
+	struct timespec st_atim;
+	struct timespec st_mtim;
+	struct timespec st_ctim;
+
+	unsigned long __unused[3];
 };
 
 #endif

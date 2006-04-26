@@ -1,7 +1,7 @@
 #ifndef _KLIBC_ARCHSTAT_H
 #define _KLIBC_ARCHSTAT_H
 
-#include <endian.h>
+#include <klibc/stathelp.h>
 
 #define _STATBUF_ST_NSEC
 
@@ -10,8 +10,9 @@
  * Note: The kernel zero's the padded region because glibc might read them
  * in the hope that the kernel has stretched to using larger sizes.
  */
+
 struct stat {
-	unsigned long long	st_dev;
+	__stdev64	(st_dev);
 	unsigned char   __pad0[4];
 
 	unsigned long	__st_ino;
@@ -21,19 +22,13 @@ struct stat {
 	unsigned long	st_uid;
 	unsigned long	st_gid;
 
-	unsigned long long	st_rdev;
+	__stdev64	(st_rdev);
 	unsigned char   __pad3[4];
 
 	long long	st_size;
 	unsigned long	st_blksize;
 
-#if __BYTE_ORDER == __BIG_ENDIAN
-	unsigned long   __pad4;		/* Future possible st_blocks hi bits */
-	unsigned long   st_blocks;	/* Number 512-byte blocks allocated. */
-#else /* Must be little */
-	unsigned long   st_blocks;	/* Number 512-byte blocks allocated. */
-	unsigned long   __pad4;		/* Future possible st_blocks hi bits */
-#endif
+	unsigned long long  st_blocks;	/* Number 512-byte blocks allocated. */
 
 	struct timespec st_atim;
 	struct timespec st_mtim;

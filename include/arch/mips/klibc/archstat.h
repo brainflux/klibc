@@ -6,11 +6,12 @@
 /*
  * This matches struct stat64 in glibc2.1, hence the absolutely insane
  * amounts of padding around dev_t's.  The memory layout is the same as of
- * struct stat of the 64-bit kernel.
+ * struct stat of the 64-bit kernel, which makes this one of the sanest
+ * 32-bit struct stats.
  */
 
 struct stat {
-	unsigned long	st_dev;
+	unsigned int	st_dev;
 	unsigned long	st_pad0[3];	/* Reserved for st_dev expansion  */
 
 	unsigned long long	st_ino;
@@ -21,7 +22,7 @@ struct stat {
 	uid_t		st_uid;
 	gid_t		st_gid;
 
-	unsigned long	st_rdev;
+	unsigned int	st_rdev;
 	unsigned long	st_pad1[3];	/* Reserved for st_rdev expansion  */
 
 	long long	st_size;

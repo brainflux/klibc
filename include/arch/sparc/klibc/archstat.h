@@ -1,10 +1,12 @@
 #ifndef _KLIBC_ARCHSTAT_H
 #define _KLIBC_ARCHSTAT_H
 
+#include <klibc/stathelp.h>
+
 #define _STATBUF_ST_NSEC
 
 struct stat {
-	unsigned long long st_dev;
+	__stdev64	(st_dev);
 
 	unsigned long long st_ino;
 
@@ -14,7 +16,7 @@ struct stat {
 	unsigned int	st_uid;
 	unsigned int	st_gid;
 
-	unsigned long long st_rdev;
+	__stdev64	(st_rdev);
 
 	unsigned char	__pad3[8];
 

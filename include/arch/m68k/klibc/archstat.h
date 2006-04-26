@@ -1,13 +1,15 @@
 #ifndef _KLIBC_ARCHSTAT_H
 #define _KLIBC_ARCHSTAT_H
 
+#include <klibc/stathelp.h>
+
 #define _STATBUF_ST_NSEC
 
 /* This matches struct stat64 in glibc2.1, hence the absolutely
- * insane amounts of padding around dev_t's.
+ * insane padding around dev_t's.
  */
 struct stat {
-	unsigned long long	st_dev;
+	__dev64		(st_dev);
 	unsigned char	__pad1[2];
 
 	unsigned long	__st_ino;
@@ -18,14 +20,13 @@ struct stat {
 	unsigned long	st_uid;
 	unsigned long	st_gid;
 
-	unsigned long long	st_rdev;
+	__dev64		(st_rdev);
 	unsigned char	__pad3[2];
 
 	long long	st_size;
 	unsigned long	st_blksize;
 
-	unsigned long	__pad4;		/* future possible st_blocks high bits */
-	unsigned long	st_blocks;	/* Number 512-byte blocks allocated. */
+	unsigned long long	st_blocks;	/* Number 512-byte blocks allocated. */
 
 	struct timespec st_atim;
 	struct timespec st_mtim;
