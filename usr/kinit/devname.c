@@ -11,6 +11,7 @@
  *
  * Print the name of a block device.
  */
+#define BUF_SIZE	512
 
 static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 {
@@ -37,7 +38,7 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 		if (de->d_type != DT_UNKNOWN && de->d_type != DT_DIR)
 			continue;
 
-		if (strlen(de->d_name) > 255)
+		if (strlen(de->d_name) >= (BUF_SIZE-64)-(dirtailptr-sysdir))
 			continue; /* Badness... */
 
 		strcpy(dirtailptr, de->d_name);
@@ -78,8 +79,8 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 
 const char *bdevname(dev_t dev)
 {
-	static char buf[512];
-	char sysdir[512];
+	static char buf[BUF_SIZE];
+	char sysdir[BUF_SIZE];
 	char *p;
 
 	strcpy(sysdir, "/sys/block");
