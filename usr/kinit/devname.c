@@ -49,7 +49,7 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 			continue;
 
 		/* Abusing the namebuf as temporary storage here. */
-		rd = fread(namebuf, 1, 256, sysdev);
+		rd = fread(namebuf, 1, BUF_SIZE, sysdev);
 		namebuf[rd] = '\0'; /* Just in case... */
 
 		fclose(sysdev);
