@@ -7,7 +7,7 @@
 # accordingly.
 #
 
-ARCHOBJS = \
+KLIBCARCHOBJS = \
 	libgcc/__divsi3.o \
 	libgcc/__modsi3.o \
 	libgcc/__udivsi3.o \
@@ -21,10 +21,10 @@ ARCHOBJS = \
 	arch/arm/syscall.o
 
 ifeq ($(THUMB),y)
-ARCHOBJS += arch/arm/setjmp-thumb.o
-LIBGCC   =
+KLIBCARCHOBJS += arch/arm/setjmp-thumb.o
+KLIBCLIBGCC   :=
 else
-ARCHOBJS += arch/arm/setjmp-arm.o
+KLIBCARCHOBJS += arch/arm/setjmp-arm.o
 endif
 
 arch/arm/sysstubs.a: arch/arm/sysstubs.pl
@@ -34,9 +34,6 @@ arch/arm/sysstubs.a: arch/arm/sysstubs.pl
 	-rm -f $@
 	$(AR) cq $@ arch/arm/sysstubs/*.o
 	$(RANLIB) $@
-
-
-ARCHSOOBJS = $(patsubst %.o,%.lo,$(ARCHOBJS))
 
 archclean:
 	-rm -rf arch/arm/sysstubs
