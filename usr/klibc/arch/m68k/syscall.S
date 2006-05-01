@@ -11,7 +11,8 @@
 	.globl	__syscall_common
 	.type	__syscall_common, @function
 __syscall_common:
-	movem.l	4(%sp), %d1-%d6
+	movem.l %d2-%d6, -(%sp)	/* 5 registers saved */
+	movem.l	24(%sp), %d1-%d6
 	trap	#0
 	cmpi.l	#-4096, %d0
 	blt.l	1f
@@ -20,6 +21,7 @@ __syscall_common:
 	moveq	#-1, %d0
 1:
 	movea.l	%d0, %a0	/* Redundant return */
+	movem.l (%sp)+, %d2-%d6 /* Restore registers */
 	rts
 
 	.size	__syscall_common,.-__syscall_common
