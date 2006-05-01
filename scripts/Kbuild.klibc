@@ -60,8 +60,8 @@ KLIBCLDFLAGS      :=
 include $(KLIBCSRC)/arch/$(KLIBCARCH)/MCONFIG
 
 # klibc version
-KLIBCMAJOR        := $(shell cut -d. -f1 $(srctree)/version)
-KLIBCMINOR        := $(shell cut -d. -f2 $(srctree)/version)
+KLIBCMAJOR        := $(shell cut -d. -f1 $(srctree)/usr/klibc/version)
+KLIBCMINOR        := $(shell cut -d. -f2 $(srctree)/usr/klibc/version)
 
 # binutils
 KLIBCLD          := $(LD)

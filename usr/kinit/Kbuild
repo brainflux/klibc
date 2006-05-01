@@ -16,12 +16,11 @@ kinit-y  += fstype/
 KLIBCCFLAGS += -I$(srctree)/$(src)/ipconfig \
   	       -I$(srctree)/$(src)/nfsmount \
  	       -I$(srctree)/$(src)/run-init \
- 	       -I$(srctree)/$(src)/fstype \
- 	       -I$(srctree)/$(src)/zlib
+ 	       -I$(srctree)/$(src)/fstype
 
 # Cleaning
 targets := kinit kinit.g
-subdir- := ipconfig nfsmount run-init fstype zlib
+subdir- := ipconfig nfsmount run-init fstype
 
 
 # install binary

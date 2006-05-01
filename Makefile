@@ -1,12 +1,12 @@
-VERSION := $(shell cat version)
 SRCROOT = .
 
 # kbuild compatibility
 export srctree  := $(shell pwd)
 export objtree  := $(shell pwd)
-export KLIBCSRC := klibc
-export KLIBCINC := include
-export KLIBCOBJ := klibc
+export KLIBCSRC := usr/klibc
+export VERSION := $(shell cat $(KLIBCSRC)/version)
+export KLIBCINC := usr/include
+export KLIBCOBJ := usr/klibc
 export KLIBCKERNELSRC := linux/
 export KLIBCKERNELOBJ := linux/
 include scripts/Kbuild.include
