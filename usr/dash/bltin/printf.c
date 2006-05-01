@@ -43,12 +43,14 @@
 static char	*conv_escape_str(char *);
 static char	*conv_escape(char *, int *);
 static int	 getchr(void);
-static double	 getdouble(void);
 static intmax_t	 getintmax(void);
 static uintmax_t getuintmax(void);
 static char	*getstr(void);
 static char	*mklong(const char *, const char *);
 static void      check_conversion(const char *, const char *);
+#ifdef HAVE_STRTOD
+static double	 getdouble(void);
+#endif
 
 static int	rval;
 static char  **gargv;
@@ -190,6 +192,7 @@ pc:
 				PF(f, p);
 				break;
 			}
+#ifdef HAVE_STRTOD
 			case 'e':
 			case 'E':
 			case 'f':
@@ -199,6 +202,7 @@ pc:
 				PF(start, p);
 				break;
 			}
+#endif
 			default:
 				warnx("%s: invalid directive", start);
 				goto err;
@@ -393,6 +397,7 @@ out:
 	return val;
 }
 
+#ifdef HAVE_STRTOD
 static double
 getdouble(void)
 {
@@ -412,6 +417,7 @@ getdouble(void)
 	check_conversion(cp, ep);
 	return val;
 }
+#endif
 
 static void
 check_conversion(const char *s, const char *ep)

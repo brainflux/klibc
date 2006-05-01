@@ -61,14 +61,6 @@ char *strchrnul(const char *, int);
 char *strsignal(int);
 #endif
 
-#ifndef HAVE_STRTOD
-static inline double strtod(const char *nptr, char **endptr)
-{
-	*endptr = (char *)nptr;
-	return 0;
-}
-#endif
-
 #ifndef HAVE_STRTOIMAX
 #define strtoimax strtoll
 #endif
