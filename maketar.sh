@@ -10,7 +10,7 @@ rm -rf $tmp
 cg-export $tmp
 cd $tmp
 make release
-version=`cat version`
+version=`cat usr/klibc/version`
 rm -rf $tmpdir/klibc-$version
 mv $tmp $tmpdir/klibc-$version
 cd ..
