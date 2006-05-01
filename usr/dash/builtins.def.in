@@ -77,7 +77,6 @@ readcmd		-u read
 returncmd	-s return
 setcmd		-s set
 shiftcmd	-s shift
-timescmd	-s times
 trapcmd		-s trap
 truecmd		-s : -u true
 typecmd		type
