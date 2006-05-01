@@ -85,7 +85,7 @@ all: klcc klibc
 
 rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 
-klibc.spec: klibc.spec.in version
+klibc.spec: klibc.spec.in $(KLIBCSRC)/version
 	sed -e 's/@@VERSION@@/$(VERSION)/g' < $< > $@
 
 # Build klcc - it is the first target
