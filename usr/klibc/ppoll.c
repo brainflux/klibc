@@ -5,7 +5,7 @@
 #include <sys/poll.h>
 #include <sys/syscall.h>
 
-#ifndef __NR_ppoll
+#ifdef __NR_ppoll
 
 __extern int __ppoll(struct pollfd *, nfds_t, struct timespec *,
 		     const sigset_t *, size_t);
