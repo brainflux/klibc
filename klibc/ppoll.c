@@ -3,6 +3,7 @@
  */
 
 #include <sys/poll.h>
+#include <sys/syscall.h>
 
 #ifndef __NR_ppoll
 
