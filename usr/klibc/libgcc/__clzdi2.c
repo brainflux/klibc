@@ -15,10 +15,10 @@ uint64_t __clzdi2(uint64_t v)
 
 	if (vhi) {
 		vx = vhi;
-		dp = 32;
+		dp = 0;
 	} else {
 		vx = (uint32_t)v;
-		dp = 0;
+		dp = 32;
 	}
 
 	return dp + __builtin_clz(vx);
