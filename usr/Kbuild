@@ -2,10 +2,6 @@
 # kbuild file for usr/ - including initramfs image and klibc
 #
 
-# klibc definitions - to be moved to top-level Makefile later
-export KLIBCSRC := $(srctree)/$(src)/klibc
-export KLIBCINC := $(srctree)/$(src)/include
-export KLIBCOBJ := $(objtree)/$(obj)/klibc
 CONFIG_KLIBC := 1
 
 klibc-subdir := klibc
@@ -17,7 +13,6 @@ klibc-subdir := $(addprefix _usr_,$(klibc-subdir))
 
 # Klibc binaries
 ifdef CONFIG_KLIBC
-klibc := -f $(srctree)/scripts/Kbuild.klibc obj
 
 # .initramfs_data.cpio.gz.d is used to identify all files included
 # in initramfs and to detect if any files are added/removed.
