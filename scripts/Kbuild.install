@@ -105,7 +105,7 @@ header:
 	  done ; \
 	done
 	$(Q)cd $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include && ln -sf asm-$(KLIBCARCH) asm
-	$(Q)cp -rf include/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/.
+	$(Q)cp -rf usr/include/. $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/.
 	$(Q)$(install-data) $(srctree)/klcc/klcc.1 $(INSTALLROOT)$(mandir)/man1/$(KCROSS)klcc.1
 	$(Q)$(install-bin) $(objtree)/klcc/$(KCROSS)klcc $(INSTALLROOT)$(bindir)
 
