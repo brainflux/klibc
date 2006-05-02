@@ -96,7 +96,7 @@ klibc:
 	$(Q)$(MAKE) $(klibc)=.
 
 test: klibc
-	$(Q)$(MAKE) $(klibc)=klibc/tests
+	$(Q)$(MAKE) $(klibc)=usr/klibc/tests
 
 
 ###

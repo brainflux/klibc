@@ -21,7 +21,7 @@ int32_t __modsi3(int32_t num, int32_t den)
     minus ^= 1;
   }
 
-  (void) __udivmodsi4(num, den, &v);
+  (void) __udivmodsi4(num, den, (uint32_t *)&v);
   if ( minus )
     v = -v;
 

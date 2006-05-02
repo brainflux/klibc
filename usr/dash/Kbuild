@@ -24,7 +24,7 @@ HOST_EXTRACFLAGS := $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD)
 SRCS :=	alias.c arith_yylex.c cd.c error.c eval.c exec.c expand.c \
 	histedit.c input.c jobs.c mail.c main.c memalloc.c miscbltin.c \
 	mystring.c options.c parser.c redir.c show.c trap.c output.c \
-	bltin/printf.c system.c bltin/test.c bltin/times.c var.c
+	bltin/printf.c system.c bltin/test.c var.c
 
 OBJ1 :=	builtins.o init.o nodes.o syntax.o
 OBJ2 :=	alias.o arith.o arith_yylex.o cd.o \
@@ -34,7 +34,7 @@ OBJ2 :=	alias.o arith.o arith_yylex.o cd.o \
 	miscbltin.o mystring.o options.o \
 	parser.o redir.o show.o trap.o \
 	output.o bltin/printf.o system.o \
-	bltin/test.o bltin/times.o var.o
+	bltin/test.o var.o
 
 OBJS :=	$(OBJ1) $(OBJ2)
 
