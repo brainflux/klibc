@@ -7,7 +7,6 @@
 
 struct stat {
 	__stdev64	(st_dev);
-        unsigned long	st_dev;
         unsigned long	st_ino;
         unsigned long	st_nlink;
         unsigned int	st_mode;
