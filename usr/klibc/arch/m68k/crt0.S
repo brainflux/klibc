@@ -22,6 +22,6 @@ _start:
 	# Push ELF argument pointer on the stack
 	move.l	%d0, -(%a7)
 		
-	jbsr	___libc_init
+	jbsr	__libc_init
 
 	.size _start, .-_start

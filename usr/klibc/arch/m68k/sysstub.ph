@@ -17,7 +17,7 @@ sub make_sysstub($$$$$@) {
 
     $stype = 'common' if ( $stype eq '' );
 
-    print OUT "\tmoveq\t# __NR_${sname}, %d0\n";
+    print OUT "\tmove.l\t# __NR_${sname}, %d0\n";
     print OUT "\tbr\t__syscall_$stype\n";
     print OUT "\t.size ${fname},.-${fname}\n";
     close(OUT);
