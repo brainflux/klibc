@@ -1,5 +1,5 @@
 /*
- * arch/s390/syscall.c
+ * arch/s390x/syscall.c
  *
  * Common error-handling path for system calls.
  * The return value from __syscall_common becomes the
@@ -7,10 +7,10 @@
  */
 #include <errno.h>
 
-long int __syscall_common(long int err)
+unsigned long __syscall_common(unsigned long err)
 {
-	if ((unsigned long)(err) < (unsigned long)(-125))
+	if (err < -4095UL)
 		return err;
-	errno = err;
+	errno = -err;
 	return -1;
 }
