@@ -7,7 +7,7 @@ nuke () {
     find "$@" -print | sort -r | xargs -rt $RM
 }
 
-nuke Kbuild Makefile defconfig klibc.spec.in *.sh
+nuke README Kbuild Makefile defconfig klibc.spec.in *.sh
 nuke contrib klcc
 
 # These files are either not needed or provided from the
