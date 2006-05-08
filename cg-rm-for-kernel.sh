@@ -4,7 +4,7 @@ if [ -z "$RM" ]; then
 fi
 
 nuke () {
-    find "$@" -print | rev | xargs -rt $RM
+    find "$@" -print | sort -r | xargs -rt $RM
 }
 
 nuke Kbuild Makefile defconfig klibc.spec.in *.sh
