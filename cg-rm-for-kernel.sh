@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ -z "$RM" ]; then
-  export RM=cg-rm
+  export RM='cg-rm -f'
 fi
 
 nuke () {
