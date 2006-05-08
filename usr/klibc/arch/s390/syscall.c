@@ -7,7 +7,7 @@
  */
 #include <errno.h>
 
-unsigned long __syscall_common(unsigned long)
+unsigned long __syscall_common(unsigned long err)
 {
 	if (err < -4095UL)
 		return err;
