@@ -9,7 +9,7 @@ static jmp_buf buf;
 
 void do_stuff(int v)
 {
-  printf("setjmp returned %d\n", v);
+  printf("calling longjmp with %d... ", v+1);
   longjmp(buf, v+1);
 }
 
@@ -20,7 +20,8 @@ void recurse(int ctr, int v)
   } else {
     do_stuff(v);
   }
-  _fwrite(".", 1, stdout);
+
+  printf("ERROR!\n");		/* We should never get here... */
 }
 
 int main(void)
@@ -28,7 +29,8 @@ int main(void)
   int v;
 
   v = setjmp(buf);
-
+  printf("setjmp returned %d\n", v);
+  
   if ( v < 256 )
     recurse(v,v);
 
