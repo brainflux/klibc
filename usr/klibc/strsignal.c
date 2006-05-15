@@ -16,7 +16,7 @@ char *strsignal(int sig)
 #ifdef SIGRTMIN
 	if (sig >= SIGRTMIN && sig <= SIGRTMAX) {
 		snprintf(buf, sizeof buf, "Real-time signal %d",
-			 sig-SIGRTMIN);
+			 sig - SIGRTMIN);
 		return buf;
 	}
 #endif

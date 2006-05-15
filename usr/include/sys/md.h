@@ -24,9 +24,9 @@
 #define LEVEL_MULTIPATH         (-4)
 #define LEVEL_LINEAR            (-1)
 #define LEVEL_FAULTY            (-5)
-#define MAX_MD_DEVS  256        /* Max number of md dev */
+#define MAX_MD_DEVS  256	/* Max number of md dev */
 
 #include <linux/raid/md_u.h>
 #include <linux/raid/md_p.h>
 
-#endif /* _SYS_MD_H */
+#endif				/* _SYS_MD_H */

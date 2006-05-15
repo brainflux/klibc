@@ -13,13 +13,11 @@
 
 static __u32 mount_port;
 
-struct mount_call
-{
+struct mount_call {
 	struct rpc_call rpc;
 	__u32 path_len;
 	char path[0];
 };
-
 
 /*
  * The following structure is the NFS v3 on-the-wire file handle,
@@ -32,19 +30,16 @@ struct mount_call
  * Use different name to avoid clashes.
  */
 #define NFS_MAXFHSIZE_WIRE 64
-struct nfs_fh_wire
-{
+struct nfs_fh_wire {
 	__u32 size;
 	char data[NFS_MAXFHSIZE_WIRE];
-} __attribute__((packed));
+} __attribute__ ((packed));
 
-
-struct mount_reply
-{
+struct mount_reply {
 	struct rpc_reply reply;
 	__u32 status;
 	struct nfs_fh_wire fh;
-} __attribute__((packed));
+} __attribute__ ((packed));
 
 #define MNT_REPLY_MINSIZE (sizeof(struct rpc_reply) + sizeof(__u32))
 
@@ -64,14 +59,12 @@ static int get_ports(__u32 server, const struct nfs_mount_data *data)
 	proto = (data->flags & NFS_MOUNT_TCP) ? IPPROTO_TCP : IPPROTO_UDP;
 
 	if (nfs_port == 0) {
-		nfs_port = portmap(server, NFS_PROGRAM, nfs_ver,
-				   proto);
+		nfs_port = portmap(server, NFS_PROGRAM, nfs_ver, proto);
 		if (nfs_port == 0) {
 			if (proto == IPPROTO_TCP) {
 				struct in_addr addr = { server };
 				fprintf(stderr, "NFS over TCP not "
-					"available from %s\n",
-					inet_ntoa(addr));
+					"available from %s\n", inet_ntoa(addr));
 				return -1;
 			}
 			nfs_port = NFS_PORT;
@@ -79,8 +72,7 @@ static int get_ports(__u32 server, const struct nfs_mount_data *data)
 	}
 
 	if (mount_port == 0) {
-		mount_port = portmap(server, NFS_MNT_PROGRAM, mount_ver,
-				     proto);
+		mount_port = portmap(server, NFS_MNT_PROGRAM, mount_ver, proto);
 		if (mount_port == 0)
 			mount_port = MOUNT_PORT;
 	}
@@ -96,7 +88,9 @@ static inline void dump_params(__u32 server,
 			       const char *path,
 			       const struct nfs_mount_data *data)
 {
-	(void)server; (void)path; (void)data;
+	(void)server;
+	(void)path;
+	(void)data;
 
 #ifdef NFS_DEBUG
 	struct in_addr addr = { server };
@@ -123,7 +117,8 @@ static inline void dump_params(__u32 server,
 
 static inline void dump_fh(const char *data, int len)
 {
-	(void)data; (void)len;
+	(void)data;
+	(void)len;
 
 #ifdef NFS_DEBUG
 	int i = 0;
@@ -149,8 +144,7 @@ static inline void dump_fh(const char *data, int len)
 static struct mount_reply mnt_reply;
 
 static int mount_call(__u32 proc, __u32 version,
-		      const char *path,
-		      struct client *clnt)
+		      const char *path, struct client *clnt)
 {
 	struct mount_call *mnt_call = NULL;
 	size_t path_len, call_len;
@@ -173,9 +167,9 @@ static int mount_call(__u32 proc, __u32 version,
 	mnt_call->path_len = htonl(path_len);
 	memcpy(mnt_call->path, path, path_len);
 
-	rpc.call = (struct rpc_call *) mnt_call;
+	rpc.call = (struct rpc_call *)mnt_call;
 	rpc.call_len = call_len;
-	rpc.reply = (struct rpc_reply *) &mnt_reply;
+	rpc.reply = (struct rpc_reply *)&mnt_reply;
 	rpc.reply_len = sizeof(mnt_reply);
 
 	if (rpc_call(clnt, &rpc) < 0)
@@ -199,10 +193,10 @@ static int mount_call(__u32 proc, __u32 version,
 
 	goto done;
 
- bail:
+bail:
 	ret = -1;
 
- done:
+done:
 	if (mnt_call) {
 		free(mnt_call);
 	}
@@ -211,13 +205,12 @@ static int mount_call(__u32 proc, __u32 version,
 }
 
 static int mount_v2(const char *path,
-		    struct nfs_mount_data *data,
-		    struct client *clnt)
+		    struct nfs_mount_data *data, struct client *clnt)
 {
 	int ret = mount_call(MNTPROC_MNT, NFS_MNT_VERSION, path, clnt);
 
 	if (ret == 0) {
-		dump_fh((const char *) &mnt_reply.fh, NFS2_FHSIZE);
+		dump_fh((const char *)&mnt_reply.fh, NFS2_FHSIZE);
 
 		data->root.size = NFS_FHSIZE;
 		memcpy(data->root.data, &mnt_reply.fh, NFS_FHSIZE);
@@ -233,15 +226,14 @@ static inline int umount_v2(const char *path, struct client *clnt)
 }
 
 static int mount_v3(const char *path,
-		    struct nfs_mount_data *data,
-		    struct client *clnt)
+		    struct nfs_mount_data *data, struct client *clnt)
 {
 	int ret = mount_call(MNTPROC_MNT, NFS_MNT3_VERSION, path, clnt);
 
 	if (ret == 0) {
 		size_t fhsize = ntohl(mnt_reply.fh.size);
 
-		dump_fh((const char *) &mnt_reply.fh.data, fhsize);
+		dump_fh((const char *)&mnt_reply.fh.data, fhsize);
 
 		memset(data->old_root.data, 0, NFS_FHSIZE);
 		memset(&data->root, 0, sizeof(data->root));
@@ -334,7 +326,7 @@ int nfs_mount(const char *pathname, const char *hostname,
 
 	goto done;
 
- bail:
+      bail:
 	if (mounted) {
 		if (data->flags & NFS_MOUNT_VER3) {
 			umount_v3(path, clnt);
@@ -345,7 +337,7 @@ int nfs_mount(const char *pathname, const char *hostname,
 
 	ret = -1;
 
- done:
+      done:
 	if (clnt) {
 		client_free(clnt);
 	}

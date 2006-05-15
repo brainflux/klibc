@@ -161,7 +161,6 @@ name (type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5, type6 arg6)   
        return (type)_retval;                                                  \
 }
 
-
 #define LOAD_ARGS_0()   do { } while (0)
 #define LOAD_ARGS_1(out0)				\
   register long _out0 asm ("out0") = (long) (out0);	\
@@ -215,4 +214,4 @@ name (type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5, type6 arg6)   
   /* Branch registers.  */						\
   "b6", "b7"
 
-#endif /* _KLIBC_ARCHSYS_H */
+#endif				/* _KLIBC_ARCHSYS_H */

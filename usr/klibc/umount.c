@@ -8,5 +8,5 @@
 
 int umount(const char *dir)
 {
-  return umount2(dir, 0);
+	return umount2(dir, 0);
 }

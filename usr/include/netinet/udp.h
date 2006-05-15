@@ -10,10 +10,10 @@
  */
 
 struct udphdr {
-	__u16	source;
-	__u16	dest;
-	__u16	len;
-	__u16	check;
+	__u16 source;
+	__u16 dest;
+	__u16 len;
+	__u16 check;
 };
 
-#endif /* _NETINET_UDP_H */
+#endif				/* _NETINET_UDP_H */

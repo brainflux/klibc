@@ -20,13 +20,13 @@
 #include "packet.h"
 
 static __u8 bootp_options[312] = {
-	[0]   = 99, 130, 83, 99,/* RFC1048 magic cookie */
-	[4]   = 1, 4,		/*   4-  9 subnet mask */
-	[10]  = 3, 4,		/*  10- 15 default gateway */
-	[16]  = 5, 8,		/*  16- 25 nameserver */
-	[26]  = 12, 32,		/*  26- 59 host name */
-	[60]  = 40, 32,		/*  60- 95 nis domain name */
-	[96]  = 17, 40,		/*  96-137 boot path */
+	[  0] = 99, 130, 83, 99,/* RFC1048 magic cookie */
+	[  4] = 1, 4,		/*   4-  9 subnet mask */
+	[ 10] = 3, 4,		/*  10- 15 default gateway */
+	[ 16] = 5, 8,		/*  16- 25 nameserver */
+	[ 26] = 12, 32,		/*  26- 59 host name */
+	[ 60] = 40, 32,		/*  60- 95 nis domain name */
+	[ 96] = 17, 40,		/*  96-137 boot path */
 	[138] = 57, 2, 1, 150,	/* 138-141 extension buffer */
 	[142] = 255,		/* end of list */
 };
@@ -39,18 +39,17 @@ int bootp_send_request(struct netdev *dev)
 	struct bootp_hdr bootp;
 	struct iovec iov[] = {
 		/* [0] = ip + udp headers */
-		[1] = { &bootp, sizeof(bootp) },
-		[2] = { bootp_options, 312 }
+		[1] = {&bootp, sizeof(bootp)},
+		[2] = {bootp_options, 312}
 	};
 
 	memset(&bootp, 0, sizeof(struct bootp_hdr));
 
-	bootp.op     = BOOTP_REQUEST,
-	bootp.htype  = dev->hwtype;
-	bootp.hlen   = dev->hwlen;
-	bootp.xid    = dev->bootp.xid;
-	bootp.ciaddr = dev->ip_addr;
-	bootp.secs   = htons(time(NULL) - dev->open_time);
+	bootp.op	= BOOTP_REQUEST, bootp.htype = dev->hwtype;
+	bootp.hlen	= dev->hwlen;
+	bootp.xid	= dev->bootp.xid;
+	bootp.ciaddr	= dev->ip_addr;
+	bootp.secs	= htons(time(NULL) - dev->open_time);
 	memcpy(bootp.chaddr, dev->hwaddr, 16);
 
 	DEBUG(("-> bootp xid 0x%08x secs 0x%08x ",
@@ -63,25 +62,25 @@ int bootp_send_request(struct netdev *dev)
  * Parse a bootp reply packet
  */
 int
-bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
+bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
 {
-	dev->bootp.gateway    = hdr->giaddr;
-	dev->ip_addr          = hdr->yiaddr;
-	dev->ip_server        = hdr->siaddr;
-	dev->ip_netmask       = INADDR_ANY;
-	dev->ip_broadcast     = INADDR_ANY;
-	dev->ip_gateway       = hdr->giaddr;
-	dev->ip_nameserver[0] = INADDR_ANY;
-	dev->ip_nameserver[1] = INADDR_ANY;
-	dev->hostname[0]      = '\0';
-	dev->nisdomainname[0] = '\0';
-	dev->bootpath[0]      = '\0';
+	dev->bootp.gateway	= hdr->giaddr;
+	dev->ip_addr		= hdr->yiaddr;
+	dev->ip_server		= hdr->siaddr;
+	dev->ip_netmask		= INADDR_ANY;
+	dev->ip_broadcast	= INADDR_ANY;
+	dev->ip_gateway		= hdr->giaddr;
+	dev->ip_nameserver[0]	= INADDR_ANY;
+	dev->ip_nameserver[1]	= INADDR_ANY;
+	dev->hostname[0]	= '\0';
+	dev->nisdomainname[0]	= '\0';
+	dev->bootpath[0]	= '\0';
 
 	if (extlen >= 4 && exts[0] == 99 && exts[1] == 130 &&
 	    exts[2] == 83 && exts[3] == 99) {
 		__u8 *ext;
 
-		for (ext = exts + 4; ext - exts < extlen; ) {
+		for (ext = exts + 4; ext - exts < extlen;) {
 			__u8 len, opt = *ext++;
 			if (opt == 0)
 				continue;
@@ -90,40 +89,44 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
 
 			switch (opt) {
 			case 1:	/* subnet mask */
-				memcpy(&dev->ip_netmask, ext, len > 4 ? 4 : len);
+				memcpy(&dev->ip_netmask, ext,
+				       len > 4 ? 4 : len);
 				break;
-			case 3: /* default gateway */
-				memcpy(&dev->ip_gateway, ext, len > 4 ? 4 : len);
+			case 3:	/* default gateway */
+				memcpy(&dev->ip_gateway, ext,
+				       len > 4 ? 4 : len);
 				break;
 			case 6:	/* DNS server */
-				memcpy(&dev->ip_nameserver, ext, len > 8 ? 8 : len);
+				memcpy(&dev->ip_nameserver, ext,
+				       len > 8 ? 8 : len);
 				break;
-			case 12: /* host name */
+			case 12:	/* host name */
 				if (len > sizeof(dev->hostname) - 1)
 					len = sizeof(dev->hostname) - 1;
 				memcpy(&dev->hostname, ext, len);
 				dev->hostname[len] = '\0';
 				break;
-			case 15: /* domain name */
+			case 15:	/* domain name */
 				if (len > sizeof(dev->dnsdomainname) - 1)
 					len = sizeof(dev->dnsdomainname) - 1;
 				memcpy(&dev->dnsdomainname, ext, len);
 				dev->dnsdomainname[len] = '\0';
 				break;
-			case 17: /* root path */
+			case 17:	/* root path */
 				if (len > sizeof(dev->bootpath) - 1)
 					len = sizeof(dev->bootpath) - 1;
 				memcpy(&dev->bootpath, ext, len);
 				dev->bootpath[len] = '\0';
 				break;
-			case 26: /* interface MTU */
-				if ( len == 2  )
+			case 26:	/* interface MTU */
+				if (len == 2)
 					dev->mtu = (ext[0] << 8) + ext[1];
 				break;
-			case 28: /* broadcast addr */
-				memcpy(&dev->ip_broadcast, ext, len > 4 ? 4 : len);
+			case 28:	/* broadcast addr */
+				memcpy(&dev->ip_broadcast, ext,
+				       len > 4 ? 4 : len);
 				break;
-			case 40: /* NIS domain name */
+			case 40:	/* NIS domain name */
 				if (len > sizeof(dev->nisdomainname) - 1)
 					len = sizeof(dev->nisdomainname) - 1;
 				memcpy(&dev->nisdomainname, ext, len);
@@ -150,8 +153,8 @@ int bootp_recv_reply(struct netdev *dev)
 	__u8 bootp_options[312];
 	struct iovec iov[] = {
 		/* [0] = ip + udp headers */
-		[1] = { &bootp, sizeof(struct bootp_hdr) },
-		[2] = { bootp_options, 312 }
+		[1] = {&bootp, sizeof(struct bootp_hdr)},
+		[2] = {bootp_options, 312}
 	};
 	int ret;
 
@@ -159,8 +162,8 @@ int bootp_recv_reply(struct netdev *dev)
 	if (ret <= 0)
 		return ret;
 
-	if (ret < sizeof(struct bootp_hdr) ||
-	    bootp.op != BOOTP_REPLY ||		/* RFC951 7.5 */
+	if (ret < sizeof(struct bootp_hdr) || 
+	    bootp.op != BOOTP_REPLY ||	/* RFC951 7.5 */
 	    bootp.xid != dev->bootp.xid ||
 	    memcmp(bootp.chaddr, dev->hwaddr, 16))
 		return 0;
@@ -195,7 +198,7 @@ int bootp_init_if(struct netdev *dev)
 	/*
 	 * Get a random XID
 	 */
-	dev->bootp.xid = (__u32)lrand48();
+	dev->bootp.xid = (__u32) lrand48();
 	dev->open_time = time(NULL);
 
 	return 0;

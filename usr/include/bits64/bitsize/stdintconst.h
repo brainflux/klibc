@@ -15,4 +15,4 @@
 #define UINTPTR_C(c)	 UINT64_C(c)
 #define PTRDIFF_C(c)     INT64_C(c)
 
-#endif /* _BITSIZE_STDINTCONST_H */
+#endif				/* _BITSIZE_STDINTCONST_H */

@@ -35,8 +35,9 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 
 	saved_umask = umask(0);
-	leaf_mode = (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH) &
-		     ~saved_umask;
+	leaf_mode =
+	    (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) &
+	    ~saved_umask;
 
 	do {
 		c = getopt(argc, argv, "m:");
@@ -44,7 +45,8 @@ int main(int argc, char *argv[])
 			break;
 		switch (c) {
 		case 'm':
-			leaf_mode = parse_file_mode(optarg, leaf_mode, saved_umask);
+			leaf_mode =
+			    parse_file_mode(optarg, leaf_mode, saved_umask);
 			break;
 
 		case '?':
@@ -55,14 +57,13 @@ int main(int argc, char *argv[])
 	} while (1);
 
 	if (optind == argc) {
-		fprintf(stderr, "Usage: %s [-m mode] file...\n",
-			progname);
+		fprintf(stderr, "Usage: %s [-m mode] file...\n", progname);
 		exit(1);
 	}
 
 	while (optind < argc) {
 		if (make_fifo(argv[optind]))
-			ret = 255; /* seems to be what gnu mkdir does */
+			ret = 255;	/* seems to be what gnu mkdir does */
 		optind++;
 	}
 

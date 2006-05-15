@@ -37,8 +37,7 @@ int mount_mtd_root(int argc, char *argv[], const char *root_dev_name,
 		return -err;
 	} else {
 		fprintf(stderr, "%s: Mounted root (%s filesystem)%s.\n",
-			progname, type,
-			(flags & MS_RDONLY) ? " readonly" : "");
+			progname, type, (flags & MS_RDONLY) ? " readonly" : "");
 		return 0;
 	}
 

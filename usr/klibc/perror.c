@@ -8,6 +8,6 @@
 
 void perror(const char *s)
 {
-  int e = errno;
-  fprintf(stderr, "%s: %s\n", s, strerror(e));
+	int e = errno;
+	fprintf(stderr, "%s: %s\n", s, strerror(e));
 }

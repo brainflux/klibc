@@ -21,4 +21,4 @@
 # define __stdev64(x)	unsigned int x, __##x;
 #endif
 
-#endif /* _KLIBC_STATHELP_H */
+#endif				/* _KLIBC_STATHELP_H */

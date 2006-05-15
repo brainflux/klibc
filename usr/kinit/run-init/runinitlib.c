@@ -74,143 +74,143 @@ static int nuke(const char *what);
 
 static int nuke_dirent(int len, const char *dir, const char *name, dev_t me)
 {
-  int bytes = len+strlen(name)+2;
-  char path[bytes];
-  int xlen;
-  struct stat st;
+	int bytes = len + strlen(name) + 2;
+	char path[bytes];
+	int xlen;
+	struct stat st;
 
-  xlen = snprintf(path, bytes, "%s/%s", dir, name);
-  assert(xlen < bytes);
+	xlen = snprintf(path, bytes, "%s/%s", dir, name);
+	assert(xlen < bytes);
 
-  if ( lstat(path, &st) )
-    return ENOENT;		/* Return 0 since already gone? */
+	if (lstat(path, &st))
+		return ENOENT;	/* Return 0 since already gone? */
 
-  if ( st.st_dev != me )
-    return 0;			/* DO NOT recurse down mount points!!!!! */
+	if (st.st_dev != me)
+		return 0;	/* DO NOT recurse down mount points!!!!! */
 
-  return nuke(path);
+	return nuke(path);
 }
 
 /* Wipe the contents of a directory, but not the directory itself */
 static int nuke_dir(const char *what)
 {
-  int len = strlen(what);
-  DIR *dir;
-  struct dirent *d;
-  int err = 0;
-  struct stat st;
+	int len = strlen(what);
+	DIR *dir;
+	struct dirent *d;
+	int err = 0;
+	struct stat st;
 
-  if ( lstat(what, &st) )
-    return errno;
+	if (lstat(what, &st))
+		return errno;
 
-  if ( !S_ISDIR(st.st_mode) )
-    return ENOTDIR;
+	if (!S_ISDIR(st.st_mode))
+		return ENOTDIR;
 
-  if ( !(dir = opendir(what)) ) {
-    /* EACCES means we can't read it.  Might be empty and removable;
-       if not, the rmdir() in nuke() will trigger an error. */
-    return (errno == EACCES) ? 0 : errno;
-  }
+	if (!(dir = opendir(what))) {
+		/* EACCES means we can't read it.  Might be empty and removable;
+		   if not, the rmdir() in nuke() will trigger an error. */
+		return (errno == EACCES) ? 0 : errno;
+	}
 
-  while ( (d = readdir(dir)) ) {
-    /* Skip . and .. */
-    if ( d->d_name[0] == '.' &&
-	 (d->d_name[1] == '\0' ||
-	  (d->d_name[1] == '.' && d->d_name[2] == '\0')) )
-      continue;
+	while ((d = readdir(dir))) {
+		/* Skip . and .. */
+		if (d->d_name[0] == '.' &&
+		    (d->d_name[1] == '\0' ||
+		     (d->d_name[1] == '.' && d->d_name[2] == '\0')))
+			continue;
 
-    err = nuke_dirent(len, what, d->d_name, st.st_dev);
-    if ( err ) {
-      closedir(dir);
-      return err;
-    }
-  }
+		err = nuke_dirent(len, what, d->d_name, st.st_dev);
+		if (err) {
+			closedir(dir);
+			return err;
+		}
+	}
 
-  closedir(dir);
+	closedir(dir);
 
-  return 0;
+	return 0;
 }
 
 static int nuke(const char *what)
 {
-  int rv;
-  int err = 0;
+	int rv;
+	int err = 0;
 
-  rv = unlink(what);
-  if ( rv < 0 ) {
-    if ( errno == EISDIR ) {
-      /* It's a directory. */
-      err = nuke_dir(what);
-      if ( !err )
-	err = rmdir(what) ? errno : err;
-    } else {
-      err = errno;
-    }
-  }
+	rv = unlink(what);
+	if (rv < 0) {
+		if (errno == EISDIR) {
+			/* It's a directory. */
+			err = nuke_dir(what);
+			if (!err)
+				err = rmdir(what) ? errno : err;
+		} else {
+			err = errno;
+		}
+	}
 
-  if ( err ) {
-    errno = err;
-    return err;
-  } else {
-    return 0;
-  }
+	if (err) {
+		errno = err;
+		return err;
+	} else {
+		return 0;
+	}
 }
 
 const char *run_init(const char *realroot, const char *console,
 		     const char *init, char **initargs)
 {
-  struct stat   rst, cst, ist;
-  struct statfs sfs;
-  int confd;
+	struct stat rst, cst, ist;
+	struct statfs sfs;
+	int confd;
 
-  /* First, change to the new root directory */
-  if ( chdir(realroot) )
-    return "chdir to new root";
+	/* First, change to the new root directory */
+	if (chdir(realroot))
+		return "chdir to new root";
 
-  /* This is a potentially highly destructive program.  Take some
-     extra precautions. */
+	/* This is a potentially highly destructive program.  Take some
+	   extra precautions. */
 
-  /* Make sure the current directory is not on the same filesystem
-     as the root directory */
-  if ( stat("/", &rst) || stat(".", &cst) )
-    return "stat";
+	/* Make sure the current directory is not on the same filesystem
+	   as the root directory */
+	if (stat("/", &rst) || stat(".", &cst))
+		return "stat";
 
-  if ( rst.st_dev == cst.st_dev )
-    return "current directory on the same filesystem as the root";
+	if (rst.st_dev == cst.st_dev)
+		return "current directory on the same filesystem as the root";
 
-  /* The initramfs should have /init */
-  if ( stat("/init", &ist) || !S_ISREG(ist.st_mode) )
-    return "can't find /init on initramfs";
+	/* The initramfs should have /init */
+	if (stat("/init", &ist) || !S_ISREG(ist.st_mode))
+		return "can't find /init on initramfs";
 
-  /* Make sure we're on a ramfs */
-  if ( statfs("/", &sfs) )
-    return "statfs /";
-  if ( sfs.f_type != RAMFS_MAGIC && sfs.f_type != TMPFS_MAGIC )
-    return "rootfs not a ramfs or tmpfs";
+	/* Make sure we're on a ramfs */
+	if (statfs("/", &sfs))
+		return "statfs /";
+	if (sfs.f_type != RAMFS_MAGIC && sfs.f_type != TMPFS_MAGIC)
+		return "rootfs not a ramfs or tmpfs";
 
-  /* Okay, I think we should be safe... */
+	/* Okay, I think we should be safe... */
 
-  /* Delete rootfs contents */
-  if ( nuke_dir("/") )
-    return "nuking initramfs contents";
+	/* Delete rootfs contents */
+	if (nuke_dir("/"))
+		return "nuking initramfs contents";
 
-  /* Overmount the root */
-  if ( mount(".", "/", NULL, MS_MOVE, NULL) )
-    return "overmounting root";
+	/* Overmount the root */
+	if (mount(".", "/", NULL, MS_MOVE, NULL))
+		return "overmounting root";
 
-  /* chroot, chdir */
-  if ( chroot(".") || chdir("/") )
-    return "chroot";
+	/* chroot, chdir */
+	if (chroot(".") || chdir("/"))
+		return "chroot";
 
-  /* Open /dev/console */
-  if ( (confd = open(console, O_RDWR)) < 0 )
-    return "opening console";
-  dup2(confd, 0);
-  dup2(confd, 1);
-  dup2(confd, 2);
-  close(confd);
+	/* Open /dev/console */
+	if ((confd = open(console, O_RDWR)) < 0)
+		return "opening console";
+	dup2(confd, 0);
+	dup2(confd, 1);
+	dup2(confd, 2);
+	close(confd);
 
-  /* Spawn init */
-  execv(init, initargs);
-  return init;			/* Failed to spawn init */
+	/* Spawn init */
+	execv(init, initargs);
+	return init;		/* Failed to spawn init */
 }

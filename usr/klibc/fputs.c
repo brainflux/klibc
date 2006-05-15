@@ -11,5 +11,5 @@
 
 int fputs(const char *s, FILE *file)
 {
-  return _fwrite(s, strlen(s), file);
+	return _fwrite(s, strlen(s), file);
 }

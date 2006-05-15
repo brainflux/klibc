@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 
-pid_t getpgrp(void) {
-  return getpgid(0);
+pid_t getpgrp(void)
+{
+	return getpgid(0);
 }

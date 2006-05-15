@@ -16,11 +16,11 @@ struct __jmp_buf {
 	unsigned int __a3;
 	unsigned int __a4;
 	unsigned int __a5;
-	unsigned int __fp; /* a6 */
-	unsigned int __sp; /* a7 */
+	unsigned int __fp;	/* a6 */
+	unsigned int __sp;	/* a7 */
 	unsigned int __retaddr;
 };
 
 typedef struct __jmp_buf jmp_buf[1];
 
-#endif /* _KLBIC_ARCHSETJMP_H */
+#endif				/* _KLBIC_ARCHSETJMP_H */

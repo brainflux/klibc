@@ -12,4 +12,4 @@
 #define bswap_32(x) __swab32(x)
 #define bswap_64(x) __swab64(x)
 
-#endif /* _BYTESWAP_H */
+#endif				/* _BYTESWAP_H */

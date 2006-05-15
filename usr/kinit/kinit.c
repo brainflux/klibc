@@ -18,8 +18,8 @@ int mnt_sysfs;
 
 void dump_args(int argc, char *argv[])
 {
-	(void) argc;
-	(void) argv;
+	(void)argc;
+	(void)argv;
 
 #ifdef INI_DEBUG
 	int i;
@@ -35,17 +35,17 @@ void dump_args(int argc, char *argv[])
 static int do_ipconfig(int argc, char *argv[])
 {
 	int i, a = 0;
-	char **args = alloca((argc+1) * sizeof(char *));
+	char **args = alloca((argc + 1) * sizeof(char *));
 
-	if ( !args )
+	if (!args)
 		return -1;
 
-	args[a++] = (char *) "IP-Config";
+	args[a++] = (char *)"IP-Config";
 
 	DEBUG(("Running ipconfig\n"));
 
 #ifdef INI_DEBUG
-	args[a++] = (char *) "-n";
+	args[a++] = (char *)"-n";
 #endif
 
 	for (i = 1; i < argc; i++) {
@@ -65,24 +65,23 @@ static int do_ipconfig(int argc, char *argv[])
 }
 
 static int split_cmdline(int *cmdc, char *cmdv[],
-			  char *cmdline,
-			  int argc, char *argv[])
+			 char *cmdline, int argc, char *argv[])
 {
 	char was_space = 1;
 	char *i = cmdline;
 	int vmax = *cmdc;
 	int v = 1, a;
 
-	if ( cmdv )
+	if (cmdv)
 		cmdv[0] = argv[0];
 
 	while (i && *i && v < vmax) {
 		if ((*i == ' ' || *i == '\t') && !was_space) {
-			if ( cmdv )
+			if (cmdv)
 				*i = '\0';
 			was_space = 1;
 		} else if (was_space) {
-			if ( cmdv )
+			if (cmdv)
 				cmdv[v] = i;
 			v++;
 			was_space = 0;
@@ -91,12 +90,12 @@ static int split_cmdline(int *cmdc, char *cmdv[],
 	}
 
 	for (a = 1; a < argc && v < vmax; a++) {
-		if ( cmdv )
+		if (cmdv)
 			cmdv[v] = argv[a];
 		v++;
 	}
 
-	if ( cmdv )
+	if (cmdv)
 		cmdv[v] = NULL;
 
 	return *cmdc = v;
@@ -129,8 +128,8 @@ static char *get_kernel_cmdline(char *buf, int len)
 	if ((fp = fopen("/proc/cmdline", "r")) == NULL) {
 		fprintf(stderr, "%s: could not open kernel command line\n",
 			progname);
-			buf = NULL;
-			goto bail;
+		buf = NULL;
+		goto bail;
 	}
 
 	if (fgets(buf, len, fp) == NULL) {
@@ -144,7 +143,7 @@ static char *get_kernel_cmdline(char *buf, int len)
 		buf[--len] = '\0';
 	}
 
- bail:
+      bail:
 	if (fp) {
 		fclose(fp);
 	}
@@ -156,7 +155,7 @@ static char *get_kernel_cmdline(char *buf, int len)
 int get_flag(int argc, char *argv[], const char *name)
 {
 	char **p;
-	for (p = argv+1; *p; p++) {
+	for (p = argv + 1; *p; p++) {
 		if (!strcmp(*p, name))
 			return 1;
 	}
@@ -194,8 +193,7 @@ static void check_path(const char *path)
 			perror("mkdir");
 			exit(1);
 		}
-	}
-	else if (!S_ISDIR(st.st_mode)) {
+	} else if (!S_ISDIR(st.st_mode)) {
 		fprintf(stderr, "%s: '%s' not a directory\n", progname, path);
 		exit(1);
 	}
@@ -209,7 +207,7 @@ static const char *find_init(const char *root, const char *user)
 	const char **p;
 	const char *path;
 
-	if ( chdir(root) ) {
+	if (chdir(root)) {
 		perror("chdir");
 		exit(1);
 	}
@@ -222,7 +220,7 @@ static const char *find_init(const char *root, const char *user)
 	} else {
 		for (p = init_paths; *p; p++) {
 			DEBUG(("Checking for init: %s\n", *p));
-			if ( !access(*p+1, X_OK) )
+			if (!access(*p+1, X_OK))
 				break;
 		}
 		path = *p;
@@ -285,8 +283,8 @@ int main(int argc, char *argv[])
 	}
 
 	cmdc = INT_MAX;
-	cmdv = (char **) alloca(sizeof(char *) *
-	       (split_cmdline(&cmdc, NULL, cmdline, argc, argv+1)));
+	split_cmdline(&cmdc, NULL, cmdline, argc, argv);
+	cmdv = (char **)alloca((cmdc+1)*sizeof(char *));
 
 	if (split_cmdline(&cmdc, cmdv, cmdline, argc, argv) == 0) {
 		ret = 1;
@@ -314,13 +312,13 @@ int main(int argc, char *argv[])
 	}
 
 	init_path = find_init("/root", get_arg(cmdc, cmdv, "init="));
-	if ( !init_path ) {
+	if (!init_path) {
 		fprintf(stderr, "%s: init not found!\n", progname);
 		ret = 2;
 		goto bail;
 	}
 
-	init_argv[0] = strrchr(init_path, '/')+1;
+	init_argv[0] = strrchr(init_path, '/') + 1;
 
 	errmsg = run_init("/root", "/dev/console", init_path, init_argv);
 
@@ -329,7 +327,7 @@ int main(int argc, char *argv[])
 	ret = 2;
 	goto bail;
 
- bail:
+bail:
 	if (mnt_procfs)
 		umount2("/proc", 0);
 

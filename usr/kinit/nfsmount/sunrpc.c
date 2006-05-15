@@ -19,12 +19,11 @@ static int rpc_do_reply(struct client *clnt, struct rpc *rpc, size_t off)
 	int ret;
 
 	if ((ret = read(clnt->sock,
-			((char *) rpc->reply) + off,
+			((char *)rpc->reply) + off,
 			rpc->reply_len - off)) == -1) {
 		perror("read");
 		goto bail;
-	}
-	else if (ret < sizeof(struct rpc_reply) - off) {
+	} else if (ret < sizeof(struct rpc_reply) - off) {
 		fprintf(stderr, "short read: %d < %zu\n", ret,
 			sizeof(struct rpc_reply) - off);
 		goto bail;
@@ -46,9 +45,9 @@ static int rpc_do_reply(struct client *clnt, struct rpc *rpc, size_t off)
 	ret = 0;
 	goto done;
 
- bail:
+bail:
 	ret = -1;
- done:
+done:
 	return ret;
 }
 
@@ -71,20 +70,18 @@ static int rpc_call_tcp(struct client *clnt, struct rpc *rpc)
 	if ((ret = write(clnt->sock, rpc->call, rpc->call_len)) == -1) {
 		perror("write");
 		goto bail;
-	}
-	else if (ret < rpc->call_len) {
-		fprintf(stderr, "short write: %d < %zu\n",
-			ret, rpc->call_len);
+	} else if (ret < rpc->call_len) {
+		fprintf(stderr, "short write: %d < %zu\n", ret, rpc->call_len);
 		goto bail;
 	}
 
 	ret = rpc_do_reply(clnt, rpc, 0);
 	goto done;
 
- bail:
+      bail:
 	ret = -1;
 
- done:
+      done:
 	return ret;
 }
 
@@ -108,12 +105,11 @@ static int rpc_call_udp(struct client *clnt, struct rpc *rpc)
 	for (i = 0; i < MAX_TRIES; i++) {
 		int timeout_ms = TIMEOUT_MS + (lrand48() % (TIMEOUT_MS / 2));
 		if ((ret = write(clnt->sock,
-				 ((char *) rpc->call) + UDP_HDR_OFF,
+				 ((char *)rpc->call) + UDP_HDR_OFF,
 				 rpc->call_len)) == -1) {
 			perror("write");
 			goto bail;
-		}
-		else if (ret < rpc->call_len) {
+		} else if (ret < rpc->call_len) {
 			fprintf(stderr, "short write: %d < %zu\n", ret,
 				rpc->call_len);
 			goto bail;
@@ -136,10 +132,10 @@ static int rpc_call_udp(struct client *clnt, struct rpc *rpc)
 		}
 	}
 
- bail:
+      bail:
 	ret = -1;
 
- done:
+      done:
 	return ret;
 }
 
@@ -173,18 +169,18 @@ struct client *tcp_client(__u32 server, __u16 port, __u32 flags)
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = server;
 
-	if (connect(sock, (struct sockaddr *) &addr, sizeof(addr)) == -1) {
+	if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
 		perror("connect");
 		goto bail;
 	}
 
 	goto done;
- bail:
+      bail:
 	if (clnt) {
 		free(clnt);
 		clnt = NULL;
 	}
- done:
+      done:
 	return clnt;
 }
 
@@ -216,7 +212,7 @@ struct client *udp_client(__u32 server, __u16 port, __u32 flags)
 		me.sin_port = 0;
 		me.sin_addr.s_addr = INADDR_ANY;
 
-		if (0 && bind(sock, (struct sockaddr *) &me, sizeof(me)) == -1) {
+		if (0 && bind(sock, (struct sockaddr *)&me, sizeof(me)) == -1) {
 			perror("bind");
 			goto bail;
 		}
@@ -229,18 +225,18 @@ struct client *udp_client(__u32 server, __u16 port, __u32 flags)
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = server;
 
-	if (connect(sock, (struct sockaddr *) &addr, sizeof(addr)) == -1) {
+	if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
 		perror("connect");
 		goto bail;
 	}
 
 	goto done;
- bail:
+      bail:
 	if (clnt) {
 		free(clnt);
 		clnt = NULL;
 	}
- done:
+      done:
 	return clnt;
 }
 

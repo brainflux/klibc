@@ -9,11 +9,11 @@
 
 /* The kernel calls this struct dirent64 */
 struct dirent {
-  uint64_t		d_ino;
-  int64_t		d_off;
-  unsigned short	d_reclen;
-  unsigned char		d_type;
-  char			d_name[256];
+	uint64_t	d_ino;
+	int64_t		d_off;
+	unsigned short	d_reclen;
+	unsigned char	d_type;
+	char		d_name[256];
 };
 
 /* File types to use for d_type */
@@ -29,4 +29,4 @@ struct dirent {
 
 __extern int getdents(unsigned int, struct dirent *, unsigned int);
 
-#endif /* _SYS_DIRENT_H */
+#endif				/* _SYS_DIRENT_H */

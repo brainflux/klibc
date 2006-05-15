@@ -12,6 +12,6 @@
    setenv() or putenv() */
 int clearenv(void)
 {
-  environ = (char **)__null_environ;
-  return 0;
+	environ = (char **)__null_environ;
+	return 0;
 }

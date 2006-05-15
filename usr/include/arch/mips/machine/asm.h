@@ -8,4 +8,4 @@
 #include <asm/regdef.h>
 #include <asm/asm.h>
 
-#endif /* _MACHINE_ASM_H */
+#endif				/* _MACHINE_ASM_H */

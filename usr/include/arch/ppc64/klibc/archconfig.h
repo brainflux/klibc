@@ -9,4 +9,4 @@
 
 #define _KLIBC_USE_RT_SIG 1
 
-#endif /* _KLIBC_ARCHCONFIG_H */
+#endif				/* _KLIBC_ARCHCONFIG_H */

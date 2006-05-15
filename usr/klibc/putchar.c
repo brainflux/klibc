@@ -11,5 +11,5 @@ int putchar(int);
 
 int putchar(int c)
 {
-  return fputc(c, stdout);
+	return fputc(c, stdout);
 }

@@ -19,7 +19,7 @@
 #define PT_HIOS    	0x6fffffff
 #define PT_LOPROC  	0x70000000
 #define PT_HIPROC  	0x7fffffff
-#define PT_GNU_EH_FRAME	0x6474e550 /* Extension, eh? */
+#define PT_GNU_EH_FRAME	0x6474e550	/* Extension, eh? */
 
 /* ELF file types */
 #define ET_NONE   	0
@@ -39,8 +39,8 @@
 #define EM_88K   	5
 #define EM_486   	6	/* Not used in Linux at least */
 #define EM_860   	7
-#define EM_MIPS         8       /* R3k, bigendian(?) */
-#define EM_MIPS_RS4_BE 	10      /* R4k BE */
+#define EM_MIPS         8	/* R3k, bigendian(?) */
+#define EM_MIPS_RS4_BE 	10	/* R4k BE */
 #define EM_PARISC      	15
 #define EM_SPARC32PLUS 	18
 #define EM_PPC         	20
@@ -87,7 +87,7 @@
 #define DT_HIPROC	0x7fffffff
 
 /* Auxilliary table entries */
-#define AT_NULL		0       /* end of vector */
+#define AT_NULL		0	/* end of vector */
 #define AT_IGNORE	1	/* entry should be ignored */
 #define AT_EXECFD	2	/* file descriptor of program */
 #define AT_PHDR		3	/* program headers for program */
@@ -184,4 +184,4 @@
 #define ELFOSABI_NONE   0
 #define ELFOSABI_LINUX  3
 
-#endif /* _SYS_ELFCOMMON_H */
+#endif				/* _SYS_ELFCOMMON_H */

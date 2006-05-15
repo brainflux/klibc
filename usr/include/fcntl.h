@@ -44,4 +44,4 @@ __extern int openat(int, const char *, int, ...);
 
 __extern int fcntl(int, int, ...);
 
-#endif /* _FCNTL_H */
+#endif				/* _FCNTL_H */

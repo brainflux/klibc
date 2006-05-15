@@ -21,4 +21,4 @@ __extern int munlockall(void);
 __extern int mlock(const void *, size_t);
 __extern int munlock(const void *, size_t);
 
-#endif /* _SYS_MMAN_H */
+#endif				/* _SYS_MMAN_H */

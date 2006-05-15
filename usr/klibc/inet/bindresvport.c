@@ -29,15 +29,16 @@ int bindresvport(int sd, struct sockaddr_in *sin)
 		return -1;
 	}
 
-	if (port == 0) {
+	if (port == 0)
 		port = START_PORT + (getpid() % NUM_PORTS);
-	}
 
 	for (i = 0; i < NUM_PORTS; i++, port++) {
 		if (port == END_PORT)
 			port = START_PORT;
 		sin->sin_port = htons(port);
-		if ((ret = bind(sd, (struct sockaddr *)sin, sizeof(*sin))) != -1)
+		
+		ret = bind(sd, (struct sockaddr *)sin, sizeof(*sin));
+		if (ret != -1)
 			break;
 	}
 

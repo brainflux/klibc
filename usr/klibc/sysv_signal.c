@@ -6,6 +6,6 @@
 
 __sighandler_t sysv_signal(int signum, __sighandler_t handler)
 {
-  /* Linux/SysV signal() semantics */
-  return __signal(signum, handler, SA_RESETHAND);
+	/* Linux/SysV signal() semantics */
+	return __signal(signum, handler, SA_RESETHAND);
 }

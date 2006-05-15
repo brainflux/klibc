@@ -106,4 +106,4 @@ __asm__ volatile (__syscall \
 __syscall_return(type,__res); \
 }
 
-#endif /* _KLIBC_ARCHSYS_H */
+#endif				/* _KLIBC_ARCHSYS_H */

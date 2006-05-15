@@ -62,7 +62,7 @@ struct jfs_superblock {
 	__le32 s_state;		/* 4: mount/unmount/recovery state:
 				 *    see jfs_filsys.h
 				 */
-	__le32 s_compress;		/* 4: > 0 if data compression */
+	__le32 s_compress;	/* 4: > 0 if data compression */
 
 	__le64 s_ait2;		/* 8: first extent of secondary
 				 *    aggregate inode table
@@ -71,9 +71,9 @@ struct jfs_superblock {
 	__le64 s_aim2;		/* 8: first extent of secondary
 				 *    aggregate inode map
 				 */
-	__le32 s_logdev;		/* 4: device address of log */
+	__le32 s_logdev;	/* 4: device address of log */
 	__le32 s_logserial;	/* 4: log serial number at aggregate mount */
-	__le64 s_logpxd;		/* 8: inline log extent */
+	__le64 s_logpxd;	/* 8: inline log extent */
 
 	__le64 s_fsckpxd;	/* 8: inline fsck work space extent */
 

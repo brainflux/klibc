@@ -49,38 +49,39 @@ typedef int sig_atomic_t;
 # define SIGRTMAX (_NSIG-1)
 #endif
 
-__extern const char * const sys_siglist[_NSIG];
-__extern const char * const sys_sigabbrev[_NSIG];
+__extern const char *const sys_siglist[_NSIG];
+__extern const char *const sys_sigabbrev[_NSIG];
 
 /* This assumes sigset_t is either an unsigned long or an array of such,
    and that _NSIG_BPW in the kernel is always LONG_BIT */
 
-static __inline__ int sigemptyset(sigset_t *__set)
+static __inline__ int sigemptyset(sigset_t * __set)
 {
-  memset(__set, 0, sizeof *__set);
-  return 0;
+	memset(__set, 0, sizeof *__set);
+	return 0;
 }
-static __inline__ int sigfillset(sigset_t *__set)
+static __inline__ int sigfillset(sigset_t * __set)
 {
-  memset(__set, ~0, sizeof *__set);
-  return 0;
+	memset(__set, ~0, sizeof *__set);
+	return 0;
 }
-static __inline__ int sigaddset(sigset_t *__set, int __signum)
+static __inline__ int sigaddset(sigset_t * __set, int __signum)
 {
-  unsigned long *__lset = (unsigned long *)__set;
-  __lset[__signum/LONG_BIT] |= 1UL << (__signum%LONG_BIT);
-  return 0;
+	unsigned long *__lset = (unsigned long *)__set;
+	__lset[__signum / LONG_BIT] |= 1UL << (__signum % LONG_BIT);
+	return 0;
 }
-static __inline__ int sigdelset(sigset_t *__set, int __signum)
+static __inline__ int sigdelset(sigset_t * __set, int __signum)
 {
-  unsigned long *__lset = (unsigned long *)__set;
-  __lset[__signum/LONG_BIT] &= ~(1UL << (__signum%LONG_BIT));
-  return 0;
+	unsigned long *__lset = (unsigned long *)__set;
+	__lset[__signum / LONG_BIT] &= ~(1UL << (__signum % LONG_BIT));
+	return 0;
 }
-static __inline__ int sigismember(sigset_t *__set, int __signum)
+static __inline__ int sigismember(sigset_t * __set, int __signum)
 {
-  unsigned long *__lset = (unsigned long *)__set;
-  return (int)((__lset[__signum/LONG_BIT] >> (__signum%LONG_BIT)) & 1);
+	unsigned long *__lset = (unsigned long *)__set;
+	return (int)((__lset[__signum / LONG_BIT] >> (__signum % LONG_BIT)) &
+		     1);
 }
 
 __extern __sighandler_t __signal(int, __sighandler_t, int);
@@ -93,4 +94,4 @@ __extern int sigsuspend(const sigset_t *);
 __extern int raise(int);
 __extern int kill(pid_t, int);
 
-#endif /* _SIGNAL_H */
+#endif				/* _SIGNAL_H */

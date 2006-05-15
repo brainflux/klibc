@@ -11,4 +11,4 @@
 #define LONG_MAX	2147483647L
 #define ULONG_MAX	4294967295UL
 
-#endif /* _BITSIZE_LIMITS_H */
+#endif				/* _BITSIZE_LIMITS_H */

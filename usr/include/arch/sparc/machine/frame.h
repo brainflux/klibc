@@ -44,9 +44,10 @@
  *	@(#)frame.h	8.1 (Berkeley) 6/11/93
  */
 
-#if defined(_KERNEL_OPT)
-#include "opt_sparc_arch.h"
-#endif
+#ifndef _MACHINE_FRAME_H
+#define _MACHINE_FRAME_H
+
+#include <stdint.h>
 
 /*
  * Sparc stack frame format.
@@ -59,31 +60,31 @@
 #ifndef _LOCORE
 #ifndef SUN4U
 struct frame {
-	int32_t	fr_local[8];	/* space to save locals (%l0..%l7) */
-	int32_t	fr_arg[6];	/* space to save arguments (%i0..%i5) */
-	struct	frame *fr_fp;	/* space to save frame pointer (%i6) */
-	int32_t	fr_pc;		/* space to save return pc (%i7) */
+	int32_t fr_local[8];	/* space to save locals (%l0..%l7) */
+	int32_t fr_arg[6];	/* space to save arguments (%i0..%i5) */
+	struct frame *fr_fp;	/* space to save frame pointer (%i6) */
+	int32_t fr_pc;		/* space to save return pc (%i7) */
 	/*
 	 * SunOS reserves another 8 words here; this is pointless
 	 * but we do it for compatibility.
 	 */
-	int32_t	fr_xxx;		/* `structure return pointer' (unused) */
-	int32_t	fr_argd[6];	/* `arg dump area' (lunacy) */
-	int32_t	fr_argx[1];	/* arg extension (args 7..n; variable size) */
+	int32_t fr_xxx;		/* `structure return pointer' (unused) */
+	int32_t fr_argd[6];	/* `arg dump area' (lunacy) */
+	int32_t fr_argx[1];	/* arg extension (args 7..n; variable size) */
 };
 #else
 struct frame32 {
-	int32_t	fr_local[8];	/* space to save locals (%l0..%l7) */
-	int32_t	fr_arg[6];	/* space to save arguments (%i0..%i5) */
-	u_int32_t	fr_fp;	/* space to save frame pointer (%i6) */
-	u_int32_t	fr_pc;	/* space to save return pc (%i7) */
+	int32_t fr_local[8];	/* space to save locals (%l0..%l7) */
+	int32_t fr_arg[6];	/* space to save arguments (%i0..%i5) */
+	uint32_t fr_fp;	/* space to save frame pointer (%i6) */
+	uint32_t fr_pc;	/* space to save return pc (%i7) */
 	/*
 	 * SunOS reserves another 8 words here; this is pointless
 	 * but we do it for compatibility.
 	 */
-	int32_t	fr_xxx;		/* `structure return pointer' (unused) */
-	int32_t	fr_argd[6];	/* `arg dump area' (lunacy) */
-	int32_t	fr_argx[1];	/* arg extension (args 7..n; variable size) */
+	int32_t fr_xxx;		/* `structure return pointer' (unused) */
+	int32_t fr_argd[6];	/* `arg dump area' (lunacy) */
+	int32_t fr_argx[1];	/* arg extension (args 7..n; variable size) */
 };
 #endif
 #endif
@@ -110,15 +111,15 @@ struct frame32 {
  */
 #if !defined(_LOCORE) && !defined(_LIBC)
 struct frame64 {
-	int64_t	fr_local[8];	/* space to save locals (%l0..%l7) */
-	int64_t	fr_arg[6];	/* space to save arguments (%i0..%i5) */
-	u_int64_t	fr_fp;		/* space to save frame pointer (%i6) */
-	u_int64_t	fr_pc;		/* space to save return pc (%i7) */
+	int64_t fr_local[8];	/* space to save locals (%l0..%l7) */
+	int64_t fr_arg[6];	/* space to save arguments (%i0..%i5) */
+	uint64_t fr_fp;		/* space to save frame pointer (%i6) */
+	uint64_t fr_pc;		/* space to save return pc (%i7) */
 	/*
 	 * SVR4 reserves a bunch of extra stuff.
 	 */
 	int64_t fr_argd[6];	/* `register save area' (lunacy) */
-	int64_t	fr_argx[0];	/* arg extension (args 7..n; variable size) */
+	int64_t fr_argx[0];	/* arg extension (args 7..n; variable size) */
 };
 
 #define v9next_frame(f)		((struct frame64*)(f->fr_fp+BIAS))
@@ -135,3 +136,5 @@ struct frame64 {
  * detect it by testing the register for an odd value.  Why 2K-1 I don't know.
  */
 #define BIAS	(2048-1)
+
+#endif /* _MACHINE_FRAME_H */

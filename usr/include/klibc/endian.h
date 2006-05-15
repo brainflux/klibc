@@ -36,4 +36,4 @@
 # error "Unknown byte order!"
 #endif
 
-#endif /* _KLIBC_ENDIAN_H */
+#endif				/* _KLIBC_ENDIAN_H */

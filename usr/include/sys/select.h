@@ -14,4 +14,4 @@ __extern int select(int, fd_set *, fd_set *, fd_set *, struct timeval *);
 __extern int pselect(int, fd_set *, fd_set *, fd_set *,
 		     const struct timespec *, const sigset_t *);
 
-#endif /* _SYS_SELECT_H */
+#endif				/* _SYS_SELECT_H */

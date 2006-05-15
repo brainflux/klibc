@@ -31,22 +31,22 @@ static int rd_copy_uncompressed(int ffd, int dfd)
 
 	DEBUG(("kinit: uncompressed initrd\n"));
 
-	if ( ffd < 0 || fstat(ffd, &st) || !S_ISREG(st.st_mode) ||
-	     (bytes = st.st_size) == 0 )
+	if (ffd < 0 || fstat(ffd, &st) || !S_ISREG(st.st_mode) ||
+	    (bytes = st.st_size) == 0)
 		return -1;
 
-	while ( bytes ) {
-		ssize_t blocksize = ((bytes-1) & (BUF_SIZE-1))+1;
-		off_t offset = bytes-blocksize;
+	while (bytes) {
+		ssize_t blocksize = ((bytes - 1) & (BUF_SIZE - 1)) + 1;
+		off_t offset = bytes - blocksize;
 
 		DEBUG(("kinit: copying %zd bytes at offset %llu\n",
 		       blocksize, offset));
 
-		if ( xpread(ffd, buffer, blocksize, offset) != blocksize ||
-		     xpwrite(dfd, buffer, blocksize, offset) != blocksize )
+		if (xpread(ffd, buffer, blocksize, offset) != blocksize ||
+		    xpwrite(dfd, buffer, blocksize, offset) != blocksize)
 			return -1;
 
-		ftruncate(ffd, offset); /* Free up memory */
+		ftruncate(ffd, offset);	/* Free up memory */
 		bytes = offset;
 	}
 	return 0;
@@ -58,11 +58,11 @@ static int rd_copy_image(const char *path)
 	int rv = -1;
 	unsigned char gzip_magic[2];
 
-	if ( ffd < 0 )
+	if (ffd < 0)
 		goto barf;
 
-	if ( xpread(ffd, gzip_magic, 2, 0) == 2 &&
-	     gzip_magic[0] == 037 && gzip_magic[1] == 0213 ) {
+	if (xpread(ffd, gzip_magic, 2, 0) == 2 &&
+	    gzip_magic[0] == 037 && gzip_magic[1] == 0213) {
 		FILE *wfd = fopen("/dev/ram0", "w");
 		if (!wfd)
 			goto barf;
@@ -85,8 +85,7 @@ barf:
 /*
  * Run /linuxrc, for emulation of old-style initrd
  */
-static int
-run_linuxrc(int argc, char *argv[], dev_t root_dev)
+static int run_linuxrc(int argc, char *argv[], dev_t root_dev)
 {
 	int root_fd, old_fd;
 	pid_t pid;
@@ -96,7 +95,7 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 
 	DEBUG(("kinit: mounting initrd\n"));
 	mkdir("/root", 0700);
-	if ( !mount_block(ramdisk_name, "/root", NULL, MS_VERBOSE, NULL) )
+	if (!mount_block(ramdisk_name, "/root", NULL, MS_VERBOSE, NULL))
 		return -errno;
 
 	/* Write the current "real root device" out to procfs */
@@ -106,37 +105,34 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	fclose(fp);
 
 	mkdir("/old", 0700);
-	root_fd = open_cloexec("/", O_RDONLY|O_DIRECTORY, 0);
-	old_fd = open_cloexec("/old", O_RDONLY|O_DIRECTORY, 0);
+	root_fd = open_cloexec("/", O_RDONLY | O_DIRECTORY, 0);
+	old_fd = open_cloexec("/old", O_RDONLY | O_DIRECTORY, 0);
 
-	if ( root_fd < 0 || old_fd < 0 )
+	if (root_fd < 0 || old_fd < 0)
 		return -errno;
 
-	if ( chdir("/root") ||
-	     mount(".", "/", NULL, MS_MOVE, NULL) ||
-	     chroot(".") )
+	if (chdir("/root") ||
+	    mount(".", "/", NULL, MS_MOVE, NULL) || chroot("."))
 		return -errno;
 
 	pid = fork();
-	if ( pid == 0 ) {
+	if (pid == 0) {
 		setsid();
 		/* Looks like linuxrc doesn't get the init environment
 		   or parameters.  Weird, but so is the whole linuxrc bit. */
 		execl("/linuxrc", "linuxrc", NULL);
 		_exit(255);
-	} else if ( pid > 0 ) {
+	} else if (pid > 0) {
 		DEBUG(("kinit: Waiting for linuxrc to complete...\n"));
-		while ( waitpid(pid, NULL, 0) != pid )
-			;
+		while (waitpid(pid, NULL, 0) != pid) ;
 		DEBUG(("kinit: linuxrc done\n"));
 	} else {
 		return -errno;
 	}
 
-	if ( fchdir(old_fd) ||
-	     mount("/", ".", NULL, MS_MOVE, NULL) ||
-	     fchdir(root_fd) ||
-	     chroot(".") )
+	if (fchdir(old_fd) ||
+	    mount("/", ".", NULL, MS_MOVE, NULL) ||
+	    fchdir(root_fd) || chroot("."))
 		return -errno;
 
 	close(root_fd);
@@ -146,21 +142,23 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 
 	/* If realroot is Root_RAM0, then the initrd did any necessary work */
 	if (realroot == Root_RAM0) {
-		if ( mount("/old", "/root", NULL, MS_MOVE, NULL) )
+		if (mount("/old", "/root", NULL, MS_MOVE, NULL))
 			return -errno;
 	} else {
-		mount_root(argc, argv, (dev_t)realroot, NULL);
+		mount_root(argc, argv, (dev_t) realroot, NULL);
 
 		/* If /root/initrd exists, move the initrd there, otherwise discard */
-		if ( !mount("/old", "/root/initrd", NULL, MS_MOVE, NULL) ) {
+		if (!mount("/old", "/root/initrd", NULL, MS_MOVE, NULL)) {
 			/* We're good */
 		} else {
 			int olddev = open(ramdisk_name, O_RDWR);
 			umount2("/old", MNT_DETACH);
-			if ( olddev < 0 ||
-			     ioctl(olddev, BLKFLSBUF, (long)0) ||
-			     close(olddev) ) {
-				fprintf(stderr, "%s: Cannot flush initrd contents\n", progname);
+			if (olddev < 0 ||
+			    ioctl(olddev, BLKFLSBUF, (long)0) ||
+			    close(olddev)) {
+				fprintf(stderr,
+					"%s: Cannot flush initrd contents\n",
+					progname);
 			}
 		}
 	}
@@ -169,17 +167,16 @@ run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	return 0;
 }
 
-
 int initrd_load(int argc, char *argv[], dev_t root_dev)
 {
-	if ( access("/initrd.image", R_OK) )
+	if (access("/initrd.image", R_OK))
 		return 0;	/* No initrd */
 
 	DEBUG(("kinit: initrd found\n"));
 
 	create_dev("/dev/ram0", Root_RAM0);
 
-	if ( rd_copy_image("/initrd.image") || unlink("/initrd.image") ) {
+	if (rd_copy_image("/initrd.image") || unlink("/initrd.image")) {
 		fprintf(stderr, "%s: initrd installation failed (too big?)\n",
 			progname);
 		return 0;	/* Failed to copy initrd */
@@ -192,7 +189,8 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 		DEBUG(("kinit: running linuxrc\n"));
 		err = run_linuxrc(argc, argv, root_dev);
 		if (err)
-			fprintf(stderr, "%s: running linuxrc: %s\n", progname, strerror(-err));
+			fprintf(stderr, "%s: running linuxrc: %s\n", progname,
+				strerror(-err));
 	} else {
 		DEBUG(("kinit: permament (or pivoting) initrd, not running linuxrc\n"));
 	}

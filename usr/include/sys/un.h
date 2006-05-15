@@ -7,4 +7,4 @@
 
 #include <linux/un.h>
 
-#endif /* _SYS_UN_H */
+#endif				/* _SYS_UN_H */

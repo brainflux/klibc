@@ -44,4 +44,4 @@ __extern size_t strspn(const char *, const char *);
 __extern char *strstr(const char *, const char *);
 __extern char *strtok(char *, const char *);
 
-#endif /* _STRING_H */
+#endif				/* _STRING_H */

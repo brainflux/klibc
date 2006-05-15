@@ -10,4 +10,4 @@
 #include <unistd.h>
 pid_t start_dummy_portmap(const char *file);
 
-#endif /* KINIT_DUMMYPORTMAP_H */
+#endif				/* KINIT_DUMMYPORTMAP_H */

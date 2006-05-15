@@ -17,7 +17,6 @@
 #define LUKS_KEY_ENABLED	0x00AC71F3
 #define LUKS_STRIPES		4000
 
-
 /* On-disk "super block" */
 struct luks_partition_header {
 	char	magic[LUKS_MAGIC_L];
@@ -26,7 +25,7 @@ struct luks_partition_header {
 	char	cipherMode[LUKS_CIPHERMODE_L];
 	char	hashSpec[LUKS_HASHSPEC_L];
 	__be32	payloadOffset;
-	__be32  keyBytes;
+	__be32	keyBytes;
 	char	mkDigest[LUKS_DIGESTSIZE];
 	char	mkDigestSalt[LUKS_SALTSIZE];
 	__be32	mkDigestIterations;

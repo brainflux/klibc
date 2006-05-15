@@ -26,62 +26,62 @@ const char *progname;
 static jmp_buf abort_buf;
 
 static struct nfs_mount_data mount_data = {
-	.version = NFS_MOUNT_VERSION,
-	.flags = NFS_MOUNT_NONLM | NFS_MOUNT_VER3 | NFS_MOUNT_TCP,
-	.rsize = 0,		/* Server's choice */
-	.wsize = 0,		/* Server's choice */
-	.timeo = 7,
-	.retrans = 3,
-	.acregmin = 3,
-	.acregmax = 60,
-	.acdirmin = 30,
-	.acdirmax = 60,
-	.namlen = NAME_MAX,
+	.version	= NFS_MOUNT_VERSION,
+	.flags		= NFS_MOUNT_NONLM | NFS_MOUNT_VER3 | NFS_MOUNT_TCP,
+	.rsize		= 0,	/* Server's choice */
+	.wsize		= 0,	/* Server's choice */
+	.timeo		= 7,
+	.retrans	= 3,
+	.acregmin	= 3,
+	.acregmax	= 60,
+	.acdirmin	= 30,
+	.acdirmax	= 60,
+	.namlen		= NAME_MAX,
 };
 
 int nfs_port;
 
 static struct int_opts {
 	char *name;
-	int  *val;
+	int *val;
 } int_opts[] = {
-	{ "port",	&nfs_port },
-	{ "rsize",	&mount_data.rsize },
-	{ "wsize",	&mount_data.wsize },
-	{ "timeo",	&mount_data.timeo },
-	{ "retrans",	&mount_data.retrans },
-	{ "acregmin",	&mount_data.acregmin },
-	{ "acregmax",	&mount_data.acregmax },
-	{ "acdirmin",	&mount_data.acdirmin },
-	{ "acdirmax",	&mount_data.acdirmax },
-	{ NULL,		NULL }
+	{"port",	&nfs_port},
+	{"rsize",	&mount_data.rsize},
+	{"wsize",	&mount_data.wsize},
+	{"timeo",	&mount_data.timeo},
+	{"retrans",	&mount_data.retrans},
+	{"acregmin",	&mount_data.acregmin},
+	{"acregmax",	&mount_data.acregmax},
+	{"acdirmin",	&mount_data.acdirmin},
+	{"acdirmax",	&mount_data.acdirmax},
+	{NULL, NULL}
 };
 
 static struct bool_opts {
 	char *name;
-	int  and_mask;
-	int  or_mask;
+	int and_mask;
+	int or_mask;
 } bool_opts[] = {
-	{ "soft",	~NFS_MOUNT_SOFT,	NFS_MOUNT_SOFT },
-	{ "hard",	~NFS_MOUNT_SOFT,	0 },
-	{ "intr",	~NFS_MOUNT_INTR,	NFS_MOUNT_INTR },
-	{ "nointr",	~NFS_MOUNT_INTR,	0 },
-	{ "posix",	~NFS_MOUNT_POSIX,	NFS_MOUNT_POSIX },
-	{ "noposix",	~NFS_MOUNT_POSIX,	0 },
-	{ "cto",	~NFS_MOUNT_NOCTO,	0 },
-	{ "nocto",	~NFS_MOUNT_NOCTO,	NFS_MOUNT_NOCTO },
-	{ "ac",		~NFS_MOUNT_NOAC,	0 },
-	{ "noac",	~NFS_MOUNT_NOAC,	NFS_MOUNT_NOAC },
-	{ "lock",	~NFS_MOUNT_NONLM,	0 },
-	{ "nolock",	~NFS_MOUNT_NONLM,	NFS_MOUNT_NONLM },
-	{ "v2",		~NFS_MOUNT_VER3,	0 },
-	{ "v3",		~NFS_MOUNT_VER3,	NFS_MOUNT_VER3 },
-	{ "udp",	~NFS_MOUNT_TCP,		0 },
-	{ "tcp",	~NFS_MOUNT_TCP,		NFS_MOUNT_TCP },
-	{ "broken_suid",~NFS_MOUNT_BROKEN_SUID,	NFS_MOUNT_BROKEN_SUID },
-	{ "ro",		~NFS_MOUNT_KLIBC_RONLY, NFS_MOUNT_KLIBC_RONLY },
-	{ "rw",		~NFS_MOUNT_KLIBC_RONLY,	0 },
-	{ NULL,		0,			0 }
+	{"soft", ~NFS_MOUNT_SOFT, NFS_MOUNT_SOFT},
+	{"hard", ~NFS_MOUNT_SOFT, 0},
+	{"intr", ~NFS_MOUNT_INTR, NFS_MOUNT_INTR},
+	{"nointr", ~NFS_MOUNT_INTR, 0},
+	{"posix", ~NFS_MOUNT_POSIX, NFS_MOUNT_POSIX},
+	{"noposix", ~NFS_MOUNT_POSIX, 0},
+	{"cto", ~NFS_MOUNT_NOCTO, 0},
+	{"nocto", ~NFS_MOUNT_NOCTO, NFS_MOUNT_NOCTO},
+	{"ac", ~NFS_MOUNT_NOAC, 0},
+	{"noac", ~NFS_MOUNT_NOAC, NFS_MOUNT_NOAC},
+	{"lock", ~NFS_MOUNT_NONLM, 0},
+	{"nolock", ~NFS_MOUNT_NONLM, NFS_MOUNT_NONLM},
+	{"v2", ~NFS_MOUNT_VER3, 0},
+	{"v3", ~NFS_MOUNT_VER3, NFS_MOUNT_VER3},
+	{"udp", ~NFS_MOUNT_TCP, 0},
+	{"tcp", ~NFS_MOUNT_TCP, NFS_MOUNT_TCP},
+	{"broken_suid", ~NFS_MOUNT_BROKEN_SUID, NFS_MOUNT_BROKEN_SUID},
+	{"ro", ~NFS_MOUNT_KLIBC_RONLY, NFS_MOUNT_KLIBC_RONLY},
+	{"rw", ~NFS_MOUNT_KLIBC_RONLY, 0},
+	{NULL, 0, 0}
 };
 
 static int parse_int(const char *val, const char *ctx)
@@ -89,7 +89,7 @@ static int parse_int(const char *val, const char *ctx)
 	char *end;
 	int ret;
 
-	ret = (int) strtoul(val, &end, 0);
+	ret = (int)strtoul(val, &end, 0);
 	if (*val == '\0' || *end != '\0') {
 		fprintf(stderr, "%s: invalid value for %s\n", val, ctx);
 		longjmp(abort_buf, 1);
@@ -150,16 +150,14 @@ static void check_path(const char *path)
 	if (stat(path, &st) == -1) {
 		perror("stat");
 		longjmp(abort_buf, 1);
-	}
-	else if (!S_ISDIR(st.st_mode)) {
-		fprintf(stderr, "%s: '%s' not a directory\n",
-			progname, path);
+	} else if (!S_ISDIR(st.st_mode)) {
+		fprintf(stderr, "%s: '%s' not a directory\n", progname, path);
 		longjmp(abort_buf, 1);
 	}
 }
 
 int main(int argc, char *argv[])
-	__attribute__ ((weak, alias ("nfsmount_main")));
+    __attribute__ ((weak, alias("nfsmount_main")));
 
 int nfsmount_main(int argc, char *argv[])
 {
@@ -173,8 +171,8 @@ int nfsmount_main(int argc, char *argv[])
 	pid_t spoof_portmap;
 	int err;
 
-	if ( (err = setjmp(abort_buf)) )
-	     return err;
+	if ((err = setjmp(abort_buf)))
+		return err;
 
 	/* Set these here to avoid longjmp warning */
 	portmap_file = NULL;
@@ -195,7 +193,7 @@ int nfsmount_main(int argc, char *argv[])
 			parse_opts(optarg);
 			break;
 		case 'p':
-			portmap_file  = optarg;
+			portmap_file = optarg;
 			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
@@ -256,7 +254,7 @@ int nfsmount_main(int argc, char *argv[])
 		kill(SIGTERM, spoof_portmap);
 		while (waitpid(spoof_portmap, NULL, 0) == -1 &&
 		       errno == EINTR)
-			;
+		  ;
 	}
 
 	free(rem_name);

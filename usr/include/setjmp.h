@@ -25,8 +25,8 @@ __extern __noreturn longjmp(jmp_buf, int);
 */
 
 struct __sigjmp_buf {
-  jmp_buf __jmpbuf;
-  sigset_t __sigs;
+	jmp_buf __jmpbuf;
+	sigset_t __sigs;
 };
 
 typedef struct __sigjmp_buf sigjmp_buf[1];
@@ -40,4 +40,4 @@ typedef struct __sigjmp_buf sigjmp_buf[1];
 
 __extern __noreturn siglongjmp(sigjmp_buf, int);
 
-#endif /* _SETJMP_H */
+#endif				/* _SETJMP_H */

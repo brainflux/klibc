@@ -8,11 +8,11 @@
 #define LVM2_TYPE		"LVM2 001"
 
 struct lvm2_super_block {
-	char 		magic[LVM2_MAGIC_L];
-	__be64		sector;
-	__be32		crc;
-	__be32		offset;
-	char		type[LVM2_TYPE_L];
+	char magic[LVM2_MAGIC_L];
+	__be64 sector;
+	__be32 crc;
+	__be32 offset;
+	char type[LVM2_TYPE_L];
 };
 
 #endif

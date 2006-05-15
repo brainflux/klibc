@@ -13,4 +13,4 @@ __extern int inotify_init(void);
 __extern int inotify_add_watch(int, const char *, __u32);
 __extern int inotify_rm_watch(int, __u32);
 
-#endif /* _SYS_INOTIFY_H */
+#endif				/* _SYS_INOTIFY_H */

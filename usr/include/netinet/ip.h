@@ -8,6 +8,6 @@
 #include <endian.h>
 #include <linux/ip.h>
 
-#define IP_DF		0x4000		/* Flag: "Don't Fragment" */
+#define IP_DF		0x4000	/* Flag: "Don't Fragment" */
 
-#endif /* _NETINET_IP_H */
+#endif				/* _NETINET_IP_H */

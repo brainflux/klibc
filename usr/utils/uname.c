@@ -12,7 +12,6 @@
 #include <string.h>
 #include <sys/utsname.h>
 
-
 enum uname_fields {
 	UN_SYSNAME,
 	UN_NODENAME,
@@ -29,8 +28,7 @@ enum uname_fields {
 	UN_NR_FIELDS
 };
 
-
-void usage(FILE *stream, const char *progname)
+void usage(FILE * stream, const char *progname)
 {
 	fprintf(stream,
 		"Usage: %s [OPTION] . . .\n"
@@ -40,8 +38,7 @@ void usage(FILE *stream, const char *progname)
 		"  -s   kernel name\n"
 		"  -n   network node name (hostname)\n"
 		"  -r   kernel release\n"
-		"  -v   kernel version\n"
-		"  -m   machine hardware name\n"
+		"  -v   kernel version\n" "  -m   machine hardware name\n"
 #if NOT_IMPLEMENTED_PROCESSOR
 		"  -p   processor type\n"
 #endif
@@ -49,32 +46,24 @@ void usage(FILE *stream, const char *progname)
 #if NOT_IMPLEMENTED_OS
 		"  -o   operating system\n"
 #endif
-		"\n"
-		"  -h   help/usage\n"
-		"\n",
-		progname);
+		"\n" "  -h   help/usage\n" "\n", progname);
 }
-
 
 char *make_hardware(const char *machine)
 {
 	char *hardware;
 
-	if (! (hardware = strdup(machine))) {
-		fprintf(stderr, "strdup() failed: %s\n",
-			strerror(errno));
+	if (!(hardware = strdup(machine))) {
+		fprintf(stderr, "strdup() failed: %s\n", strerror(errno));
 		goto end;
 	}
 	if (strlen(hardware) == 4
-	    && hardware[0] == 'i'
-	    && hardware[2] == '8'
-	    && hardware[3] == '6') {
+	    && hardware[0] == 'i' && hardware[2] == '8' && hardware[3] == '6') {
 		hardware[1] = '3';
 	}
- end:
+      end:
 	return hardware;
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -103,7 +92,7 @@ int main(int argc, char *argv[])
 			uname_fields[UN_VERSION] = buf.version;
 			uname_fields[UN_MACHINE] = buf.machine;
 			uname_fields[UN_HARDWARE] = make_hardware(buf.machine);
-			if (! uname_fields[UN_HARDWARE])
+			if (!uname_fields[UN_HARDWARE])
 				goto end;
 			break;
 		case 's':
@@ -127,7 +116,7 @@ int main(int argc, char *argv[])
 #endif
 		case 'i':
 			uname_fields[UN_HARDWARE] = make_hardware(buf.machine);
-			if (! uname_fields[UN_HARDWARE])
+			if (!uname_fields[UN_HARDWARE])
 				goto end;
 			break;
 #if NOT_IMPLEMENTED_OS
@@ -147,7 +136,7 @@ int main(int argc, char *argv[])
 	}
 
 	for (nr_pr = 0, i = UN_SYSNAME; i < UN_NR_FIELDS; i++) {
-		if (! uname_fields[i])
+		if (!uname_fields[i])
 			continue;
 		if (nr_pr)
 			fputc(' ', stdout);
@@ -158,7 +147,7 @@ int main(int argc, char *argv[])
 
 	ec = 0;
 
- end:
+      end:
 	if (uname_fields[UN_HARDWARE])
 		free(uname_fields[UN_HARDWARE]);
 	return ec;

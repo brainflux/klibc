@@ -18,12 +18,12 @@ typedef struct {
 } sigset_t;
 
 struct sigaction {
-        union {
-		__sighandler_t        _sa_handler;
-		void (*_sa_sigaction)(int, struct siginfo *, void *);
-        } _u;
-        sigset_t        sa_mask;
-        int             sa_flags;
+	union {
+		__sighandler_t _sa_handler;
+		void (*_sa_sigaction) (int, struct siginfo *, void *);
+	} _u;
+	sigset_t sa_mask;
+	int sa_flags;
 };
 
 #define sa_handler      _u._sa_handler

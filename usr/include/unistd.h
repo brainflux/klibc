@@ -24,10 +24,10 @@ __extern pid_t getpgrp(void);
 __extern int setpgrp(void);
 __extern pid_t setsid(void);
 __extern pid_t getsid(pid_t);
-__extern int execv(const char *, char * const *);
-__extern int execvp(const char *, char * const *);
-__extern int execve(const char *, char * const *, char * const *);
-__extern int execvpe(const char *, char * const *, char * const *);
+__extern int execv(const char *, char *const *);
+__extern int execvp(const char *, char *const *);
+__extern int execve(const char *, char *const *, char *const *);
+__extern int execvpe(const char *, char *const *, char *const *);
 __extern int execl(const char *, const char *, ...);
 __extern int execlp(const char *, const char *, ...);
 __extern int execle(const char *, const char *, ...);
@@ -89,8 +89,9 @@ __extern int openat(int, const char *, int, ...);
 __extern int close(int);
 __extern off_t lseek(int, off_t, int);
 /* off_t is 64 bits now even on 32-bit platforms; see llseek.c */
-static __inline__ off_t llseek(int __f, off_t __o, int __w) {
-  return lseek(__f, __o, __w);
+static __inline__ off_t llseek(int __f, off_t __o, int __w)
+{
+	return lseek(__f, __o, __w);
 }
 
 __extern ssize_t read(int, void *, size_t);
@@ -131,19 +132,21 @@ __extern void *__brk(void *);
 __extern int brk(void *);
 __extern void *sbrk(ptrdiff_t);
 
-__extern int getopt(int, char * const *, const char *);
+__extern int getopt(int, char *const *, const char *);
 __extern char *optarg;
 __extern int optind, opterr, optopt;
 
 __extern int isatty(int);
 
-static __inline__ int getpagesize(void) {
-  extern unsigned int __page_size;
-  return __page_size;
+static __inline__ int getpagesize(void)
+{
+	extern unsigned int __page_size;
+	return __page_size;
 }
-static __inline__ int __getpageshift(void) {
-  extern unsigned int __page_shift;
-  return __page_shift;
+static __inline__ int __getpageshift(void)
+{
+	extern unsigned int __page_shift;
+	return __page_shift;
 }
 
 __extern int daemon(int, int);
@@ -153,4 +156,4 @@ __extern int daemon(int, int);
 #define STDOUT_FILENO	1
 #define STDERR_FILENO	2
 
-#endif /* _UNISTD_H */
+#endif				/* _UNISTD_H */

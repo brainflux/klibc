@@ -7,5 +7,5 @@
 
 int raise(int signal)
 {
-  return kill(getpid(), signal);
+	return kill(getpid(), signal);
 }

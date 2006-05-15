@@ -153,7 +153,6 @@
 #define RODATA(name)		.align 4; .text; .globl _C_LABEL(name); \
 				OTYPE(_C_LABEL(name)); _C_LABEL(name):
 
-
 #define ASMSTR			.asciz
 
 #define RCSID(name)		.asciz name
@@ -174,7 +173,7 @@
 #else
 #define	WARN_REFERENCES(_sym,_msg)				\
 	.section .gnu.warning./**/_sym ; .ascii _msg ; .text
-#endif /* __STDC__ */
+#endif				/* __STDC__ */
 #else
 #ifdef __STDC__
 #define	__STRING(x)			#x
@@ -186,7 +185,7 @@
 #define	WARN_REFERENCES(sym,msg)					\
 	.stabs msg,30,0,0,0 ;						\
 	.stabs __STRING(_/**/sym),1,0,0,0
-#endif /* __STDC__ */
-#endif /* __ELF__ */
+#endif				/* __STDC__ */
+#endif				/* __ELF__ */
 
-#endif /* _ASM_H_ */
+#endif				/* _ASM_H_ */

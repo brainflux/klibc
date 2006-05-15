@@ -7,8 +7,7 @@
 #include "nfsmount.h"
 #include "sunrpc.h"
 
-struct portmap_call
-{
+struct portmap_call {
 	struct rpc_call rpc;
 	__u32 program;
 	__u32 version;
@@ -16,17 +15,16 @@ struct portmap_call
 	__u32 port;
 };
 
-struct portmap_reply
-{
+struct portmap_reply {
 	struct rpc_reply rpc;
 	__u32 port;
 };
 
 static struct portmap_call call = {
 	.rpc = {
-		.program   = __constant_htonl(RPC_PMAP_PROGRAM),
-		.prog_vers = __constant_htonl(RPC_PMAP_VERSION),
-		.proc      = __constant_htonl(PMAP_PROC_GETPORT),
+		.program	= __constant_htonl(RPC_PMAP_PROGRAM),
+		.prog_vers	= __constant_htonl(RPC_PMAP_VERSION),
+		.proc		= __constant_htonl(PMAP_PROC_GETPORT),
 	}
 };
 
@@ -47,9 +45,9 @@ __u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
 	call.version = htonl(version);
 	call.proto = htonl(proto);
 
-	rpc.call = (struct rpc_call *) &call;
+	rpc.call = (struct rpc_call *)&call;
 	rpc.call_len = sizeof(call);
-	rpc.reply = (struct rpc_reply *) &reply;
+	rpc.reply = (struct rpc_reply *)&reply;
 	rpc.reply_len = sizeof(reply);
 
 	if (rpc_call(clnt, &rpc) < 0)
@@ -62,8 +60,8 @@ __u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
 	}
 
 	port = ntohl(reply.port);
-
- bail:
+	
+bail:
 	DEBUG(("Port for %d/%d[%s]: %d\n", program, version,
 	       proto == IPPROTO_TCP ? "tcp" : "udp", port));
 

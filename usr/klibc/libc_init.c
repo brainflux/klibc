@@ -35,73 +35,73 @@ char **environ;
 unsigned int __page_size, __page_shift;
 
 struct auxentry {
-  uintptr_t type;
-  uintptr_t v;
+	uintptr_t type;
+	uintptr_t v;
 };
 
-__noreturn __libc_init(uintptr_t *elfdata, void (*onexit)(void))
+__noreturn __libc_init(uintptr_t * elfdata, void (*onexit) (void))
 {
-  int argc;
-  char **argv, **envp, **envend;
-  struct auxentry *auxentry;
+	int argc;
+	char **argv, **envp, **envend;
+	struct auxentry *auxentry;
 #if SHARED
-  typedef int (*main_t)(int, char **, char **);
-  main_t MAIN = NULL;
+	typedef int (*main_t) (int, char **, char **);
+	main_t MAIN = NULL;
 #else
-  extern int main(int, char **, char **);
+	extern int main(int, char **, char **);
 #define MAIN main
 #endif
-  unsigned int page_size = 0, page_shift = 0;
+	unsigned int page_size = 0, page_shift = 0;
 
 #ifdef USE_ONEXIT
-  if ( onexit ) {
-    static struct atexit at_exit;
+	if (onexit) {
+		static struct atexit at_exit;
 
-    at_exit.fctn = (void(*)(int, void *))onexit;
-    /* at_exit.next = NULL already */
-    __atexit_list = &at_exit;
-  }
+		at_exit.fctn = (void (*)(int, void *))onexit;
+		/* at_exit.next = NULL already */
+		__atexit_list = &at_exit;
+	}
 #else
-  (void)onexit;			/* Ignore this... */
+	(void)onexit;		/* Ignore this... */
 #endif
 
-  argc = (int)*elfdata++;
-  argv = (char **)elfdata;
-  envp = argv+(argc+1);
+	argc = (int)*elfdata++;
+	argv = (char **)elfdata;
+	envp = argv + (argc + 1);
 
-  /* The auxillary entry vector is after all the environment vars */
-  for ( envend = envp ; *envend ; envend++ );
-  auxentry = (struct auxentry *)(envend+1);
+	/* The auxillary entry vector is after all the environment vars */
+	for (envend = envp; *envend; envend++) ;
+	auxentry = (struct auxentry *)(envend + 1);
 
-  while ( auxentry->type ) {
-    switch ( auxentry->type ) {
+	while (auxentry->type) {
+		switch (auxentry->type) {
 #if SHARED
-    case AT_ENTRY:
-      MAIN = (main_t)(auxentry->v);
-      break;
+		case AT_ENTRY:
+			MAIN = (main_t) (auxentry->v);
+			break;
 #endif
-    case AT_PAGESZ:
-      page_size = (unsigned int)(auxentry->v);
-      break;
-    }
-    auxentry++;
-  }
+		case AT_PAGESZ:
+			page_size = (unsigned int)(auxentry->v);
+			break;
+		}
+		auxentry++;
+	}
 
-  __page_size = page_size;
+	__page_size = page_size;
 
 #if __GNUC__ >= 4
-  /* unsigned int is 32 bits on all our architectures */
-  page_shift = __builtin_clz(page_size) ^ 31;
+	/* unsigned int is 32 bits on all our architectures */
+	page_shift = __builtin_clz(page_size) ^ 31;
 #elif defined(__i386__) || defined(__x86_64__)
-  asm("bsrl %1,%0" : "=r" (page_shift) : "r" (page_size));
+      asm("bsrl %1,%0": "=r"(page_shift):"r"(page_size));
 #else
-  while ( page_size > 1 ) {
-    page_shift++;
-    page_size >>= 1;
-  }
+	while (page_size > 1) {
+		page_shift++;
+		page_size >>= 1;
+	}
 #endif
-  __page_shift = page_shift;
+	__page_shift = page_shift;
 
-  environ = envp;
-  exit(MAIN(argc, argv, envp));
+	environ = envp;
+	exit(MAIN(argc, argv, envp));
 }

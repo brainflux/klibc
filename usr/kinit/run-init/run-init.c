@@ -49,46 +49,47 @@
 
 static const char *program;
 
-static void __attribute__((noreturn)) usage(void)
+static void __attribute__ ((noreturn)) usage(void)
 {
-  fprintf(stderr, "Usage: exec %s [-c consoledev] /real-root /sbin/init [args]\n", program);
-  exit(1);
+	fprintf(stderr,
+		"Usage: exec %s [-c consoledev] /real-root /sbin/init [args]\n",
+		program);
+	exit(1);
 }
-
 
 int main(int argc, char *argv[])
 {
-  /* Command-line options and defaults */
-  const char *console = "/dev/console";
-  const char *realroot;
-  const char *init;
-  const char *error;
-  char **initargs;
+	/* Command-line options and defaults */
+	const char *console = "/dev/console";
+	const char *realroot;
+	const char *init;
+	const char *error;
+	char **initargs;
 
-  /* Variables... */
-  int o;
+	/* Variables... */
+	int o;
 
-  /* Parse the command line */
-  program = argv[0];
+	/* Parse the command line */
+	program = argv[0];
 
-  while ( (o = getopt(argc, argv, "c:")) != -1 ) {
-    if ( o == 'c' ) {
-      console = optarg;
-    } else {
-      usage();
-    }
-  }
+	while ((o = getopt(argc, argv, "c:")) != -1) {
+		if (o == 'c') {
+			console = optarg;
+		} else {
+			usage();
+		}
+	}
 
-  if ( argc-optind < 2 )
-    usage();
+	if (argc - optind < 2)
+		usage();
 
-  realroot = argv[optind];
-  init     = argv[optind+1];
-  initargs = argv+optind+1;
+	realroot = argv[optind];
+	init = argv[optind + 1];
+	initargs = argv + optind + 1;
 
-  error = run_init(realroot, console, init, initargs);
+	error = run_init(realroot, console, init, initargs);
 
-  /* If run_init returns, something went wrong */
-  fprintf(stderr, "%s: %s: %s\n", program, error, strerror(errno));
-  return 1;
+	/* If run_init returns, something went wrong */
+	fprintf(stderr, "%s: %s: %s\n", program, error, strerror(errno));
+	return 1;
 }

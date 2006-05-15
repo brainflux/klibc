@@ -14,4 +14,4 @@
 /* IA64 doesn't have sys_vfork, it has architecture-specific code */
 #define _KLIBC_REAL_VFORK 1
 
-#endif /* _KLIBC_ARCHCONFIG_H */
+#endif				/* _KLIBC_ARCHCONFIG_H */

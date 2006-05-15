@@ -46,8 +46,7 @@ int packet_open(void)
 	/*
 	 * We want to broadcast
 	 */
-	if (setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &one,
-		       sizeof(one)) == -1) {
+	if (setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one)) == -1) {
 		perror("SO_BROADCAST");
 		close(fd);
 		fd = -1;
@@ -79,26 +78,26 @@ static unsigned int ip_checksum(__u16 *hdr, int len)
 }
 
 struct header {
-	struct iphdr	ip;
-	struct udphdr	udp;
-} __attribute__((packed));
+	struct iphdr ip;
+	struct udphdr udp;
+} __attribute__ ((packed));
 
 static struct header ipudp_hdrs = {
 	.ip = {
-		.ihl		= 5,
-		.version	= IPVERSION,
-		.frag_off	= __constant_htons(IP_DF),
-		.ttl		= 64,
-		.protocol	= IPPROTO_UDP,
-		.saddr		= INADDR_ANY,
-		.daddr		= INADDR_BROADCAST,
-	},
+	       .ihl		= 5,
+	       .version		= IPVERSION,
+	       .frag_off	= __constant_htons(IP_DF),
+	       .ttl		= 64,
+	       .protocol	= IPPROTO_UDP,
+	       .saddr		= INADDR_ANY,
+	       .daddr		= INADDR_BROADCAST,
+	       },
 	.udp = {
 		.source		= __constant_htons(LOCAL_PORT),
 		.dest		= __constant_htons(REMOTE_PORT),
 		.len		= 0,
 		.check		= 0,
-	},
+		},
 };
 
 #ifdef IPC_DEBUG		/* Only used by DEBUG(()) */
@@ -147,20 +146,20 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 	for (i = 0; i < iov_len; i++)
 		len += iov[i].iov_len;
 
-	sll.sll_family   = AF_PACKET;
+	sll.sll_family	 = AF_PACKET;
 	sll.sll_protocol = htons(ETH_P_IP);
-	sll.sll_ifindex  = dev->ifindex;
-	sll.sll_hatype   = dev->hwtype;
-	sll.sll_pkttype  = PACKET_BROADCAST;
-	sll.sll_halen    = dev->hwlen;
+	sll.sll_ifindex	 = dev->ifindex;
+	sll.sll_hatype	 = dev->hwtype;
+	sll.sll_pkttype	 = PACKET_BROADCAST;
+	sll.sll_halen	 = dev->hwlen;
 	memcpy(sll.sll_addr, dev->hwbrd, dev->hwlen);
 
-	ipudp_hdrs.ip.tot_len   = htons(len);
-	ipudp_hdrs.ip.check     = 0;
-	ipudp_hdrs.ip.check     = ip_checksum((__u16 *)&ipudp_hdrs.ip,
-						ipudp_hdrs.ip.ihl);
+	ipudp_hdrs.ip.tot_len = htons(len);
+	ipudp_hdrs.ip.check   = 0;
+	ipudp_hdrs.ip.check   = ip_checksum((__u16 *) & ipudp_hdrs.ip,
+					    ipudp_hdrs.ip.ihl);
 
-	ipudp_hdrs.udp.len      = htons(len - sizeof(struct iphdr));
+	ipudp_hdrs.udp.len    = htons(len - sizeof(struct iphdr));
 
 	DEBUG(("\n   bytes %d\n", len));
 
@@ -191,7 +190,7 @@ int packet_peek(int *ifindex)
 
 	return 0;
 
- discard_pkt:
+discard_pkt:
 	packet_discard();
 	return 0;
 }
@@ -202,8 +201,7 @@ void packet_discard(void)
 	struct sockaddr_ll sll;
 	socklen_t sllen = sizeof(sll);
 
-	recvfrom(pkt_fd, &iph, sizeof(iph), 0,
-		 (struct sockaddr *) &sll, &sllen);
+	recvfrom(pkt_fd, &iph, sizeof(iph), 0, (struct sockaddr *)&sll, &sllen);
 }
 
 /*
@@ -220,7 +218,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 		.msg_iov	= iov,
 		.msg_iovlen	= iov_len,
 		.msg_control	= NULL,
-		.msg_controllen	= 0,
+		.msg_controllen = 0,
 		.msg_flags	= 0
 	};
 	int ret, iphl;
@@ -250,7 +248,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 
 	DEBUG(("<- bytes %d ", ret));
 
-	if (ip_checksum((__u16 *)ip, ip->ihl) != 0)
+	if (ip_checksum((__u16 *) ip, ip->ihl) != 0)
 		goto free_pkt;
 
 	DEBUG(("\n   ip src %s ", ntoa(ip->saddr)));
@@ -277,11 +275,11 @@ int packet_recv(struct iovec *iov, int iov_len)
 
 	return ret;
 
- free_pkt:
+free_pkt:
 	free(ip);
 	return 0;
 
- discard_pkt:
+discard_pkt:
 	DEBUG(("discarded\n"));
 	packet_discard();
 	return 0;

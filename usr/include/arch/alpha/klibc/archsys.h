@@ -50,4 +50,4 @@ type name(void)                                                         \
         _syscall_return(type);                                          \
 }
 
-#endif /* _KLIBC_ARCHSYS_H */
+#endif				/* _KLIBC_ARCHSYS_H */

@@ -16,8 +16,8 @@ extern int __getpriority(int, int);
 
 int getpriority(int which, int who)
 {
-  int rv = __getpriority(which, who);
-  return ( rv < 0 ) ? rv : 20-rv;
+	int rv = __getpriority(which, who);
+	return (rv < 0) ? rv : 20-rv;
 }
 
 #endif

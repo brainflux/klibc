@@ -50,85 +50,86 @@ static int nuke(const char *what);
 
 static int nuke_dirent(int len, const char *dir, const char *name)
 {
-  int bytes = len+strlen(name)+2;
-  char path[bytes];
-  int xlen;
+	int bytes = len + strlen(name) + 2;
+	char path[bytes];
+	int xlen;
 
-  xlen = snprintf(path, bytes, "%s/%s", dir, name);
-  assert(xlen < bytes);
+	xlen = snprintf(path, bytes, "%s/%s", dir, name);
+	assert(xlen < bytes);
 
-  return nuke(path);
+	return nuke(path);
 }
 
 /* Wipe the contents of a directory, but not the directory itself */
 static int nuke_dir(const char *what)
 {
-  int len = strlen(what);
-  DIR *dir;
-  struct dirent *d;
-  int err = 0;
+	int len = strlen(what);
+	DIR *dir;
+	struct dirent *d;
+	int err = 0;
 
-  if ( !(dir = opendir(what)) ) {
-    /* EACCES means we can't read it.  Might be empty and removable;
-       if not, the rmdir() in nuke() will trigger an error. */
-    return (errno == EACCES) ? 0 : errno;
-  }
+	if (!(dir = opendir(what))) {
+		/* EACCES means we can't read it.  Might be empty and removable;
+		   if not, the rmdir() in nuke() will trigger an error. */
+		return (errno == EACCES) ? 0 : errno;
+	}
 
-  while ( (d = readdir(dir)) ) {
-    /* Skip . and .. */
-    if ( d->d_name[0] == '.' &&
-	 (d->d_name[1] == '\0' ||
-	  (d->d_name[1] == '.' && d->d_name[2] == '\0')) )
-      continue;
+	while ((d = readdir(dir))) {
+		/* Skip . and .. */
+		if (d->d_name[0] == '.' &&
+		    (d->d_name[1] == '\0' ||
+		     (d->d_name[1] == '.' && d->d_name[2] == '\0')))
+			continue;
 
-    err = nuke_dirent(len, what, d->d_name);
-    if ( err ) {
-      closedir(dir);
-      return err;
-    }
-  }
+		err = nuke_dirent(len, what, d->d_name);
+		if (err) {
+			closedir(dir);
+			return err;
+		}
+	}
 
-  closedir(dir);
+	closedir(dir);
 
-  return 0;
+	return 0;
 }
 
 static int nuke(const char *what)
 {
-  int rv;
-  int err = 0;
+	int rv;
+	int err = 0;
 
-  rv = unlink(what);
-  if ( rv < 0 ) {
-    if ( errno == EISDIR ) {
-      /* It's a directory. */
-      err = nuke_dir(what);
-      if ( !err ) err = rmdir(what) ? errno : err;
-    } else {
-      err = errno;
-    }
-  }
+	rv = unlink(what);
+	if (rv < 0) {
+		if (errno == EISDIR) {
+			/* It's a directory. */
+			err = nuke_dir(what);
+			if (!err)
+				err = rmdir(what) ? errno : err;
+		} else {
+			err = errno;
+		}
+	}
 
-  if ( err ) {
-    fprintf(stderr, "%s: %s: %s\n", program, what, strerror(err));
-    return err;
-  } else {
-    return 0;
-  }
+	if (err) {
+		fprintf(stderr, "%s: %s: %s\n", program, what, strerror(err));
+		return err;
+	} else {
+		return 0;
+	}
 }
 
 int main(int argc, char *argv[])
 {
-  int i;
-  int err = 0;
+	int i;
+	int err = 0;
 
-  program = argv[0];
+	program = argv[0];
 
-  for ( i = 1 ; i < argc ; i++ ) {
-    err = nuke(argv[i]);
-    if ( err )
-      break;
-  }
+	for (i = 1; i < argc; i++) {
+		err = nuke(argv[i]);
+		if (err)
+			break;
+	}
 
-  return !!err;
+	return !!err;
 }

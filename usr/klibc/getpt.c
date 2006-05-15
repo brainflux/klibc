@@ -13,5 +13,5 @@
 
 int getpt(void)
 {
-  return open("/dev/ptmx", O_RDWR|O_NOCTTY);
+	return open("/dev/ptmx", O_RDWR | O_NOCTTY);
 }

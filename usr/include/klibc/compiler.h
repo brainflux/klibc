@@ -110,7 +110,7 @@
 #define __user
 
 /* The bitwise attribute: disallow arithmetric operations */
-#ifdef __CHECKER__ /* sparse only */
+#ifdef __CHECKER__		/* sparse only */
 # define __bitwise	__attribute__((bitwise))
 #else
 # define __bitwise

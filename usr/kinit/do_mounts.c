@@ -18,8 +18,7 @@
 #define BUF_SZ		65536
 
 /* Find dev_t for e.g. "hda,NULL" or "hdb,2" */
-static dev_t
-try_name(char *name, int part)
+static dev_t try_name(char *name, int part)
 {
 	char path[BUF_SZ];
 	char buf[BUF_SZ];
@@ -44,7 +43,7 @@ try_name(char *name, int part)
 	major = strtoul(buf, &s, 10);
 	if (*s != ':')
 		goto fail;
-	minor = strtoul(s+1, &s, 10);
+	minor = strtoul(s + 1, &s, 10);
 	if (*s)
 		goto fail;
 	res = makedev(major, minor);
@@ -70,11 +69,11 @@ try_name(char *name, int part)
 	/* if partition is within range - we got it */
 	if (part < range) {
 		DEBUG(("kinit: try_name %s,%d = %s\n", name, part,
-		       bdevname(res+part)));
+		       bdevname(res + part)));
 		return res + part;
 	}
 
-fail:
+      fail:
 	return (dev_t) 0;
 }
 
@@ -98,8 +97,7 @@ fail:
  *	is mounted on rootfs /sys.
  */
 
-static inline dev_t
-name_to_dev_t_real(const char *name)
+static inline dev_t name_to_dev_t_real(const char *name)
 {
 	char *p;
 	dev_t res = 0;
@@ -109,7 +107,7 @@ name_to_dev_t_real(const char *name)
 	int len;
 	const char *devname;
 
-	if ( name[0] == '/' )
+	if (name[0] == '/')
 		devname = name;
 	else {
 		char *dname = alloca(strlen(name) + 6);
@@ -135,8 +133,8 @@ name_to_dev_t_real(const char *name)
 		return Root_MTD;
 
 	len = strlen(name);
-	s = alloca(len+1);
-	memcpy(s, name, len+1);
+	s = alloca(len + 1);
+	memcpy(s, name, len + 1);
 
 	for (p = s; *p; p++)
 		if (*p == '/')
@@ -161,12 +159,11 @@ name_to_dev_t_real(const char *name)
 	res = try_name(s, part);
 	return res;
 
- fail:
-	return (dev_t)0;
+      fail:
+	return (dev_t) 0;
 }
 
-dev_t
-name_to_dev_t(const char *name)
+dev_t name_to_dev_t(const char *name)
 {
 	dev_t dev = name_to_dev_t_real(name);
 
@@ -175,58 +172,56 @@ name_to_dev_t(const char *name)
 }
 
 /* Create the device node "name" */
-int
-create_dev(const char *name, dev_t dev)
+int create_dev(const char *name, dev_t dev)
 {
 	unlink(name);
-	return mknod(name, S_IFBLK|0600, dev);
+	return mknod(name, S_IFBLK | 0600, dev);
 }
 
 /* mount a filesystem, possibly trying a set of different types */
-const char *
-mount_block(const char *source, const char *target,
-	    const char *type, unsigned long flags,
-	    const void *data)
+const char *mount_block(const char *source, const char *target,
+			const char *type, unsigned long flags, const void *data)
 {
 	char *fslist, *p, *ep;
 	const char *rp;
 	ssize_t fsbytes;
 
-	if ( type ) {
+	if (type) {
 		DEBUG(("kinit: trying to mount %s on %s with type %s\n",
 		       source, target, type));
 		int rv = mount(source, target, type, flags, data);
 		/* Mount readonly if necessary */
-		if ( rv == -1 && errno == EACCES && !(flags & MS_RDONLY) )
-			rv = mount(source, target, type, flags|MS_RDONLY, data);
+		if (rv == -1 && errno == EACCES && !(flags & MS_RDONLY))
+			rv = mount(source, target, type, flags | MS_RDONLY,
+				   data);
 		return rv ? NULL : type;
 	}
 
 	fsbytes = readfile("/proc/filesystems", &fslist);
 
 	errno = EINVAL;
-	if ( fsbytes < 0 )
+	if (fsbytes < 0)
 		return NULL;
 
 	p = fslist;
-	ep = fslist+fsbytes;
+	ep = fslist + fsbytes;
 
 	rp = NULL;
 
-	while ( p < ep ) {
+	while (p < ep) {
 		type = p;
 		p = strchr(p, '\n');
 		if (!p)
 			break;
 		*p++ = '\0';
-		if (*type != '\t')/* We can't mount a block device as a "nodev" fs */
+		if (*type != '\t')	/* We can't mount a block device as a "nodev" fs */
 			continue;
 
 		type++;
 		rp = mount_block(source, target, type, flags, data);
-		if ( rp )
+		if (rp)
 			break;
-		if ( errno != EINVAL )
+		if (errno != EINVAL)
 			break;
 	}
 
@@ -246,19 +241,20 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 
 	errno = 0;
 
-	if ( type ) {
-		if ( (rp = mount_block("/dev/root", "/root", type, flags, data)) )
+	if (type) {
+		if ((rp = mount_block("/dev/root", "/root", type, flags, data)))
 			goto ok;
-		if ( errno != EINVAL )
+		if (errno != EINVAL)
 			goto bad;
 	}
 
-	if ( !errno && (rp = mount_block("/dev/root", "/root", NULL, flags, data)) )
+	if (!errno
+	    && (rp = mount_block("/dev/root", "/root", NULL, flags, data)))
 		goto ok;
 
- bad:
-	if ( errno != EINVAL ) {
-	        /*
+      bad:
+	if (errno != EINVAL) {
+		/*
 		 * Allow the user to distinguish between failed open
 		 * and bad superblock on root device.
 		 */
@@ -271,7 +267,7 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 		return -ESRCH;
 	}
 
-ok:
+      ok:
 	printf("%s: Mounted root (%s filesystem)%s.\n",
 	       progname, rp, (flags & MS_RDONLY) ? " readonly" : "");
 	return 0;
@@ -280,7 +276,7 @@ ok:
 int
 mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 {
-	unsigned long flags = MS_RDONLY|MS_VERBOSE;
+	unsigned long flags = MS_RDONLY | MS_VERBOSE;
 	int ret;
 	const char *type = get_arg(argc, argv, "rootfstype=");
 
@@ -325,7 +321,8 @@ int do_mounts(int argc, char *argv[])
 
 	if (root_delay) {
 		int delay = atoi(root_delay);
-		fprintf(stderr, "Waiting %d s before mounting root device...\n", delay);
+		fprintf(stderr, "Waiting %d s before mounting root device...\n",
+			delay);
 		sleep(delay);
 	}
 
@@ -339,17 +336,17 @@ int do_mounts(int argc, char *argv[])
 	} else {
 		long rootdev;
 		getintfile("/proc/sys/kernel/real-root-dev", &rootdev);
-		root_dev = (dev_t)rootdev;
+		root_dev = (dev_t) rootdev;
 	}
 
 	DEBUG(("kinit: root_dev = %s\n", bdevname(root_dev)));
 
-	if ( initrd_load(argc, argv, root_dev) ) {
+	if (initrd_load(argc, argv, root_dev)) {
 		DEBUG(("initrd loaded\n"));
 		return 0;
 	}
 
-	if ( load_ramdisk && atoi(load_ramdisk) ) {
+	if (load_ramdisk && atoi(load_ramdisk)) {
 		if (ramdisk_load(argc, argv, root_dev))
 			root_dev = Root_RAM0;
 	}

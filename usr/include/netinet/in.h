@@ -34,6 +34,6 @@
 
 #define IPPORT_RESERVED	1024
 
-__extern int bindresvport (int sd, struct sockaddr_in *sin);
+__extern int bindresvport(int sd, struct sockaddr_in *sin);
 
-#endif /* _NETINET_IN_H */
+#endif				/* _NETINET_IN_H */

@@ -9,12 +9,12 @@
 
 void *calloc(size_t nmemb, size_t size)
 {
-  void *ptr;
+	void *ptr;
 
-  size *= nmemb;
-  ptr = malloc(size);
-  if ( ptr )
-    memset(ptr, 0, size);
+	size *= nmemb;
+	ptr = malloc(size);
+	if (ptr)
+		memset(ptr, 0, size);
 
-  return ptr;
+	return ptr;
 }

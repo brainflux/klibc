@@ -11,4 +11,4 @@
 
 /* All defaults */
 
-#endif /* _KLIBC_ARCHCONFIG_H */
+#endif				/* _KLIBC_ARCHCONFIG_H */

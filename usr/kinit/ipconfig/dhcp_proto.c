@@ -31,19 +31,19 @@ static __u8 dhcp_params[] = {
 };
 
 static __u8 dhcp_discover_hdr[] = {
-	99, 130, 83, 99,	/* bootp cookie */
-	53, 1, DHCPDISCOVER,	/* dhcp message type */
-	55, sizeof(dhcp_params),/* parameter list */
+	99, 130, 83, 99,		/* bootp cookie */
+	53, 1, DHCPDISCOVER,		/* dhcp message type */
+	55, sizeof(dhcp_params),	/* parameter list */
 };
 
 static __u8 dhcp_request_hdr[] = {
-	99, 130, 83, 99,	/* boot cookie */
-	53, 1, DHCPREQUEST,	/* dhcp message type */
+	99, 130, 83, 99,		/* boot cookie */
+	53, 1, DHCPREQUEST,		/* dhcp message type */
 #define SERVER_IP_OFF 9
-	54, 4, 0, 0, 0, 0,	/* server IP */
+	54, 4, 0, 0, 0, 0,		/* server IP */
 #define REQ_IP_OFF 15
-	50, 4, 0, 0, 0, 0,	/* requested IP address */
-	55, sizeof(dhcp_params),/* parameter list */
+	50, 4, 0, 0, 0, 0,		/* requested IP address */
+	55, sizeof(dhcp_params),	/* parameter list */
 };
 
 static __u8 dhcp_end[] = {
@@ -53,24 +53,24 @@ static __u8 dhcp_end[] = {
 static struct iovec dhcp_discover_iov[] = {
 	/* [0] = ip + udp header */
 	/* [1] = bootp header */
-	[2] = { dhcp_discover_hdr, sizeof(dhcp_discover_hdr) },
-	[3] = { dhcp_params, sizeof(dhcp_params) },
-	[4] = { dhcp_end, sizeof(dhcp_end) }
+	[2] = {dhcp_discover_hdr, sizeof(dhcp_discover_hdr)},
+	[3] = {dhcp_params, sizeof(dhcp_params)},
+	[4] = {dhcp_end, sizeof(dhcp_end)}
 };
 
 static struct iovec dhcp_request_iov[] = {
 	/* [0] = ip + udp header */
 	/* [1] = bootp header */
-	[2] = { dhcp_request_hdr, sizeof(dhcp_request_hdr) },
-	[3] = { dhcp_params, sizeof(dhcp_params) },
-	[4] = { dhcp_end, sizeof(dhcp_end) }
+	[2] = {dhcp_request_hdr, sizeof(dhcp_request_hdr)},
+	[3] = {dhcp_params, sizeof(dhcp_params)},
+	[4] = {dhcp_end, sizeof(dhcp_end)}
 };
 
 /*
  * Parse a DHCP response packet
  */
 static int
-dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
+dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
 {
 	__u8 type = 0;
 	__u32 serverid = INADDR_NONE;
@@ -80,7 +80,7 @@ dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 *exts, int extlen)
 	    exts[2] == 83 && exts[3] == 99) {
 		__u8 *ext;
 
-		for (ext = exts + 4; ext - exts < extlen; ) {
+		for (ext = exts + 4; ext - exts < extlen;) {
 			__u8 len, *opt = ext++;
 			if (*opt == 0)
 				continue;
@@ -126,8 +126,8 @@ static int dhcp_recv(struct netdev *dev)
 	__u8 dhcp_options[1500];
 	struct iovec iov[] = {
 		/* [0] = ip + udp header */
-		[1] = { &bootp, sizeof(struct bootp_hdr) },
-		[2] = { dhcp_options, sizeof(dhcp_options) }
+		[1] = {&bootp, sizeof(struct bootp_hdr)},
+		[2] = {dhcp_options, sizeof(dhcp_options)}
 	};
 	int ret;
 
@@ -137,8 +137,7 @@ static int dhcp_recv(struct netdev *dev)
 
 	DEBUG(("\n   dhcp xid %08x ", dev->bootp.xid));
 
-	if (ret < sizeof(struct bootp_hdr) ||
-	    bootp.op != BOOTP_REPLY ||		/* RFC951 7.5 */
+	if (ret < sizeof(struct bootp_hdr) || bootp.op != BOOTP_REPLY ||	/* RFC951 7.5 */
 	    bootp.xid != dev->bootp.xid ||
 	    memcmp(bootp.chaddr, dev->hwaddr, 16))
 		return 0;
@@ -154,20 +153,19 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec, int len)
 
 	memset(&bootp, 0, sizeof(struct bootp_hdr));
 
-	bootp.op     = BOOTP_REQUEST;
-	bootp.htype  = dev->hwtype;
-	bootp.hlen   = dev->hwlen;
-	bootp.xid    = dev->bootp.xid;
-	bootp.ciaddr = dev->ip_addr;
-	bootp.giaddr = dev->bootp.gateway;
-	bootp.secs   = htons(time(NULL) - dev->open_time);
+	bootp.op	= BOOTP_REQUEST;
+	bootp.htype	= dev->hwtype;
+	bootp.hlen	= dev->hwlen;
+	bootp.xid	= dev->bootp.xid;
+	bootp.ciaddr	= dev->ip_addr;
+	bootp.giaddr	= dev->bootp.gateway;
+	bootp.secs	= htons(time(NULL) - dev->open_time);
 	memcpy(bootp.chaddr, dev->hwaddr, 16);
 
-	vec[1].iov_base = &bootp;
-	vec[1].iov_len = sizeof(struct bootp_hdr);
+	vec[1].iov_base	= &bootp;
+	vec[1].iov_len	= sizeof(struct bootp_hdr);
 
-	DEBUG(("xid %08x secs %d ",
-	       bootp.xid, ntohs(bootp.secs)));
+	DEBUG(("xid %08x secs %d ", bootp.xid, ntohs(bootp.secs)));
 
 	return packet_send(dev, vec, len);
 }

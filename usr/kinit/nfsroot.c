@@ -34,7 +34,7 @@ static char *sub_client(__u32 client, char *path, size_t len)
 
 int mount_nfs_root(int argc, char *argv[], int flags)
 {
-	(void) flags; // FIXME - don't ignore this
+	(void)flags;		/* FIXME - don't ignore this */
 
 	struct in_addr addr = { INADDR_NONE };
 	__u32 client = INADDR_NONE;
@@ -57,8 +57,7 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 			dev_bootpath = dev->bootpath;
 			break;
 		}
-		if (dev->ip_addr != INADDR_NONE &&
-		    dev->ip_addr != INADDR_ANY) {
+		if (dev->ip_addr != INADDR_NONE && dev->ip_addr != INADDR_ANY) {
 			client = dev->ip_addr;
 		}
 	}
@@ -67,10 +66,10 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 	 * if the "nfsroot" option is set then it overrides
 	 * bootpath supplied by the boot server.
 	 */
-	if ((path = get_arg(argc, argv, "nfsroot=")) == NULL ) {
+	if ((path = get_arg(argc, argv, "nfsroot=")) == NULL) {
 		if ((path = dev_bootpath) == NULL || path[0] == '\0')
 			/* no path - set a default */
-			path = (char *) "/tftpboot/%s";
+			path = (char *)"/tftpboot/%s";
 	} else if (dev_bootpath && dev_bootpath[0] != '\0')
 		fprintf(stderr,
 			"nfsroot=%s overrides boot server bootpath %s\n",
@@ -78,7 +77,7 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 
 	if ((opts = strchr(path, ',')) != NULL) {
 		*opts++ = '\0';
-		nfs_argv[a++] = (char *) "-o";
+		nfs_argv[a++] = (char *)"-o";
 		nfs_argv[a++] = opts;
 	}
 
@@ -108,6 +107,6 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 		goto done;
 	}
 
-done:
+      done:
 	return ret;
 }

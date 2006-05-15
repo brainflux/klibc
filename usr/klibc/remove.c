@@ -8,11 +8,11 @@
 
 int remove(const char *pathname)
 {
-  int rv;
+	int rv;
 
-  rv = unlink(pathname);
-  if (rv == -1 && errno == EISDIR)
-    return rmdir(pathname);
+	rv = unlink(pathname);
+	if (rv == -1 && errno == EISDIR)
+		return rmdir(pathname);
 
-  return rv;
+	return rv;
 }

@@ -68,8 +68,7 @@ static int gzip_image(const void *buf, unsigned long long *bytes)
 
 static int cramfs_image(const void *buf, unsigned long long *bytes)
 {
-	const struct cramfs_super *sb =
-		(const struct cramfs_super *)buf;
+	const struct cramfs_super *sb = (const struct cramfs_super *)buf;
 
 	if (sb->magic == CRAMFS_MAGIC) {
 		if (sb->flags & CRAMFS_FLAG_FSID_VERSION_2)
@@ -83,8 +82,8 @@ static int cramfs_image(const void *buf, unsigned long long *bytes)
 
 static int romfs_image(const void *buf, unsigned long long *bytes)
 {
-        const struct romfs_super_block *sb =
-		(const struct romfs_super_block *)buf;
+	const struct romfs_super_block *sb =
+	    (const struct romfs_super_block *)buf;
 
 	if (sb->word0 == ROMSB_WORD0 && sb->word1 == ROMSB_WORD1) {
 		*bytes = __be32_to_cpu(sb->size);
@@ -96,12 +95,12 @@ static int romfs_image(const void *buf, unsigned long long *bytes)
 static int minix_image(const void *buf, unsigned long long *bytes)
 {
 	const struct minix_super_block *sb =
-		(const struct minix_super_block *)buf;
+	    (const struct minix_super_block *)buf;
 
 	if (sb->s_magic == MINIX_SUPER_MAGIC ||
 	    sb->s_magic == MINIX_SUPER_MAGIC2) {
 		*bytes = (unsigned long long)sb->s_nzones
-			<< (sb->s_log_zone_size+10);
+		    << (sb->s_log_zone_size + 10);
 		return 1;
 	}
 	return 0;
@@ -110,12 +109,13 @@ static int minix_image(const void *buf, unsigned long long *bytes)
 static int ext3_image(const void *buf, unsigned long long *bytes)
 {
 	const struct ext3_super_block *sb =
-		(const struct ext3_super_block *)buf;
+	    (const struct ext3_super_block *)buf;
 
 	if (sb->s_magic == __cpu_to_le16(EXT2_SUPER_MAGIC) &&
-	    sb->s_feature_compat & __cpu_to_le32(EXT3_FEATURE_COMPAT_HAS_JOURNAL)) {
+	    sb->
+	    s_feature_compat & __cpu_to_le32(EXT3_FEATURE_COMPAT_HAS_JOURNAL)) {
 		*bytes = (unsigned long long)__le32_to_cpu(sb->s_blocks_count)
-			<< (10+sb->s_log_block_size);
+		    << (10 + sb->s_log_block_size);
 		return 1;
 	}
 	return 0;
@@ -124,11 +124,11 @@ static int ext3_image(const void *buf, unsigned long long *bytes)
 static int ext2_image(const void *buf, unsigned long long *bytes)
 {
 	const struct ext2_super_block *sb =
-		(const struct ext2_super_block *)buf;
+	    (const struct ext2_super_block *)buf;
 
 	if (sb->s_magic == __cpu_to_le16(EXT2_SUPER_MAGIC)) {
 		*bytes = (unsigned long long)__le32_to_cpu(sb->s_blocks_count)
-			<< (10+sb->s_log_block_size);
+		    << (10 + sb->s_log_block_size);
 		return 1;
 	}
 	return 0;
@@ -137,7 +137,7 @@ static int ext2_image(const void *buf, unsigned long long *bytes)
 static int reiserfs_image(const void *buf, unsigned long long *bytes)
 {
 	const struct reiserfs_super_block *sb =
-		(const struct reiserfs_super_block *)buf;
+	    (const struct reiserfs_super_block *)buf;
 
 	if (memcmp(REISERFS_MAGIC(sb), REISERFS_SUPER_MAGIC_STRING,
 		   sizeof(REISERFS_SUPER_MAGIC_STRING) - 1) == 0 ||
@@ -146,7 +146,7 @@ static int reiserfs_image(const void *buf, unsigned long long *bytes)
 	    memcmp(REISERFS_MAGIC(sb), REISER2FS_JR_SUPER_MAGIC_STRING,
 		   sizeof(REISER2FS_JR_SUPER_MAGIC_STRING) - 1) == 0) {
 		*bytes = (unsigned long long)REISERFS_BLOCK_COUNT(sb) *
-			REISERFS_BLOCKSIZE(sb);
+		    REISERFS_BLOCKSIZE(sb);
 		return 1;
 	}
 	return 0;
@@ -154,12 +154,11 @@ static int reiserfs_image(const void *buf, unsigned long long *bytes)
 
 static int xfs_image(const void *buf, unsigned long long *bytes)
 {
-	const struct xfs_sb *sb =
-		(const struct xfs_sb *)buf;
+	const struct xfs_sb *sb = (const struct xfs_sb *)buf;
 
 	if (__be32_to_cpu(sb->sb_magicnum) == XFS_SB_MAGIC) {
 		*bytes = __be64_to_cpu(sb->sb_dblocks) *
-			__be32_to_cpu(sb->sb_blocksize);
+		    __be32_to_cpu(sb->sb_blocksize);
 		return 1;
 	}
 	return 0;
@@ -167,8 +166,7 @@ static int xfs_image(const void *buf, unsigned long long *bytes)
 
 static int jfs_image(const void *buf, unsigned long long *bytes)
 {
-	const struct jfs_superblock *sb =
-		(const struct jfs_superblock *)buf;
+	const struct jfs_superblock *sb = (const struct jfs_superblock *)buf;
 
 	if (!memcmp(sb->s_magic, JFS_MAGIC, 4)) {
 		*bytes = __le32_to_cpu(sb->s_size);
@@ -180,7 +178,7 @@ static int jfs_image(const void *buf, unsigned long long *bytes)
 static int luks_image(const void *buf, unsigned long long *blocks)
 {
 	const struct luks_partition_header *lph =
-		(const struct luks_partition_header *)buf;
+	    (const struct luks_partition_header *)buf;
 
 	if (!memcmp(lph->magic, LUKS_MAGIC, LUKS_MAGIC_L)) {
 		/* FSSIZE is dictated by the underlying fs, not by LUKS */
@@ -193,7 +191,7 @@ static int luks_image(const void *buf, unsigned long long *blocks)
 static int swap_image(const void *buf, unsigned long long *blocks)
 {
 	const struct swap_super_block *ssb =
-		(const struct swap_super_block *)buf;
+	    (const struct swap_super_block *)buf;
 
 	if (!memcmp(ssb->magic, SWAP_MAGIC_1, SWAP_MAGIC_L) ||
 	    !memcmp(ssb->magic, SWAP_MAGIC_2, SWAP_MAGIC_L)) {
@@ -213,7 +211,7 @@ static int lvm2_image(const void *buf, unsigned long long *blocks)
 		lsb = (const struct lvm2_super_block *)(buf + i);
 
 		if (!memcmp(lsb->magic, LVM2_MAGIC, LVM2_MAGIC_L) &&
-		    !memcmp(lsb->type,  LVM2_TYPE,  LVM2_TYPE_L)) {
+		    !memcmp(lsb->type, LVM2_TYPE, LVM2_TYPE_L)) {
 			/* This is just one of possibly many PV's */
 			*blocks = 0;
 			return 1;
@@ -224,9 +222,9 @@ static int lvm2_image(const void *buf, unsigned long long *blocks)
 }
 
 struct imagetype {
-	off_t		block;
-	const char	name[12];
-	int		(*identify)(const void *, unsigned long long *);
+	off_t block;
+	const char name[12];
+	int (*identify) (const void *, unsigned long long *);
 };
 
 /*
@@ -240,28 +238,28 @@ struct imagetype {
  * is not used before creating the new fs.
  */
 static struct imagetype images[] = {
-	{ 0,		"gzip",		gzip_image	},
-	{ 0,		"cramfs",	cramfs_image	},
-	{ 0,		"romfs",	romfs_image	},
-	{ 0,		"xfs",		xfs_image	},
-	{ 0,		"luks",		luks_image	},
-	{ 1,		"ext3",		ext3_image	},
-	{ 1,		"ext2",		ext2_image	},
-	{ 1,		"minix",	minix_image	},
-	{ 8,		"reiserfs",	reiserfs_image	},
-	{ 64,		"reiserfs",	reiserfs_image	},
-	{ 32,		"jfs",		jfs_image	},
-	{ 0,		"lvm2",		lvm2_image	},
-	{ 1,		"lvm2",		lvm2_image	},
-	{ -1,		"swap",		swap_image	},
-	{ 0,		"",		NULL 		}
+	{0, "gzip", gzip_image},
+	{0, "cramfs", cramfs_image},
+	{0, "romfs", romfs_image},
+	{0, "xfs", xfs_image},
+	{0, "luks", luks_image},
+	{1, "ext3", ext3_image},
+	{1, "ext2", ext2_image},
+	{1, "minix", minix_image},
+	{8, "reiserfs", reiserfs_image},
+	{64, "reiserfs", reiserfs_image},
+	{32, "jfs", jfs_image},
+	{0, "lvm2", lvm2_image},
+	{1, "lvm2", lvm2_image},
+	{-1, "swap", swap_image},
+	{0, "", NULL}
 };
 
 int identify_fs(int fd, const char **fstype,
 		unsigned long long *bytes, off_t offset)
 {
-	uint64_t buf[BLOCK_SIZE>>3]; /* 64-bit worst case alignment */
-	off_t cur_block = (off_t)-1;
+	uint64_t buf[BLOCK_SIZE >> 3];	/* 64-bit worst case alignment */
+	off_t cur_block = (off_t) - 1;
 	struct imagetype *ip;
 	int ret;
 
@@ -279,9 +277,9 @@ int identify_fs(int fd, const char **fstype,
 			 */
 			cur_block = ip->block;
 			ret = pread(fd, buf, BLOCK_SIZE,
-				    offset+cur_block*BLOCK_SIZE);
+				    offset + cur_block * BLOCK_SIZE);
 			if (ret != BLOCK_SIZE)
-				return -1; /* error */
+				return -1;	/* error */
 		}
 
 		if (ip->identify(buf, bytes)) {

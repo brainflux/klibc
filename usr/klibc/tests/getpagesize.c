@@ -3,9 +3,8 @@
 
 int main(void)
 {
-  printf("getpagesize()    = %d\n"
-	 "__getpageshift() = %d\n",
-	 getpagesize(), __getpageshift());
+	printf("getpagesize()    = %d\n"
+	       "__getpageshift() = %d\n", getpagesize(), __getpageshift());
 
-  return 0;
+	return 0;
 }

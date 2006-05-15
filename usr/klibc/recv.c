@@ -7,5 +7,5 @@
 
 int recv(int s, void *buf, size_t len, unsigned int flags)
 {
-  return recvfrom(s, buf, len, flags, NULL, 0);
+	return recvfrom(s, buf, len, flags, NULL, 0);
 }

@@ -12,20 +12,20 @@
 
 char *ptsname(int fd)
 {
-  static char buffer[32];	/* Big enough to hold even a 64-bit pts no */
-  unsigned int ptyno;
+	static char buffer[32];	/* Big enough to hold even a 64-bit pts no */
+	unsigned int ptyno;
 
-  if ( ioctl(fd, TIOCGPTN, &ptyno) )
-    return NULL;
+	if (ioctl(fd, TIOCGPTN, &ptyno))
+		return NULL;
 
-  snprintf(buffer, sizeof buffer, "/dev/pts/%u", ptyno);
+	snprintf(buffer, sizeof buffer, "/dev/pts/%u", ptyno);
 
-  return buffer;
+	return buffer;
 }
 
 int unlockpt(int fd)
 {
-  int unlock = 0;
+	int unlock = 0;
 
-  return ioctl(fd, TIOCSPTLCK, &unlock);
+	return ioctl(fd, TIOCSPTLCK, &unlock);
 }

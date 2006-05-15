@@ -38,8 +38,9 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 		if (de->d_type != DT_UNKNOWN && de->d_type != DT_DIR)
 			continue;
 
-		if (strlen(de->d_name) >= (BUF_SIZE-64)-(dirtailptr-sysdir))
-			continue; /* Badness... */
+		if (strlen(de->d_name) >=
+		    (BUF_SIZE - 64) - (dirtailptr - sysdir))
+			continue;	/* Badness... */
 
 		strcpy(dirtailptr, de->d_name);
 		systail = strchr(sysdir, '\0');
@@ -50,7 +51,7 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 
 		/* Abusing the namebuf as temporary storage here. */
 		rd = fread(namebuf, 1, BUF_SIZE, sysdev);
-		namebuf[rd] = '\0'; /* Just in case... */
+		namebuf[rd] = '\0';	/* Just in case... */
 
 		fclose(sysdev);
 
@@ -58,7 +59,7 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 		if (ma != major(dev) || *ep != ':')
 			continue;
 
-		mi = strtoul(ep+1, &ep, 10);
+		mi = strtoul(ep + 1, &ep, 10);
 		if (*ep != '\n')
 			continue;
 
@@ -86,10 +87,10 @@ const char *bdevname(dev_t dev)
 	strcpy(sysdir, "/sys/block");
 
 	if (!scansysdir(buf, sysdir, dev))
-		strcpy(buf, "dev"); /* prints e.g. dev(3,5) */
+		strcpy(buf, "dev");	/* prints e.g. dev(3,5) */
 
 	p = strchr(buf, '\0');
-	snprintf(p, sizeof buf-(p-buf), "(%d,%d)", major(dev), minor(dev));
+	snprintf(p, sizeof buf - (p - buf), "(%d,%d)", major(dev), minor(dev));
 
 	return buf;
 }
@@ -110,4 +111,4 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-#endif /* TEST */
+#endif				/* TEST */

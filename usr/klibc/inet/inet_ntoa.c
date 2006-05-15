@@ -2,18 +2,15 @@
  * inet/inet_ntoa.c
  */
 
+#include <stdint.h>
 #include <arpa/inet.h>
 #include <stdio.h>
 
 char *inet_ntoa(struct in_addr addr)
 {
-  static char name[16];
-  union {
-    uint8_t  b[4];
-    uint32_t l;
-  } a;
-  a.l = addr.s_addr;
+	static char name[16];
+	const uint8_t *cp = (const uint8_t *) &addr.s_addr;
 
-  sprintf(name, "%u.%u.%u.%u", a.b[0], a.b[1], a.b[2], a.b[3]);
-  return name;
+	sprintf(name, "%u.%u.%u.%u", cp[0], cp[1], cp[2], cp[3]);
+	return name;
 }

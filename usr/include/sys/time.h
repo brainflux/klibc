@@ -15,4 +15,4 @@ __extern int getitimer(int, struct itimerval *);
 __extern int setitimer(int, const struct itimerval *, struct itimerval *);
 __extern int utimes(const char *, const struct timeval *);
 
-#endif /* _SYS_TIME_H */
+#endif				/* _SYS_TIME_H */

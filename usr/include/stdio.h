@@ -34,10 +34,10 @@ typedef struct _IO_file FILE;
  * error and 0 is a valid value; for FILE *, NULL (0) is error and
  * non-NULL are valid.
  */
-static __inline__ int fileno(FILE *__f)
+static __inline__ int fileno(FILE * __f)
 {
-  /* This should really be intptr_t, but size_t should be the same size */
-  return (int)(size_t)__f - 1;
+	/* This should really be intptr_t, but size_t should be the same size */
+	return (int)(size_t) __f - 1;
 }
 
 /* This is a macro so it can be used as initializer */
@@ -51,22 +51,23 @@ __extern FILE *fopen(const char *, const char *);
 
 static __inline__ FILE *fdopen(int __fd, const char *__m)
 {
-  (void)__m; return __create_file(__fd);
+	(void)__m;
+	return __create_file(__fd);
 }
-static __inline__ int fclose(FILE *__f)
+static __inline__ int fclose(FILE * __f)
 {
-  extern int close(int);
-  return close(fileno(__f));
+	extern int close(int);
+	return close(fileno(__f));
 }
-static __inline__ int fseek(FILE *__f, off_t __o, int __w)
+static __inline__ int fseek(FILE * __f, off_t __o, int __w)
 {
-  extern off_t lseek(int, off_t, int);
-  return (lseek(fileno(__f), __o, __w) == (off_t)-1) ? -1 : 0;
+	extern off_t lseek(int, off_t, int);
+	return (lseek(fileno(__f), __o, __w) == (off_t) - 1) ? -1 : 0;
 }
-static __inline__ off_t ftell(FILE *__f)
+static __inline__ off_t ftell(FILE * __f)
 {
-  extern off_t lseek(int, off_t, int);
-  return lseek(fileno(__f), 0, SEEK_CUR);
+	extern off_t lseek(int, off_t, int);
+	return lseek(fileno(__f), 0, SEEK_CUR);
 }
 
 __extern int fputs(const char *, FILE *);
@@ -75,8 +76,8 @@ __extern int fputc(int, FILE *);
 #define putc(c,f)  fputc((c),(f))
 #define putchar(c) fputc((c),stdout)
 
-__extern int    fgetc(FILE *);
-__extern char * fgets(char *, int, FILE *);
+__extern int fgetc(FILE *);
+__extern char *fgets(char *, int, FILE *);
 #define getc(f) fgetc(f)
 #define getchar() fgetc(stdin)
 
@@ -84,16 +85,15 @@ __extern size_t _fread(void *, size_t, FILE *);
 __extern size_t _fwrite(const void *, size_t, FILE *);
 
 #ifndef __NO_FREAD_FWRITE_INLINES
-extern __inline__ size_t
-fread(void *__p, size_t __s, size_t __n, FILE *__f)
+extern __inline__ size_t fread(void *__p, size_t __s, size_t __n, FILE * __f)
 {
-  return _fread(__p, __s*__n, __f)/__s;
+	return _fread(__p, __s * __n, __f) / __s;
 }
 
 extern __inline__ size_t
-fwrite(const void *__p, size_t __s, size_t __n, FILE *__f)
+fwrite(const void *__p, size_t __s, size_t __n, FILE * __f)
 {
-  return _fwrite(__p, __s*__n, __f)/__s;
+	return _fwrite(__p, __s * __n, __f) / __s;
 }
 #endif
 
@@ -109,11 +109,10 @@ __extern int asprintf(char **, const char *, ...);
 __extern int vasprintf(char **, const char *, va_list);
 
 /* No buffering, so no flushing needed */
-extern __inline__ int
-fflush(FILE *__f)
+extern __inline__ int fflush(FILE * __f)
 {
-  (void)__f;
-  return 0;
+	(void)__f;
+	return 0;
 }
 
 __extern int sscanf(const char *, const char *, ...);
@@ -126,4 +125,4 @@ __extern int renameat(int, const char *, int, const char *);
 
 __extern int remove(const char *);
 
-#endif /* _STDIO_H */
+#endif				/* _STDIO_H */

@@ -20,10 +20,10 @@ ssize_t xpread(int fd, void *buf, size_t count, off_t offset)
 		if (rv == 0 || (rv == -1 && errno != EINTR))
 			break;
 
-		bp     += rv;
-		count  -= rv;
-		offset += rv;
-		ctr    += rv;
+		bp	+= rv;
+		count	-= rv;
+		offset	+= rv;
+		ctr	+= rv;
 	}
 
 	return ctr ? ctr : rv;
@@ -41,10 +41,10 @@ ssize_t xpwrite(int fd, void *buf, size_t count, off_t offset)
 		if (rv == 0 || (rv == -1 && errno != EINTR))
 			break;
 
-		bp     += rv;
-		count  -= rv;
-		offset += rv;
-		ctr    += rv;
+		bp	+= rv;
+		count	-= rv;
+		offset	+= rv;
+		ctr	+= rv;
 	}
 
 	return ctr ? ctr : rv;

@@ -7,10 +7,9 @@
 
 #include <signal.h>
 
-static __inline__ void
-__divide_error(void)
+static __inline__ void __divide_error(void)
 {
-  raise(SIGFPE);
+	raise(SIGFPE);
 }
 
-#endif /* _KLIBC_DIVERR_H */
+#endif				/* _KLIBC_DIVERR_H */

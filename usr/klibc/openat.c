@@ -16,7 +16,7 @@ extern int __openat(int, const char *, int, mode_t);
 
 int openat(int dirfd, const char *pathname, int flags, mode_t mode)
 {
-  return __openat(dirfd, pathname, flags|O_LARGEFILE, mode);
+	return __openat(dirfd, pathname, flags | O_LARGEFILE, mode);
 }
 
 #endif

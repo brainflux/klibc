@@ -7,115 +7,115 @@
 #include <signal.h>
 #include <unistd.h>
 
-const char * const sys_siglist[NSIG] = {
+const char *const sys_siglist[NSIG] = {
 #ifdef SIGABRT
-  [SIGABRT] = "Aborted",
+	[SIGABRT] = "Aborted",
 #endif
 #ifdef SIGALRM
-  [SIGALRM] = "Alarm clock",
+	[SIGALRM] = "Alarm clock",
 #endif
 #ifdef SIGBUS
-  [SIGBUS] = "Bus error",
+	[SIGBUS] = "Bus error",
 #endif
 #ifdef SIGCHLD
-  [SIGCHLD] = "Child exited",
+	[SIGCHLD] = "Child exited",
 #endif
 #if defined(SIGCLD) && (SIGCHLD != SIGCLD)
-  [SIGCLD] = "Child exited",
+	[SIGCLD] = "Child exited",
 #endif
 #ifdef SIGEMT
-  [SIGEMT] = "Emulation trap",
+	[SIGEMT] = "Emulation trap",
 #endif
 #ifdef SIGFPE
-  [SIGFPE] = "Floating point exception",
+	[SIGFPE] = "Floating point exception",
 #endif
 #ifdef SIGHUP
-  [SIGHUP] = "Hangup",
+	[SIGHUP] = "Hangup",
 #endif
 #ifdef SIGILL
-  [SIGILL] = "Illegal instruction",
+	[SIGILL] = "Illegal instruction",
 #endif
-  /* SIGINFO == SIGPWR */
+	/* SIGINFO == SIGPWR */
 #ifdef SIGINT
-  [SIGINT] = "Interrupt",
+	[SIGINT] = "Interrupt",
 #endif
 #ifdef SIGIO
-  [SIGIO] = "I/O possible",
+	[SIGIO] = "I/O possible",
 #endif
 #if defined(SIGIOT) && (SIGIOT != SIGABRT)
-  [SIGIOT] = "I/O trap",
+	[SIGIOT] = "I/O trap",
 #endif
 #ifdef SIGKILL
-  [SIGKILL] = "Killed",
+	[SIGKILL] = "Killed",
 #endif
 #if defined(SIGLOST) && (SIGLOST != SIGIO) && (SIGLOST != SIGPWR)
-  [SIGLOST] = "Lock lost",
+	[SIGLOST] = "Lock lost",
 #endif
 #ifdef SIGPIPE
-  [SIGPIPE] = "Broken pipe",
+	[SIGPIPE] = "Broken pipe",
 #endif
 #if defined(SIGPOLL) && (SIGPOLL != SIGIO)
-  [SIGPOLL] = "Pollable event",
+	[SIGPOLL] = "Pollable event",
 #endif
 #ifdef SIGPROF
-  [SIGPROF] = "Profiling timer expired",
+	[SIGPROF] = "Profiling timer expired",
 #endif
 #ifdef SIGPWR
-  [SIGPWR] = "Power failure",
+	[SIGPWR] = "Power failure",
 #endif
 #ifdef SIGQUIT
-  [SIGQUIT] = "Quit",
+	[SIGQUIT] = "Quit",
 #endif
-  /* SIGRESERVE == SIGUNUSED */
+	/* SIGRESERVE == SIGUNUSED */
 #ifdef SIGSEGV
-  [SIGSEGV] = "Segment violation",
+	[SIGSEGV] = "Segment violation",
 #endif
 #ifdef SIGSTKFLT
-  [SIGSTKFLT] = "Stack fault",
+	[SIGSTKFLT] = "Stack fault",
 #endif
 #ifdef SIGSTOP
-  [SIGSTOP] = "Stopped (signal)",
+	[SIGSTOP] = "Stopped (signal)",
 #endif
 #ifdef SIGSYS
-  [SIGSYS] = "Bad system call",
+	[SIGSYS] = "Bad system call",
 #endif
 #ifdef SIGTERM
-  [SIGTERM] = "Terminated",
+	[SIGTERM] = "Terminated",
 #endif
 #ifdef SIGTSTP
-  [SIGTSTP] = "Stopped",
+	[SIGTSTP] = "Stopped",
 #endif
 #ifdef SIGTTIN
-  [SIGTTIN] = "Stopped (tty input)",
+	[SIGTTIN] = "Stopped (tty input)",
 #endif
 #ifdef SIGTTOU
-  [SIGTTOU] = "Stopped (tty output)",
+	[SIGTTOU] = "Stopped (tty output)",
 #endif
 #ifdef SIGURG
-  [SIGURG] = "Urgent I/O condition",
+	[SIGURG] = "Urgent I/O condition",
 #endif
 #ifdef SIGUSR1
-  [SIGUSR1] = "User signal 1",
+	[SIGUSR1] = "User signal 1",
 #endif
 #ifdef SIGUSR2
-  [SIGUSR2] = "User signal 2",
+	[SIGUSR2] = "User signal 2",
 #endif
 #ifdef SIGVTALRM
-  [SIGVTALRM] = "Virtual timer expired",
+	[SIGVTALRM] = "Virtual timer expired",
 #endif
 #ifdef SIGWINCH
-  [SIGWINCH] = "Window size changed",
+	[SIGWINCH] = "Window size changed",
 #endif
 #ifdef SIGXCPU
-  [SIGXCPU] = "CPU time limit exceeded",
+	[SIGXCPU] = "CPU time limit exceeded",
 #endif
 #ifdef SIGXFSZ
-  [SIGXFSZ] = "File size limit exceeded",
+	[SIGXFSZ] = "File size limit exceeded",
 #endif
 #ifdef SIGTRAP
-  [SIGTRAP] = "Trace/breakpoint trap",
+	[SIGTRAP] = "Trace/breakpoint trap",
 #endif
 #ifdef SIGCONT
-  [SIGCONT] = "Continue",
+	[SIGCONT] = "Continue",
 #endif
 };

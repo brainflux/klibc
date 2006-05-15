@@ -12,4 +12,4 @@
 /* x86-64 doesn't provide a default sigreturn. */
 #define _KLIBC_NEEDS_SA_RESTORER 1
 
-#endif /* _KLIBC_ARCHCONFIG_H */
+#endif				/* _KLIBC_ARCHCONFIG_H */

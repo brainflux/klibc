@@ -21,19 +21,17 @@
 
 extern const char *progname;
 
-struct portmap_call
-{
-        struct rpc_call rpc;
-        __u32 program;
-        __u32 version;
-        __u32 proto;
-        __u32 port;
+struct portmap_call {
+	struct rpc_call rpc;
+	__u32 program;
+	__u32 version;
+	__u32 proto;
+	__u32 port;
 };
 
-struct portmap_reply
-{
-        struct rpc_reply rpc;
-        __u32 port;
+struct portmap_reply {
+	struct rpc_reply rpc;
+	__u32 port;
 };
 
 static int bind_portmap(void)
@@ -41,14 +39,14 @@ static int bind_portmap(void)
 	int sock = socket(PF_INET, SOCK_DGRAM, 0);
 	struct sockaddr_in sin;
 
-	if ( sock < 0 )
+	if (sock < 0)
 		return -1;
 
 	memset(&sin, 0, sizeof sin);
-	sin.sin_family      = AF_INET;
-	sin.sin_addr.s_addr = htonl(0x7f000001); /* 127.0.0.1 */
-	sin.sin_port        = htons(RPC_PMAP_PORT);
-	if ( bind(sock, (struct sockaddr *)&sin, sizeof sin) < 0 ) {
+	sin.sin_family = AF_INET;
+	sin.sin_addr.s_addr = htonl(0x7f000001);	/* 127.0.0.1 */
+	sin.sin_port = htons(RPC_PMAP_PORT);
+	if (bind(sock, (struct sockaddr *)&sin, sizeof sin) < 0) {
 		int err = errno;
 		close(sock);
 		errno = err;
@@ -80,50 +78,49 @@ static int dummy_portmap(int sock, FILE *portmap_file)
 	} pkt;
 	struct portmap_reply rply;
 
-	for(;;) {
+	for (;;) {
 		addrlen = sizeof sin;
 		pktlen = recvfrom(sock, &pkt.c.rpc.hdr.udp, sizeof pkt, 0,
 				  (struct sockaddr *)&sin, &addrlen);
 
-		if ( pktlen < 0 ) {
-			if ( errno == EINTR )
+		if (pktlen < 0) {
+			if (errno == EINTR)
 				continue;
 
 			return -1;
 		}
 
 		/* +4 to skip the TCP fragment header */
-		if ( pktlen+4 < sizeof(struct portmap_call) )
-			continue;			/* Bad packet */
+		if (pktlen + 4 < sizeof(struct portmap_call))
+			continue;	/* Bad packet */
 
-		if ( pkt.c.rpc.hdr.udp.msg_type != htonl(RPC_CALL) )
-			continue;			/* Bad packet */
+		if (pkt.c.rpc.hdr.udp.msg_type != htonl(RPC_CALL))
+			continue;	/* Bad packet */
 
 		memset(&rply, 0, sizeof rply);
 
-		rply.rpc.hdr.udp.xid      = pkt.c.rpc.hdr.udp.xid;
+		rply.rpc.hdr.udp.xid = pkt.c.rpc.hdr.udp.xid;
 		rply.rpc.hdr.udp.msg_type = htonl(RPC_REPLY);
 
-		if ( pkt.c.rpc.rpc_vers != htonl(2) ) {
+		if (pkt.c.rpc.rpc_vers != htonl(2)) {
 			rply.rpc.reply_state = htonl(REPLY_DENIED);
 			/* state <- RPC_MISMATCH == 0 */
-		} else if ( pkt.c.rpc.program != htonl(PORTMAP_PROGRAM) ) {
+		} else if (pkt.c.rpc.program != htonl(PORTMAP_PROGRAM)) {
 			rply.rpc.reply_state = htonl(PROG_UNAVAIL);
-		} else if ( pkt.c.rpc.prog_vers != htonl(2) ) {
+		} else if (pkt.c.rpc.prog_vers != htonl(2)) {
 			rply.rpc.reply_state = htonl(PROG_MISMATCH);
-		} else if ( pkt.c.rpc.cred_len != 0 ||
-			    pkt.c.rpc.vrf_len != 0 ) {
+		} else if (pkt.c.rpc.cred_len != 0 || pkt.c.rpc.vrf_len != 0) {
 			/* Can't deal with credentials data; the kernel
 			   won't send them */
 			rply.rpc.reply_state = htonl(SYSTEM_ERR);
 		} else {
-			switch ( ntohl(pkt.c.rpc.proc) ) {
+			switch (ntohl(pkt.c.rpc.proc)) {
 			case PMAP_PROC_NULL:
 				break;
 			case PMAP_PROC_SET:
-				if ( pkt.c.proto == htonl(IPPROTO_TCP) ||
-				     pkt.c.proto == htonl(IPPROTO_UDP) ) {
-					if ( portmap_file )
+				if (pkt.c.proto == htonl(IPPROTO_TCP) ||
+				    pkt.c.proto == htonl(IPPROTO_UDP)) {
+					if (portmap_file)
 						fprintf(portmap_file,
 							"%u %u %s %u\n",
 							ntohl(pkt.c.program),
@@ -166,8 +163,8 @@ pid_t start_dummy_portmap(const char *file)
 
 	sock = bind_portmap();
 	if (sock == -1) {
-		if ( errno == EINVAL || errno == EADDRINUSE )
-			return 0; /* Assume not needed */
+		if (errno == EINVAL || errno == EADDRINUSE)
+			return 0;	/* Assume not needed */
 		else {
 			fprintf(stderr, "%s: portmap spoofing failed\n",
 				progname);
@@ -176,13 +173,13 @@ pid_t start_dummy_portmap(const char *file)
 	}
 
 	spoof_portmap = fork();
-	if ( spoof_portmap == -1 ) {
+	if (spoof_portmap == -1) {
 		fprintf(stderr, "%s: cannot fork\n", progname);
 		return -1;
-	} else if ( spoof_portmap == 0 ) {
+	} else if (spoof_portmap == 0) {
 		/* Child process */
 		dummy_portmap(sock, portmap_filep);
-		_exit(255); /* Error */
+		_exit(255);	/* Error */
 	} else {
 		/* Parent process */
 		close(sock);

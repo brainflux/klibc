@@ -15,11 +15,9 @@
 #define Root_NFS	__makedev(0,255)
 #define Root_MTD	__makedev(0,254)
 
-int
-create_dev(const char *name, dev_t dev);
+int create_dev(const char *name, dev_t dev);
 
-dev_t
-name_to_dev_t(const char *name);
+dev_t name_to_dev_t(const char *name);
 
 const char *mount_block(const char *source, const char *target,
 			const char *type, unsigned long flags,
@@ -44,7 +42,7 @@ static inline dev_t bstat(const char *name)
 	return st.st_rdev;
 }
 
-int load_ramdisk_compressed(const char *devpath, FILE *wfd,
+int load_ramdisk_compressed(const char *devpath, FILE * wfd,
 			    off_t ramdisk_start);
 
-#endif /* DO_MOUNTS_H */
+#endif				/* DO_MOUNTS_H */

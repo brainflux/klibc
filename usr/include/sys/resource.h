@@ -12,4 +12,4 @@
 __extern int getpriority(int, int);
 __extern int setpriority(int, int, int);
 
-#endif /* _SYS_RESOURCE_H */
+#endif				/* _SYS_RESOURCE_H */

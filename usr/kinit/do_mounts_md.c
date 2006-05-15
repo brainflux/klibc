@@ -61,7 +61,7 @@ static int md_setup_ents;
  *	2 : int found including a subsequent comma
  */
 
-static int get_option (char **str, int *pint)
+static int get_option(char **str, int *pint)
 {
 	char *cur = *str;
 
@@ -103,7 +103,7 @@ static int mdp_major(void)
 			while (*p && isspace(*p))
 				p++;
 
-			if (major_no == 0) /* Not a number */
+			if (major_no == 0)	/* Not a number */
 				is_blk = 0;
 			else if (major_no > 0 && !strcmp(p, "mdp")) {
 				found = major_no;
@@ -114,7 +114,8 @@ static int mdp_major(void)
 	fclose(f);
 
 	if (!found) {
-		fprintf(stderr, "Error: mdp devices detected but no mdp device found!\n");
+		fprintf(stderr,
+			"Error: mdp devices detected but no mdp device found!\n");
 		exit(1);
 	}
 
@@ -153,53 +154,58 @@ static int md_setup(char *str)
 		str++;
 	}
 	if (get_option(&str, &minor) != 2) {	/* MD Number */
-		fprintf(stderr,"md: Too few arguments supplied to md=.\n");
+		fprintf(stderr, "md: Too few arguments supplied to md=.\n");
 		return 0;
 	}
 	str1 = str;
 	if (minor >= MAX_MD_DEVS) {
-		fprintf(stderr,"md: md=%d, Minor device number too high.\n", minor);
+		fprintf(stderr, "md: md=%d, Minor device number too high.\n",
+			minor);
 		return 0;
 	}
-	for (ent=0 ; ent< md_setup_ents ; ent++)
+	for (ent = 0; ent < md_setup_ents; ent++)
 		if (md_setup_args[ent].minor == minor &&
 		    md_setup_args[ent].partitioned == partitioned) {
-			fprintf(stderr,"md: md=%s%d, Specified more than once. "
-			       "Replacing previous definition.\n", partitioned?"d":"", minor);
+			fprintf(stderr,
+				"md: md=%s%d, Specified more than once. "
+				"Replacing previous definition.\n",
+				partitioned ? "d" : "", minor);
 			break;
 		}
 	if (ent >= MAX_MD_DEVS) {
-		fprintf(stderr,"md: md=%s%d - too many md initialisations\n", partitioned?"d":"", minor);
+		fprintf(stderr, "md: md=%s%d - too many md initialisations\n",
+			partitioned ? "d" : "", minor);
 		return 0;
 	}
 	if (ent >= md_setup_ents)
 		md_setup_ents++;
 	switch (get_option(&str, &level)) {	/* RAID level */
-	case 2: /* could be 0 or -1.. */
+	case 2:		/* could be 0 or -1.. */
 		if (level == 0 || level == LEVEL_LINEAR) {
 			if (get_option(&str, &factor) != 2 ||	/* Chunk Size */
-					get_option(&str, &fault) != 2) {
-				fprintf(stderr,"md: Too few arguments supplied to md=.\n");
+			    get_option(&str, &fault) != 2) {
+				fprintf(stderr,
+					"md: Too few arguments supplied to md=.\n");
 				return 0;
 			}
 			md_setup_args[ent].level = level;
-			md_setup_args[ent].chunk = 1 << (factor+12);
-			if (level ==  LEVEL_LINEAR)
+			md_setup_args[ent].chunk = 1 << (factor + 12);
+			if (level == LEVEL_LINEAR)
 				pername = "linear";
 			else
 				pername = "raid0";
 			break;
 		}
 		/* FALL THROUGH */
-	case 1: /* the first device is numeric */
+	case 1:		/* the first device is numeric */
 		str = str1;
 		/* FALL THROUGH */
 	case 0:
 		md_setup_args[ent].level = LEVEL_NONE;
-		pername="super-block";
+		pername = "super-block";
 	}
 
-	fprintf(stderr,"md: Will configure md%d (%s) from %s, below.\n",
+	fprintf(stderr, "md: Will configure md%d (%s) from %s, below.\n",
 		minor, pername, str);
 	md_setup_args[ent].device_names = str;
 	md_setup_args[ent].partitioned = partitioned;
@@ -214,9 +220,9 @@ static void md_setup_drive(void)
 {
 	int dev_minor, i, ent, partitioned;
 	dev_t dev;
-	dev_t devices[MD_SB_DISKS+1];
+	dev_t devices[MD_SB_DISKS + 1];
 
-	for (ent = 0; ent < md_setup_ents ; ent++) {
+	for (ent = 0; ent < md_setup_ents; ent++) {
 		int fd;
 		int err = 0;
 		char *devname;
@@ -228,7 +234,7 @@ static void md_setup_drive(void)
 		devname = md_setup_args[ent].device_names;
 
 		snprintf(name, sizeof name,
-			 "/dev/md%s%d", partitioned?"_d":"", dev_minor);
+			 "/dev/md%s%d", partitioned ? "_d" : "", dev_minor);
 
 		if (partitioned)
 			dev = makedev(mdp_major(), dev_minor << MdpMinorShift);
@@ -258,20 +264,20 @@ static void md_setup_drive(void)
 		if (!i)
 			continue;
 
-		fprintf(stderr,"md: Loading md%s%d: %s\n",
+		fprintf(stderr, "md: Loading md%s%d: %s\n",
 			partitioned ? "_d" : "", dev_minor,
 			md_setup_args[ent].device_names);
 
 		fd = open(name, 0, 0);
 		if (fd < 0) {
-			fprintf(stderr,"md: open failed - cannot start "
-					"array %s\n", name);
+			fprintf(stderr, "md: open failed - cannot start "
+				"array %s\n", name);
 			continue;
 		}
 		if (ioctl(fd, SET_ARRAY_INFO, 0) == -EBUSY) {
 			fprintf(stderr,
-			       "md: Ignoring md=%d, already autodetected. (Use raid=noautodetect)\n",
-			       dev_minor);
+				"md: Ignoring md=%d, already autodetected. (Use raid=noautodetect)\n",
+				dev_minor);
 			close(fd);
 			continue;
 		}
@@ -281,11 +287,11 @@ static void md_setup_drive(void)
 			mdu_array_info_t ainfo;
 			ainfo.level = md_setup_args[ent].level;
 			ainfo.size = 0;
-			ainfo.nr_disks =0;
-			ainfo.raid_disks =0;
+			ainfo.nr_disks = 0;
+			ainfo.raid_disks = 0;
 			while (devices[ainfo.raid_disks])
 				ainfo.raid_disks++;
-			ainfo.md_minor =dev_minor;
+			ainfo.md_minor = dev_minor;
 			ainfo.not_persistent = 1;
 
 			ainfo.state = (1 << MD_SB_CLEAN);
@@ -298,7 +304,8 @@ static void md_setup_drive(void)
 					break;
 				dinfo.number = i;
 				dinfo.raid_disk = i;
-				dinfo.state = (1<<MD_DISK_ACTIVE)|(1<<MD_DISK_SYNC);
+				dinfo.state =
+				    (1 << MD_DISK_ACTIVE) | (1 << MD_DISK_SYNC);
 				dinfo.major = major(dev);
 				dinfo.minor = minor(dev);
 				err = ioctl(fd, ADD_NEW_DISK, &dinfo);
@@ -317,7 +324,8 @@ static void md_setup_drive(void)
 		if (!err)
 			err = ioctl(fd, RUN_ARRAY, 0);
 		if (err)
-			fprintf(stderr,"md: starting md%d failed\n", dev_minor);
+			fprintf(stderr, "md: starting md%d failed\n",
+				dev_minor);
 		else {
 			/* reread the partition table.
 			 * I (neilb) and not sure why this is needed, but I cannot
@@ -340,19 +348,20 @@ static int raid_setup(char *str)
 	pos = 0;
 
 	while (pos < len) {
-		char *comma = strchr(str+pos, ',');
+		char *comma = strchr(str + pos, ',');
 		int wlen;
 		if (comma)
-			wlen = (comma-str)-pos;
-		else	wlen = (len-1)-pos;
+			wlen = (comma - str) - pos;
+		else
+			wlen = (len - 1) - pos;
 
 		if (!strncmp(str, "noautodetect", wlen))
 			raid_noautodetect = 1;
-		if (strncmp(str, "partitionable", wlen)==0)
+		if (strncmp(str, "partitionable", wlen) == 0)
 			raid_autopart = 1;
-		if (strncmp(str, "part", wlen)==0)
+		if (strncmp(str, "part", wlen) == 0)
 			raid_autopart = 1;
-		pos += wlen+1;
+		pos += wlen + 1;
 	}
 	return 1;
 }
@@ -361,11 +370,13 @@ static void md_run_setup(void)
 {
 	create_dev("/dev/md0", makedev(MD_MAJOR, 0));
 	if (raid_noautodetect)
-		fprintf(stderr, "md: Skipping autodetection of RAID arrays. (raid=noautodetect)\n");
+		fprintf(stderr,
+			"md: Skipping autodetection of RAID arrays. (raid=noautodetect)\n");
 	else {
 		int fd = open("/dev/md0", 0, 0);
 		if (fd >= 0) {
-			ioctl(fd, RAID_AUTORUN, (void *)(intptr_t)raid_autopart);
+			ioctl(fd, RAID_AUTORUN,
+			      (void *)(intptr_t) raid_autopart);
 			close(fd);
 		}
 	}
@@ -377,10 +388,10 @@ void md_run(int argc, char *argv[])
 	char **pp, *p;
 
 	for (pp = argv; (p = *pp); pp++) {
-		if (!strncmp(p,"raid=",5))
-			raid_setup(p+5);
-		else if (!strncmp(p,"md=",3))
-			md_setup(p+3);
+		if (!strncmp(p, "raid=", 5))
+			raid_setup(p + 5);
+		else if (!strncmp(p, "md=", 3))
+			md_setup(p + 3);
 	}
 
 	md_run_setup();

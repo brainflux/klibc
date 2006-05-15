@@ -21,7 +21,7 @@
 static void wait_for_key(void)
 {
 	/* Wait until the user presses Enter */
-	while ( getchar() != '\n' )
+	while (getchar() != '\n')
 		;
 }
 
@@ -40,14 +40,16 @@ static int change_disk(const char *devpath, int rfd, int disk)
 	}
 	close(rfd);
 
-	fprintf(stderr, "\nPlease insert disk %d for ramdisk and press Enter...", disk);
+	fprintf(stderr,
+		"\nPlease insert disk %d for ramdisk and press Enter...", disk);
 	wait_for_key();
 
 	return open(devpath, O_RDONLY);
 }
 
 /* Also used in initrd.c */
-int load_ramdisk_compressed(const char *devpath, FILE *wfd, off_t ramdisk_start)
+int load_ramdisk_compressed(const char *devpath, FILE * wfd,
+			    off_t ramdisk_start)
 {
 	int rfd = -1;
 	unsigned long long ramdisk_size, ramdisk_left;
@@ -64,7 +66,7 @@ int load_ramdisk_compressed(const char *devpath, FILE *wfd, off_t ramdisk_start)
 	zs.next_out = out_buf;
 	zs.avail_out = BUF_SZ;
 
-	if (inflateInit2(&zs, 32+15) != Z_OK)
+	if (inflateInit2(&zs, 32 + 15) != Z_OK)
 		goto err1;
 
 	rfd = open(devpath, O_RDONLY);
@@ -96,7 +98,7 @@ int load_ramdisk_compressed(const char *devpath, FILE *wfd, off_t ramdisk_start)
 				DEBUG(("New size = %llu\n", ramdisk_size));
 			}
 			do {
-				ramdisk_left = ramdisk_size-ramdisk_start;
+				ramdisk_left = ramdisk_size - ramdisk_start;
 				bytes = min(ramdisk_left,
 					    (unsigned long long)BUF_SZ);
 				bytes = pread(rfd, in_buf, bytes,
@@ -121,8 +123,8 @@ int load_ramdisk_compressed(const char *devpath, FILE *wfd, off_t ramdisk_start)
 		goto err2;
 
 	/* Write the last */
-	_fwrite(out_buf, BUF_SZ-zs.avail_out, wfd);
-	DEBUG(("kinit: writing %d bytes\n", BUF_SZ-zs.avail_out));
+	_fwrite(out_buf, BUF_SZ - zs.avail_out, wfd);
+	DEBUG(("kinit: writing %d bytes\n", BUF_SZ - zs.avail_out));
 
 	inflateEnd(&zs);
 	return 0;
@@ -133,9 +135,8 @@ err1:
 	return -1;
 }
 
-
 static int
-load_ramdisk_raw(const char *devpath, FILE *wfd, off_t ramdisk_start,
+load_ramdisk_raw(const char *devpath, FILE * wfd, off_t ramdisk_start,
 		 unsigned long long fssize)
 {
 	unsigned long long ramdisk_size, ramdisk_left;
@@ -168,7 +169,8 @@ load_ramdisk_raw(const char *devpath, FILE *wfd, off_t ramdisk_start,
 		}
 
 		do {
-			ramdisk_left = min(ramdisk_size-ramdisk_start, fssize);
+			ramdisk_left =
+			    min(ramdisk_size - ramdisk_start, fssize);
 			bytes = min(ramdisk_left, (unsigned long long)BUF_SZ);
 			bytes = pread(rfd, buf, bytes, ramdisk_start);
 		} while (bytes == -1 && errno == EINTR);
@@ -187,29 +189,22 @@ load_ramdisk_raw(const char *devpath, FILE *wfd, off_t ramdisk_start,
 	return !!fssize;
 }
 
-
-int
-ramdisk_load(int argc, char *argv[], dev_t root_dev)
+int ramdisk_load(int argc, char *argv[], dev_t root_dev)
 {
-        const char *arg_prompt_ramdisk =
-		get_arg(argc, argv, "prompt_ramdisk=");
+	const char *arg_prompt_ramdisk = get_arg(argc, argv, "prompt_ramdisk=");
 	const char *arg_ramdisk_blocksize =
-		get_arg(argc, argv, "ramdisk_blocksize=");
-	const char *arg_ramdisk_start =
-		get_arg(argc, argv, "ramdisk_start=");
-	const char *arg_ramdisk_device =
-		get_arg(argc, argv, "ramdisk_device=");
+	    get_arg(argc, argv, "ramdisk_blocksize=");
+	const char *arg_ramdisk_start = get_arg(argc, argv, "ramdisk_start=");
+	const char *arg_ramdisk_device = get_arg(argc, argv, "ramdisk_device=");
 
-	int prompt_ramdisk =
-		arg_prompt_ramdisk ? atoi(arg_prompt_ramdisk) : 0;
+	int prompt_ramdisk = arg_prompt_ramdisk ? atoi(arg_prompt_ramdisk) : 0;
 	int ramdisk_blocksize =
-		arg_ramdisk_blocksize ? atoi(arg_ramdisk_blocksize) : 512;
+	    arg_ramdisk_blocksize ? atoi(arg_ramdisk_blocksize) : 512;
 	off_t ramdisk_start =
-		arg_ramdisk_start
-		? strtoumax(arg_ramdisk_start, NULL, 10)*ramdisk_blocksize
-		: 0;
+	    arg_ramdisk_start
+	    ? strtoumax(arg_ramdisk_start, NULL, 10) * ramdisk_blocksize : 0;
 	const char *ramdisk_device =
-		arg_ramdisk_device ? arg_ramdisk_device : "/dev/fd0";
+	    arg_ramdisk_device ? arg_ramdisk_device : "/dev/fd0";
 
 	dev_t ramdisk_dev;
 	int rfd;
@@ -220,7 +215,8 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 	int err;
 
 	if (prompt_ramdisk) {
-		fprintf(stderr, "Please insert disk for ramdisk and press Enter...");
+		fprintf(stderr,
+			"Please insert disk for ramdisk and press Enter...");
 		wait_for_key();
 	}
 
@@ -245,20 +241,19 @@ ramdisk_load(int argc, char *argv[], dev_t root_dev)
 	/* Check filesystem type */
 	if (identify_fs(rfd, &fstype, &fssize, ramdisk_start) ||
 	    (fssize == 0 && !(is_gzip = !strcmp(fstype, "gzip")))) {
-		fprintf(stderr, "Failure loading ramdisk: unknown filesystem type\n");
+		fprintf(stderr,
+			"Failure loading ramdisk: unknown filesystem type\n");
 		return 0;
 	}
 
 	DEBUG(("kinit: ramdisk is %s, size %llu\n", fstype, fssize));
 
-	fprintf(stderr, "Loading ramdisk (%s) ...",
-		is_gzip ? "gzip" : "raw");
+	fprintf(stderr, "Loading ramdisk (%s) ...", is_gzip ? "gzip" : "raw");
 
 	close(rfd);
 
 	if (is_gzip)
-		err = load_ramdisk_compressed("/dev/rddev", wfd,
-					      ramdisk_start);
+		err = load_ramdisk_compressed("/dev/rddev", wfd, ramdisk_start);
 	else
 		err = load_ramdisk_raw("/dev/rddev", wfd,
 				       ramdisk_start, fssize);

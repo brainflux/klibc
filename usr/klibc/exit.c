@@ -14,16 +14,17 @@ struct atexit *__atexit_list;
 
 __noreturn exit(int rv)
 {
-  struct atexit *ap;
+	struct atexit *ap;
 
-  for ( ap = __atexit_list ; ap ; ap = ap->next ) {
-    /* This assumes extra args are harmless.  They should be in all
-       normal C ABIs, but if an architecture has some particularly
-       bizarre ABI this might be worth watching out for. */
-    ap->fctn(rv, ap->arg);
-  }
+	for (ap = __atexit_list; ap; ap = ap->next) {
+		/* This assumes extra args are harmless.  They should
+		   be in all normal C ABIs, but if an architecture has
+		   some particularly bizarre ABI this might be worth
+		   watching out for. */
+		ap->fctn(rv, ap->arg);
+	}
 
-  /* Handle any library destructors */
+	/* Handle any library destructors if we ever start using them... */
 
-  _exit(rv);
+	_exit(rv);
 }

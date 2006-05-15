@@ -35,20 +35,17 @@
 #define GARBAGE_ARGS	4
 #define SYSTEM_ERR	5
 
-struct rpc_udp_header
-{
+struct rpc_udp_header {
 	__u32 xid;
 	__u32 msg_type;
 };
 
-struct rpc_header
-{
+struct rpc_header {
 	__u32 frag_hdr;
 	struct rpc_udp_header udp;
 };
 
-struct rpc_call
-{
+struct rpc_call {
 	struct rpc_header hdr;
 	__u32 rpc_vers;
 
@@ -62,8 +59,7 @@ struct rpc_call
 	__u32 vrf_len;
 };
 
-struct rpc_reply
-{
+struct rpc_reply {
 	struct rpc_header hdr;
 	__u32 reply_state;
 	__u32 vrf_flavor;
@@ -71,8 +67,7 @@ struct rpc_reply
 	__u32 state;
 };
 
-struct rpc
-{
+struct rpc {
 	struct rpc_call *call;
 	size_t call_len;
 	struct rpc_reply *reply;
@@ -81,10 +76,9 @@ struct rpc
 
 struct client;
 
-typedef int (*call_stub)(struct client *, struct rpc *);
+typedef int (*call_stub) (struct client *, struct rpc *);
 
-struct client
-{
+struct client {
 	int sock;
 	call_stub call_stub;
 };

@@ -11,7 +11,7 @@
 
 static __inline__ intmax_t imaxabs(intmax_t __n)
 {
-  return (__n < (intmax_t)0) ? -__n : __n;
+	return (__n < (intmax_t) 0) ? -__n : __n;
 }
 
 __extern intmax_t strtoimax(const char *, char **, int);
@@ -223,4 +223,4 @@ __extern uintmax_t strntoumax(const char *, char **, int, size_t);
 
 #endif
 
-#endif /* _INTTYPES_H */
+#endif				/* _INTTYPES_H */

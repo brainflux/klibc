@@ -9,17 +9,17 @@
 
 int getdomainname(char *name, size_t len)
 {
-  struct utsname un;
+	struct utsname un;
 
-  if ( !uname(&un) )
-    return -1;
+	if (!uname(&un))
+		return -1;
 
-  if ( len < strlen(un.domainname)+1 ) {
-    errno = EINVAL;
-    return -1;
-  }
+	if (len < strlen(un.domainname) + 1) {
+		errno = EINVAL;
+		return -1;
+	}
 
-  strcpy(name, un.domainname);
+	strcpy(name, un.domainname);
 
-  return 0;
+	return 0;
 }

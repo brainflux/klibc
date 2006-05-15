@@ -11,11 +11,10 @@
 
 #else
 
-extern void __assert_fail(const char *, const char *,
-			  unsigned int);
+extern void __assert_fail(const char *, const char *, unsigned int);
 
 #define assert(x) ((x) ? (void)0 : __assert_fail(#x, __FILE__, __LINE__))
 
 #endif
 
-#endif /* _ASSERT_H */
+#endif				/* _ASSERT_H */

@@ -5,6 +5,6 @@
    len is the length of the key including the = sign */
 int __put_env(char *str, size_t len, int overwrite);
 
-extern char * const __null_environ[];
+extern char *const __null_environ[];
 
 #endif

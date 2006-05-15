@@ -12,6 +12,6 @@
 #define _JBLEN 0x200
 
 /* guaranteed 128-bit alignment! */
-typedef char jmp_buf[_JBLEN] __attribute__ ((aligned (16)));
+typedef char jmp_buf[_JBLEN] __attribute__ ((aligned(16)));
 
 #endif

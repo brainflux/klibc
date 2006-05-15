@@ -21,4 +21,4 @@
 
 __extern int klogctl(int, char *, int);
 
-#endif /* _SYS_KLOG_H */
+#endif				/* _SYS_KLOG_H */

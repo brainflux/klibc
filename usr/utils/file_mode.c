@@ -19,7 +19,8 @@ mode_t parse_file_mode(char *arg, mode_t mode, mode_t sumask)
 
 		num = strtoul(arg, NULL, 8);
 		if ((num == ULONG_MAX && errno == ERANGE) || num > 07777) {
-			fprintf(stderr, "%s: invalid mode `%s'\n", progname, arg);
+			fprintf(stderr, "%s: invalid mode `%s'\n", progname,
+				arg);
 			exit(255);
 		}
 		return (mode_t) num;
@@ -45,7 +46,9 @@ mode_t parse_file_mode(char *arg, mode_t mode, mode_t sumask)
 				who |= S_IRWXO | S_ISVTX;
 				continue;
 			case 'a':
-				who = S_IRWXU|S_IRWXG|S_IRWXO|S_ISUID|S_ISGID|S_ISVTX;
+				who =
+				    S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID |
+				    S_ISGID | S_ISVTX;
 				continue;
 			}
 			/* undo the increment above */
@@ -75,19 +78,19 @@ mode_t parse_file_mode(char *arg, mode_t mode, mode_t sumask)
 			while (*p) {
 				switch (*p++) {
 				case 'r':
-					perm |= S_IRUSR|S_IRGRP|S_IROTH;
+					perm |= S_IRUSR | S_IRGRP | S_IROTH;
 					continue;
 				case 'w':
-					perm |= S_IWUSR|S_IWGRP|S_IWOTH;
+					perm |= S_IWUSR | S_IWGRP | S_IWOTH;
 					continue;
 				case 'x':
-					perm |= S_IXUSR|S_IXGRP|S_IXOTH;
+					perm |= S_IXUSR | S_IXGRP | S_IXOTH;
 					continue;
 				case 'X':
 					perm |= S_ISVTX;
 					continue;
 				case 's':
-					perm |= S_ISUID|S_ISGID;
+					perm |= S_ISUID | S_ISGID;
 					continue;
 				case 'u':
 					perm = mode & S_IRWXU;
@@ -130,7 +133,8 @@ mode_t parse_file_mode(char *arg, mode_t mode, mode_t sumask)
 
 			if (!action)
 				break;
-			fprintf(stderr, "%s: invalid mode `%s'\n", progname, clause);
+			fprintf(stderr, "%s: invalid mode `%s'\n", progname,
+				clause);
 			exit(255);
 		}
 	}

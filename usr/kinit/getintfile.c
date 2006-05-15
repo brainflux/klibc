@@ -15,15 +15,15 @@ int getintfile(const char *path, long *val)
 	FILE *f;
 
 	f = fopen(path, "r");
-	if ( !f )
+	if (!f)
 		return -1;
 
-	ep = buffer + fread(buffer, 1, sizeof buffer-1, f);
+	ep = buffer + fread(buffer, 1, sizeof buffer - 1, f);
 	fclose(f);
 	*ep = '\0';
 
 	*val = strtol(buffer, &ep, 0);
-	if ( *ep && *ep != '\n' )
+	if (*ep && *ep != '\n')
 		return -1;
 	else
 		return 0;

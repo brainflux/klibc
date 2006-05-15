@@ -56,4 +56,4 @@ ssize_t freadfile(FILE *f, char **pptr);
 #define DEBUG(x) do { } while (0)
 #endif
 
-#endif /* KINIT_H */
+#endif				/* KINIT_H */

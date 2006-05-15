@@ -18,4 +18,4 @@ __extern __mallocfunc void *malloc(size_t);
 __extern __mallocfunc void *calloc(size_t, size_t);
 __extern __mallocfunc void *realloc(void *, size_t);
 
-#endif /* _MALLOC_H */
+#endif				/* _MALLOC_H */

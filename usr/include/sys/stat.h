@@ -27,7 +27,7 @@ __extern int mknod(const char *, mode_t, dev_t);
 __extern int mknodat(int, const char *, const char *, mode_t, dev_t);
 static __inline__ int mkfifo(const char *__p, mode_t __m)
 {
-  return mknod(__p, (__m & ~S_IFMT) | S_IFIFO, (dev_t)0);
+	return mknod(__p, (__m & ~S_IFMT) | S_IFIFO, (dev_t) 0);
 }
 
-#endif /* _SYS_STAT_H */
+#endif				/* _SYS_STAT_H */

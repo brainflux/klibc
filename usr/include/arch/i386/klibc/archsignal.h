@@ -18,7 +18,7 @@
 #define _NSIG_WORDS     (_NSIG / _NSIG_BPW)
 
 typedef struct {
-        unsigned long sig[_NSIG_WORDS];
+	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
 #define SIGHUP           1
@@ -83,7 +83,7 @@ typedef struct {
 
 #define SA_NOMASK	SA_NODEFER
 #define SA_ONESHOT	SA_RESETHAND
-#define SA_INTERRUPT	0x20000000 /* dummy -- ignored */
+#define SA_INTERRUPT	0x20000000	/* dummy -- ignored */
 
 #define SA_RESTORER	0x04000000
 
@@ -103,11 +103,11 @@ struct siginfo;
 
 struct sigaction {
 	union {
-		__sighandler_t	sa_handler;
+		__sighandler_t sa_handler;
 		void (*sa_sigaction)(int, struct siginfo *, void *);
 	};
 	unsigned long	sa_flags;
-	__sigrestore_t	sa_restorer;
+	__sigrestore_t 	sa_restorer;
 	sigset_t	sa_mask;
 };
 

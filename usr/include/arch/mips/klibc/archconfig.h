@@ -12,4 +12,4 @@
 /* MIPS has architecture-specific code for vfork() */
 #define _KLIBC_REAL_VFORK 1
 
-#endif /* _KLIBC_ARCHCONFIG_H */
+#endif				/* _KLIBC_ARCHCONFIG_H */

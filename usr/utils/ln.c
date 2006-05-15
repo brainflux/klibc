@@ -36,8 +36,7 @@ int main(int argc, char *argv[])
 	} while (1);
 
 	if (optind == argc) {
-		fprintf(stderr, "Usage: %s [-s] [-f] target link\n",
-			argv[0]);
+		fprintf(stderr, "Usage: %s [-s] [-f] target link\n", argv[0]);
 		return 1;
 	}
 
@@ -58,8 +57,7 @@ int main(int argc, char *argv[])
 		p++;
 
 		if (S_ISDIR(sb.st_mode))
-			snprintf(target, PATH_MAX, "%s/%s",
-				 argv[argc - 1], p);
+			snprintf(target, PATH_MAX, "%s/%s", argv[argc - 1], p);
 		else
 			snprintf(target, PATH_MAX, "%s", argv[argc - 1]);
 

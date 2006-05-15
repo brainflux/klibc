@@ -13,7 +13,7 @@ extern int __statfs64(const char *, size_t, struct statfs *);
 
 int statfs(const char *path, struct statfs *buf)
 {
-  return __statfs64(path, sizeof *buf, buf);
+	return __statfs64(path, sizeof *buf, buf);
 }
 
 #endif

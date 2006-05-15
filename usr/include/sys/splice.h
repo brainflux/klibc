@@ -16,4 +16,4 @@
 __extern int splice(int, off_t *, int, off_t *, size_t, unsigned int);
 __extern int tee(int, int, size_t, unsigned int);
 
-#endif /* _SYS_SPLICE_H */
+#endif				/* _SYS_SPLICE_H */

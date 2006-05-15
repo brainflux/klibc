@@ -7,38 +7,38 @@
 #define BPLEN		40
 
 struct netdev {
-	const char 	*name;			/* Device name		*/
-	unsigned int	ifindex;		/* interface index	*/
-	unsigned int	hwtype;			/* ARPHRD_xxx		*/
-	unsigned int	hwlen;			/* HW address length	*/
-	__u8		hwaddr[16];		/* HW address		*/
-	__u8		hwbrd[16];		/* Broadcast HW address */
-	unsigned int	mtu;			/* Device mtu		*/
-	unsigned int	caps;			/* Capabilities		*/
-	time_t		open_time;
+	const char *name;	/* Device name          */
+	unsigned int ifindex;	/* interface index      */
+	unsigned int hwtype;	/* ARPHRD_xxx           */
+	unsigned int hwlen;	/* HW address length    */
+	__u8 hwaddr[16];	/* HW address           */
+	__u8 hwbrd[16];		/* Broadcast HW address */
+	unsigned int mtu;	/* Device mtu           */
+	unsigned int caps;	/* Capabilities         */
+	time_t open_time;
 
-	struct {				/* BOOTP/DHCP info	*/
-		int	fd;
-		__u32	xid;
-		__u32	gateway;		/* BOOTP/DHCP gateway	*/
+	struct {		/* BOOTP/DHCP info      */
+		int fd;
+		__u32 xid;
+		__u32 gateway;	/* BOOTP/DHCP gateway   */
 	} bootp;
 
-	struct {				/* RARP information	*/
-		int	fd;
+	struct {		/* RARP information     */
+		int fd;
 	} rarp;
 
-	__u32		ip_addr;		/* my address		*/
-	__u32		ip_broadcast;		/* broadcast address	*/
-	__u32		ip_server;		/* server address	*/
-	__u32		ip_netmask;		/* my subnet mask	*/
-	__u32		ip_gateway;		/* my gateway		*/
-	__u32		ip_nameserver[2];	/* two nameservers	*/
-	__u32		serverid;		/* dhcp serverid	*/
-	char		hostname[SYS_NMLN];	/* hostname		*/
-	char		dnsdomainname[SYS_NMLN];/* dns domain name	*/
-	char		nisdomainname[SYS_NMLN];/* nis domain name	*/
-	char		bootpath[BPLEN];	/* boot path		*/
-	struct netdev	*next;			/* next configured i/f	*/
+	__u32 ip_addr;		/* my address           */
+	__u32 ip_broadcast;	/* broadcast address    */
+	__u32 ip_server;	/* server address       */
+	__u32 ip_netmask;	/* my subnet mask       */
+	__u32 ip_gateway;	/* my gateway           */
+	__u32 ip_nameserver[2];	/* two nameservers      */
+	__u32 serverid;		/* dhcp serverid        */
+	char hostname[SYS_NMLN];	/* hostname             */
+	char dnsdomainname[SYS_NMLN];	/* dns domain name      */
+	char nisdomainname[SYS_NMLN];	/* nis domain name      */
+	char bootpath[BPLEN];	/* boot path            */
+	struct netdev *next;	/* next configured i/f  */
 };
 
 /*

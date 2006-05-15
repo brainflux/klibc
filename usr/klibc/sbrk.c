@@ -16,30 +16,30 @@ char *__current_brk;		/* Common with brk.c */
 /* p is an address,  a is alignment; must be a power of 2 */
 static inline void *align_up(void *p, uintptr_t a)
 {
-  return (void *) (((uintptr_t)p + a-1) & ~(a-1));
+	return (void *)(((uintptr_t) p + a - 1) & ~(a - 1));
 }
 
 void *sbrk(ptrdiff_t increment)
 {
-  char *start, *end, *new_brk;
+	char *start, *end, *new_brk;
 
-  if (!__current_brk)
-    __current_brk = __brk(NULL);
+	if (!__current_brk)
+		__current_brk = __brk(NULL);
 
-  start = align_up(__current_brk, _KLIBC_SBRK_ALIGNMENT);
-  end   = start + increment;
+	start = align_up(__current_brk, _KLIBC_SBRK_ALIGNMENT);
+	end = start + increment;
 
-  new_brk = __brk(end);
+	new_brk = __brk(end);
 
-  if (new_brk == (void *)-1)
-    return (void *)-1;
-  else if (new_brk < end) {
-    errno = ENOMEM;
-    return (void *) -1;
-  }
+	if (new_brk == (void *)-1)
+		return (void *)-1;
+	else if (new_brk < end) {
+		errno = ENOMEM;
+		return (void *)-1;
+	}
 
-  __current_brk = new_brk;
-  return start;
+	__current_brk = new_brk;
+	return start;
 }
 
-#endif /* !_KLIBC_NO_MMU */
+#endif				/* !_KLIBC_NO_MMU */

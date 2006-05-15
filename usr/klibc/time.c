@@ -8,16 +8,16 @@
 
 #ifndef __NR_time
 
-time_t time(time_t *t)
+time_t time(time_t * t)
 {
-  struct timeval tv;
+	struct timeval tv;
 
-  gettimeofday(&tv, NULL);
+	gettimeofday(&tv, NULL);
 
-  if ( t )
-    *t = (time_t)tv.tv_sec;
+	if (t)
+		*t = (time_t) tv.tv_sec;
 
-  return (time_t)tv.tv_sec;
+	return (time_t) tv.tv_sec;
 }
 
 #endif

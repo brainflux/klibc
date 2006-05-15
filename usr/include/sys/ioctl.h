@@ -11,4 +11,4 @@
 
 __extern int ioctl(int, int, void *);
 
-#endif /* _SYS_IOCTL_H */
+#endif				/* _SYS_IOCTL_H */

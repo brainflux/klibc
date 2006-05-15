@@ -7,10 +7,9 @@
 
 #include <signal.h>
 
-static __inline__ void
-__divide_error(void)
+static __inline__ void __divide_error(void)
 {
-  asm volatile("divl %0" :: "rm" (0) : "eax", "edx");
+	asm volatile ("int $0");
 }
 
-#endif /* _KLIBC_DIVERR_H */
+#endif				/* _KLIBC_DIVERR_H */

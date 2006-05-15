@@ -12,28 +12,28 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-char * NAME (const char *str, TIMEX *ts)
+char *NAME(const char *str, TIMEX * ts)
 {
-  int n;
-  char *s, *s0;
-  __typeof__(ts->FSEC) fs;	/* Fractional seconds */
+	int n;
+	char *s, *s0;
+	__typeof__(ts->FSEC) fs;	/* Fractional seconds */
 
-  ts->tv_sec = strntoumax(str, &s, 10, ~(size_t)0);
-  fs = 0;
+	ts->tv_sec = strntoumax(str, &s, 10, ~(size_t) 0);
+	fs = 0;
 
-  if ( *s == '.' ) {
-    s0 = s+1;
+	if (*s == '.') {
+		s0 = s + 1;
 
-    fs = strntoumax(s0, &s, 10, DECIMALS);
-    n = s-s0;
+		fs = strntoumax(s0, &s, 10, DECIMALS);
+		n = s - s0;
 
-    while ( isdigit(*s) )
-      s++;
+		while (isdigit(*s))
+			s++;
 
-    for ( ; n < DECIMALS ; n++ )
-      fs *= 10;
-  }
+		for (; n < DECIMALS; n++)
+			fs *= 10;
+	}
 
-  ts->FSEC = fs;
-  return s;
+	ts->FSEC = fs;
+	return s;
 }

@@ -22,7 +22,7 @@ do_mount(char *dev, char *dir, char *type, unsigned long rwflag, void *data)
 	int error = 0;
 
 	while ((s = strsep(&type, ",")) != NULL) {
-retry:
+	      retry:
 		if (mount(dev, dir, s, rwflag, data) == -1) {
 			error = errno;
 			/*
@@ -38,7 +38,7 @@ retry:
 			 * try read only.
 			 */
 			if (error == EACCES &&
-			    (rwflag & (MS_REMOUNT|MS_RDONLY)) == 0) {
+			    (rwflag & (MS_REMOUNT | MS_RDONLY)) == 0) {
 				rwflag |= MS_RDONLY;
 				goto retry;
 			}
@@ -101,5 +101,5 @@ int main(int argc, char *argv[])
 	}
 
 	return do_mount(argv[optind], argv[optind + 1], type, rwflag,
-		        extra.str);
+			extra.str);
 }

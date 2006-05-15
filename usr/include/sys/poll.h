@@ -17,4 +17,4 @@ __extern int poll(struct pollfd *, nfds_t, long);
 __extern int ppoll(struct pollfd *, nfds_t, struct timespec *,
 		   const sigset_t *);
 
-#endif /* _POLL_H */
+#endif				/* _POLL_H */

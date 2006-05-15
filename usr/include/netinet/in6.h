@@ -7,4 +7,4 @@
 
 #include <linux/in6.h>
 
-#endif /* _NETINET_IN6_H */
+#endif				/* _NETINET_IN6_H */

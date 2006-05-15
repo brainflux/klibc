@@ -10,4 +10,4 @@
 
 __extern int setgroups(size_t, const gid_t *);
 
-#endif /* _GRP_H */
+#endif				/* _GRP_H */

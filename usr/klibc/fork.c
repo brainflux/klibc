@@ -15,7 +15,7 @@
 
 pid_t fork(void)
 {
-  return __clone(SIGCHLD, 0);
+	return __clone(SIGCHLD, 0);
 }
 
-#endif /* __NR_fork */
+#endif				/* __NR_fork */

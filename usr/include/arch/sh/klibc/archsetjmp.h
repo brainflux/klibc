@@ -6,17 +6,17 @@
 #define _KLIBC_ARCHSETJMP_H
 
 struct __jmp_buf {
-  unsigned long r8;
-  unsigned long r9;
-  unsigned long r10;
-  unsigned long r11;
-  unsigned long r12;
-  unsigned long r13;
-  unsigned long r14;
-  unsigned long r15;
-  unsigned long pr;
+	unsigned long __r8;
+	unsigned long __r9;
+	unsigned long __r10;
+	unsigned long __r11;
+	unsigned long __r12;
+	unsigned long __r13;
+	unsigned long __r14;
+	unsigned long __r15;
+	unsigned long __pr;
 };
 
 typedef struct __jmp_buf jmp_buf[1];
 
-#endif /* _KLIBC_ARCHSETJMP_H */
+#endif				/* _KLIBC_ARCHSETJMP_H */

@@ -22,4 +22,4 @@ __extern int reboot(int);
 /* Native four-argument system call */
 __extern int __reboot(int, int, int, void *);
 
-#endif /* _SYS_REBOOT_H */
+#endif				/* _SYS_REBOOT_H */

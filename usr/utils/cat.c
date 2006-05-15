@@ -47,15 +47,14 @@
 #include <sys/cdefs.h>
 #endif
 #if !defined(lint)
-__COPYRIGHT(
-"@(#) Copyright (c) 1989, 1993\n\
+__COPYRIGHT("@(#) Copyright (c) 1989, 1993\n\
 	The Regents of the University of California.  All rights reserved.\n");
 #if 0
 static char sccsid[] = "@(#)cat.c	8.2 (Berkeley) 4/27/95";
 #else
 __RCSID("$NetBSD: cat.c,v 1.43 2004/01/04 03:31:28 jschauma Exp $");
 #endif
-#endif /* not lint */
+#endif				/* not lint */
 
 #include <sys/param.h>
 #include <sys/stat.h>
@@ -84,8 +83,7 @@ void cook_buf(FILE *);
 void raw_args(char *argv[]);
 void raw_cat(int);
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int ch;
 	struct flock stdout_lock;
@@ -129,7 +127,7 @@ main(int argc, char *argv[])
 		default:
 		case '?':
 			(void)fprintf(stderr,
-			    "usage: cat [-beflnstuv] [-] [file ...]\n");
+				      "usage: cat [-beflnstuv] [-] [file ...]\n");
 			exit(1);
 			/* NOTREACHED */
 		}
@@ -140,8 +138,7 @@ main(int argc, char *argv[])
 		stdout_lock.l_start = 0;
 		stdout_lock.l_type = F_WRLCK;
 		stdout_lock.l_whence = SEEK_SET;
-		if (fcntl(STDOUT_FILENO, F_SETLKW, &stdout_lock) == -1)
-		{
+		if (fcntl(STDOUT_FILENO, F_SETLKW, &stdout_lock) == -1) {
 			perror("fcntl");
 			exit(1);
 		}
@@ -151,8 +148,7 @@ main(int argc, char *argv[])
 		cook_args(argv);
 	else
 		raw_args(argv);
-	if (fclose(stdout))
-	{
+	if (fclose(stdout)) {
 		perror("fclose");
 		exit(1);
 	}
@@ -160,8 +156,7 @@ main(int argc, char *argv[])
 	/* NOTREACHED */
 }
 
-void
-cook_args(char **argv)
+void cook_args(char **argv)
 {
 	FILE *fp;
 
@@ -172,7 +167,7 @@ cook_args(char **argv)
 			if (!strcmp(*argv, "-"))
 				fp = stdin;
 			else if ((fp = fopen(*argv,
-			    fflag ? "rf" : "r")) == NULL) {
+					     fflag ? "rf" : "r")) == NULL) {
 				perror("fopen");
 				rval = 1;
 				++argv;
@@ -186,8 +181,7 @@ cook_args(char **argv)
 	} while (*argv);
 }
 
-void
-cook_buf(FILE *fp)
+void cook_buf(FILE * fp)
 {
 	int ch, gobble, line, prev;
 	int stdout_err = 0;
@@ -205,13 +199,14 @@ cook_buf(FILE *fp)
 				if (nflag) {
 					if (!bflag) {
 						if (fprintf(stdout,
-						    "%6d\t", ++line) < 0) {
+							    "%6d\t",
+							    ++line) < 0) {
 							stdout_err++;
 							break;
 						}
 					} else if (eflag) {
 						if (fprintf(stdout,
-						    "%6s\t", "") < 0) {
+							    "%6s\t", "") < 0) {
 							stdout_err++;
 							break;
 						}
@@ -244,7 +239,7 @@ cook_buf(FILE *fp)
 			if (iscntrl(ch)) {
 				if (putchar('^') == EOF ||
 				    putchar(ch == '\177' ? '?' :
-				    ch | 0100) == EOF)
+					    ch | 0100) == EOF)
 					break;
 				continue;
 			}
@@ -258,8 +253,7 @@ cook_buf(FILE *fp)
 	}
 }
 
-void
-raw_args(char **argv)
+void raw_args(char **argv)
 {
 	int fd;
 
@@ -271,7 +265,7 @@ raw_args(char **argv)
 				fd = fileno(stdin);
 			else if (fflag) {
 				struct stat st;
-				fd = open(*argv, O_RDONLY|O_NONBLOCK, 0);
+				fd = open(*argv, O_RDONLY | O_NONBLOCK, 0);
 				if (fd < 0)
 					goto skip;
 
@@ -284,11 +278,10 @@ raw_args(char **argv)
 					errno = EINVAL;
 					goto skipnomsg;
 				}
-			}
-			else if ((fd = open(*argv, O_RDONLY, 0)) < 0) {
-skip:
+			} else if ((fd = open(*argv, O_RDONLY, 0)) < 0) {
+			      skip:
 				perror(*argv);
-skipnomsg:
+			      skipnomsg:
 				rval = 1;
 				++argv;
 				continue;
@@ -301,8 +294,7 @@ skipnomsg:
 	} while (*argv);
 }
 
-void
-raw_cat(int rfd)
+void raw_cat(int rfd)
 {
 	static char *buf;
 	static char fb_buf[BUFSIZ];
@@ -326,13 +318,12 @@ raw_cat(int rfd)
 	}
 	while ((nr = read(rfd, buf, bsize)) > 0)
 		for (off = 0; nr; nr -= nw, off += nw)
-			if ((nw = write(wfd, buf + off, (size_t)nr)) < 0)
-			{
+			if ((nw = write(wfd, buf + off, (size_t) nr)) < 0) {
 				perror("write");
 				exit(1);
 			}
 	if (nr < 0) {
-		fprintf(stderr,"%s: invalid length\n", filename);
+		fprintf(stderr, "%s: invalid length\n", filename);
 		rval = 1;
 	}
 }

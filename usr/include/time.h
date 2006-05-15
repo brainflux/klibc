@@ -15,4 +15,4 @@ __extern int nanosleep(const struct timespec *, struct timespec *);
 __extern char *strtotimeval(const char *str, struct timeval *tv);
 __extern char *strtotimespec(const char *str, struct timespec *tv);
 
-#endif /* _TIME_H */
+#endif				/* _TIME_H */

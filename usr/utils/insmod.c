@@ -27,7 +27,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-
 #define streq(a,b) (strcmp((a),(b)) == 0)
 
 /* This really needs to be in a header file... */
@@ -115,7 +114,7 @@ int main(int argc, char *argv[])
 		options = realloc(options,
 				  strlen(options) + 2 + strlen(argv[i]) + 2);
 		/* Spaces handled by "" pairs, but no way of escaping
-                   quotes */
+		   quotes */
 		if (strchr(argv[i], ' '))
 			strcat(options, "\"");
 		strcat(options, argv[i]);

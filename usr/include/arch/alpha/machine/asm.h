@@ -41,4 +41,4 @@
 #define sp	$30
 #define zero	$31
 
-#endif /* _MACHINE_ASM_H */
+#endif				/* _MACHINE_ASM_H */

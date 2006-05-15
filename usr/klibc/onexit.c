@@ -6,18 +6,18 @@
 #include <unistd.h>
 #include "atexit.h"
 
-int on_exit(void (*fctn)(int, void *), void *arg)
+int on_exit(void (*fctn) (int, void *), void *arg)
 {
-  struct atexit *as = malloc(sizeof(struct atexit));
+	struct atexit *as = malloc(sizeof(struct atexit));
 
-  if ( !as )
-    return -1;
+	if (!as)
+		return -1;
 
-  as->fctn = fctn;
-  as->arg  = arg;
+	as->fctn = fctn;
+	as->arg = arg;
 
-  as->next = __atexit_list;
-  __atexit_list = as;
+	as->next = __atexit_list;
+	__atexit_list = as;
 
-  return 0;
+	return 0;
 }

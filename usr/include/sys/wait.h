@@ -25,4 +25,4 @@ __extern pid_t waitpid(pid_t, int *, int);
 __extern pid_t wait3(int *, int, struct rusage *);
 __extern pid_t wait4(pid_t, int *, int, struct rusage *);
 
-#endif /* _SYS_WAIT_H */
+#endif				/* _SYS_WAIT_H */

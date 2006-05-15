@@ -20,9 +20,9 @@ struct option {
 };
 
 struct conv {
-	const char	str[8];
-	unsigned int	set;
-	unsigned int	exclude;
+	const char str[8];
+	unsigned int set;
+	unsigned int exclude;
 };
 
 #define CONV_BLOCK	(1<<0)
@@ -37,48 +37,48 @@ struct conv {
 #define CONV_SYNC	(1<<7)
 
 static struct option options[] = {
-	{ "bs",		NULL, NULL },
+	{"bs", NULL, NULL},
 #define OPT_BS		(&options[0])
-	{ "cbs",	NULL, NULL },
+	{"cbs", NULL, NULL},
 #define OPT_CBS		(&options[1])
-	{ "conv",	NULL, NULL },
+	{"conv", NULL, NULL},
 #define OPT_CONV	(&options[2])
-	{ "count",	NULL, NULL },
+	{"count", NULL, NULL},
 #define OPT_COUNT	(&options[3])
-	{ "ibs",	NULL, NULL },
+	{"ibs", NULL, NULL},
 #define OPT_IBS		(&options[4])
-	{ "if",		NULL, NULL },
+	{"if", NULL, NULL},
 #define OPT_IF		(&options[5])
-	{ "obs",	NULL, NULL },
+	{"obs", NULL, NULL},
 #define OPT_OBS		(&options[6])
-	{ "of",		NULL, NULL },
+	{"of", NULL, NULL},
 #define OPT_OF		(&options[7])
-	{ "seek",	NULL, NULL },
+	{"seek", NULL, NULL},
 #define OPT_SEEK	(&options[8])
-	{ "skip",	NULL, NULL }
+	{"skip", NULL, NULL}
 #define OPT_SKIP	(&options[9])
 };
 
 static const struct conv conv_opts[] = {
-	{ "block",	CONV_BLOCK,	CONV_UNBLOCK	},
-	{ "unblock",	CONV_UNBLOCK,	CONV_BLOCK	},
-	{ "lcase",	CONV_LCASE,	CONV_UCASE	},
-	{ "ucase",	CONV_UCASE,	CONV_LCASE	},
-	{ "swab",	CONV_SWAB,	0		},
-	{ "noerror",	CONV_NOERROR,	0		},
-	{ "notrunc",	CONV_NOTRUNC,	0		},
-	{ "sync",	CONV_SYNC,	0		},
+	{"block", CONV_BLOCK, CONV_UNBLOCK},
+	{"unblock", CONV_UNBLOCK, CONV_BLOCK},
+	{"lcase", CONV_LCASE, CONV_UCASE},
+	{"ucase", CONV_UCASE, CONV_LCASE},
+	{"swab", CONV_SWAB, 0},
+	{"noerror", CONV_NOERROR, 0},
+	{"notrunc", CONV_NOTRUNC, 0},
+	{"sync", CONV_SYNC, 0},
 };
 
-static size_t		cbs;
-static unsigned int	conv;
-static unsigned int	count;
-static size_t		ibs = 512;
-static size_t		obs = 512;
-static unsigned int	seek;
-static unsigned int	skip;
-static char		*in_buf;
-static char		*out_buf;
+static size_t cbs;
+static unsigned int conv;
+static unsigned int count;
+static size_t ibs = 512;
+static size_t obs = 512;
+static unsigned int seek;
+static unsigned int skip;
+static char *in_buf;
+static char *out_buf;
 
 static size_t parse_bs(struct option *opt)
 {
@@ -115,12 +115,11 @@ static size_t parse_bs(struct option *opt)
 		err = 1;
 
 	if (err) {
-		fprintf(stderr, "%s: bad operand `%s'\n",
-			progname, opt->arg);
+		fprintf(stderr, "%s: bad operand `%s'\n", progname, opt->arg);
 		exit(1);
 	}
 
-	return (size_t)realval;
+	return (size_t) realval;
 }
 
 static unsigned int parse_num(struct option *opt)
@@ -131,8 +130,7 @@ static unsigned int parse_num(struct option *opt)
 	val = strtoul(str, &str, 10);
 	if (str == opt->str || (val == ULONG_MAX && errno == ERANGE) ||
 	    val > UINT_MAX) {
-		fprintf(stderr, "%s: bad operand `%s'\n",
-			progname, opt->arg);
+		fprintf(stderr, "%s: bad operand `%s'\n", progname, opt->arg);
 		exit(1);
 	}
 
@@ -156,7 +154,7 @@ static int parse_options(int argc, char *argv[])
 
 		s = strchr(argv[arg], '=');
 		if (!s)
-			s = argv[arg]; /* don't recognise this arg */
+			s = argv[arg];	/* don't recognise this arg */
 
 		len = s - argv[arg];
 		for (i = 0; i < ARRAY_SIZE(options); i++) {
@@ -220,7 +218,7 @@ static int parse_options(int argc, char *argv[])
 		}
 	}
 
-	if (conv & (CONV_BLOCK|CONV_UNBLOCK) && cbs == 0) {
+	if (conv & (CONV_BLOCK | CONV_UNBLOCK) && cbs == 0) {
 		fprintf(stderr, "%s: block/unblock conversion with zero cbs\n",
 			progname);
 		return 1;
@@ -297,11 +295,11 @@ static int skip_blocks(int fd, void *buf, unsigned int blks, size_t size)
 }
 
 struct stats {
-	unsigned int	in_full;
-	unsigned int	in_partial;
-	unsigned int	out_full;
-	unsigned int	out_partial;
-	unsigned int	truncated;
+	unsigned int in_full;
+	unsigned int in_partial;
+	unsigned int out_full;
+	unsigned int out_partial;
+	unsigned int truncated;
 };
 
 static int do_dd(int rd, int wr, struct stats *stats)
@@ -313,7 +311,7 @@ static int do_dd(int rd, int wr, struct stats *stats)
 	size_t in_size;
 	char *buf;
 
-	if (conv & (CONV_BLOCK|CONV_UNBLOCK))
+	if (conv & (CONV_BLOCK | CONV_UNBLOCK))
 		fill_val = ' ';
 
 	while (!OPT_COUNT->str || count-- != 0) {
@@ -349,8 +347,8 @@ static int do_dd(int rd, int wr, struct stats *stats)
 			char c;
 
 			for (i = 1; i < in_size; i += 2) {
-				c = in_buf[i-1];
-				in_buf[i-1] = in_buf[i];
+				c = in_buf[i - 1];
+				in_buf[i - 1] = in_buf[i];
 				in_buf[i] = c;
 			}
 		}
@@ -450,7 +448,7 @@ int main(int argc, char *argv[])
 	if (ret)
 		return ret;
 
-	if (conv & (CONV_BLOCK|CONV_UNBLOCK)) {
+	if (conv & (CONV_BLOCK | CONV_UNBLOCK)) {
 		fprintf(stderr, "%s: block/unblock not implemented\n",
 			progname);
 		return 1;
@@ -483,7 +481,7 @@ int main(int argc, char *argv[])
 	 * Open the output file, if specified.
 	 */
 	if (OPT_OF->str) {
-		wr_fd = open(OPT_OF->str, O_RDWR|O_CREAT, 0666);
+		wr_fd = open(OPT_OF->str, O_RDWR | O_CREAT, 0666);
 		if (wr_fd == -1) {
 			perror("open output file");
 			return 1;
@@ -514,14 +512,12 @@ int main(int argc, char *argv[])
 	if (close(wr_fd) == -1)
 		perror(OPT_OF->str ? OPT_OF->str : "stdout");
 
-	fprintf(stderr, "%u+%u records in\n",
-		stats.in_full, stats.in_partial);
+	fprintf(stderr, "%u+%u records in\n", stats.in_full, stats.in_partial);
 	fprintf(stderr, "%u+%u records out\n",
 		stats.out_full, stats.out_partial);
 	if (stats.truncated)
 		fprintf(stderr, "%u truncated record%s\n",
-			stats.truncated, stats.truncated == 1
-			 ? "" : "s");
+			stats.truncated, stats.truncated == 1 ? "" : "s");
 
 	/*
 	 * ret will be -SIGINT if we got a SIGINT.  Raise

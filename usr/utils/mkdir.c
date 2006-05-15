@@ -30,8 +30,7 @@ static int make_one_dir(char *dir, mode_t mode)
 		 *  - stat indicates that its a directory
 		 */
 		if (p_flag && errno == EEXIST &&
-		    stat(dir, &stbuf) == 0 &&
-		    S_ISDIR(stbuf.st_mode))
+		    stat(dir, &stbuf) == 0 && S_ISDIR(stbuf.st_mode))
 			return 1;
 		errno = err;
 		fprintf(stderr, "%s: ", progname);
@@ -112,9 +111,9 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 
 	saved_umask = umask(0);
-	leaf_mode = (S_IRWXU|S_IRWXG|S_IRWXO) & ~saved_umask;
-	subdir_mode = (saved_umask ^ (S_IRWXU|S_IRWXG|S_IRWXO))
-		      |S_IWUSR|S_IXUSR;
+	leaf_mode = (S_IRWXU | S_IRWXG | S_IRWXO) & ~saved_umask;
+	subdir_mode = (saved_umask ^ (S_IRWXU | S_IRWXG | S_IRWXO))
+	    | S_IWUSR | S_IXUSR;
 
 	do {
 		c = getopt(argc, argv, "pm:");
@@ -122,7 +121,8 @@ int main(int argc, char *argv[])
 			break;
 		switch (c) {
 		case 'm':
-			leaf_mode = parse_file_mode(optarg, leaf_mode, saved_umask);
+			leaf_mode =
+			    parse_file_mode(optarg, leaf_mode, saved_umask);
 			break;
 		case 'p':
 			p_flag = 1;
@@ -136,14 +136,13 @@ int main(int argc, char *argv[])
 	} while (1);
 
 	if (optind == argc) {
-		fprintf(stderr, "Usage: %s [-p] [-m mode] dir...\n",
-			progname);
+		fprintf(stderr, "Usage: %s [-p] [-m mode] dir...\n", progname);
 		exit(1);
 	}
 
 	while (optind < argc) {
 		if (make_dir(argv[optind]))
-			ret = 255; /* seems to be what gnu mkdir does */
+			ret = 255;	/* seems to be what gnu mkdir does */
 		optind++;
 	}
 

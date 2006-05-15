@@ -11,4 +11,4 @@
 __extern int setfsuid(uid_t);
 __extern int setfsgid(gid_t);
 
-#endif /* _SYS_FSUID_H */
+#endif				/* _SYS_FSUID_H */

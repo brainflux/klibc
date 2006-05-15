@@ -21,4 +21,4 @@
 #undef offsetof
 #define offsetof(t,m) ((size_t)&((t *)0)->m)
 
-#endif /* _STDDEF_H */
+#endif				/* _STDDEF_H */

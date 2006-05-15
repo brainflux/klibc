@@ -89,7 +89,8 @@ int netdev_setdefaultroute(struct netdev *dev)
 	((struct sockaddr_in *)&r.rt_dst)->sin_family = AF_INET;
 	((struct sockaddr_in *)&r.rt_dst)->sin_addr.s_addr = INADDR_ANY;
 	((struct sockaddr_in *)&r.rt_gateway)->sin_family = AF_INET;
-	((struct sockaddr_in *)&r.rt_gateway)->sin_addr.s_addr = dev->ip_gateway;
+	((struct sockaddr_in *)&r.rt_gateway)->sin_addr.s_addr =
+	    dev->ip_gateway;
 	((struct sockaddr_in *)&r.rt_genmask)->sin_family = AF_INET;
 	((struct sockaddr_in *)&r.rt_genmask)->sin_addr.s_addr = INADDR_ANY;
 	r.rt_flags = RTF_UP | RTF_GATEWAY;
@@ -111,7 +112,7 @@ int netdev_setmtu(struct netdev *dev)
 	return ioctl(cfd, SIOCSIFMTU, &ifr);
 }
 
-static int netdev_gif_addr(struct ifreq *ifr, int cmd, __u32 *ptr)
+static int netdev_gif_addr(struct ifreq *ifr, int cmd, __u32 * ptr)
 {
 	struct sockaddr_in *sin = (struct sockaddr_in *)&ifr->ifr_addr;
 

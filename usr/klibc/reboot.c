@@ -11,5 +11,5 @@
 
 int reboot(int flag)
 {
-  return __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, flag, NULL);
+	return __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, flag, NULL);
 }

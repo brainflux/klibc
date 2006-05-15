@@ -39,14 +39,14 @@ int main(int argc, char *argv[])
 
 	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == '\0') {
 		fd = open(file = argv[1], O_RDONLY);
-		if ( fd < 0 ) {
+		if (fd < 0) {
 			perror(argv[1]);
 			return 2;
 		}
 	}
 
 	rv = identify_fs(fd, &fstype, &bytes, 0);
-	if ( rv == -1 ) {
+	if (rv == -1) {
 		perror(file);
 		return 2;
 	}

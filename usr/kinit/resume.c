@@ -37,7 +37,7 @@ int do_resume(int argc, char *argv[])
 
 	/* Fix: we either should consider reverting the device back to
 	   ordinary swap, or (better) put that code into swapon */
-	if (get_flag(argc, argv, "noresume") )
+	if (get_flag(argc, argv, "noresume"))
 		return 0;	/* Noresume requested */
 
 	resume_device = name_to_dev_t(resume_file);
@@ -62,13 +62,14 @@ int do_resume(int argc, char *argv[])
 		goto fail_r;
 
 	/* Okay, what are we still doing alive... */
-failure:
+      failure:
 	if (powerfd >= 0)
 		close(powerfd);
 	fprintf(stderr, "Resume failed, doing normal boot...\n");
 	return -1;
 
-fail_r:
-	fprintf(stderr, "Resume failed: cannot write /sys/power/resume (no kernel support?)\n");
+      fail_r:
+	fprintf(stderr,
+		"Resume failed: cannot write /sys/power/resume (no kernel support?)\n");
 	goto failure;
 }

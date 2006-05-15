@@ -11,9 +11,9 @@ __extern int __ppoll(struct pollfd *, nfds_t, struct timespec *,
 		     const sigset_t *, size_t);
 
 int ppoll(struct pollfd *ufds, nfds_t nfds, struct timespec *timeout,
-	  const sigset_t *sigmask)
+	  const sigset_t * sigmask)
 {
-  return __ppoll(ufds, nfds, timeout, sigmask, sizeof *sigmask);
+	return __ppoll(ufds, nfds, timeout, sigmask, sizeof *sigmask);
 }
 
 #endif

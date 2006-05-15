@@ -9,9 +9,8 @@ struct xfs_mount;
 
 #define	XFS_SB_MAGIC		0x58465342	/* 'XFSB' */
 
-typedef struct xfs_sb
-{
-	__u32	sb_magicnum;	/* magic number == XFS_SB_MAGIC */
-	__u32	sb_blocksize;	/* logical block size, bytes */
-	__u64	sb_dblocks;	/* number of data blocks */
+typedef struct xfs_sb {
+	__u32 sb_magicnum;	/* magic number == XFS_SB_MAGIC */
+	__u32 sb_blocksize;	/* logical block size, bytes */
+	__u64 sb_dblocks;	/* number of data blocks */
 } xfs_sb_t;

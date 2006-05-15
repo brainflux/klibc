@@ -15,47 +15,47 @@
 
 int system(const char *string)
 {
-  pid_t pid;
-  struct sigaction ignore, old_int, old_quit;
-  sigset_t masked, oldmask;
-  static const char *argv[] = { "/bin/sh", "-c", NULL, NULL };
-  int status;
+	pid_t pid;
+	struct sigaction ignore, old_int, old_quit;
+	sigset_t masked, oldmask;
+	static const char *argv[] = { "/bin/sh", "-c", NULL, NULL };
+	int status;
 
-  /* Block SIGCHLD and ignore SIGINT and SIGQUIT */
-  /* Do this before the fork() to avoid races */
+	/* Block SIGCHLD and ignore SIGINT and SIGQUIT */
+	/* Do this before the fork() to avoid races */
 
-  ignore.sa_handler = SIG_IGN;
-  sigemptyset(&ignore.sa_mask);
-  ignore.sa_flags = 0;
-  sigaction(SIGINT,  &ignore, &old_int);
-  sigaction(SIGQUIT, &ignore, &old_quit);
+	ignore.sa_handler = SIG_IGN;
+	sigemptyset(&ignore.sa_mask);
+	ignore.sa_flags = 0;
+	sigaction(SIGINT, &ignore, &old_int);
+	sigaction(SIGQUIT, &ignore, &old_quit);
 
-  sigemptyset(&masked);
-  sigaddset(&masked, SIGCHLD);
-  sigprocmask(SIG_BLOCK, &masked, &oldmask);
+	sigemptyset(&masked);
+	sigaddset(&masked, SIGCHLD);
+	sigprocmask(SIG_BLOCK, &masked, &oldmask);
 
-  pid = fork();
+	pid = fork();
 
-  if ( pid < 0 )
-    return -1;
-  else if ( pid == 0 ) {
-    sigaction(SIGINT,  &old_int, NULL);
-    sigaction(SIGQUIT, &old_quit, NULL);
-    sigprocmask(SIG_SETMASK, &oldmask, NULL);
+	if (pid < 0)
+		return -1;
+	else if (pid == 0) {
+		sigaction(SIGINT, &old_int, NULL);
+		sigaction(SIGQUIT, &old_quit, NULL);
+		sigprocmask(SIG_SETMASK, &oldmask, NULL);
 
-    argv[2] = string;
+		argv[2] = string;
 
-    execve(argv[0], (char * const *)argv, (char * const *)environ);
-    _exit(127);
-  }
+		execve(argv[0], (char *const *)argv, (char *const *)environ);
+		_exit(127);
+	}
 
-  /* else... */
+	/* else... */
 
-  waitpid(pid, &status, 0);
+	waitpid(pid, &status, 0);
 
-  sigaction(SIGINT,  &old_int, NULL);
-  sigaction(SIGQUIT, &old_quit, NULL);
-  sigprocmask(SIG_SETMASK, &oldmask, NULL);
+	sigaction(SIGINT, &old_int, NULL);
+	sigaction(SIGQUIT, &old_quit, NULL);
+	sigprocmask(SIG_SETMASK, &oldmask, NULL);
 
-  return status;
+	return status;
 }

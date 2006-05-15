@@ -13,17 +13,18 @@
 
 #if _BITSIZE == 32
 
-extern int __llseek(int fd, unsigned long hi, unsigned long lo, off_t *res, int whence);
+extern int __llseek(int fd, unsigned long hi, unsigned long lo, off_t * res,
+		    int whence);
 
 off_t lseek(int fd, off_t offset, int whence)
 {
-  off_t result;
-  int rv;
+	off_t result;
+	int rv;
 
-  rv = __llseek(fd, (unsigned long)(offset >> 32), (unsigned long)offset,
-		&result, whence);
+	rv = __llseek(fd, (unsigned long)(offset >> 32), (unsigned long)offset,
+		      &result, whence);
 
-  return rv ? (off_t)-1 : result;
+	return rv ? (off_t) - 1 : result;
 }
 
 #endif

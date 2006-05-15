@@ -13,7 +13,7 @@ extern int __fstatfs64(int, size_t, struct statfs *);
 
 int fstatfs(int fd, struct statfs *buf)
 {
-  return __fstatfs64(fd, sizeof *buf, buf);
+	return __fstatfs64(fd, sizeof *buf, buf);
 }
 
 #endif

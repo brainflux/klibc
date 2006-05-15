@@ -7,8 +7,7 @@
 int main(int argc, char *argv[], char *envp[])
 {
 	if (argc < 3) {
-		fprintf(stderr, "Usage: %s newroot command...\n",
-			argv[0]);
+		fprintf(stderr, "Usage: %s newroot command...\n", argv[0]);
 		return 1;
 	}
 

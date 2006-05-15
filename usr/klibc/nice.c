@@ -11,8 +11,9 @@
 
 int nice(int inc)
 {
-  pid_t me = getpid();
-  return setpriority(me, PRIO_PROCESS, getpriority(me, PRIO_PROCESS)+inc);
+	pid_t me = getpid();
+	return setpriority(me, PRIO_PROCESS,
+			   getpriority(me, PRIO_PROCESS) + inc);
 }
 
 #endif

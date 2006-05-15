@@ -22,17 +22,19 @@
 
 extern void *__mmap2(void *, size_t, int, int, int, size_t);
 
-void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset)
+void *mmap(void *start, size_t length, int prot, int flags, int fd,
+	   off_t offset)
 {
-  const int mmap2_shift = _KLIBC_MMAP2_SHIFT;
-  const off_t mmap2_mask = ((off_t)1 << mmap2_shift) - 1;
+	const int mmap2_shift = _KLIBC_MMAP2_SHIFT;
+	const off_t mmap2_mask = ((off_t) 1 << mmap2_shift) - 1;
 
-  if ( offset & mmap2_mask ) {
-    errno = EINVAL;
-    return MAP_FAILED;
-  }
+	if (offset & mmap2_mask) {
+		errno = EINVAL;
+		return MAP_FAILED;
+	}
 
-  return __mmap2(start, length, prot, flags, fd, (size_t)offset >> mmap2_shift);
+	return __mmap2(start, length, prot, flags, fd,
+		       (size_t) offset >> mmap2_shift);
 }
 
 #endif

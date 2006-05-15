@@ -11,4 +11,4 @@
 
 __extern clock_t times(struct tms *);
 
-#endif /* _SYS_TIMES_H */
+#endif				/* _SYS_TIMES_H */

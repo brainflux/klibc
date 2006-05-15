@@ -12,4 +12,4 @@
 __extern int readv(int, const struct iovec *, int);
 __extern int writev(int, const struct iovec *, int);
 
-#endif /* _SYS_UIO_H */
+#endif				/* _SYS_UIO_H */

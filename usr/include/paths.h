@@ -71,4 +71,4 @@
 #define	_PATH_VARRUN	"/var/run/"
 #define	_PATH_VARTMP	"/var/tmp/"
 
-#endif /* !_PATHS_H_ */
+#endif				/* !_PATHS_H_ */

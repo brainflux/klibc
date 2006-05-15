@@ -7,115 +7,115 @@
 #include <signal.h>
 #include <unistd.h>
 
-const char * const sys_sigabbrev[NSIG] = {
+const char *const sys_sigabbrev[NSIG] = {
 #ifdef SIGABRT
-  [SIGABRT] = "ABRT",
+	[SIGABRT] = "ABRT",
 #endif
 #ifdef SIGALRM
-  [SIGALRM] = "ALRM",
+	[SIGALRM] = "ALRM",
 #endif
 #ifdef SIGBUS
-  [SIGBUS] = "BUS",
+	[SIGBUS] = "BUS",
 #endif
 #ifdef SIGCHLD
-  [SIGCHLD] = "CHLD",
+	[SIGCHLD] = "CHLD",
 #endif
 #if defined(SIGCLD) && (SIGCHLD != SIGCLD)
-  [SIGCLD] = "CLD",
+	[SIGCLD] = "CLD",
 #endif
 #ifdef SIGEMT
-  [SIGEMT] = "EMT",
+	[SIGEMT] = "EMT",
 #endif
 #ifdef SIGFPE
-  [SIGFPE] = "FPE",
+	[SIGFPE] = "FPE",
 #endif
 #ifdef SIGHUP
-  [SIGHUP] = "HUP",
+	[SIGHUP] = "HUP",
 #endif
 #ifdef SIGILL
-  [SIGILL] = "ILL",
+	[SIGILL] = "ILL",
 #endif
-  /* SIGINFO == SIGPWR */
+	/* SIGINFO == SIGPWR */
 #ifdef SIGINT
-  [SIGINT] = "INT",
+	[SIGINT] = "INT",
 #endif
 #ifdef SIGIO
-  [SIGIO] = "IO",
+	[SIGIO] = "IO",
 #endif
 #if defined(SIGIOT) && (SIGIOT != SIGABRT)
-  [SIGIOT] = "IOT",
+	[SIGIOT] = "IOT",
 #endif
 #ifdef SIGKILL
-  [SIGKILL] = "KILL",
+	[SIGKILL] = "KILL",
 #endif
 #if defined(SIGLOST) && (SIGLOST != SIGIO) && (SIGLOST != SIGPWR)
-  [SIGLOST] = "LOST",
+	[SIGLOST] = "LOST",
 #endif
 #ifdef SIGPIPE
-  [SIGPIPE] = "PIPE",
+	[SIGPIPE] = "PIPE",
 #endif
 #if defined(SIGPOLL) && (SIGPOLL != SIGIO)
-  [SIGPOLL] = "POLL",
+	[SIGPOLL] = "POLL",
 #endif
 #ifdef SIGPROF
-  [SIGPROF] = "PROF",
+	[SIGPROF] = "PROF",
 #endif
 #ifdef SIGPWR
-  [SIGPWR] = "PWR",
+	[SIGPWR] = "PWR",
 #endif
 #ifdef SIGQUIT
-  [SIGQUIT] = "QUIT",
+	[SIGQUIT] = "QUIT",
 #endif
-  /* SIGRESERVE == SIGUNUSED */
+	/* SIGRESERVE == SIGUNUSED */
 #ifdef SIGSEGV
-  [SIGSEGV] = "SEGV",
+	[SIGSEGV] = "SEGV",
 #endif
 #ifdef SIGSTKFLT
-  [SIGSTKFLT] = "STKFLT",
+	[SIGSTKFLT] = "STKFLT",
 #endif
 #ifdef SIGSTOP
-  [SIGSTOP] = "STOP",
+	[SIGSTOP] = "STOP",
 #endif
 #ifdef SIGSYS
-  [SIGSYS] = "SYS",
+	[SIGSYS] = "SYS",
 #endif
 #ifdef SIGTERM
-  [SIGTERM] = "TERM",
+	[SIGTERM] = "TERM",
 #endif
 #ifdef SIGTSTP
-  [SIGTSTP] = "TSTP",
+	[SIGTSTP] = "TSTP",
 #endif
 #ifdef SIGTTIN
-  [SIGTTIN] = "TTIN",
+	[SIGTTIN] = "TTIN",
 #endif
 #ifdef SIGTTOU
-  [SIGTTOU] = "TTOU",
+	[SIGTTOU] = "TTOU",
 #endif
 #ifdef SIGURG
-  [SIGURG] = "URG",
+	[SIGURG] = "URG",
 #endif
 #ifdef SIGUSR1
-  [SIGUSR1] = "USR1",
+	[SIGUSR1] = "USR1",
 #endif
 #ifdef SIGUSR2
-  [SIGUSR2] = "USR2",
+	[SIGUSR2] = "USR2",
 #endif
 #ifdef SIGVTALRM
-  [SIGVTALRM] = "VTALRM",
+	[SIGVTALRM] = "VTALRM",
 #endif
 #ifdef SIGWINCH
-  [SIGWINCH] = "WINCH",
+	[SIGWINCH] = "WINCH",
 #endif
 #ifdef SIGXCPU
-  [SIGXCPU] = "XCPU",
+	[SIGXCPU] = "XCPU",
 #endif
 #ifdef SIGXFSZ
-  [SIGXFSZ] = "XFSZ",
+	[SIGXFSZ] = "XFSZ",
 #endif
 #ifdef SIGTRAP
-  [SIGTRAP] = "TRAP",
+	[SIGTRAP] = "TRAP",
 #endif
 #ifdef SIGCONT
-  [SIGCONT] = "CONT",
+	[SIGCONT] = "CONT",
 #endif
 };

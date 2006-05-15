@@ -36,6 +36,6 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
 	__syscall_return(type, __res);			     \
 }
 
-#endif /* _syscall6() missing */
+#endif				/* _syscall6() missing */
 
-#endif /* _KLIBC_ARCHSYS_H */
+#endif				/* _KLIBC_ARCHSYS_H */

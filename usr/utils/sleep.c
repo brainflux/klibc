@@ -12,15 +12,14 @@ int main(int argc, char *argv[])
 		goto err;
 
 	p = strtotimespec(argv[1], &ts);
-	if ( *p )
+	if (*p)
 		goto err;
 
-	while ( nanosleep(&ts, &ts) == -1 && errno == EINTR )
-		;
+	while (nanosleep(&ts, &ts) == -1 && errno == EINTR) ;
 
 	return 0;
 
-err:
+      err:
 	fprintf(stderr, "Usage: %s seconds[.fraction]\n", argv[0]);
 	return 1;
 }

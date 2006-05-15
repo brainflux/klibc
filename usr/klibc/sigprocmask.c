@@ -10,9 +10,9 @@
 
 __extern int __rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t);
 
-int sigprocmask(int how, const sigset_t *set, sigset_t *oset)
+int sigprocmask(int how, const sigset_t * set, sigset_t * oset)
 {
-  return __rt_sigprocmask(how, set, oset, sizeof(sigset_t));
+	return __rt_sigprocmask(how, set, oset, sizeof(sigset_t));
 }
 
 #endif

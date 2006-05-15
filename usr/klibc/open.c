@@ -16,7 +16,7 @@ extern int __open(const char *, int, mode_t);
 
 int open(const char *pathname, int flags, mode_t mode)
 {
-  return __open(pathname, flags|O_LARGEFILE, mode);
+	return __open(pathname, flags | O_LARGEFILE, mode);
 }
 
 #endif

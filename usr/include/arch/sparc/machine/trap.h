@@ -119,7 +119,6 @@
 #define T_SVR4_GETHRVTIME	0xa5
 #define T_SVR4_GETHRESTIME	0xa7
 
-
 #ifdef _KERNEL			/* pseudo traps for locore.s */
 #define	T_RWRET		-1	/* need first user window for trap return */
 #define	T_AST		-2	/* no-op, just needed reschedule or profile */
@@ -138,4 +137,4 @@
 #define	ST_FLUSHWIN	(T_FLUSHWIN & 0x7f)
 #define	ST_SYSCALL	(T_SUN_SYSCALL & 0x7f)
 
-#endif /* _MACHINE_TRAP_H_ */
+#endif				/* _MACHINE_TRAP_H_ */

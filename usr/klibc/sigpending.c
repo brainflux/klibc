@@ -10,9 +10,9 @@
 
 __extern int __rt_sigpending(sigset_t *, size_t);
 
-int sigpending(sigset_t *set)
+int sigpending(sigset_t * set)
 {
-  return __rt_sigpending(set, sizeof(sigset_t));
+	return __rt_sigpending(set, sizeof(sigset_t));
 }
 
 #endif

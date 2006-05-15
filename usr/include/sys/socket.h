@@ -35,10 +35,12 @@ __socketcall int accept(int, struct sockaddr *, socklen_t *);
 __socketcall int getsockname(int, struct sockaddr *, socklen_t *);
 __socketcall int getpeername(int, struct sockaddr *, socklen_t *);
 __socketcall int socketpair(int, int, int, int *);
-__extern     int send(int, const void *, size_t, unsigned int);
-__socketcall int sendto(int, const void *, size_t, int, const struct sockaddr *, socklen_t);
-__extern     int recv(int, void *, size_t, unsigned int);
-__socketcall int recvfrom(int, void *, size_t, unsigned int, struct sockaddr *, socklen_t *);
+__extern int send(int, const void *, size_t, unsigned int);
+__socketcall int sendto(int, const void *, size_t, int, const struct sockaddr *,
+			socklen_t);
+__extern int recv(int, void *, size_t, unsigned int);
+__socketcall int recvfrom(int, void *, size_t, unsigned int, struct sockaddr *,
+			  socklen_t *);
 __socketcall int shutdown(int, int);
 __socketcall int setsockopt(int, int, int, const void *, socklen_t);
 __socketcall int getsockopt(int, int, int, void *, socklen_t *);
@@ -47,4 +49,4 @@ __socketcall int recvmsg(int, struct msghdr *, unsigned int);
 
 #undef __socketcall
 
-#endif /* _SYS_SOCKET_H */
+#endif				/* _SYS_SOCKET_H */

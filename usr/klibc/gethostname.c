@@ -9,17 +9,17 @@
 
 int gethostname(char *name, size_t len)
 {
-  struct utsname un;
+	struct utsname un;
 
-  if ( !uname(&un) )
-    return -1;
+	if (!uname(&un))
+		return -1;
 
-  if ( len < strlen(un.nodename)+1 ) {
-    errno = EINVAL;
-    return -1;
-  }
+	if (len < strlen(un.nodename) + 1) {
+		errno = EINVAL;
+		return -1;
+	}
 
-  strcpy(name, un.nodename);
+	strcpy(name, un.nodename);
 
-  return 0;
+	return 0;
 }

@@ -7,6 +7,6 @@
 
 #include <linux/kernel.h>
 
-extern int sysinfo (struct sysinfo *info);
+extern int sysinfo(struct sysinfo *info);
 
-#endif /* _SYS_SYSINFO_H */
+#endif				/* _SYS_SYSINFO_H */

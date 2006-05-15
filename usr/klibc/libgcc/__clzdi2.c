@@ -9,7 +9,7 @@
 
 uint64_t __clzdi2(uint64_t v)
 {
-	uint32_t vhi = (uint32_t)(v >> 32);
+	uint32_t vhi = (uint32_t) (v >> 32);
 	uint32_t vx;
 	int dp;
 
@@ -17,7 +17,7 @@ uint64_t __clzdi2(uint64_t v)
 		vx = vhi;
 		dp = 0;
 	} else {
-		vx = (uint32_t)v;
+		vx = (uint32_t) v;
 		dp = 32;
 	}
 

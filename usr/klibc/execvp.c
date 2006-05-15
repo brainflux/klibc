@@ -5,7 +5,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 
-int execvp(const char *path, char * const * argv)
+int execvp(const char *path, char *const *argv)
 {
-  return execvpe(path, argv, environ);
+	return execvpe(path, argv, environ);
 }

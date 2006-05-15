@@ -13,7 +13,7 @@
 
 int fgetc(FILE *f)
 {
-  unsigned char ch;
+	unsigned char ch;
 
-  return (_fread(&ch, 1, f) == 1) ? (int)ch : EOF;
+	return (_fread(&ch, 1, f) == 1) ? (int)ch : EOF;
 }

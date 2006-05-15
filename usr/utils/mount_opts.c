@@ -12,22 +12,22 @@
 #define ARRAY_SIZE(x)	(sizeof(x) / sizeof(x[0]))
 
 static const struct mount_opts options[] = {
-	/* name		mask		set		noset		*/
-	{ "async",	MS_SYNCHRONOUS,	0,		MS_SYNCHRONOUS	},
-	{ "atime",	MS_NOATIME,	0,		MS_NOATIME	},
-	{ "bind",	MS_TYPE,	MS_BIND,	0,		},
-	{ "dev",	MS_NODEV,	0,		MS_NODEV	},
-	{ "diratime",	MS_NODIRATIME,	0,		MS_NODIRATIME	},
-	{ "dirsync",	MS_DIRSYNC,	MS_DIRSYNC,	0		},
-	{ "exec",	MS_NOEXEC,	0,		MS_NOEXEC	},
-	{ "move",	MS_TYPE,	MS_MOVE,	0		},
-	{ "recurse",	MS_REC,		MS_REC,		0		},
-	{ "remount",	MS_TYPE,	MS_REMOUNT,	0		},
-	{ "ro",		MS_RDONLY,	MS_RDONLY,	0		},
-	{ "rw",		MS_RDONLY,	0,		MS_RDONLY	},
-	{ "suid",	MS_NOSUID,	0,		MS_NOSUID	},
-	{ "sync",	MS_SYNCHRONOUS,	MS_SYNCHRONOUS,	0		},
-	{ "verbose",	MS_VERBOSE,	MS_VERBOSE,	0		},
+	/* name         mask            set             noset           */
+	{"async", MS_SYNCHRONOUS, 0, MS_SYNCHRONOUS},
+	{"atime", MS_NOATIME, 0, MS_NOATIME},
+	{"bind", MS_TYPE, MS_BIND, 0,},
+	{"dev", MS_NODEV, 0, MS_NODEV},
+	{"diratime", MS_NODIRATIME, 0, MS_NODIRATIME},
+	{"dirsync", MS_DIRSYNC, MS_DIRSYNC, 0},
+	{"exec", MS_NOEXEC, 0, MS_NOEXEC},
+	{"move", MS_TYPE, MS_MOVE, 0},
+	{"recurse", MS_REC, MS_REC, 0},
+	{"remount", MS_TYPE, MS_REMOUNT, 0},
+	{"ro", MS_RDONLY, MS_RDONLY, 0},
+	{"rw", MS_RDONLY, 0, MS_RDONLY},
+	{"suid", MS_NOSUID, 0, MS_NOSUID},
+	{"sync", MS_SYNCHRONOUS, MS_SYNCHRONOUS, 0},
+	{"verbose", MS_VERBOSE, MS_VERBOSE, 0},
 };
 
 static void add_extra_option(struct extra_opts *extra, char *s)
@@ -36,7 +36,7 @@ static void add_extra_option(struct extra_opts *extra, char *s)
 	int newlen = extra->used_size + len;
 
 	if (extra->str)
-	       len++;			/* +1 for ',' */
+		len++;		/* +1 for ',' */
 
 	if (newlen >= extra->alloc_size) {
 		char *new;

@@ -14,4 +14,4 @@
    syscall macros */
 #include <klibc/archsys.h>
 
-#endif /* _SYS_SYSCALL_H */
+#endif				/* _SYS_SYSCALL_H */

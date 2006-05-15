@@ -17,4 +17,4 @@
 #define _MIPS_SIM_NABI32        2
 #define _MIPS_SIM_ABI64         3
 
-#endif /* _SGIDEFS_H */
+#endif				/* _SGIDEFS_H */

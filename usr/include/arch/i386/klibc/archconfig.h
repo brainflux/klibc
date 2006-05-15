@@ -16,4 +16,4 @@
    had a broken default restorer.  It's easier to enable this here. */
 #define _KLIBC_NEEDS_SA_RESTORER 1
 
-#endif /* _KLIBC_ARCHCONFIG_H */
+#endif				/* _KLIBC_ARCHCONFIG_H */
