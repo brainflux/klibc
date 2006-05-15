@@ -30,9 +30,9 @@ pipe:
 	ret	zero,(ra),1
 1:
 	stl	v0, 0(a0)
-	mov	v0, zero
-	stl	a3, 4(a0)
+	lda	v0, 0
+	stl	a4, 4(a0)
 	ret	zero,(ra),1
 
-	.size	__syscall_dual1,.-__syscall_dual1
-	.end	__syscall_dual1
+	.size	pipe,.-pipe
+	.end	pipe
