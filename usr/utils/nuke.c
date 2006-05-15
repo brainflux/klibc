@@ -1,4 +1,3 @@
-#ident "$Id: nuke.c,v 1.3 2004/06/08 06:39:44 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved

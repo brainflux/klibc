@@ -1,4 +1,3 @@
-#ident "$Id: io.h,v 1.2 2004/01/25 07:49:39 hpa Exp $"
 /* ----------------------------------------------------------------------- *
  *
  *   Copyright 2004 H. Peter Anvin - All Rights Reserved
