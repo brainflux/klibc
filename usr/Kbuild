@@ -4,9 +4,10 @@
 
 CONFIG_KLIBC := 1
 
+include-subdir := include
 klibc-subdir := klibc
 usr-subdirs  := kinit utils dash gzip
-subdir-      := $(klibc-subdir) $(usr-subdirs)
+subdir-      := $(include-subdir) $(klibc-subdir) $(usr-subdirs)
 
 usr-subdirs  := $(addprefix _usr_,$(usr-subdirs))
 klibc-subdir := $(addprefix _usr_,$(klibc-subdir))
@@ -24,14 +25,17 @@ endif
 
 # build klibc library before the klibc programs
 # build klibc programs before cpio.gz
-.PHONY: initramfs $(usr-subdirs) $(klibc-subdir)
-initramfs:         $(usr-subdirs) $(klibc-subdir)
-$(deps_initramfs): $(usr-subdirs) $(klibc-subdir)
+.PHONY: initramfs $(usr-subdirs) $(klibc-subdir) $(include-subdir)
+initramfs:         $(usr-subdirs) $(klibc-subdir) $(include-subdir)
+$(deps_initramfs): $(usr-subdirs) $(klibc-subdir) $(include-subdir)
 
 $(usr-subdirs): $(klibc-subdir)
 	$(Q)$(MAKE) $(klibc)=$(src)/$(patsubst _usr_%,%,$(@))
 
-$(klibc-subdir):
+$(klibc-subdir): $(include-subdir)
+	$(Q)$(MAKE) $(klibc)=$(src)/$(patsubst _usr_%,%,$(@))
+
+$(include-subdir):
 	$(Q)$(MAKE) $(klibc)=$(src)/$(patsubst _usr_%,%,$(@))
 endif
 
