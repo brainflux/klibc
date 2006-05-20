@@ -16,3 +16,7 @@ KLIBCBITSIZE  = 32
 # Normal binaries start at 64K; the linker wants 64K alignment,
 # and call instructions have a 30-bit signed offset, << 2.
 KLIBCSHAREDFLAGS	= -Ttext 0x40000100
+
+# Libgcc on SPARC has funny reverse dependencies.  We provide our
+# own functions, so we shouldn't need it.
+KLIBCLIBGCC :=

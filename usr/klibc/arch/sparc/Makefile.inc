@@ -13,14 +13,21 @@ m4-targets := arch/$(KLIBCARCH)/sdiv.o arch/$(KLIBCARCH)/srem.o \
 KLIBCARCHOBJS = $(m4-targets) \
 	arch/$(KLIBCARCH)/smul.o \
 	arch/$(KLIBCARCH)/umul.o \
+	arch/$(KLIBCARCH)/__muldi3.o \
 	arch/$(KLIBCARCH)/setjmp.o \
+	arch/$(KLIBCARCH)/pipe.o \
 	arch/$(KLIBCARCH)/syscall.o \
 	arch/$(KLIBCARCH)/sysfork.o \
+	libgcc/__ashldi3.o \
+	libgcc/__ashrdi3.o \
+	libgcc/__lshrdi3.o \
 	libgcc/__divdi3.o \
 	libgcc/__moddi3.o \
 	libgcc/__udivdi3.o \
 	libgcc/__umoddi3.o \
-	libgcc/__udivmoddi4.o
+	libgcc/__udivmoddi4.o \
+	libgcc/__clzsi2.o \
+	libgcc/__clzdi2.o
 
 adir := $(obj)/arch/$(KLIBCARCH)
 
