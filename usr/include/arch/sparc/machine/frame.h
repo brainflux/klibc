@@ -47,7 +47,13 @@
 #ifndef _MACHINE_FRAME_H
 #define _MACHINE_FRAME_H
 
-#include <stdint.h>
+#ifdef __ASSEMBLY__
+# define _LOCORE
+#endif
+
+#ifndef _LOCORE
+# include <stdint.h>
+#endif
 
 /*
  * Sparc stack frame format.

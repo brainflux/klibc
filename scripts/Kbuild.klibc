@@ -96,13 +96,14 @@ KLIBCCFLAGS      := $(KLIBCCPPFLAGS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS)  \
 KLIBCAFLAGS      := -D__ASSEMBLY__ $(KLIBCCFLAGS)
 KLIBCSTRIPFLAGS  := --strip-all -R .comment -R .note
 
-KLIBCLIBGCC      := $(shell $(KLIBCCC) $(KLIBCCFLAGS) --print-libgcc)
+KLIBCLIBGCC_DEF  := $(shell $(KLIBCCC) $(KLIBCCFLAGS) --print-libgcc)
+KLIBCLIBGCC	 ?= $(KLIBCLIBGCC_DEF)
 KLIBCCRT0        := $(KLIBCOBJ)/arch/$(KLIBCARCH)/crt0.o
 KLIBCLIBC        := $(KLIBCOBJ)/libc.a
 KLIBCCRTSHARED   := $(KLIBCOBJ)/interp.o
 KLIBCLIBCSHARED  := $(KLIBCOBJ)/libc.so
 # How to tell the linker main() is the entrypoint
-KLIBCEMAIN	?= -e main
+KLIBCEMAIN	 ?= -e main
 
 #
 # This indicates the location of the final version of the shared library.
