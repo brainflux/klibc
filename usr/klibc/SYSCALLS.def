@@ -181,7 +181,8 @@ int sync_file_range,fdatasync,fsync::sync_file_range(int, off_t, off_t, unsigned
 ; We really should get rid of the non-rt_* of these, but that takes
 ; sanitizing <signal.h> for all architectures, sigh.  See <klibc/config.h>.
 #if _KLIBC_USE_RT_SIG
-int rt_sigaction::__rt_sigaction(int, const struct sigaction *, struct sigaction *, size_t)
+<!sparc,sparc64> int rt_sigaction::__rt_sigaction(int, const struct sigaction *, struct sigaction *, size_t)
+<sparc,sparc64> int rt_sigaction::__rt_sigaction(int, const struct sigaction *, struct sigaction *, void *, size_t)
 int rt_sigsuspend::__rt_sigsuspend(const sigset_t *, size_t)
 int rt_sigpending::__rt_sigpending(sigset_t *, size_t)
 int rt_sigprocmask::__rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t)
