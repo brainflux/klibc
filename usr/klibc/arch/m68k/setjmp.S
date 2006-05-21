@@ -16,11 +16,12 @@
 	.globl setjmp
 	.type setjmp, @function
 setjmp:
-	move.l	(%sp), %d0		| Return address
-	movea.l	4(%sp), %a0		| Buffer address
+	move.l	(%sp)+, %d0		| Return address
+	movea.l	(%sp), %a0		| Buffer address
 	| Postincrement mode is not permitted here...
 	movem.l	%d2-%d7/%a2-%a7, (%a0)
 	move.l	%d0, 48(%a0)		| Return address
+	move.l	%d0, -(%sp)		| Restore return address
 	clr.l	%d0			| Return value
 	movea.l	%d0, %a0		| Redundant return...
 	rts
