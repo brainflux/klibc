@@ -24,11 +24,13 @@ int create_dev(const char *name, dev_t dev)
 
 /* mount a filesystem, possibly trying a set of different types */
 const char *mount_block(const char *source, const char *target,
-			const char *type, unsigned long flags, const void *data)
+			const char *type, unsigned long flags,
+			const void *data)
 {
 	char *fslist, *p, *ep;
 	const char *rp;
 	ssize_t fsbytes;
+	int fd;
 
 	if (type) {
 		DEBUG(("kinit: trying to mount %s on %s with type %s\n",
@@ -40,6 +42,26 @@ const char *mount_block(const char *source, const char *target,
 				   data);
 		return rv ? NULL : type;
 	}
+
+	/* If no type given, try to identify the type first; this
+	   also takes care of specific ordering requirements, like
+	   ext3 before ext2... */
+	fd = open(source, O_RDONLY);
+	if (fd >= 0) {
+		int err = identify_fs(fd, &type, NULL, 0);
+		close(fd);
+
+		if (!err && type) {
+			DEBUG(("kinit: %s appears to be a %s filesystem\n",
+			       source, type));
+			type = mount_block(source, target, type, flags, data);
+			if (type)
+				return type;
+		}
+	}
+
+	DEBUG(("kinit: failed to identify filesystem %s, trying all\n",
+	       source));
 
 	fsbytes = readfile("/proc/filesystems", &fslist);
 
