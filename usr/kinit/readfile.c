@@ -13,7 +13,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-ssize_t freadfile(FILE * f, char **pp)
+ssize_t freadfile(FILE *f, char **pp)
 {
 	size_t bs;		/* Decent starting point... */
 	size_t bf;		/* Bytes free */
