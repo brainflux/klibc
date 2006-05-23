@@ -6,12 +6,11 @@
 #define KINIT_H
 
 #include <stddef.h>
+#include <stdio.h>
+#include <sys/types.h>
 
-void dump_args(int argc, char *argv[]);
 int do_mounts(int argc, char *argv[]);
 int mount_nfs_root(int argc, char *argv[], int flags);
-char *get_arg(int argc, char *argv[], const char *name);
-int get_flag(int argc, char *argv[], const char *name);
 int ramdisk_load(int argc, char *argv[], dev_t root_dev);
 void md_run(int argc, char *argv[]);
 int do_resume(int argc, char *argv[]);
@@ -24,8 +23,13 @@ extern int init_argc;
 extern char **init_argv;
 extern const char *progname;
 
+char *get_arg(int argc, char *argv[], const char *name);
+int get_flag(int argc, char *argv[], const char *name);
+
 int open_cloexec(const char *path, int flags, mode_t mode);
+
 int getintfile(const char *path, long *val);
+
 ssize_t readfile(const char *path, char **pptr);
 ssize_t freadfile(FILE *f, char **pptr);
 
