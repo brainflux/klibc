@@ -44,10 +44,6 @@ static int do_ipconfig(int argc, char *argv[])
 
 	DEBUG(("Running ipconfig\n"));
 
-#ifdef INI_DEBUG
-	args[a++] = (char *)"-n";
-#endif
-
 	for (i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "ip=", 3) == 0 ||
 		    strncmp(argv[i], "nfsaddrs=", 9) == 0) {
