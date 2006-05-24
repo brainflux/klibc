@@ -186,6 +186,7 @@ int sync_file_range,fdatasync,fsync::sync_file_range(int, off_t, off_t, unsigned
 int rt_sigsuspend::__rt_sigsuspend(const sigset_t *, size_t)
 int rt_sigpending::__rt_sigpending(sigset_t *, size_t)
 int rt_sigprocmask::__rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t)
+<sparc64> void rt_sigreturn::__sigreturn(void)
 #else
 int sigaction::__sigaction(int, const struct sigaction *, struct sigaction *)
 int sigsuspend(const sigset_t *)

@@ -18,4 +18,7 @@ struct sigaction {
 	sigset_t	sa_mask;
 };
 
+/* Not actually used by the kernel... */
+#define SA_RESTORER	0x80000000
+
 #endif
