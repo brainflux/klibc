@@ -6,8 +6,6 @@
  * "is child" flag in %o1
  *
  * Common system-call stub; %g1 already set to syscall number
- *
- * IS THIS CORRECT FOR SPARC64?
  */
 
 	.globl	__syscall_forkish
@@ -20,7 +18,9 @@ __syscall_forkish:
 	  and	%o0, %o1, %o0
 	sethi	%hi(errno), %g4
 	or	%g4, %lo(errno), %g4
-	st	%o0,[%g4]
+	st	%o0, [%g4]
+	retl
+	  mov	-1, %o0
 1:
        	retl
-	  movcs	%xcc, -1, %o0
+	  nop

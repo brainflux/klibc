@@ -21,12 +21,12 @@ void _exit,exit::_exit(int)
 <?!ia64> pid_t clone::__clone(unsigned long, void *)
 <?ia64> pid_t clone::__clone2(unsigned long, void *, void *)
 # if ! _KLIBC_NO_MMU
-<!sparc,ia64> pid_t fork()
-<sparc> pid_t fork@forkish()
+<!sparc,sparc64,ia64> pid_t fork()
+<sparc,sparc64> pid_t fork@forkish()
 #endif
 #if _KLIBC_REAL_VFORK
-<!sparc,mips,mips64,ia64> pid_t vfork()
-<sparc> pid_t vfork@forkish()
+<!sparc,sparc64,mips,mips64,ia64> pid_t vfork()
+<sparc,sparc64> pid_t vfork@forkish()
 #endif
 <!alpha> pid_t getpid()
 <alpha> pid_t getxpid@dual0::getpid()
