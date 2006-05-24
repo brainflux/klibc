@@ -41,11 +41,13 @@ int main(int argc, char *argv[])
 		if (!counter) {
 			fprintf(stderr, "No signal received!\n");
 			exit(1);
+		} else {
+			printf("Signal received OK\n");
+			exit(0);
 		}
-		exit(0);
 	} else {
 		sleep(1);
 		kill(getppid(), SIGINT);
-		exit(0);
+		_exit(0);
 	}
 }
