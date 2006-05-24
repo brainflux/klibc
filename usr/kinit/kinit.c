@@ -116,6 +116,9 @@ static int split_cmdline(int cmdcmax, char *cmdv[], char *argv0,
 		args++;
 	}
 
+	if (cmdv)
+		cmdv[v] = NULL;
+
 	return v;
 }
 
