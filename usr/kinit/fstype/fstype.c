@@ -262,6 +262,10 @@ int identify_fs(int fd, const char **fstype,
 	off_t cur_block = (off_t) - 1;
 	struct imagetype *ip;
 	int ret;
+	unsigned long long dummy;
+
+	if (!bytes)
+		bytes = &dummy;
 
 	*fstype = NULL;
 	*bytes = 0;

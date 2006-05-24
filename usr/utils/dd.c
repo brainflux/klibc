@@ -481,7 +481,9 @@ int main(int argc, char *argv[])
 	 * Open the output file, if specified.
 	 */
 	if (OPT_OF->str) {
-		wr_fd = open(OPT_OF->str, O_RDWR | O_CREAT, 0666);
+		int flags = O_WRONLY|O_CREAT;
+		flags |= (conv & CONV_NOTRUNC) ? 0 : O_TRUNC;
+		wr_fd = open(OPT_OF->str, flags, 0666);
 		if (wr_fd == -1) {
 			perror("open output file");
 			return 1;

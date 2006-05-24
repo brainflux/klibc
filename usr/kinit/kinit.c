@@ -7,6 +7,7 @@
 #include <string.h>
 #include <alloca.h>
 #include <limits.h>
+#include <ctype.h>
 
 #include "kinit.h"
 #include "ipconfig.h"
@@ -16,21 +17,30 @@ const char *progname = "kinit";
 int mnt_procfs;
 int mnt_sysfs;
 
-void dump_args(int argc, char *argv[])
+#ifdef INI_DEBUG
+static void dump_args(int argc, char *argv[])
+{
+	int i;
+
+	printf("  argc == %d\n", argc);
+
+	for (i = 0; i < argc; i++) {
+		printf("  argv[%d]: '%s'\n", i, argv[i]);
+	}
+
+	if (argv[argc] != NULL) {
+		printf("  argv[%d]: '%s' (SHOULD BE NULL)\n",
+		       argc, argv[argc]);
+	}
+}
+#else
+static inline void dump_args(int argc, char *argv[])
 {
 	(void)argc;
 	(void)argv;
-
-#ifdef INI_DEBUG
-	int i;
-
-	printf("%s: argc == %d\n", argv[0], argc);
-
-	for (i = 1; i < argc; i++) {
-		printf("  argv[%d]: '%s'\n", i, argv[i]);
-	}
-#endif
 }
+#endif
+
 
 static int do_ipconfig(int argc, char *argv[])
 {
@@ -43,10 +53,6 @@ static int do_ipconfig(int argc, char *argv[])
 	args[a++] = (char *)"IP-Config";
 
 	DEBUG(("Running ipconfig\n"));
-
-#ifdef INI_DEBUG
-	args[a++] = (char *)"-n";
-#endif
 
 	for (i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "ip=", 3) == 0 ||
@@ -64,41 +70,56 @@ static int do_ipconfig(int argc, char *argv[])
 	return 0;
 }
 
-static int split_cmdline(int *cmdc, char *cmdv[],
-			 char *cmdline, int argc, char *argv[])
+static int split_cmdline(int cmdcmax, char *cmdv[], char *argv0,
+			 char *cmdlines[], char *args[])
 {
-	char was_space = 1;
-	char *i = cmdline;
-	int vmax = *cmdc;
-	int v = 1, a;
+	int was_space;
+	char c, *p;
+	int vmax = cmdcmax;
+	int v = 1;
+	int space;
 
 	if (cmdv)
-		cmdv[0] = argv[0];
+		cmdv[0] = argv0;
 
-	while (i && *i && v < vmax) {
-		if ((*i == ' ' || *i == '\t') && !was_space) {
-			if (cmdv)
-				*i = '\0';
-			was_space = 1;
-		} else if (was_space) {
-			if (cmdv)
-				cmdv[v] = i;
-			v++;
-			was_space = 0;
+	/* First, add the parsable command lines */
+
+	while (*cmdlines) {
+		p = *cmdlines++;
+		was_space = 1;
+		while (v < vmax) {
+			c = *p;
+			space = isspace(c);
+			if ((space || !c) && !was_space) {
+				if (cmdv)
+					*p = '\0';
+				v++;
+			} else if (was_space) {
+				if (cmdv)
+					cmdv[v] = p;
+			}
+
+			if (!c)
+				break;
+
+			was_space = space;
+			p++;
 		}
-		i++;
 	}
 
-	for (a = 1; a < argc && v < vmax; a++) {
+	/* Second, add the explicit command line arguments */
+
+	while (*args && v < vmax) {
 		if (cmdv)
-			cmdv[v] = argv[a];
+			cmdv[v] = *args;
 		v++;
+		args++;
 	}
 
 	if (cmdv)
 		cmdv[v] = NULL;
 
-	return *cmdc = v;
+	return v;
 }
 
 static int mount_sys_fs(const char *check, const char *fsname,
@@ -119,65 +140,6 @@ static int mount_sys_fs(const char *check, const char *fsname,
 	}
 
 	return 1;
-}
-
-static char *get_kernel_cmdline(char *buf, int len)
-{
-	FILE *fp;
-
-	if ((fp = fopen("/proc/cmdline", "r")) == NULL) {
-		fprintf(stderr, "%s: could not open kernel command line\n",
-			progname);
-		buf = NULL;
-		goto bail;
-	}
-
-	if (fgets(buf, len, fp) == NULL) {
-		buf = NULL;
-		goto bail;
-	}
-
-	len = strlen(buf);
-
-	if (buf[len - 1] == '\n') {
-		buf[--len] = '\0';
-	}
-
-      bail:
-	if (fp) {
-		fclose(fp);
-	}
-
-	return buf;
-}
-
-/* Was this boolean argument passed? */
-int get_flag(int argc, char *argv[], const char *name)
-{
-	char **p;
-	for (p = argv + 1; *p; p++) {
-		if (!strcmp(*p, name))
-			return 1;
-	}
-	return 0;
-}
-
-/* Was this parameter passed? */
-char *get_arg(int argc, char *argv[], const char *name)
-{
-	int len = strlen(name);
-	char *ret = NULL;
-	int i;
-
-	for (i = 1; i < argc; i++) {
-		if (argv[i] && strncmp(argv[i], name, len) == 0 &&
-		    (argv[i][len] != '\0')) {
-			ret = argv[i] + len;
-			break;
-		}
-	}
-
-	return ret;
 }
 
 static void check_path(const char *path)
@@ -238,9 +200,9 @@ extern ssize_t readfile(const char *, char **);
 
 int main(int argc, char *argv[])
 {
-	char **cmdv;
-	char buf[1024];
-	char *cmdline;
+	char **cmdv, **args;
+	char *cmdlines[3];
+	int i;
 	const char *errmsg;
 	int ret = 0;
 	int cmdc;
@@ -265,31 +227,58 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((mnt_procfs = mount_sys_fs("/proc/cmdline", "/proc", "proc")) == -1) {
+	mnt_procfs = mount_sys_fs("/proc/cmdline", "/proc", "proc") >= 0;
+	if (!mnt_procfs) {
 		ret = 1;
 		goto bail;
 	}
 
-	ret = readfile("/proc/cmdline", &cmdline);
-
-	if ((mnt_sysfs = mount_sys_fs("/sys/bus", "/sys", "sysfs")) == -1) {
+	mnt_sysfs = mount_sys_fs("/sys/bus", "/sys", "sysfs") >= 0;
+	if (!mnt_sysfs) {
 		ret = 1;
 		goto bail;
 	}
 
-	if ((cmdline = get_kernel_cmdline(buf, sizeof(buf))) == NULL) {
+	/* Construct the effective kernel command line.  The
+	   effective kernel command line consists of /arch.cmd, if
+	   it exists, /proc/cmdline, plus any arguments after an --
+	   argument on the proper command line, in that order. */
+
+	ret = readfile("/arch.cmd", &cmdlines[0]);
+	if (ret < 0)
+		cmdlines[0] = "";
+
+	ret = readfile("/proc/cmdline", &cmdlines[1]);
+	if (ret < 0) {
+		fprintf(stderr, "%s: cannot read /proc/cmdline\n", progname);
 		ret = 1;
 		goto bail;
 	}
 
-	cmdc = INT_MAX;
-	split_cmdline(&cmdc, NULL, cmdline, argc, argv);
+	cmdlines[2] = NULL;
+
+	/* Find an -- argument, and if so append to the command line */
+	for (i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "--")) {
+			i++;
+			break;
+		}
+	}
+	args = &argv[i];	/* Points either to first argument past -- or
+				   to the final NULL */
+
+	/* Count the number of arguments */
+	cmdc = split_cmdline(INT_MAX, NULL, argv[0], cmdlines, args);
+
+	/* Actually generate the cmdline array */
 	cmdv = (char **)alloca((cmdc+1)*sizeof(char *));
-
-	if (split_cmdline(&cmdc, cmdv, cmdline, argc, argv) == 0) {
+	if (split_cmdline(cmdc, cmdv, argv[0], cmdlines, args) != cmdc) {
 		ret = 1;
 		goto bail;
 	}
+
+	/* Debugging... */
+	dump_args(cmdc, cmdv);
 
 	/* Resume from suspend-to-disk, if appropriate */
 	/* If successful, does not return */

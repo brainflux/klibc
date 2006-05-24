@@ -95,7 +95,7 @@ const char *bdevname(dev_t dev)
 	return buf;
 }
 
-#ifdef TEST			/* Standalone test */
+#ifdef TEST_DEVNAME		/* Standalone test */
 
 int main(int argc, char *argv[])
 {
