@@ -8,19 +8,37 @@
  * with a later argument.
  */
 
-/* Was this boolean argument passed? */
+/*
+ * Was this boolean argument passed?  If so return the index in the
+ * argv array for it.  For conflicting boolean options, use the
+ * one with the higher index.  The only case when the return value
+ * can be equal, is when they're both zero; so equality can be used
+ * as the default option choice.
+ *
+ * In other words, if two options "a" and "b" are opposites, and "a"
+ * is the default, this can be coded as:
+ *
+ * if (get_flag(argc,argv,"a") >= get_flag(argc,argv,"b"))
+ * 	do_a_stuff();
+ * else
+ *	do_b_stuff();
+ */
 int get_flag(int argc, char *argv[], const char *name)
 {
 	int i;
 
 	for (i = argc-1; i > 0; i--) {
 		if (!strcmp(argv[i], name))
-			return 1;
+			return i;
 	}
 	return 0;
 }
 
-/* Was this parameter passed? */
+/*
+ * Was this textual parameter (foo=option) passed?
+ *
+ * This returns the latest instance of such an option in the argv array.
+ */
 char *get_arg(int argc, char *argv[], const char *name)
 {
 	int len = strlen(name);

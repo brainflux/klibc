@@ -146,8 +146,8 @@ mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 	int ret;
 	const char *type = get_arg(argc, argv, "rootfstype=");
 
-	if (get_flag(argc, argv, "rw")) {
-		DEBUG(("kinit: rw flag specified\n"));
+	if (get_flag(argc, argv, "rw") > get_flag(argc, argv, "ro")) {
+		DEBUG(("kinit: mounting root rw\n"));
 		flags &= ~MS_RDONLY;
 	}
 
