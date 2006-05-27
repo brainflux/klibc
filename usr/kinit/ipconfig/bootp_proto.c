@@ -81,24 +81,29 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
 		__u8 *ext;
 
 		for (ext = exts + 4; ext - exts < extlen;) {
-			__u8 len, opt = *ext++;
+			int len;
+			__u8 opt = *ext++;
+
 			if (opt == 0)
 				continue;
+			else if (opt == 255)
+				break;
 
-			len = *ext++;
+			len = xlen = *ext++;
 
 			switch (opt) {
 			case 1:	/* subnet mask */
-				memcpy(&dev->ip_netmask, ext,
-				       len > 4 ? 4 : len);
+				if (len == 4)
+					memcpy(&dev->ip_netmask, ext, 4);
 				break;
 			case 3:	/* default gateway */
-				memcpy(&dev->ip_gateway, ext,
-				       len > 4 ? 4 : len);
+				if (len >= 4)
+					memcpy(&dev->ip_gateway, ext, 4);
 				break;
 			case 6:	/* DNS server */
-				memcpy(&dev->ip_nameserver, ext,
-				       len > 8 ? 8 : len);
+				if (len >= 4)
+					memcpy(&dev->ip_nameserver, ext,
+					       len >= 8 ? 8 : 4);
 				break;
 			case 12:	/* host name */
 				if (len > sizeof(dev->hostname) - 1)
@@ -123,14 +128,18 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
 					dev->mtu = (ext[0] << 8) + ext[1];
 				break;
 			case 28:	/* broadcast addr */
-				memcpy(&dev->ip_broadcast, ext,
-				       len > 4 ? 4 : len);
+				if (len == 4)
+					memcpy(&dev->ip_broadcast, ext, 4);
 				break;
 			case 40:	/* NIS domain name */
 				if (len > sizeof(dev->nisdomainname) - 1)
 					len = sizeof(dev->nisdomainname) - 1;
 				memcpy(&dev->nisdomainname, ext, len);
 				dev->nisdomainname[len] = '\0';
+				break;
+			case 54: 	/* server identifier */
+				if (len == 4 && !dev->ip_server)
+					memcpy(&dev->ip_server, ext, 4);
 				break;
 			}
 
