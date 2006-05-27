@@ -4,7 +4,6 @@
  * DHCP RFC 2131 and 2132
  */
 #include <sys/types.h>
-#include <linux/types.h>	/* for uint8_t */
 #include <sys/uio.h>
 #include <netinet/in.h>
 #include <stdio.h>
