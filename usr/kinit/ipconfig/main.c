@@ -44,7 +44,7 @@ struct state {
 	struct state *next;
 };
 
-static inline const char *my_inet_ntoa(__u32 addr)
+static inline const char *my_inet_ntoa(uint32_t addr)
 {
 	struct in_addr a;
 
@@ -116,7 +116,7 @@ static void dump_device_config(struct netdev *dev)
 	}
 }
 
-static __u32 inet_class_netmask(__u32 ip)
+static uint32_t inet_class_netmask(uint32_t ip)
 {
 	ip = ntohl(ip);
 	if (IN_CLASSA(ip))
@@ -420,7 +420,7 @@ static int add_one_dev(struct netdev *dev)
 	return 0;
 }
 
-static void parse_addr(__u32 * addr, const char *ip)
+static void parse_addr(uint32_t * addr, const char *ip)
 {
 	struct in_addr in;
 	if (inet_aton(ip, &in) == 0) {

@@ -24,8 +24,8 @@
 
 static int pkt_fd = -1;
 
-__u16 cfg_local_port = LOCAL_PORT;
-__u16 cfg_remote_port = REMOTE_PORT;
+uint16_t cfg_local_port = LOCAL_PORT;
+uint16_t cfg_remote_port = REMOTE_PORT;
 
 int packet_open(void)
 {
@@ -63,7 +63,7 @@ void packet_close(void)
 	pkt_fd = -1;
 }
 
-static unsigned int ip_checksum(__u16 *hdr, int len)
+static unsigned int ip_checksum(uint16_t *hdr, int len)
 {
 	unsigned int chksum = 0;
 
@@ -101,7 +101,7 @@ static struct header ipudp_hdrs = {
 };
 
 #ifdef IPC_DEBUG		/* Only used by DEBUG(()) */
-static char *ntoa(__u32 addr)
+static char *ntoa(uint32_t addr)
 {
 	struct in_addr in = { addr };
 	return inet_ntoa(in);
@@ -156,7 +156,7 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 
 	ipudp_hdrs.ip.tot_len = htons(len);
 	ipudp_hdrs.ip.check   = 0;
-	ipudp_hdrs.ip.check   = ip_checksum((__u16 *) & ipudp_hdrs.ip,
+	ipudp_hdrs.ip.check   = ip_checksum((uint16_t *) & ipudp_hdrs.ip,
 					    ipudp_hdrs.ip.ihl);
 
 	ipudp_hdrs.udp.len    = htons(len - sizeof(struct iphdr));
@@ -248,7 +248,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 
 	DEBUG(("<- bytes %d ", ret));
 
-	if (ip_checksum((__u16 *) ip, ip->ihl) != 0)
+	if (ip_checksum((uint16_t *) ip, ip->ihl) != 0)
 		goto free_pkt;
 
 	DEBUG(("\n   ip src %s ", ntoa(ip->saddr)));

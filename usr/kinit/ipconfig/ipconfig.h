@@ -2,18 +2,20 @@
  * ipconfig/ipconfig.h
  */
 
+#ifndef IPCONFIG_IPCONFIG_H
+#define IPCONFIG_IPCONFIG_H
+
+#include <stdint.h>
 #include <sys/types.h>
-#include <linux/types.h>	/* for __u16 */
 
 #define LOCAL_PORT	68
 #define REMOTE_PORT	(LOCAL_PORT - 1)
 
-extern __u16 cfg_local_port;
-extern __u16 cfg_remote_port;
+extern uint16_t cfg_local_port;
+extern uint16_t cfg_remote_port;
 
-extern struct netdev *ifaces;
-
-extern int ipconfig_main(int argc, char *argv[]);
+int ipconfig_main(int argc, char *argv[]);
+uint32_t ipconfig_server_address(void *next);
 
 /*
  * Note for gcc 3.2.2:
@@ -29,3 +31,5 @@ extern int ipconfig_main(int argc, char *argv[]);
 #else
 #define DEBUG(x) do { } while(0)
 #endif
+
+#endif /* IPCONFIG_IPCONFIG_H */

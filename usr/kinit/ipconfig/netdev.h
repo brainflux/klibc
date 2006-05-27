@@ -1,6 +1,10 @@
 /*
  * ipconfig/netdev.h
  */
+
+#ifndef IPCONFIG_NETDEV_H
+#define IPCONFIG_NETDEV_H
+
 #include <sys/utsname.h>
 #include <net/if.h>
 
@@ -11,35 +15,37 @@ struct netdev {
 	unsigned int ifindex;	/* interface index      */
 	unsigned int hwtype;	/* ARPHRD_xxx           */
 	unsigned int hwlen;	/* HW address length    */
-	__u8 hwaddr[16];	/* HW address           */
-	__u8 hwbrd[16];		/* Broadcast HW address */
+	uint8_t hwaddr[16];	/* HW address           */
+	uint8_t hwbrd[16];	/* Broadcast HW address */
 	unsigned int mtu;	/* Device mtu           */
 	unsigned int caps;	/* Capabilities         */
 	time_t open_time;
 
 	struct {		/* BOOTP/DHCP info      */
 		int fd;
-		__u32 xid;
-		__u32 gateway;	/* BOOTP/DHCP gateway   */
+		uint32_t xid;
+		uint32_t gateway; /* BOOTP/DHCP gateway   */
 	} bootp;
 
 	struct {		/* RARP information     */
 		int fd;
 	} rarp;
 
-	__u32 ip_addr;		/* my address           */
-	__u32 ip_broadcast;	/* broadcast address    */
-	__u32 ip_server;	/* server address       */
-	__u32 ip_netmask;	/* my subnet mask       */
-	__u32 ip_gateway;	/* my gateway           */
-	__u32 ip_nameserver[2];	/* two nameservers      */
-	__u32 serverid;		/* dhcp serverid        */
+	uint32_t ip_addr;	/* my address           */
+	uint32_t ip_broadcast;	/* broadcast address    */
+	uint32_t ip_server;	/* server address       */
+	uint32_t ip_netmask;	/* my subnet mask       */
+	uint32_t ip_gateway;	/* my gateway           */
+	uint32_t ip_nameserver[2];	/* two nameservers      */
+	uint32_t serverid;		/* dhcp serverid        */
 	char hostname[SYS_NMLN];	/* hostname             */
 	char dnsdomainname[SYS_NMLN];	/* dns domain name      */
 	char nisdomainname[SYS_NMLN];	/* nis domain name      */
 	char bootpath[BPLEN];	/* boot path            */
 	struct netdev *next;	/* next configured i/f  */
 };
+
+extern struct netdev *ifaces;
 
 /*
  * Device capabilities
@@ -73,3 +79,5 @@ static inline int netdev_running(struct netdev *dev)
 
 	return ret ? 0 : !!(flags & IFF_RUNNING);
 }
+
+#endif /* IPCONFIG_NETDEV_H */

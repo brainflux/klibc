@@ -4,7 +4,7 @@
  * DHCP RFC 2131 and 2132
  */
 #include <sys/types.h>
-#include <linux/types.h>	/* for __u8 */
+#include <linux/types.h>	/* for uint8_t */
 #include <sys/uio.h>
 #include <netinet/in.h>
 #include <stdio.h>
@@ -18,7 +18,7 @@
 #include "dhcp_proto.h"
 #include "packet.h"
 
-static __u8 dhcp_params[] = {
+static uint8_t dhcp_params[] = {
 	1,			/* subnet mask */
 	3,			/* default gateway */
 	6,			/* DNS server */
@@ -30,13 +30,13 @@ static __u8 dhcp_params[] = {
 	40,			/* NIS domain name (why?) */
 };
 
-static __u8 dhcp_discover_hdr[] = {
+static uint8_t dhcp_discover_hdr[] = {
 	99, 130, 83, 99,		/* bootp cookie */
 	53, 1, DHCPDISCOVER,		/* dhcp message type */
 	55, sizeof(dhcp_params),	/* parameter list */
 };
 
-static __u8 dhcp_request_hdr[] = {
+static uint8_t dhcp_request_hdr[] = {
 	99, 130, 83, 99,		/* boot cookie */
 	53, 1, DHCPREQUEST,		/* dhcp message type */
 #define SERVER_IP_OFF 9
@@ -46,7 +46,7 @@ static __u8 dhcp_request_hdr[] = {
 	55, sizeof(dhcp_params),	/* parameter list */
 };
 
-static __u8 dhcp_end[] = {
+static uint8_t dhcp_end[] = {
 	255,
 };
 
@@ -70,18 +70,18 @@ static struct iovec dhcp_request_iov[] = {
  * Parse a DHCP response packet
  */
 static int
-dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
+dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, uint8_t * exts, int extlen)
 {
-	__u8 type = 0;
-	__u32 serverid = INADDR_NONE;
+	uint8_t type = 0;
+	uint32_t serverid = INADDR_NONE;
 	int ret = 0;
 
 	if (extlen >= 4 && exts[0] == 99 && exts[1] == 130 &&
 	    exts[2] == 83 && exts[3] == 99) {
-		__u8 *ext;
+		uint8_t *ext;
 
 		for (ext = exts + 4; ext - exts < extlen;) {
-			__u8 len, *opt = ext++;
+			uint8_t len, *opt = ext++;
 			if (*opt == 0)
 				continue;
 
@@ -123,7 +123,7 @@ dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
 static int dhcp_recv(struct netdev *dev)
 {
 	struct bootp_hdr bootp;
-	__u8 dhcp_options[1500];
+	uint8_t dhcp_options[1500];
 	struct iovec iov[] = {
 		/* [0] = ip + udp header */
 		[1] = {&bootp, sizeof(struct bootp_hdr)},

@@ -40,7 +40,7 @@ int netdev_getflags(struct netdev *dev, short *flags)
 	return 0;
 }
 
-static int netdev_sif_addr(struct ifreq *ifr, int cmd, __u32 addr)
+static int netdev_sif_addr(struct ifreq *ifr, int cmd, uint32_t addr)
 {
 	struct sockaddr_in *sin = (struct sockaddr_in *)&ifr->ifr_addr;
 
@@ -112,7 +112,7 @@ int netdev_setmtu(struct netdev *dev)
 	return ioctl(cfd, SIOCSIFMTU, &ifr);
 }
 
-static int netdev_gif_addr(struct ifreq *ifr, int cmd, __u32 * ptr)
+static int netdev_gif_addr(struct ifreq *ifr, int cmd, uint32_t * ptr)
 {
 	struct sockaddr_in *sin = (struct sockaddr_in *)&ifr->ifr_addr;
 

@@ -4,7 +4,6 @@
  * BOOTP packet protocol handling.
  */
 #include <sys/types.h>
-#include <linux/types.h>	/* for __u8 */
 #include <sys/uio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +18,7 @@
 #include "bootp_proto.h"
 #include "packet.h"
 
-static __u8 bootp_options[312] = {
+static uint8_t bootp_options[312] = {
 	[  0] = 99, 130, 83, 99,/* RFC1048 magic cookie */
 	[  4] = 1, 4,		/*   4-  9 subnet mask */
 	[ 10] = 3, 4,		/*  10- 15 default gateway */
@@ -61,8 +60,8 @@ int bootp_send_request(struct netdev *dev)
 /*
  * Parse a bootp reply packet
  */
-int
-bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
+int bootp_parse(struct netdev *dev, struct bootp_hdr *hdr,
+		uint8_t *exts, int extlen)
 {
 	dev->bootp.gateway	= hdr->giaddr;
 	dev->ip_addr		= hdr->yiaddr;
@@ -78,18 +77,18 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
 
 	if (extlen >= 4 && exts[0] == 99 && exts[1] == 130 &&
 	    exts[2] == 83 && exts[3] == 99) {
-		__u8 *ext;
+		uint8_t *ext;
 
 		for (ext = exts + 4; ext - exts < extlen;) {
 			int len;
-			__u8 opt = *ext++;
+			uint8_t opt = *ext++;
 
 			if (opt == 0)
 				continue;
 			else if (opt == 255)
 				break;
 
-			len = xlen = *ext++;
+			len = *ext++;
 
 			switch (opt) {
 			case 1:	/* subnet mask */
@@ -159,7 +158,7 @@ bootp_parse(struct netdev *dev, struct bootp_hdr *hdr, __u8 * exts, int extlen)
 int bootp_recv_reply(struct netdev *dev)
 {
 	struct bootp_hdr bootp;
-	__u8 bootp_options[312];
+	uint8_t bootp_options[312];
 	struct iovec iov[] = {
 		/* [0] = ip + udp headers */
 		[1] = {&bootp, sizeof(struct bootp_hdr)},
@@ -207,7 +206,7 @@ int bootp_init_if(struct netdev *dev)
 	/*
 	 * Get a random XID
 	 */
-	dev->bootp.xid = (__u32) lrand48();
+	dev->bootp.xid = (uint32_t) lrand48();
 	dev->open_time = time(NULL);
 
 	return 0;
