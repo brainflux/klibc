@@ -7,15 +7,26 @@
 # accordingly.
 #
 
+ifneq ("$(KLIBCARCH)", "s390x")
+
 KLIBCARCHOBJS = \
-	arch/$(KLIBCARCH)/setjmp.o \
-	arch/$(KLIBCARCH)/mmap.o \
-	arch/$(KLIBCARCH)/syscall.o \
+	arch/$(KLIBCARCHDIR)/setjmp.o \
+	arch/$(KLIBCARCHDIR)/mmap.o \
+	arch/$(KLIBCARCHDIR)/syscall.o \
 	libgcc/__divdi3.o \
 	libgcc/__moddi3.o \
 	libgcc/__udivdi3.o \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o
+
+else
+
+KLIBCARCHOBJS = \
+	arch/$(KLIBCARCHDIR)/setjmp.o \
+	arch/$(KLIBCARCHDIR)/mmap.o \
+	arch/$(KLIBCARCHDIR)/syscall.o
+
+endif
 
 KLIBCARCHSOOBJS = $(patsubst %.o,%.lo,$(KLIBCARCHOBJS))
 

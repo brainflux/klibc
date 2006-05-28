@@ -55,9 +55,10 @@ KLIBCWARNFLAGS    := -W -Wall -Wno-sign-compare -Wno-unused-parameter
 KLIBCSHAREDFLAGS  :=
 KLIBCBITSIZE      :=
 KLIBCLDFLAGS      :=
+KLIBCCFLAGS       :=
 
 # Arch specific definitions for klibc
-include $(KLIBCSRC)/arch/$(KLIBCARCH)/MCONFIG
+include $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/MCONFIG
 
 # include/asm-* architecture
 KLIBCASMARCH	  ?= $(KLIBCARCH)
@@ -77,7 +78,7 @@ KLIBCOBJCOPY	 := $(OBJCOPY)
 KLIBCOBJDUMP	 := $(OBJDUMP)
 
 # klibc include paths
-KLIBCCPPFLAGS    := -I$(KLIBCINC)/arch/$(KLIBCARCH)	\
+KLIBCCPPFLAGS    := -I$(KLIBCINC)/arch/$(KLIBCARCHDIR)	\
                     -I$(KLIBCINC)/bits$(KLIBCBITSIZE)	\
 		    -I$(KLIBCOBJ)/../include		\
                     -I$(KLIBCINC)
@@ -92,14 +93,14 @@ KLIBCDEFS        := -D__KLIBC__=$(KLIBCMAJOR)          \
 		    -D__KLIBC_MINOR__=$(KLIBCMINOR)    \
 		    -D_BITSIZE=$(KLIBCBITSIZE)
 KLIBCCPPFLAGS    += $(KLIBCDEFS)
-KLIBCCFLAGS      := $(KLIBCCPPFLAGS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS)  \
+KLIBCCFLAGS      += $(KLIBCCPPFLAGS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS)  \
                     $(KLIBCOPTFLAGS) $(KLIBCWARNFLAGS)
 KLIBCAFLAGS      := -D__ASSEMBLY__ $(KLIBCCFLAGS)
 KLIBCSTRIPFLAGS  := --strip-all -R .comment -R .note
 
 KLIBCLIBGCC_DEF  := $(shell $(KLIBCCC) $(KLIBCCFLAGS) --print-libgcc)
 KLIBCLIBGCC	 ?= $(KLIBCLIBGCC_DEF)
-KLIBCCRT0        := $(KLIBCOBJ)/arch/$(KLIBCARCH)/crt0.o
+KLIBCCRT0        := $(KLIBCOBJ)/arch/$(KLIBCARCHDIR)/crt0.o
 KLIBCLIBC        := $(KLIBCOBJ)/libc.a
 KLIBCCRTSHARED   := $(KLIBCOBJ)/interp.o
 KLIBCLIBCSHARED  := $(KLIBCOBJ)/libc.so

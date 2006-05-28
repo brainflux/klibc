@@ -28,7 +28,7 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4,    \
 	long __res;					     \
 	__asm__ __volatile__ (               	             \
                 "    svc %b1\n"                              \
-                "    lr  %0,2"                               \
+                "    la  %0,2"                               \
                 : "=d" (__res)                               \
                 : "i" (__NR_##name),                         \
                   "d" (__argp)				     \
