@@ -9,15 +9,15 @@
 
 struct portmap_call {
 	struct rpc_call rpc;
-	__u32 program;
-	__u32 version;
-	__u32 proto;
-	__u32 port;
+	uint32_t program;
+	uint32_t version;
+	uint32_t proto;
+	uint32_t port;
 };
 
 struct portmap_reply {
 	struct rpc_reply rpc;
-	__u32 port;
+	uint32_t port;
 };
 
 static struct portmap_call call = {
@@ -28,12 +28,12 @@ static struct portmap_call call = {
 	}
 };
 
-__u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto)
+uint32_t portmap(uint32_t server, uint32_t program, uint32_t version, uint32_t proto)
 {
 	struct portmap_reply reply;
 	struct client *clnt;
 	struct rpc rpc;
-	__u32 port = 0;
+	uint32_t port = 0;
 
 	if ((clnt = tcp_client(server, RPC_PMAP_PORT, 0)) == NULL) {
 		if ((clnt = udp_client(server, RPC_PMAP_PORT, 0)) == NULL) {

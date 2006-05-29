@@ -1,8 +1,11 @@
 /*
  * sunrpc.h - open-coded SunRPC structures
  */
+#ifndef NFSMOUNT_SUNRPC_H
+#define NFSMOUNT_SUNRPC_H
+
 #include <sys/types.h>
-#include <linux/types.h>	/* for __u32 */
+#include <inttypes.h>
 
 #define SUNRPC_PORT	111
 #define MOUNT_PORT	627
@@ -36,35 +39,35 @@
 #define SYSTEM_ERR	5
 
 struct rpc_udp_header {
-	__u32 xid;
-	__u32 msg_type;
+	uint32_t xid;
+	uint32_t msg_type;
 };
 
 struct rpc_header {
-	__u32 frag_hdr;
+	uint32_t frag_hdr;
 	struct rpc_udp_header udp;
 };
 
 struct rpc_call {
 	struct rpc_header hdr;
-	__u32 rpc_vers;
+	uint32_t rpc_vers;
 
-	__u32 program;
-	__u32 prog_vers;
-	__u32 proc;
-	__u32 cred_flavor;
+	uint32_t program;
+	uint32_t prog_vers;
+	uint32_t proc;
+	uint32_t cred_flavor;
 
-	__u32 cred_len;
-	__u32 vrf_flavor;
-	__u32 vrf_len;
+	uint32_t cred_len;
+	uint32_t vrf_flavor;
+	uint32_t vrf_len;
 };
 
 struct rpc_reply {
 	struct rpc_header hdr;
-	__u32 reply_state;
-	__u32 vrf_flavor;
-	__u32 vrf_len;
-	__u32 state;
+	uint32_t reply_state;
+	uint32_t vrf_flavor;
+	uint32_t vrf_len;
+	uint32_t state;
 };
 
 struct rpc {
@@ -85,10 +88,12 @@ struct client {
 
 #define CLI_RESVPORT	00000001
 
-struct client *tcp_client(__u32 server, __u16 port, __u32 flags);
-struct client *udp_client(__u32 server, __u16 port, __u32 flags);
+struct client *tcp_client(uint32_t server, uint16_t port, uint32_t flags);
+struct client *udp_client(uint32_t server, uint16_t port, uint32_t flags);
 void client_free(struct client *client);
 
 int rpc_call(struct client *client, struct rpc *rpc);
 
-__u32 portmap(__u32 server, __u32 program, __u32 version, __u32 proto);
+uint32_t portmap(uint32_t server, uint32_t program, uint32_t version, uint32_t proto);
+
+#endif /* NFSMOUNT_SUNRPC_H */

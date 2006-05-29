@@ -11,11 +11,11 @@
 #include "nfsmount.h"
 #include "sunrpc.h"
 
-static __u32 mount_port;
+static uint32_t mount_port;
 
 struct mount_call {
 	struct rpc_call rpc;
-	__u32 path_len;
+	uint32_t path_len;
 	char path[0];
 };
 
@@ -31,22 +31,22 @@ struct mount_call {
  */
 #define NFS_MAXFHSIZE_WIRE 64
 struct nfs_fh_wire {
-	__u32 size;
+	uint32_t size;
 	char data[NFS_MAXFHSIZE_WIRE];
 } __attribute__ ((packed));
 
 struct mount_reply {
 	struct rpc_reply reply;
-	__u32 status;
+	uint32_t status;
 	struct nfs_fh_wire fh;
 } __attribute__ ((packed));
 
-#define MNT_REPLY_MINSIZE (sizeof(struct rpc_reply) + sizeof(__u32))
+#define MNT_REPLY_MINSIZE (sizeof(struct rpc_reply) + sizeof(uint32_t))
 
-static int get_ports(__u32 server, const struct nfs_mount_data *data)
+static int get_ports(uint32_t server, const struct nfs_mount_data *data)
 {
-	__u32 nfs_ver, mount_ver;
-	__u32 proto;
+	uint32_t nfs_ver, mount_ver;
+	uint32_t proto;
 
 	if (data->flags & NFS_MOUNT_VER3) {
 		nfs_ver = NFS3_VERSION;
@@ -84,7 +84,7 @@ static inline int pad_len(int len)
 	return (len + 3) & ~3;
 }
 
-static inline void dump_params(__u32 server,
+static inline void dump_params(uint32_t server,
 			       const char *path,
 			       const struct nfs_mount_data *data)
 {
@@ -143,7 +143,7 @@ static inline void dump_fh(const char *data, int len)
 
 static struct mount_reply mnt_reply;
 
-static int mount_call(__u32 proc, __u32 version,
+static int mount_call(uint32_t proc, uint32_t version,
 		      const char *path, struct client *clnt)
 {
 	struct mount_call *mnt_call = NULL;
@@ -251,7 +251,7 @@ static inline int umount_v3(const char *path, struct client *clnt)
 }
 
 int nfs_mount(const char *pathname, const char *hostname,
-	      __u32 server, const char *rem_path, const char *path,
+	      uint32_t server, const char *rem_path, const char *path,
 	      struct nfs_mount_data *data)
 {
 	struct client *clnt = NULL;

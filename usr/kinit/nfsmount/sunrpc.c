@@ -139,7 +139,7 @@ static int rpc_call_udp(struct client *clnt, struct rpc *rpc)
 	return ret;
 }
 
-struct client *tcp_client(__u32 server, __u16 port, __u32 flags)
+struct client *tcp_client(uint32_t server, uint16_t port, uint32_t flags)
 {
 	struct client *clnt = malloc(sizeof(*clnt));
 	struct sockaddr_in addr;
@@ -184,7 +184,7 @@ struct client *tcp_client(__u32 server, __u16 port, __u32 flags)
 	return clnt;
 }
 
-struct client *udp_client(__u32 server, __u16 port, __u32 flags)
+struct client *udp_client(uint32_t server, uint16_t port, uint32_t flags)
 {
 	struct client *clnt = malloc(sizeof(*clnt));
 	struct sockaddr_in addr;

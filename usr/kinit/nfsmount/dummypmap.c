@@ -23,15 +23,15 @@ extern const char *progname;
 
 struct portmap_call {
 	struct rpc_call rpc;
-	__u32 program;
-	__u32 version;
-	__u32 proto;
-	__u32 port;
+	uint32_t program;
+	uint32_t version;
+	uint32_t proto;
+	uint32_t port;
 };
 
 struct portmap_reply {
 	struct rpc_reply rpc;
-	__u32 port;
+	uint32_t port;
 };
 
 static int bind_portmap(void)
@@ -56,7 +56,7 @@ static int bind_portmap(void)
 	return sock;
 }
 
-static const char *protoname(__u32 proto)
+static const char *protoname(uint32_t proto)
 {
 	switch (ntohl(proto)) {
 	case IPPROTO_TCP:

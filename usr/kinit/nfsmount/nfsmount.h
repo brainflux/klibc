@@ -2,13 +2,16 @@
  * nfsmount/nfsmount.h
  */
 
+#ifndef NFSMOUNT_NFSMOUNT_H
+#define NFSMOUNT_NFSMOUNT_H
+
 #include <linux/nfs_mount.h>
 
 extern int nfs_port;
 
 extern int nfsmount_main(int argc, char *argv[]);
 int nfs_mount(const char *rem_name, const char *hostname,
-	      __u32 server, const char *rem_path,
+	      uint32_t server, const char *rem_path,
 	      const char *path, struct nfs_mount_data *data);
 
 enum nfs_proto {
@@ -32,3 +35,5 @@ enum nfs_proto {
 #else
 #define DEBUG(x) do { } while(0)
 #endif
+
+#endif /* NFSMOUNT_NFSMOUNT_H */

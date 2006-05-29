@@ -132,7 +132,7 @@ static void parse_opts(char *opts)
 	}
 }
 
-static __u32 parse_addr(const char *ip)
+static uint32_t parse_addr(const char *ip)
 {
 	struct in_addr in;
 	if (inet_aton(ip, &in) == 0) {
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 
 int nfsmount_main(int argc, char *argv[])
 {
-	__u32 server;
+	uint32_t server;
 	char *rem_name;
 	char *rem_path;
 	char *hostname;
