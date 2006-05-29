@@ -88,19 +88,20 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 		}
 
 		snprintf(root, len, "%s:%s", inet_ntoa(addr), path);
-
-		nfs_argv[a++] = sub_client(client, root, len);
 	} else {
 		strcpy(root, path);
-		nfs_argv[a++] = sub_client(client, root, len);
 	}
+	
+	nfs_argv[a++] = sub_client(client, root, len);
 
-	DEBUG(("NFS-Root: mounting %s on %s with options '%s'\n",
-	       argv[a - 1], mtpt, opts ? opts : "none"));
+	DEBUG(("NFS-Root: mounting %s on %s with options \"%s\"\n",
+	       nfs_argv[a-1], mtpt, opts ? opts : ""));
 
 	nfs_argv[a++] = mtpt;
 	nfs_argv[a] = NULL;
 	assert(a <= NFS_ARGC);
+
+	dump_args(a, nfs_argv);
 
 	if ((ret = nfsmount_main(a, nfs_argv)) != 0) {
 		ret = -1;

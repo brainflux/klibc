@@ -60,4 +60,14 @@ ssize_t freadfile(FILE *f, char **pptr);
 #define DEBUG(x) do { } while (0)
 #endif
 
+#ifdef INI_DEBUG
+void dump_args(int argc, char *argv[]);
+#else
+static inline void dump_args(int argc, char *argv[])
+{
+	(void)argc;
+	(void)argv;
+}
+#endif
+
 #endif				/* KINIT_H */

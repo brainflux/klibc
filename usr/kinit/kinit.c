@@ -18,26 +18,20 @@ int mnt_procfs;
 int mnt_sysfs;
 
 #ifdef INI_DEBUG
-static void dump_args(int argc, char *argv[])
+void dump_args(int argc, char *argv[])
 {
 	int i;
 
 	printf("  argc == %d\n", argc);
 
 	for (i = 0; i < argc; i++) {
-		printf("  argv[%d]: '%s'\n", i, argv[i]);
+		printf("  argv[%d]: \"%s\"\n", i, argv[i]);
 	}
 
 	if (argv[argc] != NULL) {
-		printf("  argv[%d]: '%s' (SHOULD BE NULL)\n",
+		printf("  argv[%d]: \"%s\" (SHOULD BE NULL)\n",
 		       argc, argv[argc]);
 	}
-}
-#else
-static inline void dump_args(int argc, char *argv[])
-{
-	(void)argc;
-	(void)argv;
 }
 #endif
 

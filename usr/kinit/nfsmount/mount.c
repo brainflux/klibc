@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "nfsmount.h"
 #include "sunrpc.h"
@@ -265,7 +266,7 @@ int nfs_mount(const char *pathname, const char *hostname,
 		goto bail;
 	}
 
-	dump_params(server, path, data);
+	dump_params(server, rem_path, data);
 
 	if (data->flags & NFS_MOUNT_TCP) {
 		clnt = tcp_client(server, mount_port, CLI_RESVPORT);
@@ -318,7 +319,13 @@ int nfs_mount(const char *pathname, const char *hostname,
 	ret = mount(pathname, path, "nfs", mountflags, data);
 
 	if (ret == -1) {
-		perror("mount");
+		if (errno == ENODEV) {
+			fprintf(stderr, "mount: the kernel lacks NFS v%d "
+				"support\n",
+				(data->flags & NFS_MOUNT_VER3) ? 3 : 2);
+		} else {
+			perror("mount");
+		}
 		goto bail;
 	}
 
