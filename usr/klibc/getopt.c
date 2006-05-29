@@ -9,18 +9,34 @@
 #include <string.h>
 
 char *optarg;
-int optind = 1;
-int opterr, optopt;
+int optind, opterr, optopt;
 static const char *__optptr;
+static const char *__last_optstring;
 
 int getopt(int argc, char *const *argv, const char *optstring)
 {
-	const char *carg = argv[optind];
+	const char *carg;
 	const char *osptr;
 	int opt;
 
-	/* We don't actually need argc */
-	(void)argc;
+	/* getopt() relies on a number of different global
+	   state variables, which can make this really
+	   confusing if there is more than one use of
+	   getopt() in the same program.  This attempts
+	   to detect that situation by detecting if
+	   the "optstring" argument is the same one as
+	   last time we were called; if not, reinitialize
+	   the query state. */
+	
+	if (optstring != __last_optstring ||
+	    optind < 1 || optind > argc) {
+		/* optind doesn't match the current query */
+		__last_optstring = optstring;
+		optind = 1;
+		__optptr = NULL;
+	}
+
+	carg = argv[optind];
 
 	/* First, eliminate all non-option cases */
 
