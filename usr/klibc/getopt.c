@@ -10,8 +10,11 @@
 
 char *optarg;
 int optind, opterr, optopt;
-static const char *__optptr;
-static const char *__last_optstring;
+static struct getopt_private_state {
+	const char *optptr;
+	const char *last_optstring;
+	char *const *last_argv;
+} pvt;
 
 int getopt(int argc, char *const *argv, const char *optstring)
 {
@@ -19,21 +22,20 @@ int getopt(int argc, char *const *argv, const char *optstring)
 	const char *osptr;
 	int opt;
 
-	/* getopt() relies on a number of different global
-	   state variables, which can make this really
-	   confusing if there is more than one use of
-	   getopt() in the same program.  This attempts
-	   to detect that situation by detecting if
-	   the "optstring" argument is the same one as
-	   last time we were called; if not, reinitialize
-	   the query state. */
+	/* getopt() relies on a number of different global state
+	   variables, which can make this really confusing if there is
+	   more than one use of getopt() in the same program.  This
+	   attempts to detect that situation by detecting if the
+	   "optstring" or "argv" argument have changed since last time
+	   we were called; if so, reinitialize the query state. */
 	
-	if (optstring != __last_optstring ||
+	if (optstring != pvt.last_optstring || argv != pvt.last_argv ||
 	    optind < 1 || optind > argc) {
 		/* optind doesn't match the current query */
-		__last_optstring = optstring;
+		pvt.last_optstring = optstring;
+		pvt.last_argv = argv;
 		optind = 1;
-		__optptr = NULL;
+		pvt.optptr = NULL;
 	}
 
 	carg = argv[optind];
@@ -49,19 +51,19 @@ int getopt(int argc, char *const *argv, const char *optstring)
 		return -1;
 	}
 
-	if ((uintptr_t) (__optptr - carg) > (uintptr_t) strlen(carg)) {
+	if ((uintptr_t) (pvt.optptr - carg) > (uintptr_t) strlen(carg)) {
 		/* Someone frobbed optind, change to new opt. */
-		__optptr = carg + 1;
+		pvt.optptr = carg + 1;
 	}
 
-	opt = *__optptr++;
+	opt = *pvt.optptr++;
 
 	if (opt != ':' && (osptr = strchr(optstring, opt))) {
 		if (osptr[1] == ':') {
-			if (*__optptr) {
+			if (*pvt.optptr) {
 				/* Argument-taking option with attached
 				   argument */
-				optarg = (char *)__optptr;
+				optarg = (char *)pvt.optptr;
 				optind++;
 			} else {
 				/* Argument-taking option with non-attached
@@ -79,16 +81,16 @@ int getopt(int argc, char *const *argv, const char *optstring)
 			return opt;
 		} else {
 			/* Non-argument-taking option */
-			/* __optptr will remember the exact position to
+			/* pvt.optptr will remember the exact position to
 			   resume at */
-			if (!*__optptr)
+			if (!*pvt.optptr)
 				optind++;
 			return opt;
 		}
 	} else {
 		/* Unknown option */
 		optopt = opt;
-		if (!*__optptr)
+		if (!*pvt.optptr)
 			optind++;
 		return '?';
 	}
