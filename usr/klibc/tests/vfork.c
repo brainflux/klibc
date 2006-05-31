@@ -21,16 +21,25 @@ int main(int argc, char *argv[])
 		printf("Child (%d)...\n", (int)getpid());
 		_exit(123);
 	} else if (f > 0) {
+		int err = 0;
+
+		printf("Parent (child = %d)\n", (int)f);
+
 		rv = waitpid(f, &status, 0);
 		if (rv != f) {
 			printf("waitpid returned %d, errno = %d\n",
 			       (int)rv, errno);
+			err++;
 		}
-		printf("Parent (child = %d)\n", (int)f);
-		return rv != f;
+		if (!WIFEXITED(status) || WEXITSTATUS(status) != 123) {
+			printf("Child process existed with wrong status %d\n",
+			       status);
+			err++;
+		}
+		return err;
 	} else {
 		printf("vfork returned %d, errno = %d\n",
 		       (int)f, errno);
-		return 1;
+		return 127;
 	}
 }
