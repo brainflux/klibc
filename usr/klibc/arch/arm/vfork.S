@@ -4,8 +4,8 @@
  * vfork - nasty system call which must not use the stack.
  */
 
-	.type	__syscall_common,#function
-	.globl	__syscall_common
+	.type	vfork,#function
+	.globl	vfork
 #ifndef __thumb__
 	/* ARM version - this is executed after the swi */
 
@@ -28,7 +28,7 @@ vfork:
 
 	.thumb_func
 	.align	2
-__syscall_common:
+vfork:
 	mov	r7, # __NR_vfork
 	swi	0
 	ldr	r1, 2f
