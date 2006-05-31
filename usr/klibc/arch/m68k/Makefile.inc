@@ -9,7 +9,8 @@
 
 KLIBCARCHOBJS = \
 	arch/$(KLIBCARCH)/setjmp.o \
-	arch/$(KLIBCARCH)/syscall.o
+	arch/$(KLIBCARCH)/syscall.o \
+	arch/$(KLIBCARCH)/vfork.o
 
 KLIBCBITSIZE  = 32
 

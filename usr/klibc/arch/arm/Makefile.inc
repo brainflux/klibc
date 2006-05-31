@@ -18,7 +18,8 @@ KLIBCARCHOBJS = \
 	libgcc/__udivdi3.o \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o \
-	arch/arm/syscall.o
+	arch/arm/syscall.o \
+	arch/arm/vfork.o
 
 ifeq ($(THUMB),y)
 KLIBCARCHOBJS += arch/arm/setjmp-thumb.o

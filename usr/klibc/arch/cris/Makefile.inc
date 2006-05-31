@@ -15,6 +15,7 @@ KLIBCARCHOBJS = \
 	arch/$(KLIBCARCH)/__negdi2.o \
 	arch/$(KLIBCARCH)/setjmp.o \
 	arch/$(KLIBCARCH)/syscall.o \
+	arch/$(KLIBCARCH)/vfork.o \
 	libgcc/__divdi3.o \
 	libgcc/__moddi3.o \
 	libgcc/__udivdi3.o \

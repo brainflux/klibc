@@ -10,7 +10,8 @@
 KLIBCARCHOBJS = \
 	arch/$(KLIBCARCH)/setjmp.o \
 	arch/$(KLIBCARCH)/syscall.o \
-	arch/$(KLIBCARCH)/sigreturn.o
+	arch/$(KLIBCARCH)/sigreturn.o \
+	arch/$(KLIBCARCH)/vfork.o
 
 KLIBCARCHSOOBJS = $(patsubst %.o,%.lo,$(KLIBCARCHOBJS))
 

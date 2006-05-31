@@ -14,7 +14,7 @@ __syscall_common:
 	movem.l %d2-%d6, -(%sp)	/* 5 registers saved */
 	movem.l	24(%sp), %d1-%d6
 	trap	#0
-	cmpi.l	#-4096, %d0
+	cmpi.l	#-4095, %d0
 	blt.l	1f
 	neg.l	%d0
 	move.l	%d0, (errno)

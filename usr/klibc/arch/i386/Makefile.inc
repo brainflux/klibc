@@ -15,6 +15,7 @@ KLIBCARCHOBJS = \
 	arch/$(KLIBCARCH)/open.o \
 	arch/$(KLIBCARCH)/openat.o \
 	arch/$(KLIBCARCH)/sigreturn.o \
+	arch/$(KLIBCARCH)/vfork.o \
 	arch/$(KLIBCARCH)/libgcc/__ashldi3.o \
 	arch/$(KLIBCARCH)/libgcc/__ashrdi3.o \
 	arch/$(KLIBCARCH)/libgcc/__lshrdi3.o \
