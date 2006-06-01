@@ -4,6 +4,8 @@
  * vfork - nasty system call which must not use the stack.
  */
 
+#include <asm/unistd.h>
+	
 	.type	vfork,#function
 	.globl	vfork
 #ifndef __thumb__
