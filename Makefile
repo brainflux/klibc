@@ -84,16 +84,20 @@ klibc := -f $(srctree)/scripts/Kbuild.klibc obj
 .PHONY: all klcc klibc
 all: klcc klibc
 
+.config: defconfig
+	@echo "defconfig has changed, please remove or edit .config" >&2; \
+		exit 1
+
 rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 
 klibc.spec: klibc.spec.in $(KLIBCSRC)/version
 	sed -e 's/@@VERSION@@/$(VERSION)/g' < $< > $@
 
 # Build klcc - it is the first target
-klcc:
+klcc: .config
 	$(Q)$(MAKE) $(klibc)=klcc
 
-klibc:
+klibc: .config
 	$(Q)$(MAKE) $(klibc)=.
 
 test: klibc
