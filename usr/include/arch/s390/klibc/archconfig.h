@@ -9,6 +9,7 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* All defaults */
+/* Both s390 and s390x use the "32-bit" version of this structure */
+#define _KLIBC_STATFS_F_TYPE_64 0
 
 #endif				/* _KLIBC_ARCHCONFIG_H */

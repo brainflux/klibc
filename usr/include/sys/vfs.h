@@ -9,27 +9,14 @@
 #include <klibc/extern.h>
 #include <sys/types.h>
 #include <bitsize.h>
+#include <klibc/sysconfig.h>
 
 /* struct statfs64 -- there seems to be two standards -
-   one for 32 and one for 64 bits, and they're incompatible... */
+   one for 32 and one for 64 bits, and they're incompatible.
+   Worse, some 64-bit platforms seem to use the 32-bit layout.
+   Of course, there is no includable header that does this well. */
 
-#if !defined(__x86_64__) && !defined(__ia64__) && !defined(__sparc_v9__)
-
-struct statfs {
-	uint32_t f_type;
-	uint32_t f_bsize;
-	uint64_t f_blocks;
-	uint64_t f_bfree;
-	uint64_t f_bavail;
-	uint64_t f_files;
-	uint64_t f_ffree;
-	__kernel_fsid_t f_fsid;
-	uint32_t f_namelen;
-	uint32_t f_frsize;
-	uint32_t f_spare[5];
-};
-
-#else				/* _BITSIZE == 64 */
+#if _KLIBC_STATFS_F_TYPE_64
 
 struct statfs {
 	uint64_t f_type;
@@ -45,7 +32,23 @@ struct statfs {
 	uint64_t f_spare[5];
 };
 
-#endif				/* _BITSIZE */
+#else /* not _KLIBC_STATFS_F_TYPE_64 */
+
+struct statfs {
+	uint32_t f_type;
+	uint32_t f_bsize;
+	uint64_t f_blocks;
+	uint64_t f_bfree;
+	uint64_t f_bavail;
+	uint64_t f_files;
+	uint64_t f_ffree;
+	__kernel_fsid_t f_fsid;
+	uint32_t f_namelen;
+	uint32_t f_frsize;
+	uint32_t f_spare[5];
+};
+
+#endif /* _KLIBC_STATFS_F_TYPE_64 */
 
 __extern int statfs(const char *, struct statfs *);
 __extern int fstatfs(int, struct statfs *);

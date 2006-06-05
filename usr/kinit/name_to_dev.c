@@ -142,6 +142,9 @@ static inline dev_t name_to_dev_t_real(const char *name)
 	if (!strcmp(name, "nfs"))
 		return Root_NFS;
 
+	if (!strcmp(name, "ram")) /* /dev/ram - historic alias for /dev/ram0 */
+		return Root_RAM0;
+
 	if (!strncmp(name, "mtd", 3))
 		return Root_MTD;
 

@@ -149,4 +149,18 @@
 # define _KLIBC_NEEDS_SA_RESTORER 0
 #endif
 
+
+/*
+ * _KLIBC_STATFS_F_TYPE_64:
+ *
+ *	This indicates that the f_type, f_bsize, f_namelen,
+ *	f_frsize, and f_spare fields of struct statfs are
+ *	64 bits long.  This is normally the case for 64-bit
+ *	platforms, and so is the default for those.  See
+ *	usr/include/sys/vfs.h for the exact details.
+ */
+#ifndef _KLIBC_STATFS_F_TYPE_64
+# define _KLIBC_STATFS_F_TYPE_64 (_BITSIZE == 64)
+#endif
+
 #endif /* _KLIBC_SYSCONFIG_H */

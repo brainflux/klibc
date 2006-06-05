@@ -9,20 +9,20 @@
 
 # Enable this to compile with register parameters; only safe for
 # gcc >= 3
+
+ifeq ($(CONFIG_REGPARM),y)
 REGPARM_OPT := -mregparm=3 -D_REGPARM=3
-
-gcc_major := $(shell echo __GNUC__ | $(CC) -E -xc - | tail -n 1)
-
-KLIBCOPTFLAGS  = -march=i386 -Os -g -fomit-frame-pointer
-KLIBCLDFLAGS   = -m elf_i386
-
-ifneq ($(gcc_major),2)
-KLIBCREQFLAGS += $(REGPARM_OPT)
-KLIBCOPTFLAGS += -falign-functions=0 -falign-jumps=0 -falign-loops=0
-KLIBCARCHREQFLAGS += -m32
-else
-KLIBCOPTFLAGS += -malign-functions=0 -malign-jumps=0 -malign-loops=0
 endif
+
+gcc_align_option  := $(call cc-option, \
+		-falign-functions=0 -falign-jumps=0 -falign-loops=0, \
+		-malign-functions=0 -malign-jumps=0 -malign-loops=0)
+gcc_m32_option  := $(call cc-option, -m32, )
+
+KLIBCOPTFLAGS     = -march=i386 -Os -g -fomit-frame-pointer $(gcc_align_option)
+KLIBCLDFLAGS      = -m elf_i386
+KLIBCREQFLAGS	  += $(REGPARM_OPT)
+KLIBCARCHREQFLAGS += $(gcc_m32_option)
 
 KLIBCBITSIZE  = 32
 
