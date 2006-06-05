@@ -191,9 +191,9 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 		if (err)
 			fprintf(stderr, "%s: running linuxrc: %s\n", progname,
 				strerror(-err));
+		return 1;	/* initrd is root, or run_linuxrc took care of it */
 	} else {
 		DEBUG(("kinit: permament (or pivoting) initrd, not running linuxrc\n"));
+		return 0;	/* Mounting initrd as ordinary root */
 	}
-
-	return 1;		/* initrd is root, or run_linuxrc took care of it */
 }
