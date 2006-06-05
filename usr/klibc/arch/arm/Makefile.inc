@@ -8,22 +8,23 @@
 #
 
 KLIBCARCHOBJS = \
-	libgcc/__divsi3.o \
-	libgcc/__modsi3.o \
-	libgcc/__udivsi3.o \
-	libgcc/__umodsi3.o \
+	arch/arm/syscall.o \
+	arch/arm/vfork.o \
 	libgcc/__udivmodsi4.o \
 	libgcc/__divdi3.o \
 	libgcc/__moddi3.o \
 	libgcc/__udivdi3.o \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o \
-	arch/arm/syscall.o \
-	arch/arm/vfork.o
 
 ifeq ($(THUMB),y)
-KLIBCARCHOBJS += arch/arm/setjmp-thumb.o
 KLIBCLIBGCC   :=
+KLIBCARCHOBJS += arch/arm/setjmp-thumb.o \
+	libgcc/__divsi3.o \
+	libgcc/__modsi3.o \
+	libgcc/__udivsi3.o \
+	libgcc/__umodsi3.o \
+
 else
 KLIBCARCHOBJS += arch/arm/setjmp-arm.o
 endif

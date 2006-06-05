@@ -13,8 +13,9 @@ CPU_TUNE := strongarm
 
 KLIBCOPTFLAGS = -Os -march=$(CPU_ARCH) -mtune=$(CPU_TUNE)
 KLIBCBITSIZE  = 32
+KLIBCREQFLAGS = -fno-exceptions -mno-thumb-interwork
 
-ifeq ($(THUMB),y)
+ifeq ($(CONFIG_KLIBC_THUMB),y)
 CPU_ARCH := $(CPU_ARCH)t
 KLIBCOPTFLAGS += -mthumb
 KLIBCLDFLAGS  += --thumb-entry _start

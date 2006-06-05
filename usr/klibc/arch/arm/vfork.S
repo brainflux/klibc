@@ -38,14 +38,15 @@ vfork:
 	bcc	1f
 	ldr	r1, 3f
 	neg	r2, r0
-	mvn	r0, #0
+	mov	r0, #1
 	str	r2, [r1]
+	neg	r0, r0
 1:
 	mov	pc, lr
 
 	.align	4
 2:
-	.word	#-4095
+	.word	-4095
 3:
 	.word	errno
 
