@@ -41,7 +41,7 @@ __syscall_common:
 __syscall_common_tail:
 	int	$0x80
 
-	cmpl	$-4096,%eax
+	cmpl	$-4095,%eax
 
 	popl	%ebp
 	popl	%edi
