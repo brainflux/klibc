@@ -7,15 +7,20 @@
 # accordingly.
 #
 
-KLIBCOPTFLAGS = -Os
-KLIBCBITSIZE  = 32
+gcc_m32_option  := $(call cc-option, -m32, )
+
+KLIBCOPTFLAGS	   = -Os
+KLIBCLDFLAGS       = -m elf32ppclinux
+KLIBCARCHREQFLAGS += $(gcc_m32_option)
+
+KLIBCBITSIZE       = 32
 
 # Extra linkflags when building the shared version of the library
 # This address needs to be reachable using normal inter-module
 # calls, and work on the memory models for this architecture
 # 256-16 MB - normal binaries start at 256 MB, and jumps are limited
 # to +/- 16 MB
-KLIBCSHAREDFLAGS     = -Ttext 0x0f000200
+KLIBCSHAREDFLAGS     = -Ttext 0x0f800200
 
 # The kernel so far has both asm-ppc* and asm-powerpc.
 KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(KLIBCARCH)/include
