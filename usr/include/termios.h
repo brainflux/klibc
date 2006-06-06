@@ -39,6 +39,11 @@ static __inline__ int tcflush(int __fd, int __queue)
 	return ioctl(__fd, TCFLSH, (void *)(intptr_t) __queue);
 }
 
+static __inline__ int tcdrain(int __fd)
+{
+	return ioctl(__fd, TCSBRK, (void *)1L);
+}
+
 static __inline__ pid_t tcgetpgrp(int __fd)
 {
 	pid_t __p;
