@@ -33,10 +33,4 @@ __syscall_varadic:
 
 	.size	__syscall_varadic,.-__syscall_varadic
 
-#else
-
-	.globl	__syscall_varadic
-	.type	__syscall_varadic,@function
-__syscall_varadic = __syscall_common
-
 #endif

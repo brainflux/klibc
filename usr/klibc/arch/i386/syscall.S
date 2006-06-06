@@ -59,3 +59,11 @@ __syscall_common_tail:
 	ret
 
 	.size	__syscall_common,.-__syscall_common
+
+#ifndef _REGPARM
+
+	.globl	__syscall_varadic
+	.type	__syscall_varadic,@function
+__syscall_varadic = __syscall_common
+
+#endif
