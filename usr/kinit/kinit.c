@@ -8,6 +8,7 @@
 #include <alloca.h>
 #include <limits.h>
 #include <ctype.h>
+#include <termios.h>
 
 #include "kinit.h"
 #include "ipconfig.h"
@@ -317,5 +318,13 @@ bail:
 	if (mnt_sysfs)
 		umount2("/sys", 0);
 
-	exit(ret);
+	/*
+	 * If we get here, something bad probably happened, and the kernel
+	 * will most likely panic.  Drain console output so the user can
+	 * figure out what happened.
+	 */
+	tcdrain(2);
+	tcdrain(1);
+
+	return ret;
 }
