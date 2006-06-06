@@ -122,3 +122,25 @@ $(obj)/arith.c $(obj)/arith.h: $(src)/arith.y
 
 # Targets to install
 install-y := sh.shared
+
+# Dependencies on generated files.  This really should be automated.
+$(obj)/arith_yylex.o: $(src)/arith.h
+$(obj)/builtins.o: $(src)/builtins.h
+$(obj)/cd.o: $(src)/nodes.h
+$(obj)/eval.o: $(src)/nodes.h $(src)/syntax.h $(src)/builtins.h
+$(obj)/exec.o: $(src)/nodes.h $(src)/builtins.h $(src)/syntax.h
+$(obj)/expand.o: $(src)/nodes.h $(src)/syntax.h
+$(obj)/input.o: $(src)/syntax.h
+$(obj)/jobs.o: $(src)/nodes.h $(src)/syntax.h
+$(obj)/mail.o: $(src)/nodes.h
+$(obj)/main.o: $(src)/nodes.h
+$(obj)/mystring.o: $(src)/syntax.h
+$(obj)/nodes.o: $(src)/nodes.h
+$(obj)/options.o: $(src)/nodes.h
+$(obj)/output.o: $(src)/syntax.h
+$(obj)/parser.o: $(src)/nodes.h $(src)/syntax.h $(src)/builtins.h $(src)/token.h
+$(obj)/redir.o: $(src)/nodes.h
+$(obj)/show.o: $(src)/nodes.h
+$(obj)/syntax.o: $(src)/syntax.h
+$(obj)/trap.o: $(src)/nodes.h $(src)/syntax.h
+$(obj)/var.o: $(src)/nodes.h $(src)/syntax.h
