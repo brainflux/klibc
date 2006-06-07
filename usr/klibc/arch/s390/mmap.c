@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <sys/types.h>
 #include <linux/unistd.h>
 
@@ -32,7 +33,7 @@ void *__mmap2(void *addr, size_t len, int prot, int flags, int fd, long offset)
 			     : "i"(__NR_mmap2), "0"(__arg1)
 			     : "1", "cc", "memory");
 	__res = __svcres;
-	if (__res >= (unsigned long)-125) {
+	if (__res >= (unsigned long)-4095) {
 		errno = -__res;
 		__res = -1;
 	}
@@ -64,7 +65,7 @@ void * mmap(void * addr, size_t len, int prot, int flags,
 		  "0" (__arg1)
 		: "1", "cc", "memory");
 	__res = __svcres;
-	if (__res >= (unsigned long)-125) {
+	if (__res >= (unsigned long)-4095) {
 		errno = -__res;
 		__res = -1;
 	}
