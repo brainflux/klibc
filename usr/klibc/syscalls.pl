@@ -51,10 +51,10 @@ print "syscall-objs := ";
 
 while ( defined($line = <FILE>) ) {
     chomp $line;
-    $line =~ s/\s*(|[\#;].*)$//; # Strip comments and trailing blanks
+    $line =~ s/\s*(|\#.*|\/\/.*)$//; # Strip comments and trailing blanks
     next unless $line;
 
-    if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([A-Za-z0-9_\*\s]+)\s+([A-Za-z0-9_,]+)(|\@[A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*$/ ) {
+    if ( $line =~ /^\s*(\<[^\>]+\>\s+|)([A-Za-z0-9_\*\s]+)\s+([A-Za-z0-9_,]+)(|\@[A-Za-z0-9_]+)(|\:\:[A-Za-z0-9_]+)\s*\(([^\:\)]*)\)\s*\;$/ ) {
 	$archs  = $1;
 	$type   = $2;
 	$snames = $3;
