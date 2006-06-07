@@ -27,7 +27,7 @@ void _exit,exit::_exit(int)
 #if _KLIBC_REAL_VFORK
 ; A lot of architectures need architecture-specific vfork
 ; stubs, due to the no-stack requirement.  These are the
-; architectures which don't.
+; architectures which do not.
 <alpha,m32r,ppc,ppc64,sh> pid_t vfork()
 <sparc,sparc64> pid_t vfork@forkish()
 #endif
