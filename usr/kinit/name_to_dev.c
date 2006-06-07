@@ -154,7 +154,7 @@ static inline dev_t name_to_dev_t_real(const char *name)
 
 	for (p = s; *p; p++)
 		if (*p == '/')
-			*p = '.';
+			*p = '!';
 	res = try_name(s, 0);
 	if (res)
 		return res;
