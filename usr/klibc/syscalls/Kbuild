@@ -38,7 +38,7 @@ $(obj)/syscalls.list: $(call objectify,$(syscall-objs)) FORCE
 # We pass -ansi to keep cpp from define e.g. "i386" as well as "__i386__"
 quiet_cmd_syscall.i = GEN     $@
       cmd_syscall.i = $(KLIBCCC) $(klibccflags) -D__ASSEMBLY__ \
-                                -ansi -x c++ -E -o $@ $<
+                                -ansi -x c -E -o $@ $<
 $(obj)/SYSCALLS.i: $(KLIBCSRC)/SYSCALLS.def FORCE
 	$(call if_changed_dep,syscall.i)
 
