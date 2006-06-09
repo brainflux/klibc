@@ -19,7 +19,7 @@
 #
 
 	.text
-	.align 4
+	.balign 4
 	.globl setjmp
 	.type setjmp, #function
 	.thumb_func
@@ -37,7 +37,7 @@ setjmp:
 	.size setjmp,.-setjmp
 
 	.text
-	.align 4
+	.balign 4
 	.globl longjmp
 	.type longjmp, #function
 	.thumb_func

@@ -18,7 +18,7 @@ sub make_sysstub($$$$$@) {
     print  OUT "	.globl	${fname}\n";
 
     print  OUT "#ifndef __thumb__\n";
-    print  OUT "	.align	4\n";
+    print  OUT "	.balign	4\n";
 
     print  OUT "#ifndef __ARM_EABI__\n";
 
@@ -48,7 +48,7 @@ sub make_sysstub($$$$$@) {
     print  OUT "#else /* __thumb__ */\n";
 
     # Thumb version
-    print  OUT "	.align	4\n";
+    print  OUT "	.balign	4\n";
     print  OUT "	.thumb_func\n";
     print  OUT "${fname}:\n";
     print  OUT "	push	{r4,r5,r7,lr}\n";
@@ -58,7 +58,7 @@ sub make_sysstub($$$$$@) {
     print  OUT "#else\n";
     print  OUT "	ldr	r7, 1f\n";
     print  OUT "	bl	__syscall_common\n";
-    print  OUT "	.align	4\n";
+    print  OUT "	.balign	4\n";
     print  OUT "1:\n";
     print  OUT "	.word	__NR_${sname}\n";
     print  OUT "#endif\n";

@@ -8,7 +8,7 @@
 #
 
 	.text
-	.align 4
+	.balign 4
 	.type _start,#function
 	.globl _start
 
