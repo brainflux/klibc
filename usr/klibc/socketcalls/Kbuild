@@ -16,6 +16,7 @@ always := socketcalls.list
 # Based on input from SOCKETCALLS.def generate socket call stubs
 targets     := socketcalls.list
 targets     += socketcalls.mk
+targets	    += SOCKETCALLS.i
 targets     += $(socketcall-objs)
 clean-files += *.S *.c *.o *.list
 
@@ -28,13 +29,21 @@ quiet_cmd_makelist = LIST    $@
 $(obj)/socketcalls.list: $(call objectify,$(socketcall-objs)) FORCE
 	$(call if_changed,makelist)
 
-quiet_cmd_socketcalls = GEN     $@
-      cmd_socketcalls = $(PERL) $(KLIBCSRC)/socketcalls.pl          \
-                                $(KLIBCSRC)/SOCKETCALLS.def         \
-                                $(KLIBCARCH) $(obj) > $@ || rm -f $@
+# Generate assembler file (.i)
+# We pass -ansi to keep cpp from define e.g. "i386" as well as "__i386__"
+quiet_cmd_socketcall.i = GEN     $@
+      cmd_socketcall.i = $(KLIBCCC) $(klibccflags) -D__ASSEMBLY__ \
+                                -ansi -x c -E -o $@ $<
+$(obj)/SOCKETCALLS.i: $(KLIBCSRC)/SOCKETCALLS.def FORCE
+	$(call if_changed_dep,socketcall.i)
 
 # Generate socketcall stubs
+quiet_cmd_socketcalls = GEN     $@
+      cmd_socketcalls = $(PERL) $(KLIBCSRC)/socketcalls.pl          \
+                                $(obj)/SOCKETCALLS.i	            \
+                                $(KLIBCARCH) $(obj) > $@ || rm -f $@
+
 $(obj)/socketcalls.mk: $(KLIBCSRC)/socketcalls.pl                   \
-                       $(KLIBCSRC)/SOCKETCALLS.def                  \
+                       $(obj)/SOCKETCALLS.i                         \
                        $(src)/socketcommon.h
 	$(call cmd,socketcalls)

@@ -1,22 +1,22 @@
-// -*- c -*-
-//
-// This is a list of system calls we invoke "directly".  These
-// are generated into syscall stubs in their own files, so the
-// linker can do its job properly.
-//
-// The full description of a line is:
-// [<[?][!]arch,...>] type [sysname,...][@systype][::funcname](args);
-//
-// ? means only instantiate this system call if present in asm/unistd.h
-//
+/* -*- c -*-
+ *
+ * This is a list of system calls we invoke "directly".  These
+ * are generated into syscall stubs in their own files, so the
+ * linker can do its job properly.
+ *
+ * The full description of a line is:
+ * [<[?][!]arch,...>] type [sysname,...][@systype][::funcname](args);
+ *
+ * ? means only instantiate this system call if present in asm/unistd.h
+ */
 
 #include <asm/unistd.h>
 #include <klibc/sysconfig.h>
 #include <bitsize.h>
 
-//
-// Process-related 'syscalls
-//
+/*
+ * Process-related syscalls
+ */
 void _exit,exit::_exit(int);
 <?!ia64> pid_t clone::__clone(unsigned long, void *);
 <?ia64> pid_t clone::__clone2(unsigned long, void *, void *);
@@ -25,9 +25,11 @@ void _exit,exit::_exit(int);
 <sparc,sparc64> pid_t fork@forkish();
 #endif
 #if _KLIBC_REAL_VFORK
-// A lot of architectures need architecture-specific vfork
-// stubs, due to the no-stack requirement.  These are the
-// architectures which do not.
+/*
+ * A lot of architectures need architecture-specific vfork
+ * stubs, due to the no-stack requirement.  These are the
+ * architectures which do not.
+ */
 <alpha,m32r,ppc,ppc64,sh,s390,s390x> pid_t vfork();
 <sparc,sparc64> pid_t vfork@forkish();
 #endif
@@ -48,9 +50,9 @@ int setpriority(int, int, int);
 int sched_setscheduler(pid_t, int, const struct sched_param *);
 int sched_yield();
 
-//
-// User and group IDs
-//
+/*
+ * User and group IDs
+ */
 int setuid32,setuid::setuid(uid_t);
 int setgid32,setgid::setgid(gid_t);
 <!alpha> uid_t getuid32,getuid::getuid();
@@ -69,9 +71,9 @@ int setfsuid32,setfsuid::setfsuid(uid_t);
 int setfsgid32,setfsgid::setfsgid(gid_t);
 int setresuid32,setresuid::setresuid(int, uid_t, uid, uid_t);
 
-//
-// Filesystem-related system calls
-//
+/*
+ * Filesystem-related system calls
+ */
 int mount(const char *, const char *, const char *, unsigned long, const void *);
 <!alpha,ia64> int umount2(const char *, int);
 <alpha,ia64> int umount::umount2(const char *, int);
@@ -90,9 +92,9 @@ int fstatfs(int, struct statfs *);
 int swapon(const char *, int);
 int swapoff(const char *);
 
-//
-// Inode-related system calls
-//
+/*
+ * Inode-related system calls
+ */
 int access(const char *, int);
 <?> int faccessat(int, const char *, int);
 int link(const char *, const char *);
@@ -124,7 +126,7 @@ int readlink(const char *, char *, size_t);
 <ppc64> int stat::stat(const char *, struct stat *);
 <ppc64> int lstat::lstat(const char *, struct stat *);
 <ppc64> int fstat::fstat(int, struct stat *);
-// XXX: Is this right?!
+/* XXX: Is this right?! */
 <?> int fstatat64,newstatat,fstatat::fstatat(int, const char *, struct stat *, int);
 int getdents64,getdents::getdents(unsigned int, struct dirent *, unsigned int);
 int chown32,chown::chown(const char *, uid_t, gid_t);
@@ -139,9 +141,9 @@ int getcwd::__getcwd(char *, size_t);
 <?> int inotify_add_watch(int, const char *, __u32);
 <?> int inotify_rm_watch(int, __u32);
 
-//
-// I/O operations
-//
+/*
+ * I/O operations
+ */
 <!i386,64> int open::__open(const char *, int, mode_t);
 <?!i386,64> int openat::__openat(int, const char *, int, mode_t);
 <64> int open(const char *, int, mode_t);
@@ -178,11 +180,12 @@ int sync_file_range,fdatasync,fsync::sync_file_range(int, off_t, off_t, unsigned
 <?> int splice(int, off_t *, int, off_t *, size_t, unsigned int);
 <?> int tee(int, int, size_t, unsigned int);
 
-//
-// Signal operations
-//
-// We really should get rid of the non-rt_* of these, but that takes
-// sanitizing <signal.h> for all architectures, sigh.  See <klibc/config.h>.
+/*
+ * Signal operations
+ *
+ * We really should get rid of the non-rt_* of these, but that takes
+ * sanitizing <signal.h> for all architectures, sigh.  See <klibc/config.h>.
+ */
 #if _KLIBC_USE_RT_SIG
 <!sparc,sparc64> int rt_sigaction::__rt_sigaction(int, const struct sigaction *, struct sigaction *, size_t);
 <sparc,sparc64> int rt_sigaction::__rt_sigaction(int, const struct sigaction *, struct sigaction *, void *, size_t);
@@ -201,9 +204,9 @@ int kill(pid_t, int);
 int getitimer(int, struct itimerval *);
 int setitimer(int, const struct itimerval *, struct itimerval *);
 
-//
-// Time-related system calls
-//
+/*
+ * Time-related system calls
+ */
 <?> time_t time(time_t *);
 clock_t times(struct tms *);
 int gettimeofday(struct timeval *, struct timezone *);
@@ -211,9 +214,9 @@ int settimeofday(const struct timeval *, const struct timezone *);
 int nanosleep(const struct timespec *, struct timespec *);
 <?> int pause();
 
-//
-// Memory
-//
+/*
+ * Memory
+ */
 <?> void * brk::__brk(void *);
 int munmap(void *, size_t);
 void * mremap(void *, size_t, size_t, unsigned long);
@@ -229,9 +232,9 @@ int mlock(const void *, size_t);
 int munlock(const void *, size_t);
 #endif
 
-//
-// System stuff
-//
+/*
+ * System stuff
+ */
 int uname(struct utsname *);
 int setdomainname(const char *, size_t);
 int sethostname(const char *, size_t);
@@ -241,16 +244,16 @@ int reboot::__reboot(int, int, int, void *);
 int syslog::klogctl(int, char *, int);
 int sysinfo(struct sysinfo *);
 
-//
-// Low-level I/O (generally architecture-specific);
-//
+/*
+ * Low-level I/O (generally architecture-specific);
+ */
 <i386,x86_64> int iopl(int);
 <i386,x86_64> int ioperm(unsigned long, unsigned long, int);
 <i386> int vm86(struct vm86_struct *);
 
-//
-// Most architectures have the socket interfaces using regular
-// system calls.
-//
+/*
+ * Most architectures have the socket interfaces using regular
+ * system calls.
+ */
 <?!i386> long socketcall::__socketcall(int, const unsigned long *);
 #include "SOCKETCALLS.def"

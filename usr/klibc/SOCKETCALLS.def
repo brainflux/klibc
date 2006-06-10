@@ -1,9 +1,9 @@
-// -*- c -*-
-//
-// These are calls that are invoked via the socketcall mechanism
-// Note that on most architectures this is simply #included into
-// SYSCALLS.def.
-//
+/* -*- c -*-
+ *
+ * These are calls that are invoked via the socketcall mechanism
+ * Note that on most architectures this is simply #included into
+ * SYSCALLS.def.
+ */
 <?> int socket(int, int, int);
 <?> int bind(int, struct sockaddr *, int);
 <?> int connect(int, struct sockaddr *, socklen_t);
