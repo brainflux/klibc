@@ -69,7 +69,7 @@ int setreuid32,setreuid::setreuid(uid_t, uid_t);
 int setregid32,setregid::setregid(gid_t, gid_t);
 int setfsuid32,setfsuid::setfsuid(uid_t);
 int setfsgid32,setfsgid::setfsgid(gid_t);
-int setresuid32,setresuid::setresuid(int, uid_t, uid, uid_t);
+int setresuid32,setresuid::setresuid(int, uid_t, uid_t, uid_t);
 
 /*
  * Filesystem-related system calls
