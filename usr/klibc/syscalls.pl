@@ -181,9 +181,6 @@ while ( defined($line = <FILE>) ) {
 		    $typesize{$a} = $size_table[$a_index];
 		}
 	    }
-	    if ($pass == 2) {
-		print STDERR "sizeof($a) = ", $typesize{$a}, "\n";
-	    }
 	}
 
 	if ($pass == 2) {
