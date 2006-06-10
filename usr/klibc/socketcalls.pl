@@ -24,7 +24,7 @@ if (!open(FILE, "< $file")) {
 print "socketcall-objs := ";
 while ( defined($line = <FILE>) ) {
     chomp $line;
-    $line =~ s/\s*(|\#.*]|\/\/.*)$//;	# Strip comments and trailing blanks
+    $line =~ s/\s*(|\#.*|\/\/.*)$//;	# Strip comments and trailing blanks
     next unless $line;
 
     if ( $line =~ /^\s*\<\?\>\s*(.*)\s+([_a-zA-Z][_a-zA-Z0-9]+)\s*\((.*)\)\s*\;$/ ) {
