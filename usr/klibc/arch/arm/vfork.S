@@ -11,7 +11,7 @@
 #ifndef __thumb__
 	/* ARM version - this is executed after the swi */
 
-	.align	4
+	.balign	4
 vfork:
 	swi	# __NR_vfork
         cmn     r0, #4096
@@ -21,7 +21,7 @@ vfork:
         strcs	r2, [r3]
 	mov	pc, lr
 
-	.align 4
+	.balign 4
 1:
 	.word	errno
 
@@ -29,7 +29,7 @@ vfork:
 	/* Thumb version - must still load r4 and r5 and run swi */
 
 	.thumb_func
-	.align	2
+	.balign	2
 vfork:
 	mov	r7, # __NR_vfork
 	swi	0
@@ -44,7 +44,7 @@ vfork:
 1:
 	mov	pc, lr
 
-	.align	4
+	.balign	4
 2:
 	.word	-4095
 3:

@@ -10,7 +10,7 @@
 	/* ARM version - this is executed after the swi, unless
 	   we are compiled in EABI mode */
 
-	.align	4
+	.balign	4
 __syscall_common:
 #ifdef __ARM_EABI__
 	ldr	r4, [sp,#16]
@@ -24,7 +24,7 @@ __syscall_common:
         strcs	r2, [r3]
 	ldmfd	sp!,{r4,r5,r7,pc}
 
-	.align 4
+	.balign 4
 1:
 	.word	errno
 
@@ -32,7 +32,7 @@ __syscall_common:
 	/* Thumb version - must still load r4 and r5 and run swi */
 
 	.thumb_func
-	.align	2
+	.balign	2
 __syscall_common:
 	ldr	r4, [sp,#16]
 	ldr	r5, [sp,#20]
@@ -48,7 +48,7 @@ __syscall_common:
 1:
 	pop	{r4,r5,r7,pc}
 
-	.align	4
+	.balign	4
 2:
 	.word	-4095
 3:

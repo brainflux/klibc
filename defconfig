@@ -3,3 +3,6 @@ CONFIG_KLIBC_ERRLIST=y
 CONFIG_KLIBC_ZLIB=y
 # i386 option
 CONFIG_REGPARM=y
+# ARM options
+# CONFIG_KLIBC_THUMB is not set
+# CONFIG_EABI is not set

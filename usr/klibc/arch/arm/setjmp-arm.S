@@ -19,7 +19,7 @@
 #
 
 	.text
-	.align 4
+	.balign 4
 	.globl setjmp
 	.type setjmp, #function
 setjmp:
@@ -29,7 +29,7 @@ setjmp:
 	.size setjmp,.-setjmp
 
 	.text
-	.align 4
+	.balign 4
 	.globl longjmp
 	.type longjmp, #function
 longjmp:
