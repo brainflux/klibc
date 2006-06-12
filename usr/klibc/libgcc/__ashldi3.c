@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stddef.h>
 
-uint64_t __ashldi3(uint64_t v, uint64_t cnt)
+uint64_t __ashldi3(uint64_t v, int cnt)
 {
-	int c = (int)cnt & 31;
+	int c = cnt & 31;
 	uint32_t vl = (uint32_t) v;
 	uint32_t vh = (uint32_t) (v >> 32);
 
