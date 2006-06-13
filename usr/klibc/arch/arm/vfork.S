@@ -9,11 +9,17 @@
 	.type	vfork,#function
 	.globl	vfork
 #ifndef __thumb__
-	/* ARM version - this is executed after the swi */
 
 	.balign	4
 vfork:
+#ifdef	__ARM_EABI__
+	mov	r3, r7
+	mov	r7, # __NR_vfork
+	swi	0
+	mov	r7, r3
+#else
 	swi	# __NR_vfork
+#endif
         cmn     r0, #4096
         rsbcs	r2, r0, #0
         ldrcs	r3, 1f
@@ -26,13 +32,14 @@ vfork:
 	.word	errno
 
 #else
-	/* Thumb version - must still load r4 and r5 and run swi */
 
 	.thumb_func
 	.balign	2
 vfork:
+	mov	r3, r7
 	mov	r7, # __NR_vfork
 	swi	0
+	mov	r7, r3
 	ldr	r1, 2f
 	cmp	r0, r1
 	bcc	1f
