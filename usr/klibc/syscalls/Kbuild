@@ -19,6 +19,7 @@ always := syscalls.list
 targets += syscalls.mk
 targets += syscalls.list
 targets += SYSCALLS.i syscalls.nrs
+targets += typesize.c typesize.o typesize.bin
 targets += $(syscall-objs)
 
 # Side effect of running syscalls.pl
@@ -62,15 +63,15 @@ quiet_cmd_syscalsz = GEN     $@
 $(obj)/typesize.c: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
                       $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \
                       $(call objectify, $(syscall-objs:.o=.S)) \
-                      $(src)/syscommon.h $(obj)/syscalls.nrs
-	$(call cmd,syscalsz)
+                      $(src)/syscommon.h $(obj)/syscalls.nrs FORCE
+	$(call if_changed,syscalsz)
 
 # Convert typesize.o to typesize.bin
 quiet_cmd_mkbin = OBJCOPY $@
       cmd_mkbin = $(KLIBCOBJCOPY) -O binary $< $@
 
-$(obj)/typesize.bin: $(obj)/typesize.o
-	$(call cmd,mkbin)
+$(obj)/typesize.bin: $(obj)/typesize.o FORCE
+	$(call if_changed,mkbin)
 
 # Generate $(KLIBINC)/klibc/havesyscall.h + makefile fragment
 # Using sysstub.pl in arch dir generate all .S files
@@ -88,5 +89,5 @@ $(obj)/syscalls.mk: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
                     $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \
                     $(call objectify, $(syscall-objs:.o=.S)) \
                     $(src)/syscommon.h $(obj)/syscalls.nrs \
-		    $(obj)/typesize.bin
-	$(call cmd,syscalls)
+		    $(obj)/typesize.bin FORCE
+	$(call if_changed,syscalls)
