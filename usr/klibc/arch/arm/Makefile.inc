@@ -10,6 +10,7 @@
 KLIBCARCHOBJS = \
 	arch/arm/syscall.o \
 	arch/arm/vfork.o \
+	arch/arm/aeabi_nonsense.o \
 	libgcc/__udivmodsi4.o \
 	libgcc/__divdi3.o \
 	libgcc/__moddi3.o \

@@ -5,4 +5,4 @@ CONFIG_KLIBC_ZLIB=y
 CONFIG_REGPARM=y
 # ARM options
 # CONFIG_KLIBC_THUMB is not set
-# CONFIG_EABI is not set
+# CONFIG_AEABI is not set
