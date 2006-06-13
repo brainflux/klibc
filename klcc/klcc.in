@@ -243,9 +243,13 @@ if ( $operation ne '' ) {
     close(LIBGCC);
 
     if ( $shared ) {
-	$rv = mysystem($LD, @LDFLAGS, @sharedopt, @ldopt, @outopt, @objs, @libs, @stdlibpath, @sharedlib, $libgcc);
+	$rv = mysystem($LD, @LDFLAGS, @sharedopt, @ldopt, @outopt, @objs,
+		       @libs, @stdlibpath, '--start-group', @sharedlib,
+		       $libgcc, '--end-group');
     } else {
-	$rv = mysystem($LD, @LDFLAGS, @staticopt, @ldopt, @outopt, @objs, @libs, @stdlibpath, @staticlib, $libgcc);
+	$rv = mysystem($LD, @LDFLAGS, @staticopt, @ldopt, @outopt, @objs,
+		       @libs, @stdlibpath, '--start-group', @staticlib,
+		       $libgcc, '--end-group');
     }
 
     unlink(@rmobjs);

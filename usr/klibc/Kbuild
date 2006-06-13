@@ -130,8 +130,10 @@ targets += libc.so __shared_init.o
 
 quiet_cmd_libcso = KLIBCLD $@
       cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) -o $@ \
+			--start-group \
 			$(patsubst %.list,`cat %.list`,$(filter-out FORCE,$^)) \
-			$(KLIBCLIBGCC)
+			$(KLIBCLIBGCC) \
+			--end-group
 
 $(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
 	$(call if_changed,libcso)

@@ -89,14 +89,14 @@ KLIBCCPPFLAGS    += -I$(KLIBCKERNELSRC)include		\
 		     $(KLIBCARCHINCFLAGS)
 
 # klibc definitions
-KLIBCDEFS        := -D__KLIBC__=$(KLIBCMAJOR)          \
+KLIBCDEFS        += -D__KLIBC__=$(KLIBCMAJOR)          \
 		    -D__KLIBC_MINOR__=$(KLIBCMINOR)    \
 		    -D_BITSIZE=$(KLIBCBITSIZE)
 KLIBCCPPFLAGS    += $(KLIBCDEFS)
 KLIBCCFLAGS      += $(KLIBCCPPFLAGS) $(KLIBCREQFLAGS) $(KLIBCARCHREQFLAGS)  \
                     $(KLIBCOPTFLAGS) $(KLIBCWARNFLAGS)
-KLIBCAFLAGS      := -D__ASSEMBLY__ $(KLIBCCFLAGS)
-KLIBCSTRIPFLAGS  := --strip-all -R .comment -R .note
+KLIBCAFLAGS      += -D__ASSEMBLY__ $(KLIBCCFLAGS)
+KLIBCSTRIPFLAGS  += --strip-all -R .comment -R .note
 
 KLIBCLIBGCC_DEF  := $(shell $(KLIBCCC) $(KLIBCCFLAGS) --print-libgcc)
 KLIBCLIBGCC	 ?= $(KLIBCLIBGCC_DEF)
@@ -265,26 +265,28 @@ addliba   = $(addprefix $(obj)/, $(patsubst %/, %/lib.a, $(1)))
 link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o)
 
 quiet_cmd_ld-static = KLIBCLD $@
-      cmd_ld-static = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@    \
-                       $(EXTRA_KLIBCLDFLAGS)              \
-                       $(KLIBCCRT0)                       \
-                       $(link-deps)                       \
-                       $(KLIBCLIBC) $(KLIBCLIBGCC);       \
-                       cp -f $@ $@.g;                     \
-                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
+      cmd_ld-static = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@    	\
+                       $(EXTRA_KLIBCLDFLAGS)              	\
+                       $(KLIBCCRT0)                       	\
+                       $(link-deps)                       	\
+                       --start-group $(KLIBCLIBC) 	  	\
+		       $(KLIBCLIBGCC) --end-group ;       	\
+                      cp -f $@ $@.g ;                     	\
+                      $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
 
 $(static-y): $(klibc-objs) $(lib-target) $(KLIBCCRT0) $(KLIBCLIBC) FORCE
 	$(call if_changed,ld-static)
 
 quiet_cmd_ld-shared = KLIBCLD $@
-      cmd_ld-shared = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@    \
-                       $(EXTRA_KLIBCLDFLAGS)              \
-                       $(KLIBCEMAIN) $(KLIBCCRTSHARED)    \
-                       $(link-deps)                       \
-                       -R $(KLIBCLIBCSHARED) $(KLIBCLIBGCC);\
-                       cp -f $@ $@.g;                     \
-                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
+      cmd_ld-shared = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@    	\
+                       $(EXTRA_KLIBCLDFLAGS)              	\
+                       $(KLIBCEMAIN) $(KLIBCCRTSHARED)    	\
+                       $(link-deps)                       	\
+                       --start-group -R $(KLIBCLIBCSHARED) 	\
+	               $(KLIBCLIBGCC) --end-group ;		\
+                      cp -f $@ $@.g ;                     	\
+                      $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
 
 $(shared-y): $(klibc-objs) $(lib-target) $(KLIBCCRTSHARED) \
