@@ -18,9 +18,10 @@ KLIBCARCHOBJS = \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o \
 
-ifeq ($(THUMB),y)
+ifeq ($(CONFIG_KLIBC_THUMB),y)
 KLIBCLIBGCC   :=
 KLIBCARCHOBJS += arch/arm/setjmp-thumb.o \
+	arch/arm/__muldi3.o \
 	libgcc/__divsi3.o \
 	libgcc/__modsi3.o \
 	libgcc/__udivsi3.o \

@@ -12,19 +12,20 @@ CPU_TUNE := strongarm
 
 KLIBCOPTFLAGS = -Os -march=$(CPU_ARCH) -mtune=$(CPU_TUNE)
 KLIBCBITSIZE  = 32
-KLIBCREQFLAGS = -fno-exceptions -mno-thumb-interwork
+KLIBCREQFLAGS = -fno-exceptions
 KLIBCSTRIPFLAGS += -R .ARM.exidx
 
 ifeq ($(CONFIG_KLIBC_THUMB),y)
 CPU_ARCH := $(CPU_ARCH)t
 KLIBCREQFLAGS += -mthumb
 KLIBCLDFLAGS  += --thumb-entry _start
-endif
-
-ifeq ($(CONFIG_AEABI),y)
-KLIBCREQFLAGS += -mabi=aapcs-linux
-else
 KLIBCREQFLAGS += -mabi=apcs-gnu
+else
+ifeq ($(CONFIG_AEABI),y)
+KLIBCREQFLAGS += -mabi=aapcs-linux -mno-thumb-interwork
+else
+KLIBCREQFLAGS += -mabi=apcs-gnu -mno-thumb-interwork
+endif
 endif
 
 # Extra linkflags when building the shared version of the library
