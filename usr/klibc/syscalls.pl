@@ -7,6 +7,31 @@
 # Pass 2: generate the syscall stubs and other output
 #
 
+#
+# Convert a string to a C array of characters,
+# e.g. foo -> 'f','o','o','\0',
+#
+sub chararray($) {
+    use bytes;
+
+    my($s) = @_;
+    my($i, $c);
+    my($a) = '';
+
+    for ($i = 0; $i < length($s); $i++) {
+	$c = substr($s, $i, 1);
+	if (ord($c) < 32 || ord($c) > 126) {
+	    $a .= sprintf("0x%02x,", ord($c));
+	} elsif ($c eq "\\" || $c eq "\'") {
+	    $a .= "\'\\$c\',";
+	} else {
+	    $a .= "\'$c\',";
+	}
+    }
+
+    return $a;
+}
+
 $v = $ENV{'KBUILD_VERBOSE'};
 $quiet = defined($v) && ($v == 0) ? 1 : undef;
 
@@ -75,7 +100,23 @@ if ($pass == 2) {
     # Remove magic number and bytes before it
     $typebin = substr($typebin, $ix+8);
 
-    @size_table = unpack("C*", $typebin);
+    # Expand the types until a terminating null
+    %typesize = ();
+    while (1) {
+	my $n, $s, $rem;
+	($n, $s, $rem) = unpack("Z*Ca*", $typebin);
+	$typebin = $rem;
+	last if (length($n) == 0);
+	$typesize{$n} = $s;
+	print STDERR "sizeof($n) = $s\n" unless ($quiet);
+    }
+} else {
+    # List here any types which should be sized even if they never occur
+    # in any system calls at all.
+    %type_list = ('int' => 1, 'long' => 1, 'long long' => 1,
+		  'void *' => 1,
+		  'intptr_t' => 1, 'uintptr_t' => 1,
+		  'intmax_t' => 1, 'uintmax_t' => 1);
 }
 
 if ($pass == 2) {
@@ -96,22 +137,6 @@ if ($pass == 2) {
     print "syscall-objs := ";
 }
 
-
-# List here any types which should be sized even if they never occur
-# in any system calls at all.
-@type_list = ('int', 'long', 'void *', 'intptr_t', 'uintptr_t',
-	      'intmax_t', 'uintmax_t');
-
-%type_index = ();
-%typesize = ();
-$n = 0;
-foreach $t (@type_list) {
-    $type_index{$t} = $n;
-    if ($pass == 2) {
-	$typesize{$t} = $size_table[$n];
-    }
-    $n++;
-}
 
 while ( defined($line = <FILE>) ) {
     chomp $line;
@@ -168,22 +193,29 @@ while ( defined($line = <FILE>) ) {
 	    $fname =~ s/^\:\://;
 	}
 
-	@args = split(/\s*\,\s*/, $argv);
+	$argv =~ s/^\s+//;
+	$argv =~ s/\s+$//;
 
-	# Assign types indexes in order of appearance, so that in pass 2
-	# we know where to find it.
-	foreach $a (@args) {
-	    if (!defined($type_index{$a})) {
-		$a_index = scalar(@type_list);
-		push(@type_list, $a);
-		$type_index{$a} = $a_index;
-		if ($pass == 2) {
-		    $typesize{$a} = $size_table[$a_index];
-		}
-	    }
+	if ($argv eq 'void') {
+	    @args = ();
+	} else {
+	    @args = split(/\s*\,\s*/, $argv);
 	}
 
-	if ($pass == 2) {
+	if ($pass == 1) {
+	    # Pass 1: Add the types to the type list
+	    foreach $a (@args) {
+		$type_list{$a}++;
+	    }
+	} else {
+	    # Pass 2: make sure all types defined, and actually generate stubs
+
+	    foreach $a (@args) {
+		if (!defined($typesize{$a})) {
+		    die "$0: $typesize: type name missing: $a\n";
+		}
+	    }
+
 	    print HAVESYS "#define _KLIBC_HAVE_SYSCALL_${fname} ${sname}\n";
 	    print " \\\n\t${fname}.o";
 	    make_sysstub($outputdir, $fname, $type, $sname, $stype, @args);
@@ -194,6 +226,7 @@ while ( defined($line = <FILE>) ) {
 }
 
 if ($pass == 1) {
+    # Pass 1: generate typesize.c
     if (!open(TYPESIZE, '>', $typesize)) {
 	die "$0: cannot create file: $typesize: $!\n";
     }
@@ -202,15 +235,16 @@ if ($pass == 1) {
     print TYPESIZE "\n";
     print TYPESIZE "const unsigned char type_sizes[] = {\n";
     print TYPESIZE "\t0x7a,0xc8,0xdb,0x4e,0x97,0xb4,0xc9,0x19, /* magic */\n";
-    foreach $t (@type_list) {
-	print TYPESIZE "\tsizeof($t),\n";
+    foreach $t (sort(keys(%type_list))) {
+	print TYPESIZE "\t", chararray($t), "0, sizeof($t),\n";
     }
+    print TYPESIZE "\t0, 0,\n";	# End sentinel
     print TYPESIZE "};\n";
     close(TYPESIZE);
 } else {
+    # Pass 2: finalize output files
     print "\n";
 
     print HAVESYS "\n#endif\n";
     close(HAVESYS);
 }
-
