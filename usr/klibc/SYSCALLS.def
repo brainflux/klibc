@@ -137,7 +137,7 @@ int getcwd::__getcwd(char *, size_t);
 <?> int utime(const char *, const struct utimbuf *);
 <?> int utimes(const char *, const struct timeval *);
 <?> int futimesat(int, const char *, const struct timeval *);
-<?> int inotify_init(void);
+<?> int inotify_init();
 <?> int inotify_add_watch(int, const char *, __u32);
 <?> int inotify_rm_watch(int, __u32);
 
@@ -192,7 +192,7 @@ int sync_file_range,fdatasync,fsync::sync_file_range(int, off_t, off_t, unsigned
 int rt_sigsuspend::__rt_sigsuspend(const sigset_t *, size_t);
 int rt_sigpending::__rt_sigpending(sigset_t *, size_t);
 int rt_sigprocmask::__rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t);
-<sparc64> void rt_sigreturn::__sigreturn(void);
+<sparc64> void rt_sigreturn::__sigreturn();
 #else
 int sigaction::__sigaction(int, const struct sigaction *, struct sigaction *);
 int sigsuspend(const sigset_t *);
