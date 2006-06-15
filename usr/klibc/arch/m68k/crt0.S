@@ -18,10 +18,10 @@ _start:
 	# Save the address of the ELF argument array
 	move.l	%a7, %d0
 	# Push a zero on the stack in lieu of atexit pointer
-	clr.l	-(%sp)	
+	clr.l	-(%sp)
 	# Push ELF argument pointer on the stack
 	move.l	%d0, -(%a7)
-		
+
 	jbsr	__libc_init
 
 	.size _start, .-_start

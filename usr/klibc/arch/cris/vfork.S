@@ -8,7 +8,7 @@
  */
 
 #include <asm/unistd.h>
-	
+
 	.section ".text","ax"
 	.balign	4
 	.globl	vfork

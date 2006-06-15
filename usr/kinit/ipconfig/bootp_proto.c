@@ -170,7 +170,7 @@ int bootp_recv_reply(struct netdev *dev)
 	if (ret <= 0)
 		return ret;
 
-	if (ret < sizeof(struct bootp_hdr) || 
+	if (ret < sizeof(struct bootp_hdr) ||
 	    bootp.op != BOOTP_REPLY ||	/* RFC951 7.5 */
 	    bootp.xid != dev->bootp.xid ||
 	    memcmp(bootp.chaddr, dev->hwaddr, 16))

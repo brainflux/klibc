@@ -16,7 +16,7 @@ __syscall_common:
 	ldr	r4, [sp,#16]
 	ldr	r5, [sp,#20]
 	swi	0
-#endif	
+#endif
         cmn     r0, #4096
         rsbcs	r2, r0, #0
         ldrcs	r3, 1f

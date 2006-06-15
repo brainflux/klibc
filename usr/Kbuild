@@ -73,4 +73,3 @@ targets := initramfs_data.cpio.gz
 $(obj)/initramfs_data.cpio.gz: $(obj)/gen_init_cpio $(deps_initramfs) initramfs
 	$(Q)$(ginitramfs) -l $(ramfs-input) > $(obj)/.initramfs_data.cpio.gz.d
 	$(call if_changed,initfs)
-

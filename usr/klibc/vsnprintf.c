@@ -372,7 +372,7 @@ int vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 							       int);
 						break;
 					case rank_long:
-						val = (uintmax_t) 
+						val = (uintmax_t)
 							va_arg(ap, unsigned
 							       long);
 						break;
@@ -439,7 +439,7 @@ int vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 					{
 						/* Output the number of
 						   characters written */
-						
+
 						switch (rank) {
 						case rank_char:
 							*va_arg(ap,
@@ -453,7 +453,7 @@ int vsnprintf(char *buffer, size_t n, const char *format, va_list ap)
 							break;
 						case rank_int:
 							*va_arg(ap,
-								signed int *) 
+								signed int *)
 								= o;
 							break;
 						case rank_long:

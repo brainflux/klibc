@@ -91,7 +91,7 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 	} else {
 		strcpy(root, path);
 	}
-	
+
 	nfs_argv[a++] = sub_client(client, root, len);
 
 	DEBUG(("NFS-Root: mounting %s on %s with options \"%s\"\n",

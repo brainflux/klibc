@@ -28,7 +28,7 @@ int getopt(int argc, char *const *argv, const char *optstring)
 	   attempts to detect that situation by detecting if the
 	   "optstring" or "argv" argument have changed since last time
 	   we were called; if so, reinitialize the query state. */
-	
+
 	if (optstring != pvt.last_optstring || argv != pvt.last_argv ||
 	    optind < 1 || optind > argc) {
 		/* optind doesn't match the current query */

@@ -13,4 +13,3 @@ uint64_t __muldi3(uint64_t a, uint64_t b)
 
 	return v;
 }
-

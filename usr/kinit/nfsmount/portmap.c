@@ -60,7 +60,7 @@ uint32_t portmap(uint32_t server, uint32_t program, uint32_t version, uint32_t p
 	}
 
 	port = ntohl(reply.port);
-	
+
 bail:
 	DEBUG(("Port for %d/%d[%s]: %d\n", program, version,
 	       proto == IPPROTO_TCP ? "tcp" : "udp", port));

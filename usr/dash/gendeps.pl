@@ -20,7 +20,7 @@ while ( defined($file = readdir(DIR)) ) {
 	while ( defined($line = <FILE>) ) {
 	    if ( $line =~ /^\s*\#\s*include\s+\"(.*)\"/ ) {
 		$header = $1;
-		
+
 		if ( $build_headers{$header} ) {
 		    push(@hdrs, "\$(src)/$header");
 		}
@@ -36,4 +36,3 @@ while ( defined($file = readdir(DIR)) ) {
 
 closedir(DIR);
 close(GENDEPS);
-

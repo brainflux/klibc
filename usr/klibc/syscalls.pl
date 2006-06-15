@@ -83,7 +83,7 @@ if ($pass == 2) {
     if (!open(TYPESIZE, '<', $typesize)) {
 	die "$0: $typesize: $!\n";
     }
-    
+
     binmode TYPESIZE;
 
     $len = -s TYPESIZE;
@@ -123,7 +123,7 @@ if ($pass == 2) {
     if (!open(HAVESYS, '>', $havesyscall)) {
 	die "$0: $havesyscall: $!\n";
     }
-    
+
     print HAVESYS "#ifndef _KLIBC_HAVESYSCALL_H\n";
     print HAVESYS "#define _KLIBC_HAVESYSCALL_H 1\n\n";
 }

@@ -5,7 +5,7 @@
  */
 
 #include <asm/unistd.h>
-	
+
 	.type	vfork,#function
 	.globl	vfork
 #ifndef __thumb__
