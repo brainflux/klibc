@@ -58,7 +58,7 @@ quiet_cmd_syscalsz = GEN     $@
                              $(obj)                                         \
                              $(KLIBCINC)/klibc/havesyscall.h 		    \
 			     $(obj)/typesize.c > $@                      \
-                             || rm -f $@
+                             || ( rm -f $@ ; exit 1 )
 
 $(obj)/typesize.c: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
                       $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \
@@ -83,7 +83,7 @@ quiet_cmd_syscalls = GEN     $@
                              $(obj)                                         \
                              $(KLIBCINC)/klibc/havesyscall.h 		    \
 			     $(obj)/typesize.bin > $@                    \
-                             || rm -f $@
+                             || ( rm -f $@ ; exit 1 )
 
 $(obj)/syscalls.mk: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
                     $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \

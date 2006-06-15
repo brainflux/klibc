@@ -41,7 +41,8 @@ $(obj)/SOCKETCALLS.i: $(KLIBCSRC)/SOCKETCALLS.def FORCE
 quiet_cmd_socketcalls = GEN     $@
       cmd_socketcalls = $(PERL) $(KLIBCSRC)/socketcalls.pl          \
                                 $(obj)/SOCKETCALLS.i	            \
-                                $(KLIBCARCH) $(obj) > $@ || rm -f $@
+                                $(KLIBCARCH) $(obj) > $@ 	    \
+				|| ( rm -f $@ ; exit 1 )
 
 $(obj)/socketcalls.mk: $(KLIBCSRC)/socketcalls.pl                   \
                        $(obj)/SOCKETCALLS.i                         \
