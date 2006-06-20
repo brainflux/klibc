@@ -84,9 +84,14 @@ klibc := -f $(srctree)/scripts/Kbuild.klibc obj
 .PHONY: all klcc klibc
 all: klcc klibc
 
-.config: defconfig
-	@echo "defconfig has changed, please remove or edit .config" >&2; \
-		exit 1
+.config: defconfig linux
+	@echo "defconfig has changed, please remove or edit .config"
+	@false
+
+linux:
+	@echo "The 'linux' symlink is missing; it should point to a kernel tree "
+	@echo "configured for the $(KLIBCARCH) architecture."
+	@false
 
 rpmbuild = $(shell which rpmbuild 2>/dev/null || which rpm)
 
