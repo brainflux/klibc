@@ -19,8 +19,14 @@ ifeq ($(CONFIG_KLIBC_THUMB),y)
 CPU_ARCH := $(CPU_ARCH)t
 KLIBCREQFLAGS += -mthumb
 KLIBCLDFLAGS  += --thumb-entry _start
-KLIBCREQFLAGS += -mabi=apcs-gnu
+KLIBCEMAIN     = --thumb-entry _start
+KLIBCREQFLAGS += -mabi=aapcs-linux
+KLIBCSHAREDFLAGS = -Ttext 0x380200
 else
+# Extra linkflags when building the shared version of the library
+# This address needs to be reachable using normal inter-module
+# calls, and work on the memory models for this architecture
+KLIBCSHAREDFLAGS = -Ttext 0x01800200
 ifeq ($(CONFIG_AEABI),y)
 KLIBCREQFLAGS += -mabi=aapcs-linux -mno-thumb-interwork
 else
@@ -28,7 +34,3 @@ KLIBCREQFLAGS += -mabi=apcs-gnu -mno-thumb-interwork
 endif
 endif
 
-# Extra linkflags when building the shared version of the library
-# This address needs to be reachable using normal inter-module
-# calls, and work on the memory models for this architecture
-KLIBCSHAREDFLAGS = -Ttext 0x01000200

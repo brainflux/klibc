@@ -15,6 +15,7 @@ __syscall_common:
 #ifdef __ARM_EABI__
 	ldr	r4, [sp,#16]
 	ldr	r5, [sp,#20]
+	ldr	r7, [lr]
 	swi	0
 #endif
         cmn     r0, #4096
@@ -34,8 +35,11 @@ __syscall_common:
 	.thumb_func
 	.balign	2
 __syscall_common:
+	mov	r7, lr
 	ldr	r4, [sp,#16]
+	sub	r7, #1		/* Remove the Thumb bit */
 	ldr	r5, [sp,#20]
+	ldrh	r7, [r7]
 	swi	0
 	ldr	r1, 2f
 	cmp	r0, r1
