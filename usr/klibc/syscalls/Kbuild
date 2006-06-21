@@ -28,6 +28,8 @@ clean-files += $(KLIBCINC)/klibc/havesyscall.h
 # All the syscall stubs
 clean-files += *.o *.S *.c *.list *.bin
 
+EXTRA_KLIBCCFLAGS := -I$(srctree)/$(src)
+
 quiet_cmd_makelist = LIST    $@
       cmd_makelist = echo '$(filter-out FORCE,$^)' > $@
 
