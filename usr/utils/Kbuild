@@ -2,7 +2,7 @@
 # Kbuild file for klib utils
 #
 
-progs := chroot dd mkdir mkfifo mount pivot_root umount
+progs := chroot dd mkdir mkfifo mknod mount pivot_root umount
 progs += true false sleep ln nuke minips cat
 progs += insmod uname halt
 
@@ -18,6 +18,8 @@ static/mkdir-y      := mkdir.o file_mode.o
 shared/mkdir-y      := mkdir.o file_mode.o
 static/mkfifo-y     := mkfifo.o file_mode.o
 shared/mkfifo-y     := mkfifo.o file_mode.o
+static/mknod-y      := mknod.o file_mode.o
+shared/mknod-y      := mknod.o file_mode.o
 static/mount-y      := mount_main.o mount_opts.o
 shared/mount-y      := mount_main.o mount_opts.o
 static/pivot_root-y := pivot_root.o
