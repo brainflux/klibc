@@ -124,23 +124,23 @@ $(obj)/arith.c $(obj)/arith.h: $(src)/arith.y
 install-y := sh.shared
 
 # Dependencies on generated files.  This really should be automated.
-$(obj)/arith_yylex.o: $(src)/arith.h
-$(obj)/builtins.o: $(src)/builtins.h
-$(obj)/cd.o: $(src)/nodes.h
-$(obj)/eval.o: $(src)/nodes.h $(src)/syntax.h $(src)/builtins.h
-$(obj)/exec.o: $(src)/nodes.h $(src)/builtins.h $(src)/syntax.h
-$(obj)/expand.o: $(src)/nodes.h $(src)/syntax.h
-$(obj)/input.o: $(src)/syntax.h
-$(obj)/jobs.o: $(src)/nodes.h $(src)/syntax.h
-$(obj)/mail.o: $(src)/nodes.h
-$(obj)/main.o: $(src)/nodes.h
-$(obj)/mystring.o: $(src)/syntax.h
-$(obj)/nodes.o: $(src)/nodes.h
-$(obj)/options.o: $(src)/nodes.h
-$(obj)/output.o: $(src)/syntax.h
-$(obj)/parser.o: $(src)/nodes.h $(src)/syntax.h $(src)/builtins.h $(src)/token.h
-$(obj)/redir.o: $(src)/nodes.h
-$(obj)/show.o: $(src)/nodes.h
-$(obj)/syntax.o: $(src)/syntax.h
-$(obj)/trap.o: $(src)/nodes.h $(src)/syntax.h
-$(obj)/var.o: $(src)/nodes.h $(src)/syntax.h
+$(obj)/arith_yylex.o: $(obj)/arith.h
+$(obj)/builtins.o: $(obj)/builtins.h
+$(obj)/cd.o: $(obj)/nodes.h
+$(obj)/eval.o: $(obj)/nodes.h $(obj)/syntax.h $(obj)/builtins.h
+$(obj)/exec.o: $(obj)/nodes.h $(obj)/builtins.h $(obj)/syntax.h
+$(obj)/expand.o: $(obj)/nodes.h $(obj)/syntax.h
+$(obj)/input.o: $(obj)/syntax.h
+$(obj)/jobs.o: $(obj)/nodes.h $(obj)/syntax.h
+$(obj)/mail.o: $(obj)/nodes.h
+$(obj)/main.o: $(obj)/nodes.h
+$(obj)/mystring.o: $(obj)/syntax.h
+$(obj)/nodes.o: $(obj)/nodes.h
+$(obj)/options.o: $(obj)/nodes.h
+$(obj)/output.o: $(obj)/syntax.h
+$(obj)/parser.o: $(obj)/nodes.h $(obj)/syntax.h $(obj)/builtins.h $(obj)/token.h
+$(obj)/redir.o: $(obj)/nodes.h
+$(obj)/show.o: $(obj)/nodes.h
+$(obj)/syntax.o: $(obj)/syntax.h
+$(obj)/trap.o: $(obj)/nodes.h $(obj)/syntax.h
+$(obj)/var.o: $(obj)/nodes.h $(obj)/syntax.h

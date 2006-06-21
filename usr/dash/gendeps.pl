@@ -22,7 +22,7 @@ while ( defined($file = readdir(DIR)) ) {
 		$header = $1;
 
 		if ( $build_headers{$header} ) {
-		    push(@hdrs, "\$(src)/$header");
+		    push(@hdrs, "\$(obj)/$header");
 		}
 	    }
 	}
