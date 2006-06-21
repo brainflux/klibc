@@ -18,7 +18,7 @@ int main(int argc, char *argv[], char *envp[])
 	dev_t dev;
 
 	progname = argv[0];
-	if (argc != 5) 
+	if (argc != 5)
 		usage();
 
 	name = argv[1];
