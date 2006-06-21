@@ -4,7 +4,7 @@
 
 progs := chroot dd mkdir mkfifo mount pivot_root umount
 progs += true false sleep ln nuke minips cat
-progs += insmod uname
+progs += insmod uname halt
 
 static-y := $(addprefix static/, $(progs))
 shared-y := $(addprefix shared/, $(progs))
@@ -42,6 +42,16 @@ static/insmod-y     := insmod.o
 shared/insmod-y     := insmod.o
 static/uname-y      := uname.o
 shared/uname-y      := uname.o
+static/halt-y       := halt.o
+shared/halt-y       := halt.o
+
+# Additionally linked targets
+always := static/reboot static/poweroff shared/reboot shared/poweroff
+
+$(obj)/static/reboot $(obj)/static/poweroff: $(obj)/static/halt
+	$(call cmd,ln)
+$(obj)/shared/reboot $(obj)/shared/poweroff: $(obj)/shared/halt
+	$(call cmd,ln)
 
 # Clean deletes the static and shared dir
 clean-dirs := static shared

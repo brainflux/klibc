@@ -1,12 +1,14 @@
+#include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/reboot.h>
+#include <klibc/compiler.h>
 
-static volatile void usage()
+static __noreturn usage(void)
 {
        static char mesg[] = "Usage: {halt|reboot|poweroff} [-n]\n";
        write(2, mesg, sizeof(mesg) - 1);
-       _exit(1);
+       exit(1);
 }
 
 int main(int argc, char *argv[])
