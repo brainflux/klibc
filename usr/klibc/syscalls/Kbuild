@@ -64,7 +64,6 @@ quiet_cmd_syscalsz = GEN     $@
 
 $(obj)/typesize.c: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
                       $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \
-                      $(call objectify, $(syscall-objs:.o=.S)) \
                       $(src)/syscommon.h $(obj)/syscalls.nrs FORCE
 	$(call if_changed,syscalsz)
 
