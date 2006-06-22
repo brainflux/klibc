@@ -43,7 +43,7 @@ while ( defined($line = <FILE>) ) {
 	print " \\\n\t${name}.o";
 
 	if ( $arch eq 'i386' ) {
-	    open(OUT, '>', "${outputdir}/${name}.S")
+	    open(OUT, "> ${outputdir}/${name}.S")
 		or die "$0: Cannot open ${outputdir}/${name}.S\n";
 
 	    print OUT "#include <sys/socketcalls.h>\n";
@@ -58,7 +58,7 @@ while ( defined($line = <FILE>) ) {
 	    print OUT "\t.size ${name},.-${name}\n";
 	    close(OUT);
 	} else {
-	    open(OUT, '>', "${outputdir}/${name}.c")
+	    open(OUT, "> ${outputdir}/${name}.c")
 		or die "$0: Cannot open ${outputdir}/${name}.c\n";
 
 	    print OUT "#include \"socketcommon.h\"\n";

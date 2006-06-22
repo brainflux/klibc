@@ -7,7 +7,7 @@
 ($src, $obj, @build_headers) = @ARGV;
 %build_headers = map { $_ => 1 } @build_headers;
 
-open(GENDEPS, '>', "$obj/.gendeps")
+open(GENDEPS, "> $obj/.gendeps\0")
     or die "$0: Cannot create $obj/.gendeps: $!\n";
 
 opendir(DIR, $src) or die "$0: Cannot opendir $src: $!\n";
@@ -15,7 +15,7 @@ while ( defined($file = readdir(DIR)) ) {
     if ( $file =~ /^(.*)\.c$/ ) {
 	$basename = $1;
 	@hdrs = ();
-	open(FILE, '<', "$src/$file")
+	open(FILE, "< $src/$file\0")
 	    or die "$0: Cannot open $src/$file: $!\n";
 	while ( defined($line = <FILE>) ) {
 	    if ( $line =~ /^\s*\#\s*include\s+\"(.*)\"/ ) {

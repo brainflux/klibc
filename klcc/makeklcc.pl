@@ -28,7 +28,8 @@ sub pathsearch($) {
 
 print "#!${perlpath}\n";
 
-open(KLIBCCONF, '<', $klibcconf) or die "$0: cannot open $klibcconf: $!\n";
+open(KLIBCCONF, "< $klibcconf\0")
+    or die "$0: cannot open $klibcconf: $!\n";
 while ( defined($l = <KLIBCCONF>) ) {
     chomp $l;
     if ( $l =~ /^([^=]+)\=\s*(.*)$/ ) {
@@ -47,14 +48,15 @@ while ( defined($l = <KLIBCCONF>) ) {
 	while ( $s =~ /^\s*(\S+)/ ) {
 	    print $sep, "\"\Q$1\E\"";
 	    $sep = ', ';
-	    $s = $';
+	    $s = "$'";
 	}
 	print ");\n";
     }
 }
 close(KLIBCCONF);
 
-open(KLCCIN, '<', $klccin) or die "$0: cannot open $klccin: $!\n";
+open(KLCCIN, "< $klccin\0")
+or die "$0: cannot open $klccin: $!\n";
 while ( defined($l = <KLCCIN>) ) {
     print $l;
 }

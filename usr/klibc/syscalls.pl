@@ -32,6 +32,30 @@ sub chararray($) {
     return $a;
 }
 
+#
+# This extracts an ASCIIZ string for the type and the additional
+# information.  This is open-coded, because unpack("Z*") apparently
+# is broken in Perl 5.6.1.
+#
+sub get_one_type($) {
+    use bytes;
+
+    my($typestr) = @_;
+    my $i, $c;
+    my $l = length($typestr);
+
+    for ($i = 0; $i < $l-3; $i++) {
+	$c = substr($typestr, $i, 1);
+	if ($c eq "\0") {
+	    return (substr($typestr, 0, $i),
+		    unpack("CC", substr($typestr, $i+1, 2)),
+		    substr($typestr, $i+3));
+	}
+    }
+
+    return (undef, undef, undef, undef);
+}
+
 $v = $ENV{'KBUILD_VERBOSE'};
 $quiet = defined($v) && ($v == 0) ? 1 : undef;
 
@@ -63,7 +87,7 @@ $quiet = ($pass != 2) unless defined($quiet);
 
 require "$sysstub";
 
-if (!open(UNISTD, '<', $unistd)) {
+if (!open(UNISTD, "< $unistd\0")) {
     die "$0: $unistd: $!\n";
 }
 
@@ -80,7 +104,7 @@ close(UNISTD);
 if ($pass == 2) {
     use bytes;
 
-    if (!open(TYPESIZE, '<', $typesize)) {
+    if (!open(TYPESIZE, "< $typesize\0")) {
 	die "$0: $typesize: $!\n";
     }
 
@@ -92,7 +116,7 @@ if ($pass == 2) {
     }
     close(TYPESIZE);
 
-    $ix = index($typebin, "\x7a\xc8\xdb\x4e\x97\xb4\xc9\x19");
+    $ix = index($typebin, "\x7a\xc8\xdb\x4e\x97\xb4\x9c\x19");
     if ($ix < 0) {
 	die "$0: $typesize: magic number not found\n";
     }
@@ -103,12 +127,12 @@ if ($pass == 2) {
     # Expand the types until a terminating null
     %typesize = ();
     while (1) {
-	my $n, $s, $rem;
-	($n, $s, $rem) = unpack("Z*Ca*", $typebin);
-	$typebin = $rem;
+	my $n, $sz, $si;
+	($n, $sz, $si, $typebin) = get_one_type($typebin);
 	last if (length($n) == 0);
-	$typesize{$n} = $s;
-	print STDERR "sizeof($n) = $s\n" unless ($quiet);
+	$typesize{$n} = $sz;
+	$typesign{$n} = $si;
+	print STDERR "TYPE $n: size $sz, sign $si\n" unless ($quiet);
     }
 } else {
     # List here any types which should be sized even if they never occur
@@ -120,7 +144,7 @@ if ($pass == 2) {
 }
 
 if ($pass == 2) {
-    if (!open(HAVESYS, '>', $havesyscall)) {
+    if (!open(HAVESYS, "> $havesyscall\0")) {
 	die "$0: $havesyscall: $!\n";
     }
 
@@ -128,7 +152,7 @@ if ($pass == 2) {
     print HAVESYS "#define _KLIBC_HAVESYSCALL_H 1\n\n";
 }
 
-if (!open(FILE, '<', $file)) {
+if (!open(FILE, "< $file\0")) {
     die "$0: $file: $!\n";
 }
 
@@ -227,16 +251,28 @@ while ( defined($line = <FILE>) ) {
 
 if ($pass == 1) {
     # Pass 1: generate typesize.c
-    if (!open(TYPESIZE, '>', $typesize)) {
+    if (!open(TYPESIZE, "> $typesize")) {
 	die "$0: cannot create file: $typesize: $!\n";
     }
 
     print TYPESIZE "#include \"syscommon.h\"\n";
+
+    # This compares -2 < 1 in the appropriate type, which is true for
+    # signed types and false for unsigned types.  We use -2 and 1 since
+    # gcc complains about comparing unsigned types with zero, and might
+    # complain equally about -1 in the future.
+    #
+    # This test is valid (as in, doesn't cause the compiler to barf)
+    # for pointers as well as for integral types; if we ever add system
+    # calls which take any other kinds of types than that then this needs
+    # to be smarter.
+    print TYPESIZE "#define SIGNED(X) ((X)-2 < (X)1)\n";
+
     print TYPESIZE "\n";
     print TYPESIZE "const unsigned char type_sizes[] = {\n";
-    print TYPESIZE "\t0x7a,0xc8,0xdb,0x4e,0x97,0xb4,0xc9,0x19, /* magic */\n";
+    print TYPESIZE "\t0x7a,0xc8,0xdb,0x4e,0x97,0xb4,0x9c,0x19, /* magic */\n";
     foreach $t (sort(keys(%type_list))) {
-	print TYPESIZE "\t", chararray($t), "0, sizeof($t),\n";
+	print TYPESIZE "\t", chararray($t), "0, sizeof($t), SIGNED($t),\n";
     }
     print TYPESIZE "\t0, 0,\n";	# End sentinel
     print TYPESIZE "};\n";
