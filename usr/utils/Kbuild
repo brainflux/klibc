@@ -59,4 +59,4 @@ $(obj)/shared/reboot $(obj)/shared/poweroff: $(obj)/shared/halt
 clean-dirs := static shared
 
 # install only install the shared binaries
-install-y := $(shared-y)
+install-y := $(shared-y) shared/reboot shared/poweroff
