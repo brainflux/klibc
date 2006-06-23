@@ -179,6 +179,7 @@ ssize_t pwrite64,pwrite::pwrite(int, void *, size_t, off_t);
 int sync_file_range,fdatasync,fsync::sync_file_range(int, off_t, off_t, unsigned int);
 <?> int splice(int, off_t *, int, off_t *, size_t, unsigned int);
 <?> int tee(int, int, size_t, unsigned int);
+ssize_t sendfile64,sendfile::sendfile(int, int, off_t *, size_t, off_t);
 
 /*
  * Signal operations
