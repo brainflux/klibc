@@ -23,7 +23,7 @@ __socketcall_common:
 	movl	$__NR_socketcall,%eax
 	int	$0x80
 
-	cmpl	$-4096,%eax	# Error return?
+	cmpl	$-4095,%eax	# Error return?
 
 	popl	%ebx
 
