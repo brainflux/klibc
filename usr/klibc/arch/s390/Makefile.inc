@@ -13,6 +13,11 @@ KLIBCARCHOBJS = \
 	arch/$(KLIBCARCHDIR)/setjmp.o \
 	arch/$(KLIBCARCHDIR)/mmap.o \
 	arch/$(KLIBCARCHDIR)/syscall.o \
+	libgcc/__clzsi2.o \
+	libgcc/__clzdi2.o \
+	libgcc/__ashldi3.o \
+	libgcc/__ashrdi3.o \
+	libgcc/__lshrdi3.o \
 	libgcc/__divdi3.o \
 	libgcc/__moddi3.o \
 	libgcc/__udivdi3.o \
