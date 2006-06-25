@@ -1,11 +1,12 @@
 #
 # socketcall.S
 #
-# On i386, the main (only?) user of socketcall(2), the memory array
-# socketcall(2) needs is conveniently already assembled for us on
-# the stack.  Capitalize on that to make a common socketcall stub.
+# Socketcalls use the following convention:
+# %eax = __NR_socketcall
+# %ebx = socketcall number
+# %ecx = pointer to arguments (up to 6)
 #
-
+	
 #include <asm/unistd.h>
 
 #ifdef __i386__
@@ -16,13 +17,27 @@
 	.type __socketcall_common, @function
 
 __socketcall_common:
-	pushl	%ebx
+	xchgl	%ebx,(%esp)	# The stub passes the socketcall # on stack
 
-	movzbl	%al,%ebx	# The socketcall number is passed in in %al
-	leal	8(%esp),%ecx	# Argument pointer
+#ifdef	_REGPARM
+	pushl	16(%esp)	# Arg 6
+	pushl	16(%esp)	# Arg 5
+	pushl	16(%esp)	# Arg 4
+	pushl	%ecx
+	pushl	%edx
+	pushl	%eax
+	movl	%esp,%ecx
+#else
+	leal	8(%esp),%ecx	# Arguments already contiguous on-stack
+#endif
+
 	movl	$__NR_socketcall,%eax
 	int	$0x80
 
+#ifdef	_REGPARM
+	addl	$6*4, %esp
+#endif
+	
 	cmpl	$-4095,%eax	# Error return?
 
 	popl	%ebx

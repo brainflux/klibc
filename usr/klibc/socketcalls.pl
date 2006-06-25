@@ -49,12 +49,12 @@ while ( defined($line = <FILE>) ) {
 	    print OUT "#include <sys/socketcalls.h>\n";
 	    print OUT "\n";
 	    print OUT "\t.text\n";
-	    print OUT "\t.align 4\n";
-	    print OUT "\t.globl ${name}\n";
-	    print OUT "\t.type ${name},\@function\n";
+	    print OUT "\t.align	4\n";
+	    print OUT "\t.globl	${name}\n";
+	    print OUT "\t.type	${name},\@function\n";
 	    print OUT "${name}:\n";
-	    print OUT "\tmovb \$SYS_\U${name}\E,%al\n";
-	    print OUT "\tjmp __socketcall_common\n";
+	    print OUT "\tpushl	\$SYS_\U${name}\n";
+	    print OUT "\tjmp	__socketcall_common\n";
 	    print OUT "\t.size ${name},.-${name}\n";
 	    close(OUT);
 	} else {
