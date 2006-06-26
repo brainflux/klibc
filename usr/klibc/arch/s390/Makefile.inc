@@ -14,7 +14,6 @@ KLIBCARCHOBJS = \
 	arch/$(KLIBCARCHDIR)/mmap.o \
 	arch/$(KLIBCARCHDIR)/syscall.o \
 	libgcc/__clzsi2.o \
-	libgcc/__clzdi2.o \
 	libgcc/__ashldi3.o \
 	libgcc/__ashrdi3.o \
 	libgcc/__lshrdi3.o \

@@ -19,5 +19,5 @@ KLIBCARCHOBJS = \
 	libgcc/__umoddi3.o \
 	libgcc/__udivmoddi4.o \
 	libgcc/__clzsi2.o \
-	libgcc/__clzdi2.o \
+
 
