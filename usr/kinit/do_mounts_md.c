@@ -205,8 +205,8 @@ static int md_setup(char *str)
 		pername = "super-block";
 	}
 
-	fprintf(stderr, "md: Will configure md%d (%s) from %s, below.\n",
-		minor, pername, str);
+	fprintf(stderr, "md: Will configure md%s%d (%s) from %s, below.\n",
+		partitioned?"_d":"", minor, pername, str);
 	md_setup_args[ent].device_names = str;
 	md_setup_args[ent].partitioned = partitioned;
 	md_setup_args[ent].minor = minor;
