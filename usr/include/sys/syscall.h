@@ -10,8 +10,4 @@
 #include <sys/types.h>
 #include <asm/unistd.h>
 
-/* Many architectures have incomplete, defective or non-applicable
-   syscall macros */
-#include <klibc/archsys.h>
-
 #endif				/* _SYS_SYSCALL_H */
