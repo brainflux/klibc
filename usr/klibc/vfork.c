@@ -9,5 +9,8 @@
 #include <klibc/sysconfig.h>
 
 #if !_KLIBC_NO_MMU && !_KLIBC_REAL_VFORK
-__ALIAS(int, vfork, (void), fork)
+int vfork(void)
+{
+	return fork();
+}
 #endif
