@@ -28,4 +28,4 @@ subdir- := ipconfig nfsmount run-init fstype
 
 
 # install binary
-install-y := kinit
+install-y := kinit kinit.shared
