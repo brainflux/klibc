@@ -12,7 +12,7 @@ CPU_TUNE := strongarm
 
 KLIBCOPTFLAGS = -Os -march=$(CPU_ARCH) -mtune=$(CPU_TUNE)
 KLIBCBITSIZE  = 32
-KLIBCREQFLAGS = -fno-exceptions
+KLIBCREQFLAGS += -fno-exceptions
 KLIBCSTRIPFLAGS += -R .ARM.exidx
 
 ifeq ($(CONFIG_KLIBC_THUMB),y)
