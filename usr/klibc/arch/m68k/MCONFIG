@@ -7,5 +7,5 @@
 # accordingly.
 #
 
-KLIBCOPTFLAGS = -Os -fomit-frame-pointer
+KLIBCOPTFLAGS += -Os -fomit-frame-pointer
 KLIBCBITSIZE  = 32

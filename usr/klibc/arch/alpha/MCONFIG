@@ -5,7 +5,7 @@
 # Build configuration for this architecture
 #
 
-KLIBCOPTFLAGS = -Os
+KLIBCOPTFLAGS += -Os
 KLIBCBITSIZE  = 64
 
 # Extra linkflags when building the shared version of the library

@@ -7,5 +7,5 @@
 # accordingly.
 #
 
-KLIBCOPTFLAGS = -Os
+KLIBCOPTFLAGS += -Os
 KLIBCBITSIZE  = 64

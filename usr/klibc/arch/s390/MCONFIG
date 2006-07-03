@@ -7,7 +7,7 @@
 # accordingly.
 #
 
-KLIBCOPTFLAGS = -Os
+KLIBCOPTFLAGS += -Os
 
 ifneq ("$(KLIBCARCH)", "s390x")
 	KLIBCBITSIZE	= 32

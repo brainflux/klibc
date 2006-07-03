@@ -8,7 +8,7 @@
 #
 
 KLIBCARCHREQFLAGS = -m64 -mcall-aixdesc
-KLIBCOPTFLAGS     = -Os
+KLIBCOPTFLAGS     += -Os
 KLIBCBITSIZE      = 64
 KLIBCLDFLAGS      = -m elf64ppc
 

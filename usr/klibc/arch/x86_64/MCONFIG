@@ -16,10 +16,10 @@
 #
 KLIBCARCHREQFLAGS = -m64
 ifeq ($(DEBUG),y)
-KLIBCOPTFLAGS     = -Os -fomit-frame-pointer \
+KLIBCOPTFLAGS     += -Os -fomit-frame-pointer \
 		-falign-functions=1 -falign-jumps=1 -falign-loops=1
 else
-KLIBCOPTFLAGS     = -Os -fno-asynchronous-unwind-tables -fomit-frame-pointer \
+KLIBCOPTFLAGS     += -Os -fno-asynchronous-unwind-tables -fomit-frame-pointer \
 		-falign-functions=1 -falign-jumps=1 -falign-loops=1
 endif
 KLIBCBITSIZE      = 64

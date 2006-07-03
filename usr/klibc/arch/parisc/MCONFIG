@@ -7,6 +7,6 @@
 # accordingly.
 #
 
-KLIBCOPTFLAGS = -Os -fomit-frame-pointer
+KLIBCOPTFLAGS += -Os -fomit-frame-pointer
 KLIBCBITSIZE  = 32
 KLIBCSHAREDFLAGS	= -Ttext 0x40001000

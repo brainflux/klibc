@@ -7,7 +7,7 @@
 # accordingly.
 #
 
-KLIBCOPTFLAGS		 = -Os -m32 -mptr32
+KLIBCOPTFLAGS		 += -Os -m32 -mptr32
 KLIBCBITSIZE		 = 32
 KLIBCARCHREQFLAGS	+= -D__sparc32__
 

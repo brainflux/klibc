@@ -9,7 +9,7 @@
 
 gcc_m32_option  := $(call cc-option, -m32, )
 
-KLIBCOPTFLAGS	   = -Os
+KLIBCOPTFLAGS	   += -Os
 KLIBCLDFLAGS       = -m elf32ppclinux
 KLIBCARCHREQFLAGS += $(gcc_m32_option)
 

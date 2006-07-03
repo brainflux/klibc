@@ -7,7 +7,7 @@
 # accordingly.
 #
 
-KLIBCOPTFLAGS = -Os -fomit-frame-pointer
+KLIBCOPTFLAGS += -Os -fomit-frame-pointer
 KLIBCBITSIZE  = 32
 
 # Extra linkflags when building the shared version of the library

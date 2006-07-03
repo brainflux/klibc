@@ -10,7 +10,7 @@
 CPU_ARCH := armv4
 CPU_TUNE := strongarm
 
-KLIBCOPTFLAGS = -Os -march=$(CPU_ARCH) -mtune=$(CPU_TUNE)
+KLIBCOPTFLAGS += -Os -march=$(CPU_ARCH) -mtune=$(CPU_TUNE)
 KLIBCBITSIZE  = 32
 KLIBCREQFLAGS += -fno-exceptions
 KLIBCSTRIPFLAGS += -R .ARM.exidx

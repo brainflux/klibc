@@ -8,7 +8,7 @@
 #
 
 KLIBCARCHREQFLAGS = -m64 -mptr64 -D__sparc64__
-KLIBCOPTFLAGS     = -Os
+KLIBCOPTFLAGS     += -Os
 KLIBCBITSIZE      = 64
 
 KLIBCLDFLAGS      = -m elf64_sparc

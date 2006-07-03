@@ -19,7 +19,7 @@ gcc_align_option  := $(call cc-option, \
 		-malign-functions=0 -malign-jumps=0 -malign-loops=0)
 gcc_m32_option  := $(call cc-option, -m32, )
 
-KLIBCOPTFLAGS     = -march=i386 -Os -g -fomit-frame-pointer $(gcc_align_option)
+KLIBCOPTFLAGS     += -march=i386 -Os -g -fomit-frame-pointer $(gcc_align_option)
 KLIBCLDFLAGS      = -m elf_i386
 KLIBCREQFLAGS	  += $(REGPARM_OPT)
 KLIBCARCHREQFLAGS += $(gcc_m32_option)
