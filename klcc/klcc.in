@@ -40,7 +40,7 @@ sub filename2lang($) {
     return 'ada' if ( $file =~ /\.(ads|adb)$/ );
 
     return 'assembler' if ( $file =~ /\.s$/ );
-    return 'assembler-with-cpp' if ( $file =~/ \.S$/ );
+    return 'assembler-with-cpp' if ( $file =~/\.S$/ );
 
     # Linker file; there is no option to gcc to assume something
     # is a linker file, so we make up our own...
