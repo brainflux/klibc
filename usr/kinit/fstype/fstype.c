@@ -236,19 +236,21 @@ struct imagetype {
  * LVM comes after all other filesystems since it's possible
  * that an old lvm signature is left on the disk if pvremove
  * is not used before creating the new fs.
+ *
+ * The same goes for LUKS as for LVM.
  */
 static struct imagetype images[] = {
 	{0, "gzip", gzip_image},
 	{0, "cramfs", cramfs_image},
 	{0, "romfs", romfs_image},
 	{0, "xfs", xfs_image},
-	{0, "luks", luks_image},
 	{1, "ext3", ext3_image},
 	{1, "ext2", ext2_image},
 	{1, "minix", minix_image},
 	{8, "reiserfs", reiserfs_image},
 	{64, "reiserfs", reiserfs_image},
 	{32, "jfs", jfs_image},
+	{0, "luks", luks_image},
 	{0, "lvm2", lvm2_image},
 	{1, "lvm2", lvm2_image},
 	{-1, "swap", swap_image},
