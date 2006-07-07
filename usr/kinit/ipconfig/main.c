@@ -87,6 +87,10 @@ static void configure_device(struct netdev *dev)
 	if (netdev_setdefaultroute(dev))
 		printf("IP-Config: failed to set default route on %s\n",
 		       dev->name);
+	if (dev->hostname[0] &&
+			sethostname(dev->hostname, strlen(dev->hostname)))
+		printf("IP-Config: failed to set hostname '%s' from %s\n",
+			dev->hostname, dev->name);
 }
 
 static void dump_device_config(struct netdev *dev)
