@@ -115,7 +115,7 @@ static int run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	    mount(".", "/", NULL, MS_MOVE, NULL) || chroot("."))
 		return -errno;
 
-	pid = fork();
+	pid = vfork();
 	if (pid == 0) {
 		setsid();
 		/* Looks like linuxrc doesn't get the init environment
