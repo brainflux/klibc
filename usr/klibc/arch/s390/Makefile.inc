@@ -2,7 +2,7 @@
 #
 # arch/s390/Makefile.inc
 #
-# Special rules for this architecture.  Note that this is actually
+# Special rules for this architecture. Note that this is actually
 # included from the main Makefile, and that pathnames should be
 # accordingly.
 #
@@ -33,6 +33,5 @@ KLIBCARCHOBJS = \
 endif
 
 KLIBCARCHSOOBJS = $(patsubst %.o,%.lo,$(KLIBCARCHOBJS))
-
 
 archclean:

@@ -16,12 +16,12 @@ struct mmap_arg_struct {
 void *__mmap2(void *addr, size_t len, int prot, int flags, int fd, long offset)
 {
 	struct mmap_arg_struct args = {
-		(unsigned long)addr,
-		(unsigned long)len,
-		(unsigned long)prot,
-		(unsigned long)flags,
-		(unsigned long)fd,
-		(unsigned long)offset,
+		.addr	= (unsigned long)addr,
+		.len	= (unsigned long)len,
+		.prot	= (unsigned long)prot,
+		.flags	= (unsigned long)flags,
+		.fd	= (unsigned long)fd,
+		.offset = (unsigned long)offset,
 	};
 
 	register struct mmap_arg_struct *__arg1 asm("2") = &args;
@@ -42,16 +42,15 @@ void *__mmap2(void *addr, size_t len, int prot, int flags, int fd, long offset)
 
 #else /* __s390x__ */
 
-void * mmap(void * addr, size_t len, int prot, int flags,
-						 int fd, off_t offset)
+void *mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset)
 {
 	struct mmap_arg_struct args = {
-		(unsigned long) addr,
-		(unsigned long) len,
-		(unsigned long) prot,
-		(unsigned long) flags,
-		(unsigned long) fd,
-		(unsigned long) offset,
+		.addr	= (unsigned long)addr,
+		.len	= (unsigned long)len,
+		.prot	= (unsigned long)prot,
+		.flags	= (unsigned long)flags,
+		.fd	= (unsigned long)fd,
+		.offset = (unsigned long)offset,
 	};
 
 	register struct mmap_arg_struct *__arg1 asm("2") = &args;

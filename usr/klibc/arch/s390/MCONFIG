@@ -2,7 +2,7 @@
 #
 # arch/s390/MCONFIG
 #
-# Special rules for this architecture.  Note that this is actually
+# Special rules for this architecture. Note that this is actually
 # included from the main Makefile, and that pathnames should be
 # accordingly.
 #
