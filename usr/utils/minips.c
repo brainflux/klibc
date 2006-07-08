@@ -484,6 +484,8 @@ int main(int argc, char *argv[])
 		found_a_proc = 0;
 		ouruid = getuid();
 		dir = opendir("/proc");
+		if (!dir)
+			exit(1);
 		while ((ent = readdir(dir))) {
 			if (*ent->d_name < '0' || *ent->d_name > '9')
 				continue;
