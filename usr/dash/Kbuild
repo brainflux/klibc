@@ -110,13 +110,14 @@ $(obj)/syntax.c: $(obj)/mksyntax
 $(obj)/syntax.h: $(obj)/syntax.c
 	$(Q):
 
-BISON := bison
+# Prefer bison, but BSD yacc should work as well
+YACC ?= bison
 
-quiet_cmd_bison	= BISON   $@
-      cmd_bison = $(BISON) -d -o $@ $<
+quiet_cmd_yacc	= YACC    $@
+      cmd_yacc = $(YACC) -d -o $@ $<
 
 $(obj)/%.c %(obj)/%.h: $(src)/%.y
-	$(call cmd,bison)
+	$(call cmd,yacc)
 
 $(obj)/arith.c $(obj)/arith.h: $(src)/arith.y
 
