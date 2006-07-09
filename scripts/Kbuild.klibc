@@ -312,7 +312,7 @@ endif
 # ---------------------------------------------------------------------------
 
 .PHONY: $(subdir-y) $(klibc-dirs)
-$(subdir-y) $(klibc-dirs):
+$(sort $(subdir-y) $(klibc-dirs)):
 	$(Q)$(MAKE) $(klibc)=$@
 
 # Add FORCE to the prequisites of a target to force it to be always rebuilt.
