@@ -1,5 +1,5 @@
 # ==========================================================================
-# Support for building klibc and related programs
+# Support for building klibc programs and klibc library
 # ==========================================================================
 #
 # To create a kbuild file for a userspace program do the following:
@@ -129,25 +129,25 @@ include $(obj)/Kbuild
 
 #####
 # static-y + shared-y handling
-klibc-progs := $(static-y) $(shared-y)
-# klibc-progs based on a single .o file (with same name + .o)
-klibc-objs := $(foreach p, $(klibc-progs), $(if $($(p)-y),,$(p)))
-klibc-objs := $(addsuffix .o, $(klibc-objs))
-# klibc-progs which is based on several .o files
-klibc-multi := $(foreach p, $(klibc-progs), $(if $($(p)-y),$(p)))
-# objects used for klibc-progs with more then one .o file
-klibc-objs += $(foreach p, $(klibc-multi), $($(p)-y))
+kprogs := $(static-y) $(shared-y)
+# kprogs based on a single .o file (with same name + .o)
+kprog-objs := $(foreach p, $(kprogs), $(if $($(p)-y),,$(p)))
+kprog-objs := $(addsuffix .o, $(kprog-objs))
+# kprogs which is based on several .o files
+kprog-multi := $(foreach p, $(kprogs), $(if $($(p)-y),$(p)))
+# objects used for kprogs with more then one .o file
+kprog-objs += $(foreach p, $(kprog-multi), $($(p)-y))
 # objects build in this dir
-klibc-real-objs := $(patsubst %/,,$(klibc-objs))
-# Directories we need to visit before klibc-objs are up-to-date
-klibc-dirs :=  $(patsubst %/,%,$(filter %/, $(klibc-objs)))
+kprog-real-objs := $(patsubst %/,,$(kprog-objs))
+# Directories we need to visit before kprogs-objs are up-to-date
+kprog-dirs :=  $(patsubst %/,%,$(filter %/, $(kprog-objs)))
 # replace all dir/ with dir/lib.a
-klibc-objs := $(patsubst %/, %/lib.a, $(klibc-objs))
+kprog-objs := $(patsubst %/, %/lib.a, $(kprog-objs))
 
 targets += $(static-y) $(shared-y)
 
 # $(output-dirs) are a list of directories that contain object files
-output-dirs := $(dir $(klibc-dirs) $(klibc-objs))
+output-dirs := $(dir $(kprog-dirs) $(kprog-objs))
 output-dirs += $(foreach f, $(hostprogs-y) $(targets), \
                $(if $(dir $(f)), $(dir $(f))))
 output-dirs := $(strip $(sort $(filter-out ./,$(output-dirs))))
@@ -155,10 +155,10 @@ output-dirs := $(strip $(sort $(filter-out ./,$(output-dirs))))
 # prefix so we get full dir
 static-y        := $(addprefix $(obj)/,$(static-y))
 shared-y        := $(addprefix $(obj)/,$(shared-y))
-klibc-objs      := $(addprefix $(obj)/,$(klibc-objs))
-klibc-real-objs := $(addprefix $(obj)/,$(klibc-real-objs))
+kprog-objs      := $(addprefix $(obj)/,$(kprog-objs))
+kprog-real-objs := $(addprefix $(obj)/,$(kprog-real-objs))
 output-dirs     := $(addprefix $(obj)/,$(output-dirs))
-klibc-dirs      := $(addprefix $(obj)/,$(klibc-dirs))
+kprog-dirs      := $(addprefix $(obj)/,$(kprog-dirs))
 subdir-y        := $(addprefix $(obj)/,$(subdir-y))
 lib-y           := $(addprefix $(obj)/,$(lib-y))
 always          := $(addprefix $(obj)/,$(always))
@@ -243,14 +243,14 @@ targets += $(lib-target) $(lib-y)
 endif # lib-target
 
 
-ifdef klibc-progs
-# Compile klibcspace programs for the target
+ifdef kprogs
+# Compile klibc-programs for the target
 # ===========================================================================
 
-__build : $(klibc-dirs) $(static-y) $(shared-y)
+__build : $(kprog-dirs) $(static-y) $(shared-y)
 
 # Descend if needed
-$(sort $(addsuffix /lib.a,$(klibc-dirs))): $(klibc-dirs) ;
+$(sort $(addsuffix /lib.a,$(kprog-dirs))): $(kprog-dirs) ;
 
 # Define dependencies for link of progs
 # For the simple program:
@@ -265,31 +265,31 @@ addliba   = $(addprefix $(obj)/, $(patsubst %/, %/lib.a, $(1)))
 link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o)
 
 quiet_cmd_ld-static = KLIBCLD $@
-      cmd_ld-static = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@    	\
-                       $(EXTRA_KLIBCLDFLAGS)              	\
-                       $(KLIBCCRT0)                       	\
-                       $(link-deps)                       	\
-                       --start-group $(KLIBCLIBC) 	  	\
-		       $(KLIBCLIBGCC) --end-group ;       	\
-                      cp -f $@ $@.g ;                     	\
+      cmd_ld-static = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@		\
+                       $(EXTRA_KLIBCLDFLAGS)			\
+                       $(KLIBCCRT0)				\
+                       $(link-deps)				\
+                       --start-group $(KLIBCLIBC)		\
+		       $(KLIBCLIBGCC) --end-group ;		\
+                      cp -f $@ $@.g ;				\
                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
 
-$(static-y): $(klibc-objs) $(lib-target) $(KLIBCCRT0) $(KLIBCLIBC) FORCE
+$(static-y): $(kprog-objs) $(lib-target) $(KLIBCCRT0) $(KLIBCLIBC) FORCE
 	$(call if_changed,ld-static)
 
 quiet_cmd_ld-shared = KLIBCLD $@
-      cmd_ld-shared = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@    	\
-                       $(EXTRA_KLIBCLDFLAGS)              	\
-                       $(KLIBCEMAIN) $(KLIBCCRTSHARED)    	\
-                       $(link-deps)                       	\
-                       --start-group -R $(KLIBCLIBCSHARED) 	\
+      cmd_ld-shared = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@		\
+                       $(EXTRA_KLIBCLDFLAGS)			\
+                       $(KLIBCEMAIN) $(KLIBCCRTSHARED)		\
+                       $(link-deps)				\
+                       --start-group -R $(KLIBCLIBCSHARED)	\
 	               $(KLIBCLIBGCC) --end-group ;		\
-                      cp -f $@ $@.g ;                     	\
+                      cp -f $@ $@.g ;				\
                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
 
-$(shared-y): $(klibc-objs) $(lib-target) $(KLIBCCRTSHARED) \
+$(shared-y): $(kprog-objs) $(lib-target) $(KLIBCCRTSHARED) \
                                          $(KLIBCLIBCSHARED) FORCE
 	$(call if_changed,ld-shared)
 
@@ -299,7 +299,7 @@ $(KLIBCCRT0) $(KLIBCLIBC): ;
 $(KLIBCCRTSHARED) $(KLIBCLIBCSHARED): ;
 endif
 
-targets += $(klibc-real-objs)
+targets += $(kprog-real-objs)
 endif
 
 # Compile programs on the host
@@ -311,8 +311,8 @@ endif
 # Descending
 # ---------------------------------------------------------------------------
 
-.PHONY: $(subdir-y) $(klibc-dirs)
-$(sort $(subdir-y) $(klibc-dirs)):
+.PHONY: $(subdir-y) $(kprog-dirs)
+$(sort $(subdir-y) $(kprog-dirs)):
 	$(Q)$(MAKE) $(klibc)=$@
 
 # Add FORCE to the prequisites of a target to force it to be always rebuilt.
