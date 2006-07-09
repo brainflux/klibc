@@ -3,9 +3,9 @@
 #
 
 # Tell that we are building klibc
-klibc-build := y
+export klibc-build := y
 
-libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
+klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  asprintf.o vasprintf.o \
 	  vsscanf.o sscanf.o ctypes.o \
 	  strntoumax.o strntoimax.o \
@@ -52,19 +52,15 @@ libc-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  ctype/ispunct.o ctype/isspace.o ctype/isupper.o \
 	  ctype/isxdigit.o ctype/tolower.o ctype/toupper.o
 
-libc-$(CONFIG_KLIBC_ERRLIST) += errlist.o
+klib-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 
 ifeq ($(CONFIG_KLIBC_ERRLIST),y)
 KLIBCCFLAGS_strerror.o += -DWITH_ERRLIST
 endif
 
-libc-$(CONFIG_KLIBC_ZLIB)    += \
-	zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/gzio.o \
-	zlib/uncompr.o zlib/deflate.o zlib/trees.o zlib/zutil.o \
-	zlib/inflate.o zlib/infback.o zlib/inftrees.o zlib/inffast.o
-
-# zlib specific flag
-KLIBCCFLAGS += -DDYNAMIC_CRC_TABLE
+klib-$(CONFIG_KLIBC_ZLIB) += zlib/
+# arch specific .o files
+klib-y += arch/$(KLIBCARCHDIR)/
 
 #####
 # Add any architecture-specific rules
@@ -72,14 +68,14 @@ include $(obj)/arch/$(KLIBCARCHDIR)/Makefile.inc
 
 #####
 # Shared definitions
-LIB      := libc.a
+LIBC     := libc.a
 SOLIB    := libc.so
 SOHASH   := klibc.so
 CRT0     := arch/$(KLIBCARCHDIR)/crt0.o
 INTERP_O := interp.o
 
-always   := $(CRT0) $(LIB) $(SOLIB) $(SOHASH) $(INTERP_O)
-LIB      := $(call objectify,$(LIB))
+always   := $(LIBC) $(SOLIB) $(SOHASH) $(INTERP_O)
+LIBC     := $(call objectify,$(LIBC))
 SOLIB    := $(call objectify,$(SOLIB))
 SOHASH   := $(call objectify,$(SOHASH))
 CRT0     := $(call objectify,$(CRT0))
@@ -87,17 +83,10 @@ INTERP_O := $(call objectify,$(INTERP_O))
 
 SOLIBHASH = $(shell cat $(SOLIB).hash)
 
-targets  += arch/$(KLIBCARCHDIR)/crt0.o
-targets  += $(libc-y) $(KLIBCARCHOBJS)
-
 # Generate syscall stubs
-subdir-y += syscalls
+klib-y += syscalls/
 # Generate socket calls stubs
-subdir-y += socketcalls
-
-# Tell make to descend before building libs
-$(obj)/syscalls/syscalls.list: $(obj)/syscalls
-$(obj)/socketcalls/socketcalls.list: $(obj)/socketcalls
+klib-y += socketcalls/
 
 #####
 # Readable errormessages extracted from src..
@@ -108,20 +97,20 @@ quiet_cmd_errlist = GEN     $@
 $(obj)/errlist.c: $(srctree)/$(src)/makeerrlist.pl
 	$(call cmd,errlist)
 
-# full list of dependencies for klibc
-libc-deps = $(call objectify, $(libc-y) $(KLIBCARCHOBJS)) \
-            $(call objectify, syscalls/syscalls.list socketcalls/socketcalls.list)
 
+# all .o files for all dirs
+klib-o-files = $(shell cat $(obj)/klib.list \
+		$(addsuffix /klib.list, $(klib-dirs)))
 ######
 # Build static library: libc.a
 targets += libc.a __static_init.o
 quiet_cmd_libc = KLIBCAR $@
-      cmd_libc = rm -f $@; \
-                 $(KLIBCAR) cq $@ \
-		 	$(patsubst %.list,`cat %.list`,$(filter-out FORCE,$^)); \
+      cmd_libc = rm -f $@;						\
+                 $(KLIBCAR) cq $@					\
+		 $(call objectify,__static_init.o) $(klib-o-files);	\
                  $(KLIBCRANLIB) $@
 
-$(LIB): $(call objectify,__static_init.o) $(libc-deps) FORCE
+$(LIBC): $(call objectify,__static_init.o) $(obj)/klib.list FORCE
 	$(call if_changed,libc)
 
 ######
@@ -130,12 +119,14 @@ targets += libc.so __shared_init.o
 
 quiet_cmd_libcso = KLIBCLD $@
       cmd_libcso = $(KLIBCLD) $(KLIBCLDFLAGS) $(KLIBCSHAREDFLAGS) -o $@ \
-			--start-group \
-			$(patsubst %.list,`cat %.list`,$(filter-out FORCE,$^)) \
-			$(KLIBCLIBGCC) \
+			--start-group					\
+				$(CRT0)					\
+				$(call objectify,__shared_init.o)	\
+				$(klib-o-files)				\
+				$(KLIBCLIBGCC)				\
 			--end-group
 
-$(SOLIB): $(CRT0) $(call objectify,__shared_init.o) $(libc-deps) FORCE
+$(SOLIB): $(call objectify,__shared_init.o) $(obj)/klib.list FORCE
 	$(call if_changed,libcso)
 
 
@@ -177,7 +168,7 @@ $(INTERP_O): $(obj)/interp.S $(SOLIB).hash
 # Install klibc
 install-rule:
 	@echo "  INSTALL klibc to $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib"
-	$(Q)$(foreach f, $(LIB) $(SOLIB) $(CRT0) $(INTERP_O), \
+	$(Q)$(foreach f, $(LIBC) $(SOLIB) $(CRT0) $(INTERP_O), \
 	  $(shell $(install-data) $(f) \
 	          $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)lib))
 	$(Q)$(install-lib) $(obj)/klibc-$(SOLIBHASH).so \

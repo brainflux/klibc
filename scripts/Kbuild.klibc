@@ -14,13 +14,28 @@
 # # This will compile a file named cats.c -> the executable 'cats'
 # # The executable will be linked shared
 #
-# If the userspace program consist of more files do the following:
+# If the userspace program consist of composite files do the following:
 # Kbuild:
 #
-# static-y   := ipconfig
-# ipconfig-y := main.o netdev.c
+# static-y   := kinit
+# kinit-y := main.o netdev.c
 # So ipconfig will be linked statically using the two .o files
 # specified with ipconfig-y.
+#
+# Are part of the program located in a sub-directory do like this:
+# kinit-y += ipconfig/
+#
+# And in the subdirectory:
+# ipconfig/Kbuild:
+# lib-y := packet.o dhcp_proto.o
+#
+#####
+# For a klibc libary file do like this
+# klibc/Kbuild
+# klib-y := error.o pipe.o zlib/
+#
+#####
+# Handling of compiler/linker options
 #
 # To set directory wide CFLAGS use:
 # EXTRA_KLIBCCFLAGS := -DDEBUG
@@ -146,10 +161,22 @@ kprog-objs := $(patsubst %/, %/lib.a, $(kprog-objs))
 
 targets += $(static-y) $(shared-y)
 
+#####
+# klib-y handling
+# .o files to build in this dir
+klib-real-objs := $(patsubst %/,,$(klib-y))
+# Directories we need to visit before libs are up-to-date
+klib-dirs := $(patsubst %/,%,$(filter %/, $(klib-y)))
+# replace all dir/ with dir/klib.list
+klib-objs := $(patsubst %/, %/klib.list, $(klib-y))
+# remove all dirs
+klib-y := $(filter-out %/, $(klib-y))
+
 # $(output-dirs) are a list of directories that contain object files
 output-dirs := $(dir $(kprog-dirs) $(kprog-objs))
 output-dirs += $(foreach f, $(hostprogs-y) $(targets), \
                $(if $(dir $(f)), $(dir $(f))))
+output-dirs += $(klib-dirs)
 output-dirs := $(strip $(sort $(filter-out ./,$(output-dirs))))
 
 # prefix so we get full dir
@@ -160,9 +187,13 @@ kprog-real-objs := $(addprefix $(obj)/,$(kprog-real-objs))
 output-dirs     := $(addprefix $(obj)/,$(output-dirs))
 kprog-dirs      := $(addprefix $(obj)/,$(kprog-dirs))
 subdir-y        := $(addprefix $(obj)/,$(subdir-y))
-lib-y           := $(addprefix $(obj)/,$(lib-y))
 always          := $(addprefix $(obj)/,$(always))
 targets         := $(addprefix $(obj)/,$(targets))
+lib-y           := $(addprefix $(obj)/,$(lib-y))
+klib-y          := $(addprefix $(obj)/,$(klib-y))
+klib-objs       := $(addprefix $(obj)/,$(klib-objs))
+klib-real-objs  := $(addprefix $(obj)/,$(klib-real-objs))
+klib-dirs       := $(addprefix $(obj)/,$(klib-dirs))
 
 #####
 # Handle options to gcc. Support building with separate output directory
@@ -194,7 +225,7 @@ lib-target := $(obj)/lib.a
 endif
 
 __build: $(subdir-y) $(lib-target) $(always)
-	@:
+	$(Q):
 
 # Compile C sources (.c)
 # ---------------------------------------------------------------------------
@@ -242,6 +273,28 @@ $(lib-target): $(lib-y) FORCE
 targets += $(lib-target) $(lib-y)
 endif # lib-target
 
+#
+# Create klib.list
+#
+# Do we have to create a klibc library file in this dir?
+ifneq ($(strip $(klib-y) $(klib-n) $(klib-)),)
+klib-target := $(obj)/klib.list
+endif
+
+ifdef klib-target
+# include this in build
+__build: $(klib-target) $(klib-dirs)
+
+# descend if needed
+$(sort $(addsuffix /klib.list,$(klib-dirs))): $(klib-dirs) ;
+
+# create klib.list
+quiet_cmd_klib-list = LIST    $@
+      cmd_klib-list = echo $(klib-y) > $@
+$(klib-target): $(klib-objs) FORCE
+	$(call if_changed,klib-list)
+targets += $(klib-target) $(klib-y)
+endif # klib-target
 
 ifdef kprogs
 # Compile klibc-programs for the target
@@ -311,8 +364,8 @@ endif
 # Descending
 # ---------------------------------------------------------------------------
 
-.PHONY: $(subdir-y) $(kprog-dirs)
-$(sort $(subdir-y) $(kprog-dirs)):
+.PHONY: $(subdir-y) $(kprog-dirs) $(klib-dirs)
+$(sort $(subdir-y) $(kprog-dirs) $(klib-dirs)):
 	$(Q)$(MAKE) $(klibc)=$@
 
 # Add FORCE to the prequisites of a target to force it to be always rebuilt.

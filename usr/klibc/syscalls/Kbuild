@@ -9,7 +9,7 @@ ifeq ($(clean),)
 endif
 
 # Listing of all .o files
-always := syscalls.list
+always := klib.list
 
 
 #####
@@ -17,7 +17,7 @@ always := syscalls.list
 # Based on list in SYSCALLS.def generate stubs for sys calls. Actual arch code
 # is defined in an arch specific perl file
 targets += syscalls.mk
-targets += syscalls.list
+targets += klib.list
 targets += SYSCALLS.i syscalls.nrs
 targets += typesize.c typesize.o typesize.bin
 targets += $(syscall-objs)
@@ -34,7 +34,7 @@ quiet_cmd_makelist = LIST    $@
       cmd_makelist = echo '$(filter-out FORCE,$^)' > $@
 
 # Create list of all files
-$(obj)/syscalls.list: $(call objectify,$(syscall-objs)) FORCE
+$(obj)/klib.list: $(call objectify,$(syscall-objs)) FORCE
 	$(call if_changed,makelist)
 
 # Generate assembler file (.i)

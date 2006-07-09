@@ -19,23 +19,18 @@ include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-di
 # Figure out what we need to build from the various variables
 # ==========================================================================
 
-__subdir-y	:= $(patsubst %/,%,$(filter %/, $(obj-y)))
-subdir-y	+= $(__subdir-y)
-__subdir-m	:= $(patsubst %/,%,$(filter %/, $(obj-m)))
-subdir-m	+= $(__subdir-m)
-__subdir-n	:= $(patsubst %/,%,$(filter %/, $(obj-n)))
-subdir-n	+= $(__subdir-n)
-__subdir-	:= $(patsubst %/,%,$(filter %/, $(obj-)))
-subdir-		+= $(__subdir-)
+subdirs := $(subdir-y) $(subdir-m) $(subdir-n) $(subdir-)
+subdirs += $(patsubst %/,%,$(filter %/, $(obj-y)))
+subdirs += $(patsubst %/,%,$(filter %/, $(obj-m)))
+subdirs += $(patsubst %/,%,$(filter %/, $(obj-n)))
+subdirs += $(patsubst %/,%,$(filter %/, $(obj-)))
+
+subdirs += $(patsubst %/,%,$(filter %/, $(klib-y)))
+subdirs += $(patsubst %/,%,$(filter %/, $(klib-)))
 
 # Subdirectories we need to descend into
+subdirs := $(addprefix $(obj)/,$(sort $(subdirs)))
 
-subdir-ym	:= $(sort $(subdir-y) $(subdir-m))
-subdir-ymn      := $(sort $(subdir-ym) $(subdir-n) $(subdir-))
-
-# Add subdir path
-
-subdir-ymn	:= $(addprefix $(obj)/,$(subdir-ymn))
 
 # build a list of files to remove, usually releative to the current
 # directory
@@ -43,7 +38,8 @@ subdir-ymn	:= $(addprefix $(obj)/,$(subdir-ymn))
 __clean-files	:= $(extra-y) $(EXTRA_TARGETS) $(always) \
 		   $(targets) $(clean-files)             \
 		   $(host-progs)                         \
-		   $(hostprogs-y) $(hostprogs-m) $(hostprogs-)
+		   $(hostprogs-y) $(hostprogs-m) $(hostprogs-) \
+		   klib.list
 
 # as clean-files is given relative to the current directory, this adds
 # a $(obj) prefix, except for absolute paths
@@ -67,7 +63,7 @@ quiet_cmd_cleandir = CLEAN   $(__clean-dirs)
       cmd_cleandir = rm -rf $(__clean-dirs)
 
 
-__clean: $(subdir-ymn)
+__clean: $(subdirs)
 ifneq ($(strip $(__clean-files)),)
 	+$(call cmd,clean)
 endif
@@ -87,8 +83,8 @@ endif
 # Descending
 # ---------------------------------------------------------------------------
 
-.PHONY: $(subdir-ymn)
-$(subdir-ymn):
+.PHONY: $(subdirs)
+$(subdirs):
 	$(Q)$(MAKE) $(clean)=$@
 
 # If quiet is set, only print short version of command
