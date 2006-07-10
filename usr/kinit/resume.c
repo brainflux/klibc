@@ -32,13 +32,15 @@ int do_resume(int argc, char *argv[])
 
 	resume_arg = get_arg(argc, argv, "resume=");
 	resume_file = resume_arg ? resume_arg : resume_file;
+	/* No resume device specified */
 	if (!resume_file[0])
-		return 0;	/* No resume device specified */
+		return 0;
 
 	/* Fix: we either should consider reverting the device back to
 	   ordinary swap, or (better) put that code into swapon */
+	/* Noresume requested */
 	if (get_flag(argc, argv, "noresume"))
-		return 0;	/* Noresume requested */
+		return 0;
 
 	resume_device = name_to_dev_t(resume_file);
 
@@ -53,8 +55,9 @@ int do_resume(int argc, char *argv[])
 	len = snprintf(device_string, sizeof device_string, "%u:%u",
 		       major(resume_device), minor(resume_device));
 
+	/* This should never happen */
 	if (len >= sizeof device_string)
-		goto fail_r;	/* This should never happen */
+		goto fail_r;
 
 	DEBUG(("kinit: trying to resume from %s\n", resume_file));
 
@@ -62,14 +65,14 @@ int do_resume(int argc, char *argv[])
 		goto fail_r;
 
 	/* Okay, what are we still doing alive... */
-      failure:
+failure:
 	if (powerfd >= 0)
 		close(powerfd);
 	fprintf(stderr, "Resume failed, doing normal boot...\n");
 	return -1;
 
-      fail_r:
-	fprintf(stderr,
-		"Resume failed: cannot write /sys/power/resume (no kernel support?)\n");
+fail_r:
+	fprintf(stderr, "Cannot write /sys/power/resume "
+			"(no software suspend kernel support?)\n");
 	goto failure;
 }
