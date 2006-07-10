@@ -63,10 +63,6 @@ klib-$(CONFIG_KLIBC_ZLIB) += zlib/
 klib-y += arch/$(KLIBCARCHDIR)/
 
 #####
-# Add any architecture-specific rules
-include $(obj)/arch/$(KLIBCARCHDIR)/Makefile.inc
-
-#####
 # Shared definitions
 LIBC     := libc.a
 SOLIB    := libc.so
