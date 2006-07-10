@@ -7,11 +7,6 @@
 # accordingly.
 #
 
-KLIBCARCHOBJS = \
-	arch/$(KLIBCARCH)/setjmp.o \
-	arch/$(KLIBCARCH)/syscall.o \
-	arch/$(KLIBCARCH)/vfork.o
-
 KLIBCBITSIZE  = 32
 
 # Extra linkflags when building the shared version of the library
@@ -21,5 +16,3 @@ KLIBCBITSIZE  = 32
 # script right.  Not sure if there is a fundamental reason
 # to not duck below the halfway point...
 KLIBCSHAREDFLAGS        = -Ttext 0xb0000000
-
-archclean:

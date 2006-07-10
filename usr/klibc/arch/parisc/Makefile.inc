@@ -6,11 +6,3 @@
 # included from the main Makefile, and that pathnames should be
 # accordingly.
 #
-
-KLIBCARCHOBJS = \
-	arch/$(KLIBCARCH)/setjmp.o \
-	arch/$(KLIBCARCH)/syscall.o
-
-KLIBCARCHOOBJS = $(patsubst %o,%.lo,%(KLIBCARCHOBJS))
-
-archclean:

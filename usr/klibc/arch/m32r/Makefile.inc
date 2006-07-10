@@ -6,14 +6,3 @@
 # included from the main Makefile, and that pathnames should be
 # accordingly.
 #
-
-KLIBCARCHOBJS = \
-	arch/$(KLIBCARCH)/setjmp.o \
-	arch/$(KLIBCARCH)/syscall.o \
-	libgcc/__divdi3.o \
-	libgcc/__moddi3.o \
-	libgcc/__udivdi3.o \
-	libgcc/__umoddi3.o \
-	libgcc/__udivmoddi4.o
-
-archclean:
