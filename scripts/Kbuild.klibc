@@ -169,8 +169,6 @@ klib-real-objs := $(patsubst %/,,$(klib-y))
 klib-dirs := $(patsubst %/,%,$(filter %/, $(klib-y)))
 # replace all dir/ with dir/klib.list
 klib-objs := $(patsubst %/, %/klib.list, $(klib-y))
-# remove all dirs
-klib-y := $(filter-out %/, $(klib-y))
 
 # $(output-dirs) are a list of directories that contain object files
 output-dirs := $(dir $(kprog-dirs) $(kprog-objs))
@@ -290,10 +288,10 @@ $(sort $(addsuffix /klib.list,$(klib-dirs))): $(klib-dirs) ;
 
 # create klib.list
 quiet_cmd_klib-list = LIST    $@
-      cmd_klib-list = echo $(klib-y) > $@
+      cmd_klib-list = echo $(klib-real-objs) > $@
 $(klib-target): $(klib-objs) FORCE
 	$(call if_changed,klib-list)
-targets += $(klib-target) $(klib-y)
+targets += $(klib-target) $(klib-real-objs)
 endif # klib-target
 
 ifdef kprogs
