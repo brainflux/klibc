@@ -6,5 +6,3 @@
 # included from the main Makefile, and that pathnames should be
 # accordingly.
 #
-
-archclean:
