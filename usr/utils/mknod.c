@@ -6,7 +6,7 @@ char *progname;
 
 static __noreturn usage(void)
 {
-	fprintf(stderr, "Usage: %s name {b|c|f} major minor\n", progname);
+	fprintf(stderr, "Usage: %s name {b|c|p} major minor\n", progname);
 	exit(1);
 }
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	case 'b':
 		mode = S_IFBLK;
 		break;
-	case 'f':
+	case 'p':
 		mode = S_IFIFO;
 		break;
 	default:
