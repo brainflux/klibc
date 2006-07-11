@@ -9,12 +9,12 @@ ifeq ($(clean),)
 endif
 
 # Listing of all .o files
-always := socketcalls.list
+always := klib.list
 
 #####
 # Generate socket calls stubs
 # Based on input from SOCKETCALLS.def generate socket call stubs
-targets     := socketcalls.list
+targets     := klib.list
 targets     += socketcalls.mk
 targets	    += SOCKETCALLS.i
 targets     += $(socketcall-objs)
@@ -26,7 +26,7 @@ quiet_cmd_makelist = LIST    $@
       cmd_makelist = echo '$(filter-out FORCE,$^)' > $@
 
 # Create list of all files
-$(obj)/socketcalls.list: $(call objectify,$(socketcall-objs)) FORCE
+$(obj)/klib.list: $(call objectify,$(socketcall-objs)) FORCE
 	$(call if_changed,makelist)
 
 # Generate assembler file (.i)
