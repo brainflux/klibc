@@ -23,7 +23,11 @@ __syscall_common:
         ldrcs	r3, 1f
         mvncs	r0, #0
         strcs	r2, [r3]
+#ifdef __ARM_EABI__
 	ldmfd	sp!,{r4,r5,r7,pc}
+#else
+	ldmfd	sp!,{r4,r5,pc}
+#endif
 
 	.balign 4
 1:
