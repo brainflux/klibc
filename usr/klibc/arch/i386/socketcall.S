@@ -6,7 +6,7 @@
 # %ebx = socketcall number
 # %ecx = pointer to arguments (up to 6)
 #
-	
+
 #include <asm/unistd.h>
 
 #ifdef __i386__
@@ -37,7 +37,7 @@ __socketcall_common:
 #ifdef	_REGPARM
 	addl	$6*4, %esp
 #endif
-	
+
 	cmpl	$-4095,%eax	# Error return?
 
 	popl	%ebx

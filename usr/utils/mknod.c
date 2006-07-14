@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	} else {
 		if (!argv[0] || !argv[1])
 			usage();
-			
+
 		major = strtol(*argv++, &endp, 0);
 		if (*endp != '\0')
 			usage();

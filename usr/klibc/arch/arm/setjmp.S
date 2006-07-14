@@ -7,7 +7,7 @@
 #ifndef	__thumb__
 
 #
-# "Pure ARM" version		
+# "Pure ARM" version
 #
 # The jmp_buf is assumed to contain the following, in order:
 #		r4

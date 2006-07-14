@@ -11,5 +11,3 @@ klib-y += ../../libgcc/__clzsi2.o
 
 always  := crt0.o
 targets := crt0.o
-
-

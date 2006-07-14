@@ -6,5 +6,3 @@ klib-y += inflate.o infback.o inftrees.o inffast.o
 
 # zlib specific flag
 EXTRA_KLIBCCFLAGS := -DDYNAMIC_CRC_TABLE
-
-
