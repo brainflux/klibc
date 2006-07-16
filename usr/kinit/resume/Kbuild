@@ -1,0 +1,28 @@
+#
+# Kbuild file for resume
+#
+
+static-y := static/resume
+shared-y := shared/resume
+
+# common .o files
+objs := resume.o resumelib.o ../getarg.o ../name_to_dev.o ../devname.o
+
+# TODO - do we want a stripped version
+# TODO - do we want the static.g + shared.g directories?
+
+# Create built-in.o with all object files (used by kinit)
+lib-y := $(objs)
+
+# Additional include paths files
+KLIBCCFLAGS += -I$(srctree)/$(src)/..
+
+# .o files used to built executables
+static/resume-y := $(objs)
+shared/resume-y := $(objs)
+
+# Cleaning
+clean-dirs := static shared
+
+# install binary
+install-y := $(shared-y)
