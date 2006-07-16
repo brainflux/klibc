@@ -16,6 +16,7 @@
 
 #include "kinit.h"
 #include "do_mounts.h"
+#include "resume.h"
 
 #ifndef CONFIG_PM_STD_PARTITION
 # define CONFIG_PM_STD_PARTITION ""
@@ -25,10 +26,6 @@ int do_resume(int argc, char *argv[])
 {
 	const char *resume_file = CONFIG_PM_STD_PARTITION;
 	const char *resume_arg;
-	dev_t resume_device;
-	int powerfd = -1;
-	char device_string[64];
-	int len;
 
 	resume_arg = get_arg(argc, argv, "resume=");
 	resume_file = resume_arg ? resume_arg : resume_file;
@@ -41,6 +38,15 @@ int do_resume(int argc, char *argv[])
 	/* Noresume requested */
 	if (get_flag(argc, argv, "noresume"))
 		return 0;
+	return resume(resume_file);
+}
+
+int resume(const char *resume_file)
+{
+	dev_t resume_device;
+	int powerfd = -1;
+	char device_string[64];
+	int len;
 
 	resume_device = name_to_dev_t(resume_file);
 
