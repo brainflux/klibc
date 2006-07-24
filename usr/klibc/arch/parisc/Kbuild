@@ -2,7 +2,7 @@
 # klibc files for parisc
 #
 
-klib-y := setjmp.o syscall.o
+klib-y := setjmp.o syscall.o vfork.o
 
 always  := crt0.o
 targets := crt0.o
