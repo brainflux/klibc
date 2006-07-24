@@ -2,7 +2,7 @@
 # klibc files for ppc
 #
 
-klib-y := arch/$(KLIBCARCH)/setjmp.o arch/$(KLIBCARCH)/syscall.o
+klib-y := setjmp.o syscall.o
 
 klib-y += ../../libgcc/__divdi3.o     ../../libgcc/__moddi3.o
 klib-y += ../../libgcc/__udivdi3.o    ../../libgcc/__umoddi3.o
