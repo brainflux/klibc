@@ -2,6 +2,10 @@
 # Kbuild file for kinit
 #
 
+before-descend := name_to_dev.o devname.o getarg.o
+targets := $(before-descend)
+before-descend := $(call objectify, $(before-descend))
+use-libs := $(before-descend)
 static-y := kinit
 kinit-y  := kinit.o do_mounts.o ramdisk_load.o initrd.o
 kinit-y  += getintfile.o open.o readfile.o xpio.o
@@ -24,7 +28,7 @@ KLIBCCFLAGS += -I$(srctree)/$(src)/fstype \
  	       -I$(srctree)/$(src)/run-init
 
 # Cleaning
-targets := kinit kinit.g kinit.shared kinit.shared.g
+targets += kinit kinit.g kinit.shared kinit.shared.g
 subdir- := fstype ipconfig nfsmount resume run-init
 
 

@@ -6,8 +6,8 @@ static-y := static/resume
 shared-y := shared/resume
 
 # common .o files
-objs := resume.o resumelib.o ../getarg.o ../name_to_dev.o ../devname.o
-
+objs := resume.o resumelib.o
+use-libs := $(call objectify, ../getarg.o ../name_to_dev.o ../devname.o)
 # TODO - do we want a stripped version
 # TODO - do we want the static.g + shared.g directories?
 

@@ -313,7 +313,7 @@ $(sort $(addsuffix /lib.a,$(kprog-dirs))): $(kprog-dirs) ;
 
 stripobj  = $(subst $(obj)/,,$@)
 addliba   = $(addprefix $(obj)/, $(patsubst %/, %/lib.a, $(1)))
-link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o)
+link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o) $(use-libs)
 
 quiet_cmd_ld-static = KLIBCLD $@
       cmd_ld-static = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@		\
@@ -363,7 +363,7 @@ endif
 # ---------------------------------------------------------------------------
 
 .PHONY: $(subdir-y) $(kprog-dirs) $(klib-dirs)
-$(sort $(subdir-y) $(kprog-dirs) $(klib-dirs)):
+$(sort $(subdir-y) $(kprog-dirs) $(klib-dirs)): $(before-descend)
 	$(Q)$(MAKE) $(klibc)=$@
 
 # Add FORCE to the prequisites of a target to force it to be always rebuilt.
