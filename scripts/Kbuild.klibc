@@ -177,7 +177,7 @@ klib-objs := $(patsubst %/, %/klib.list, $(klib-y))
 output-dirs := $(dir $(kprog-dirs) $(kprog-objs))
 output-dirs += $(foreach f, $(hostprogs-y) $(targets), \
                $(if $(dir $(f)), $(dir $(f))))
-output-dirs += $(klib-dirs)
+output-dirs += $(dir $(klib-objs))
 output-dirs := $(strip $(sort $(filter-out ./,$(output-dirs))))
 
 # prefix so we get full dir
