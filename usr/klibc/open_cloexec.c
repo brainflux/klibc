@@ -1,5 +1,5 @@
 /*
- * open.c
+ * open_cloexec.c
  *
  * A quick hack to do an open() and set the cloexec flag
  */

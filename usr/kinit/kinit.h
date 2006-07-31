@@ -25,8 +25,6 @@ extern const char *progname;
 char *get_arg(int argc, char *argv[], const char *name);
 int get_flag(int argc, char *argv[], const char *name);
 
-int open_cloexec(const char *path, int flags, mode_t mode);
-
 int getintfile(const char *path, long *val);
 
 ssize_t readfile(const char *path, char **pptr);

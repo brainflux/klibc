@@ -86,6 +86,7 @@ __extern char *getcwd(char *, size_t);
 __extern int open(const char *, int, ...);
 __extern int openat(int, const char *, int, ...);
 #endif
+__extern int open_cloexec(const char *, int, mode_t);
 __extern int close(int);
 __extern off_t lseek(int, off_t, int);
 /* off_t is 64 bits now even on 32-bit platforms; see llseek.c */
