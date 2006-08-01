@@ -11,5 +11,10 @@ char *strtok(char *s, const char *delim)
 	if (s)
 		holder = s;
 
-	return strsep(&holder, delim);
+	do {
+		s = strsep(&holder, delim);
+	}
+	while( s && ('\0' == *s) );
+
+	return s;
 }
