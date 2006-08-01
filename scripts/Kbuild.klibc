@@ -17,10 +17,10 @@
 # If the userspace program consist of composite files do the following:
 # Kbuild:
 #
-# static-y   := kinit
-# kinit-y := main.o netdev.c
-# So ipconfig will be linked statically using the two .o files
-# specified with ipconfig-y.
+# static-y := kinit
+# kinit-y  := main.o netdev.c
+# So kinit will be linked statically using the two .o files
+# specified with kinit-y.
 #
 # Are part of the program located in a sub-directory do like this:
 # kinit-y += ipconfig/
@@ -28,6 +28,9 @@
 # And in the subdirectory:
 # ipconfig/Kbuild:
 # lib-y := packet.o dhcp_proto.o
+# # All .o files listed with lib-y will be used to create a single .a file.
+# # The .a file is created before any subdirectories are visited so it
+# # may be used in the sub-directory programs.
 #
 #####
 # For a klibc libary file do like this
@@ -313,15 +316,18 @@ $(sort $(addsuffix /lib.a,$(kprog-dirs))): $(kprog-dirs) ;
 
 stripobj  = $(subst $(obj)/,,$@)
 addliba   = $(addprefix $(obj)/, $(patsubst %/, %/lib.a, $(1)))
-link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o) $(use-libs)
+link-deps = $(if $($(stripobj)-y), $(call addliba, $($(stripobj)-y)), $@.o) \
+	    $(call objectify,$($(stripobj)-lib))
 
 quiet_cmd_ld-static = KLIBCLD $@
       cmd_ld-static = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@		\
                        $(EXTRA_KLIBCLDFLAGS)			\
                        $(KLIBCCRT0)				\
+		       --start-group				\
                        $(link-deps)				\
-                       --start-group $(KLIBCLIBC)		\
-		       $(KLIBCLIBGCC) --end-group ;		\
+                       $(KLIBCLIBC)				\
+		       $(KLIBCLIBGCC)				\
+		       --end-group ;				\
                       cp -f $@ $@.g ;				\
                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
@@ -333,9 +339,11 @@ quiet_cmd_ld-shared = KLIBCLD $@
       cmd_ld-shared = $(KLIBCLD) $(KLIBCLDFLAGS) -o $@		\
                        $(EXTRA_KLIBCLDFLAGS)			\
                        $(KLIBCEMAIN) $(KLIBCCRTSHARED)		\
+                       --start-group				\
                        $(link-deps)				\
-                       --start-group -R $(KLIBCLIBCSHARED)	\
-	               $(KLIBCLIBGCC) --end-group ;		\
+                       -R $(KLIBCLIBCSHARED)			\
+	               $(KLIBCLIBGCC)				\
+		       --end-group ;				\
                       cp -f $@ $@.g ;				\
                       $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@
 
@@ -363,7 +371,7 @@ endif
 # ---------------------------------------------------------------------------
 
 .PHONY: $(subdir-y) $(kprog-dirs) $(klib-dirs)
-$(sort $(subdir-y) $(kprog-dirs) $(klib-dirs)): $(before-descend)
+$(sort $(subdir-y) $(kprog-dirs) $(klib-dirs)): $(lib-target)
 	$(Q)$(MAKE) $(klibc)=$@
 
 # Add FORCE to the prequisites of a target to force it to be always rebuilt.

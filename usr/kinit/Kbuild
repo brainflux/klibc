@@ -2,12 +2,12 @@
 # Kbuild file for kinit
 #
 
-before-descend := name_to_dev.o devname.o getarg.o
-targets := $(before-descend)
-before-descend := $(call objectify, $(before-descend))
-use-libs := $(before-descend)
-static-y := kinit
-kinit-y  := kinit.o do_mounts.o ramdisk_load.o initrd.o
+# library part of kinit. Is used by programs in sub-directories (resume et al)
+lib-y   := name_to_dev.o devname.o getarg.o
+# use lib for kinit
+kinit-y  := lib.a
+
+kinit-y  += kinit.o do_mounts.o ramdisk_load.o initrd.o
 kinit-y  += getintfile.o readfile.o xpio.o
 kinit-y  += do_mounts_md.o do_mounts_mtd.o nfsroot.o
 
@@ -17,6 +17,7 @@ kinit-y  += run-init/
 kinit-y  += fstype/
 kinit-y  += resume/
 
+static-y := kinit
 shared-y := kinit.shared
 kinit.shared-y := $(kinit-y)
 
