@@ -13,8 +13,7 @@ char *strtok(char *s, const char *delim)
 
 	do {
 		s = strsep(&holder, delim);
-	}
-	while( s && ('\0' == *s) );
+	} while (s && !*s);
 
 	return s;
 }
