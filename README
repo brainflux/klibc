@@ -11,11 +11,22 @@ There is a mailing list for klibc and early-userspace issues at:
 
 	http://www.zytor.com/mailman/listinfo/klibc/
 
-There is also a cvsweb repository at:
+klibc is maintained in the git version control system.  The git
+repository can be viewed on the web at:
 
-	http://www.zytor.com/cvsweb.cgi/klibc/
+	http://www.kernel.org/git/?p=libs/klibc/klibc.git;a=summary
 
-There is no direct public CVS access yet, however, the CVS repository
-is available for rsync from:
+To clone the klibc repository using Cogito:
 
-	rsync://rsync.kernel.org/pub/linux/libs/klibc/cvsroot/
+	git clone git://git.kernel.org/pub/scm/libs/klibc/klibc.git <workdir>
+
+To update an already cloned tree:
+
+	git pull
+
+For more information on git, see:
+
+	http://git.or.cz/
+	http://www.kernel.org/pub/software/scm/git/docs/tutorial.html
+	http://www.kernel.org/pub/software/scm/git/docs
+
