@@ -180,8 +180,12 @@ while ( defined($a = shift(@ARGV)) ) {
 	$strip = 1;
     } elsif ( $a eq '-o' ) {
 	$output = shift(@ARGV);
-    } elsif ( $a eq '-x' ) {
-	$lang = shift(@ARGV);
+    } elsif ( $a =~ /^\-x(.*)$/ ) {
+	# -x can be conjoined or disjoined
+	$lang = $1;
+	if ( $lang eq '' ) {
+	    $lang = shift(@ARGV);
+	}
     } elsif ( $a eq '-nostdinc' ) {
 	push(@ccopt, $a);
 	@includes = ();
