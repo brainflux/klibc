@@ -163,4 +163,14 @@
 # define _KLIBC_STATFS_F_TYPE_64 (_BITSIZE == 64)
 #endif
 
+/*
+ * _KLIBC_STATFS_F_TYPE_32B:
+ *
+ * 	mips has it's own definition of statfs, which is
+ * 	different from any other 32 bit arch.
+ */	
+#ifndef _KLIBC_STATFS_F_TYPE_32B
+# define _KLIBC_STATFS_F_TYPE_32B 0
+#endif
+
 #endif /* _KLIBC_SYSCONFIG_H */
