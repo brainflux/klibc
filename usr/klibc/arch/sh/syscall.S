@@ -10,10 +10,10 @@
 
 	.section ".text.syscall","ax"
 	.align	2
-	.globl	___syscall_common
-	.type	___syscall_common,@function
-___syscall_common:
-	mov.l	@(sp),r0
+	.globl	__syscall_common
+	.type	__syscall_common,@function
+__syscall_common:
+	mov.l	@(0,sp),r0
 	mov.l	@(4,sp),r1
 	trapa	#0x15
 	mov.l	1f,r0
@@ -32,4 +32,4 @@ ___syscall_common:
 1:	.long	-4096		/* Errno limit */
 2:	.long	errno
 
-	.size	___syscall_common,.-___syscall_common
+	.size	__syscall_common,.-__syscall_common

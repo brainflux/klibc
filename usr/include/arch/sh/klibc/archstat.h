@@ -8,7 +8,7 @@
 /* This matches struct stat64 in glibc2.1, hence the absolutely
  * insane amounts of padding around dev_t's.
  */
-struct stat64 {
+struct stat {
 	__stdev64	(st_dev);
 	unsigned char	__pad0[4];
 
