@@ -12,7 +12,6 @@
 #include <limits.h>
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
-#include <linux/config.h>	/* For CONFIG_PM_STD_PARTITION */
 
 #include "kinit.h"
 #include "do_mounts.h"
