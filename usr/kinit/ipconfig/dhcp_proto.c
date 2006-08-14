@@ -49,12 +49,17 @@ static uint8_t dhcp_end[] = {
 	255,
 };
 
+/* Both iovecs below have to have the same structure, since dhcp_send()
+   pokes at the internals */
+#define DHCP_IOV_LEN 6
+
 static struct iovec dhcp_discover_iov[] = {
 	/* [0] = ip + udp header */
 	/* [1] = bootp header */
 	[2] = {dhcp_discover_hdr, sizeof(dhcp_discover_hdr)},
 	[3] = {dhcp_params, sizeof(dhcp_params)},
-	[4] = {dhcp_end, sizeof(dhcp_end)}
+	/* [4] = DHCP vendor class */
+	[5] = {dhcp_end, sizeof(dhcp_end)}
 };
 
 static struct iovec dhcp_request_iov[] = {
@@ -62,7 +67,8 @@ static struct iovec dhcp_request_iov[] = {
 	/* [1] = bootp header */
 	[2] = {dhcp_request_hdr, sizeof(dhcp_request_hdr)},
 	[3] = {dhcp_params, sizeof(dhcp_params)},
-	[4] = {dhcp_end, sizeof(dhcp_end)}
+	/* [4] = DHCP vendor class */
+	[5] = {dhcp_end, sizeof(dhcp_end)}
 };
 
 /*
@@ -146,7 +152,7 @@ static int dhcp_recv(struct netdev *dev)
 	return dhcp_parse(dev, &bootp, dhcp_options, ret);
 }
 
-static int dhcp_send(struct netdev *dev, struct iovec *vec, int len)
+static int dhcp_send(struct netdev *dev, struct iovec *vec)
 {
 	struct bootp_hdr bootp;
 
@@ -164,9 +170,12 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec, int len)
 	vec[1].iov_base	= &bootp;
 	vec[1].iov_len	= sizeof(struct bootp_hdr);
 
+	vec[4].iov_base = vendor_class_identifier;
+	vec[4].iov_len  = vendor_class_identifier_len;
+
 	DEBUG(("xid %08x secs %d ", bootp.xid, ntohs(bootp.secs)));
 
-	return packet_send(dev, vec, len);
+	return packet_send(dev, vec, DHCP_IOV_LEN);
 }
 
 /*
@@ -179,7 +188,7 @@ int dhcp_send_discover(struct netdev *dev)
 
 	DEBUG(("-> dhcp discover "));
 
-	return dhcp_send(dev, dhcp_discover_iov, 5);
+	return dhcp_send(dev, dhcp_discover_iov);
 }
 
 /*
@@ -200,7 +209,7 @@ int dhcp_send_request(struct netdev *dev)
 
 	DEBUG(("-> dhcp request "));
 
-	return dhcp_send(dev, dhcp_request_iov, 5);
+	return dhcp_send(dev, dhcp_request_iov);
 }
 
 /*

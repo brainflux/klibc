@@ -41,12 +41,14 @@ void dump_args(int argc, char *argv[])
 static int do_ipconfig(int argc, char *argv[])
 {
 	int i, a = 0;
-	char **args = alloca((argc + 1) * sizeof(char *));
+	char **args = alloca((argc + 3) * sizeof(char *));
 
 	if (!args)
 		return -1;
 
 	args[a++] = (char *)"IP-Config";
+	args[a++] = (char *)"-i";
+	args[a++] = (char *)"Linux kinit";
 
 	DEBUG(("Running ipconfig\n"));
 

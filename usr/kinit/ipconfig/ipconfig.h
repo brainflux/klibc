@@ -14,6 +14,9 @@
 extern uint16_t cfg_local_port;
 extern uint16_t cfg_remote_port;
 
+extern char vendor_class_identifier[];
+extern int vendor_class_identifier_len;
+
 int ipconfig_main(int argc, char *argv[]);
 uint32_t ipconfig_server_address(void *next);
 

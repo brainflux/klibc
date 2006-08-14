@@ -34,6 +34,10 @@ static int loop_timeout = -1;
 static int configured;
 static int bringup_first = 0;
 
+/* DHCP vendor class identifier */
+char vendor_class_identifier[260];
+int vendor_class_identifier_len;
+
 struct state {
 	int state;
 	int restart_state;
@@ -679,6 +683,21 @@ static int check_autoconfig(void)
 	return nauto;
 }
 
+static void set_vendor_identifier(const char *id)
+{
+	int len = strlen(id);
+	if (len >= 255) {
+		fprintf(stderr,
+			"%s: invalid vendor class identifier: "
+			"%s\n", progname, id);
+		longjmp(abort_buf, 1);
+	}
+	memcpy(vendor_class_identifier+2, id, len);
+	vendor_class_identifier[0] = 60;
+	vendor_class_identifier[1] = len;
+	vendor_class_identifier_len = len+2;
+}
+
 int main(int argc, char *argv[])
     __attribute__ ((weak, alias("ipconfig_main")));
 
@@ -699,8 +718,11 @@ int ipconfig_main(int argc, char *argv[])
 	if ((err = setjmp(abort_buf)))
 		return err;
 
+	/* Default vendor identifier */
+	set_vendor_identifier("Linux ipconfig");
+
 	do {
-		c = getopt(argc, argv, "c:d:onp:t:");
+		c = getopt(argc, argv, "c:d:i:onp:t:");
 		if (c == EOF)
 			break;
 
@@ -727,6 +749,9 @@ int ipconfig_main(int argc, char *argv[])
 					progname, loop_timeout);
 				longjmp(abort_buf, 1);
 			}
+			break;
+		case 'i':
+			set_vendor_identifier(optarg);
 			break;
 		case 'o':
 			bringup_first = 1;
