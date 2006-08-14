@@ -34,7 +34,7 @@ void *realloc(void *ptr, size_t size)
 		return ptr;
 	} else {
 		/* Make me a new block.  This is kind of bogus; we should
-		   be checking the adjacent blocks to see if we can do an
+		   be checking the following block to see if we can do an
 		   in-place adjustment... fix that later. */
 
 		oldsize = ah->a.size - sizeof(struct arena_header);

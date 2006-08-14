@@ -5,8 +5,11 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include "malloc.h"
 
-char *__current_brk;		/* Common with sbrk.c */
+#if !_KLIBC_NO_MMU		/* uClinux doesn't have brk() */
+
+char *__current_brk;
 
 /*
  * The Linux brk() isn't what most people expect, so we call the
@@ -22,3 +25,5 @@ int brk(void *end_data_segment)
 	__current_brk = new_brk;
 	return 0;
 }
+
+#endif

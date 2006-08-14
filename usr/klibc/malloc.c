@@ -194,7 +194,76 @@ void free(void *ptr)
 	assert(ah->a.type == ARENA_TYPE_USED);
 #endif
 
-	__free_block(ah);
+	/* Merge into adjacent free blocks */
+	ah = __free_block(ah);
 
-	/* Here we could insert code to return memory to the system. */
+	/* See if it makes sense to return memory to the system */
+#if _KLIBC_MALLOC_USES_SBRK
+	if (ah->a.size >= _KLIBC_MALLOC_CHUNK_SIZE &&
+	    (char *)ah + ah->a.size == __current_brk) {
+		/* Remove from list */
+		ah->a.prev->a.next = ah->a.next;
+		ah->a.next->a.prev = ah->a.prev;
+		ah->next_free->prev_free = ah->prev_free;
+		ah->prev_free->next_free = ah->next_free;
+		brk(ah);
+	}
+#else
+	if (ah->a.size >= _KLIBC_MALLOC_CHUNK_SIZE) {
+		size_t page_size = getpagesize();
+		size_t page_mask = page_size - 1;
+		size_t head_portion = -(size_t)ah & page_mask;
+		size_t tail_portion = ((size_t)ah + ah->a.size) & page_mask;
+		size_t adj_size;
+
+		/* Careful here... an individual chunk of memory must have
+		   a minimum size if it exists at all. */
+
+		adj_size = ah->a.size;
+
+		if (head_portion &&
+		    head_portion < 2*sizeof(struct arena_header))
+			head_portion += page_size;
+
+		if (tail_portion &&
+		    tail_portion < 2*sizeof(struct arena_header))
+			tail_portion += page_size;
+
+		adj_size = ah->a.size - head_portion - tail_portion;
+
+		/* Still worth it?  Also, watch for overflow here... */
+		if (ah->a.size >= head_portion+tail_portion+
+		    _KLIBC_MALLOC_CHUNK_SIZE) {
+			struct free_arena_header *tah;
+
+			if (tail_portion) {
+				/* Make a new header */
+				tah = (struct free_arena_header *)
+					((char *)ah + head_portion + adj_size);
+				tah->a.type = ARENA_TYPE_FREE;
+				tah->a.size = tail_portion;
+				tah->a.next = ah->a.next;
+				tah->a.next->a.prev = tah;
+				tah->a.prev = ah;
+				ah->a.next = tah;
+				tah->prev_free = ah->prev_free;
+				tah->prev_free->next_free = tah;
+				tah->next_free = ah;
+				ah->prev_free = tah;
+			}
+
+			if (head_portion) {
+				ah->a.size = head_portion;
+			} else {
+				/* Remove from lists */
+				ah->a.prev->a.next = ah->a.next;
+				ah->a.next->a.prev = ah->a.prev;
+				ah->next_free->prev_free = ah->prev_free;
+				ah->prev_free->next_free = ah->next_free;
+			}
+
+			munmap((char *)ah + head_portion, adj_size);
+		}
+	}
+#endif
 }

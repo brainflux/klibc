@@ -45,3 +45,8 @@ struct free_arena_header {
 };
 
 extern struct free_arena_header __malloc_head;
+
+/*
+ * Internal variable used by brk/sbrk
+ */
+extern char *__current_brk;
