@@ -9,6 +9,7 @@
 #include <net/if.h>
 
 #define BPLEN		40
+#define FNLEN		128			/* from DHCP  RFC 2131 */
 
 struct netdev {
 	const char *name;	/* Device name          */
@@ -42,6 +43,7 @@ struct netdev {
 	char dnsdomainname[SYS_NMLN];	/* dns domain name      */
 	char nisdomainname[SYS_NMLN];	/* nis domain name      */
 	char bootpath[BPLEN];	/* boot path            */
+	char filename[FNLEN];   /* filename             */
 	struct netdev *next;	/* next configured i/f  */
 };
 

@@ -74,6 +74,7 @@ int bootp_parse(struct netdev *dev, struct bootp_hdr *hdr,
 	dev->hostname[0]	= '\0';
 	dev->nisdomainname[0]	= '\0';
 	dev->bootpath[0]	= '\0';
+	memcpy(&dev->filename, &hdr->boot_file, FNLEN);
 
 	if (extlen >= 4 && exts[0] == 99 && exts[1] == 130 &&
 	    exts[2] == 83 && exts[3] == 99) {

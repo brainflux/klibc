@@ -71,6 +71,7 @@ static void print_device_config(struct netdev *dev)
 		printf(" nisdomain: %-64s\n", dev->nisdomainname);
 	printf(" rootserver: %s ", my_inet_ntoa(dev->ip_server));
 	printf("rootpath: %s\n", dev->bootpath);
+	printf(" filename  : %s\n", dev->filename);
 }
 
 static void configure_device(struct netdev *dev)
@@ -116,6 +117,7 @@ static void dump_device_config(struct netdev *dev)
 		fprintf(f, "NISDOMAIN=%s\n", dev->nisdomainname);
 		fprintf(f, "ROOTSERVER=%s\n", my_inet_ntoa(dev->ip_server));
 		fprintf(f, "ROOTPATH=%s\n", dev->bootpath);
+		fprintf(f, "filename=\"%s\"\n", dev->filename);
 		fclose(f);
 	}
 }
