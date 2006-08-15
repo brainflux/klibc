@@ -23,10 +23,29 @@ struct free_arena_header __malloc_head = {
 	&__malloc_head
 };
 
+static inline void remove_from_chains(struct free_arena_header *ah)
+{
+	struct free_arena_header *ap, *an;
+
+	ap = ah->a.prev;
+	an = ah->a.next;
+	ap->a.next = an;
+	an->a.prev = ap;
+
+	ap = ah->prev_free;
+	an = ah->next_free;
+	ap->next_free = an;
+	an->prev_free = ap;
+
+#ifdef DEBUG_MALLOC
+	ah->a.type = ARENA_TYPE_DEAD;
+#endif
+}
+
 static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
 {
 	size_t fsize;
-	struct free_arena_header *nfp, *na;
+	struct free_arena_header *nfp, *na, *fpn, *fpp;
 
 	fsize = fp->a.size;
 
@@ -49,10 +68,10 @@ static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
 		fp->a.next = nfp;
 
 		/* Replace current block on free chain */
-		nfp->next_free = fp->next_free;
-		nfp->prev_free = fp->prev_free;
-		fp->next_free->prev_free = nfp;
-		fp->prev_free->next_free = nfp;
+		nfp->next_free = fpn = fp->next_free;
+		nfp->prev_free = fpp = fp->prev_free;
+		fpn->prev_free = nfp;
+		fpp->next_free = nfp;
 	} else {
 		/* Allocate the whole block */
 		fp->a.type = ARENA_TYPE_USED;
@@ -101,14 +120,7 @@ static struct free_arena_header *__free_block(struct free_arena_header *ah)
 		ah->a.size += nah->a.size;
 
 		/* Remove the old block from the chains */
-		nah->next_free->prev_free = nah->prev_free;
-		nah->prev_free->next_free = nah->next_free;
-		ah->a.next = nah->a.next;
-		nah->a.next->a.prev = ah;
-
-#ifdef DEBUG_MALLOC
-		nah->a.type = ARENA_TYPE_DEAD;
-#endif
+		remove_from_chains(nah);
 	}
 
 	/* Return the block that contains the called block */
@@ -201,11 +213,7 @@ void free(void *ptr)
 #if _KLIBC_MALLOC_USES_SBRK
 	if (ah->a.size >= _KLIBC_MALLOC_CHUNK_SIZE &&
 	    (char *)ah + ah->a.size == __current_brk) {
-		/* Remove from list */
-		ah->a.prev->a.next = ah->a.next;
-		ah->a.next->a.prev = ah->a.prev;
-		ah->next_free->prev_free = ah->prev_free;
-		ah->prev_free->next_free = ah->next_free;
+		remove_from_chains(ah);
 		brk(ah);
 	}
 #else
@@ -234,7 +242,7 @@ void free(void *ptr)
 		/* Still worth it?  Also, watch for overflow here... */
 		if (ah->a.size >= head_portion+tail_portion+
 		    _KLIBC_MALLOC_CHUNK_SIZE) {
-			struct free_arena_header *tah;
+			struct free_arena_header *tah, *tan, *tap;
 
 			if (tail_portion) {
 				/* Make a new header */
@@ -242,25 +250,20 @@ void free(void *ptr)
 					((char *)ah + head_portion + adj_size);
 				tah->a.type = ARENA_TYPE_FREE;
 				tah->a.size = tail_portion;
-				tah->a.next = ah->a.next;
-				tah->a.next->a.prev = tah;
+				tah->a.next = tan = ah->a.next;
+				tan->a.prev = tah;
 				tah->a.prev = ah;
 				ah->a.next = tah;
-				tah->prev_free = ah->prev_free;
-				tah->prev_free->next_free = tah;
+				tah->prev_free = tap = ah->prev_free;
+				tap->next_free = tah;
 				tah->next_free = ah;
 				ah->prev_free = tah;
 			}
 
-			if (head_portion) {
+			if (head_portion)
 				ah->a.size = head_portion;
-			} else {
-				/* Remove from lists */
-				ah->a.prev->a.next = ah->a.next;
-				ah->a.next->a.prev = ah->a.prev;
-				ah->next_free->prev_free = ah->prev_free;
-				ah->prev_free->next_free = ah->next_free;
-			}
+			else
+				remove_from_chains(ah);
 
 			munmap((char *)ah + head_portion, adj_size);
 		}
