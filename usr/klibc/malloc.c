@@ -12,7 +12,7 @@
 /* Both the arena list and the free memory list are double linked
    list with head node.  This the head node. Note that the arena list
    is sorted in order of address. */
-struct free_arena_header __malloc_head = {
+static struct free_arena_header __malloc_head = {
 	{
 		ARENA_TYPE_HEAD,
 		0,

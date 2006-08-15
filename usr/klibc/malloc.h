@@ -44,8 +44,6 @@ struct free_arena_header {
 	struct free_arena_header *next_free, *prev_free;
 };
 
-extern struct free_arena_header __malloc_head;
-
 /*
  * Internal variable used by brk/sbrk
  */
