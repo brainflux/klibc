@@ -226,7 +226,7 @@ void free(void *ptr)
 		brk(ah);
 	}
 #else
-	if (ah->a.size >= _KLIBC_MALLOC_CHUNK_SIZE) {
+	{
 		size_t page_size = getpagesize();
 		size_t page_mask = page_size - 1;
 		size_t head_portion = -(size_t)ah & page_mask;
@@ -248,7 +248,8 @@ void free(void *ptr)
 
 		adj_size = ah->a.size - head_portion - tail_portion;
 
-		/* Still worth it?  Also, watch for overflow here... */
+		/* Worth it?  This is written the way it is to guard
+		   against overflows... */
 		if (ah->a.size >= head_portion+tail_portion+
 		    _KLIBC_MALLOC_CHUNK_SIZE) {
 			struct free_arena_header *tah, *tan, *tap;
