@@ -23,23 +23,39 @@ struct free_arena_header __malloc_head = {
 	&__malloc_head
 };
 
-static inline void remove_from_chains(struct free_arena_header *ah)
+static inline void mark_block_dead(struct free_arena_header *ah)
+{
+#ifdef DEBUG_MALLOC
+	ah->a.type = ARENA_TYPE_DEAD;
+#endif
+}
+
+static inline void remove_from_main_chain(struct free_arena_header *ah)
 {
 	struct free_arena_header *ap, *an;
+
+	mark_block_dead(ah);
 
 	ap = ah->a.prev;
 	an = ah->a.next;
 	ap->a.next = an;
 	an->a.prev = ap;
+}	
+
+static inline void remove_from_free_chain(struct free_arena_header *ah)
+{
+	struct free_arena_header *ap, *an;
 
 	ap = ah->prev_free;
 	an = ah->next_free;
 	ap->next_free = an;
 	an->prev_free = ap;
+}	
 
-#ifdef DEBUG_MALLOC
-	ah->a.type = ARENA_TYPE_DEAD;
-#endif
+static inline void remove_from_chains(struct free_arena_header *ah)
+{
+	remove_from_free_chain(ah);
+	remove_from_main_chain(ah);
 }
 
 static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
@@ -73,12 +89,8 @@ static void *__malloc_from_block(struct free_arena_header *fp, size_t size)
 		fpn->prev_free = nfp;
 		fpp->next_free = nfp;
 	} else {
-		/* Allocate the whole block */
-		fp->a.type = ARENA_TYPE_USED;
-
-		/* Remove from free chain */
-		fp->next_free->prev_free = fp->prev_free;
-		fp->prev_free->next_free = fp->next_free;
+		fp->a.type = ARENA_TYPE_USED; /* Allocate the whole block */
+		remove_from_free_chain(fp);
 	}
 
 	return (void *)(&fp->a + 1);
@@ -96,10 +108,7 @@ static struct free_arena_header *__free_block(struct free_arena_header *ah)
 		pah->a.size += ah->a.size;
 		pah->a.next = nah;
 		nah->a.prev = pah;
-
-#ifdef DEBUG_MALLOC
-		ah->a.type = ARENA_TYPE_DEAD;
-#endif
+		mark_block_dead(ah);
 
 		ah = pah;
 		pah = ah->a.prev;
@@ -245,7 +254,8 @@ void free(void *ptr)
 			struct free_arena_header *tah, *tan, *tap;
 
 			if (tail_portion) {
-				/* Make a new header */
+				/* Make a new header, and insert into chains
+				   immediately after the current block */
 				tah = (struct free_arena_header *)
 					((char *)ah + head_portion + adj_size);
 				tah->a.type = ARENA_TYPE_FREE;
