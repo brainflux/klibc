@@ -234,9 +234,9 @@ void free(void *ptr)
 		size_t adj_size;
 
 		/* Careful here... an individual chunk of memory must have
-		   a minimum size if it exists at all. */
-
-		adj_size = ah->a.size;
+		   a minimum size if it exists at all, so if either the
+		   head or the tail is below the minimum, then extend
+		   that chunk by a page. */
 
 		if (head_portion &&
 		    head_portion < 2*sizeof(struct arena_header))
