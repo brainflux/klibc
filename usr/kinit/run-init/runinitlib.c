@@ -26,8 +26,6 @@
  * ----------------------------------------------------------------------- */
 
 /*
- * runinitlib.c
- *
  * run_init(consoledev, realroot, init, initargs)
  *
  * This function should be called as the last thing in kinit,

@@ -1,6 +1,4 @@
 /*
- * kinit/initrd.c
- *
  * Handle initrd, thus putting the backwards into backwards compatible
  */
 

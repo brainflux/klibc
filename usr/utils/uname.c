@@ -1,5 +1,5 @@
 /*
- * uname.c, by tlh
+ * by tlh
  *
  * The uname program for system information: kernel name, kernel
  * release, kernel release, machine, processor, platform, os and

@@ -1,7 +1,3 @@
-/*
- * nfsmount/nfsmount.h
- */
-
 #ifndef NFSMOUNT_NFSMOUNT_H
 #define NFSMOUNT_NFSMOUNT_H
 

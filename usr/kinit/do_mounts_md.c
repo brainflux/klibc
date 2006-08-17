@@ -1,6 +1,4 @@
 /*
- * usr/kinit/do_mounts_md.c
- *
  * Handle autoconfiguration of md devices.  This is ugly, partially since
  * it still relies on a sizable kernel component.
  *

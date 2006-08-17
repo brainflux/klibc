@@ -1,6 +1,4 @@
 /*
- * getintfile.c
- *
  * Open a file and read it, assuming it contains a single long value.
  * Return 0 if we read a valid value, otherwise -1.
  */

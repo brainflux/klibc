@@ -1,5 +1,5 @@
 /*
- * sunrpc.h - open-coded SunRPC structures
+ * open-coded SunRPC structures
  */
 #ifndef NFSMOUNT_SUNRPC_H
 #define NFSMOUNT_SUNRPC_H

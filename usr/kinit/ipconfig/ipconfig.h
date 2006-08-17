@@ -1,7 +1,3 @@
-/*
- * ipconfig/ipconfig.h
- */
-
 #ifndef IPCONFIG_IPCONFIG_H
 #define IPCONFIG_IPCONFIG_H
 

@@ -1,5 +1,5 @@
 /*
- * chroot.c, by rmk
+ * by rmk
  */
 #include <unistd.h>
 #include <stdio.h>

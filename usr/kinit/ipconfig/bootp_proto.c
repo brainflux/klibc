@@ -1,6 +1,4 @@
 /*
- * ipconfig/bootp_proto.c
- *
  * BOOTP packet protocol handling.
  */
 #include <sys/types.h>

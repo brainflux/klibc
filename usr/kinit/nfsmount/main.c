@@ -1,7 +1,3 @@
-/*
- * nfsmount/main.c
- */
-
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>

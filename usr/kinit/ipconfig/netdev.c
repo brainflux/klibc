@@ -1,6 +1,4 @@
 /*
- * ipconfig/netdev.c
- *
  * ioctl-based device configuration
  */
 #include <sys/types.h>

@@ -7,8 +7,6 @@
 #include <sys/sysmacros.h>
 
 /*
- * devname.c
- *
  * Print the name of a block device.
  */
 #define BUF_SIZE	512

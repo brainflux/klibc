@@ -1,6 +1,4 @@
 /*
- * resume.c
- *
  * Handle resume from suspend-to-disk
  */
 

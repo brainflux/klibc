@@ -1,6 +1,4 @@
 /*
- * readfile.c
- *
  * Read the entire contents of a file into malloc'd storage.  This
  * is mostly useful for things like /proc files where we can't just
  * fstat() to get the length and then mmap().

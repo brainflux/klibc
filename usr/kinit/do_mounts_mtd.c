@@ -1,6 +1,4 @@
 /*
- * usr/kinit/do_mounts_mtd.c
- *
  * Mount an MTD device as a character device.
  */
 

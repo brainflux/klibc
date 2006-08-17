@@ -1,5 +1,5 @@
 /*
- * mount_opts.c, by rmk
+ * by rmk
  *
  * Decode mount options.
  */

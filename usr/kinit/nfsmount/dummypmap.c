@@ -1,6 +1,4 @@
 /*
- * dummypmap.c
- *
  * Enough portmapper functionality that mount doesn't hang trying
  * to start lockd.  Enables nfsroot with locking functionality.
  *

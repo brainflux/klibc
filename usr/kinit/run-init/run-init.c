@@ -26,8 +26,6 @@
  * ----------------------------------------------------------------------- */
 
 /*
- * run-init.c
- *
  * Usage: exec run-init [-c /dev/console] /real-root /sbin/init "$@"
  *
  * This program should be called as the last thing in a shell script

@@ -1,6 +1,4 @@
 /*
- * ipconfig/dhcp_proto.c
- *
  * DHCP RFC 2131 and 2132
  */
 #include <sys/types.h>

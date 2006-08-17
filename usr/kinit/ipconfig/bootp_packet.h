@@ -1,6 +1,3 @@
-/*
- * ipconfig/bootp_packet.h
- */
 #ifndef BOOTP_PACKET_H
 #define BOOTP_PACKET_H
 

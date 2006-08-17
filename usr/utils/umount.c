@@ -1,5 +1,5 @@
 /*
- * umount.c, by rmk
+ * by rmk
  */
 #include <sys/mount.h>
 #include <errno.h>

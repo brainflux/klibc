@@ -26,8 +26,6 @@
  * ----------------------------------------------------------------------- */
 
 /*
- * nuke.c
- *
  * Simple program which does the same thing as rm -rf, except it takes
  * no options and can therefore not get confused by filenames starting
  * with -.  Similarly, an empty list of inputs is assumed to mean don't

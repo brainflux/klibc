@@ -1,6 +1,4 @@
 /*
- * dummyportmap.h
- *
  * Functions for the portmap spoofer
  */
 

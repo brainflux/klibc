@@ -1,4 +1,4 @@
-/* pivot_root.c - Change the root file system */
+/* Change the root file system */
 
 /* Written 2000 by Werner Almesberger */
 

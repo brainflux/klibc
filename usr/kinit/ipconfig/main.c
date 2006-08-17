@@ -1,6 +1,3 @@
-/*
- * ipconfig/main.c
- */
 #include <errno.h>
 #include <poll.h>
 #include <limits.h>

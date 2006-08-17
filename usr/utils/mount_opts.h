@@ -1,3 +1,6 @@
+#ifndef UTILS_MOUNT_OPTS_H
+#define UTILS_MOUNT_OPTS_H
+
 struct mount_opts {
 	const char str[8];
 	unsigned long rwmask;
@@ -19,3 +22,5 @@ struct extra_opts {
 
 unsigned long
 parse_mount_options(char *arg, unsigned long rwflag, struct extra_opts *extra);
+
+#endif /* UTILS_MOUNT_OPTS_H */

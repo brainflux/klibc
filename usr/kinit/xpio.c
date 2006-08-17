@@ -1,6 +1,4 @@
 /*
- * kinit/xpio.c
- *
  * Looping versions of pread() and pwrite()
  */
 

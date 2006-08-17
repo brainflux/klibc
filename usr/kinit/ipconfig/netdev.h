@@ -1,7 +1,3 @@
-/*
- * ipconfig/netdev.h
- */
-
 #ifndef IPCONFIG_NETDEV_H
 #define IPCONFIG_NETDEV_H
 

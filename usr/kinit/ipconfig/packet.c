@@ -1,6 +1,4 @@
 /*
- * ipconfig/packet.c
- *
  * Packet socket handling glue.
  */
 #include <sys/types.h>

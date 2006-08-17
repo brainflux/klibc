@@ -1,5 +1,5 @@
 /*
- * fstype.c, by rmk
+ * by rmk
  *
  * Detect filesystem type (on stdin) and output strings for two
  * environment variables:
