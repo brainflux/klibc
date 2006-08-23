@@ -61,7 +61,8 @@ EOF
 mkdir -p %{buildroot}
 
 %build
-make  KLIBCARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
+make %{_smp_mflags} \
+	KLIBCARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 	INSTALLDIR=%{klibcdir} mandir=%{_mandir} INSTALLROOT=%{buildroot}
 
 %install
