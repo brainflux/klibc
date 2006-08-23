@@ -66,7 +66,8 @@ include $(srctree)/scripts/Kbuild.include
 # Defines used when compiling early userspace (klibc programs)
 # ---------------------------------------------------------------------------
 
-KLIBCREQFLAGS     := $(call cc-option, -fno-stack-protector, )
+KLIBCREQFLAGS     := $(call cc-option, -fno-stack-protector, ) \
+		     -nostdinc -iwithprefix include
 KLIBCARCHREQFLAGS :=
 KLIBCOPTFLAGS     :=
 KLIBCWARNFLAGS    := -W -Wall -Wno-sign-compare -Wno-unused-parameter
