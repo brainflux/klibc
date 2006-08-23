@@ -61,6 +61,7 @@ EOF
 mkdir -p %{buildroot}
 
 %build
+rm -f .config
 make  KLIBCARCH=%{_target_cpu} prefix=%{_prefix} bindir=%{_bindir} \
 	INSTALLDIR=%{klibcdir} mandir=%{_mandir} INSTALLROOT=%{buildroot}
 
