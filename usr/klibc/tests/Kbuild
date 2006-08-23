@@ -15,6 +15,7 @@ shared-y := $(addsuffix .shared, $(static-y))
 
 environ.shared-y	:= environ.o
 fcntl.shared-y		:= fcntl.o
+fnmatch.shared-y	:= fnmatch.o
 getopttest.shared-y	:= getopttest.o
 getpagesize.shared-y	:= getpagesize.o
 hello.shared-y		:= hello.o
