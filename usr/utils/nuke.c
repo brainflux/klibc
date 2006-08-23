@@ -101,18 +101,11 @@ static int nuke(const char *what)
 			/* It's a directory. */
 			err = nuke_dir(what);
 			if (!err)
-				err = rmdir(what) ? errno : err;
-		} else {
-			err = errno;
+				rmdir(what);
 		}
 	}
 
-	if (err) {
-		fprintf(stderr, "%s: %s: %s\n", program, what, strerror(err));
-		return err;
-	} else {
-		return 0;
-	}
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -122,11 +115,8 @@ int main(int argc, char *argv[])
 
 	program = argv[0];
 
-	for (i = 1; i < argc; i++) {
-		err = nuke(argv[i]);
-		if (err)
-			break;
-	}
+	for (i = 1; i < argc; i++)
+		nuke(argv[i]);
 
-	return !!err;
+	return 0;
 }
