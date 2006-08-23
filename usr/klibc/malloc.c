@@ -40,7 +40,7 @@ static inline void remove_from_main_chain(struct free_arena_header *ah)
 	an = ah->a.next;
 	ap->a.next = an;
 	an->a.prev = ap;
-}	
+}
 
 static inline void remove_from_free_chain(struct free_arena_header *ah)
 {
@@ -50,7 +50,7 @@ static inline void remove_from_free_chain(struct free_arena_header *ah)
 	an = ah->next_free;
 	ap->next_free = an;
 	an->prev_free = ap;
-}	
+}
 
 static inline void remove_from_chains(struct free_arena_header *ah)
 {
