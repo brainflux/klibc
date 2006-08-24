@@ -3,7 +3,7 @@
 #
 
 config-cppflags := -DBSD=1 -DSMALL -DJOBS=0 -DHAVE_CONFIG_H -DSHELL
-config-cppflags += -DGLOB_BROKEN -DFNMATCH_BROKEN -DIFS_BROKEN
+config-cppflags += -DGLOB_BROKEN -DIFS_BROKEN
 
 EXTRA_KLIBCCFLAGS := -I$(srctree)/$(src) -I$(objtree)/$(obj)
 EXTRA_KLIBCCFLAGS += -include $(srctree)/$(src)/config.h
