@@ -1,7 +1,7 @@
 /*
  * fnmatch.c
  *
- * Original implementation by Aaron Griffin, modified by H. Peter Anvin
+ * Original implementation by Kay Sievers, modified by H. Peter Anvin.
  */
 
 #include <fnmatch.h>
