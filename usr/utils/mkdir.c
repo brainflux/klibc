@@ -15,6 +15,12 @@ static int p_flag;
 
 char *progname;
 
+static __noreturn usage(void)
+{
+	fprintf(stderr, "Usage: %s [-p] [-m mode] dir...\n", progname);
+	exit(1);
+}
+
 static int make_one_dir(char *dir, mode_t mode)
 {
 	struct stat stbuf;
@@ -131,14 +137,12 @@ int main(int argc, char *argv[])
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
-			exit(1);
+			usage();
 		}
 	} while (1);
 
-	if (optind == argc) {
-		fprintf(stderr, "Usage: %s [-p] [-m mode] dir...\n", progname);
-		exit(1);
-	}
+	if (optind == argc)
+		usage();
 
 	while (optind < argc) {
 		if (make_dir(argv[optind]))
