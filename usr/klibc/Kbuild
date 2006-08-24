@@ -41,7 +41,7 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  seteuid.o setegid.o \
 	  getenv.o setenv.o putenv.o __put_env.o unsetenv.o \
 	  clearenv.o nullenv.o \
-	  getopt.o readdir.o remove.o \
+	  getopt.o getopt_long.o readdir.o remove.o \
 	  syslog.o closelog.o pty.o getpt.o isatty.o reboot.o \
 	  time.o utime.o llseek.o nice.o getpriority.o \
 	  qsort.o bsearch.o \
