@@ -62,9 +62,8 @@ int getopt_long(int argc, char *const *argv, const char *optstring,
 
 	/* First, eliminate all non-option cases */
 
-	if (!carg || carg[0] != '-' || !carg[1]) {
+	if (!carg || carg[0] != '-' || !carg[1])
 		return -1;
-	}
 
 	if (carg[1] == '-') {
 		const struct option *lo;
@@ -82,14 +81,17 @@ int getopt_long(int argc, char *const *argv, const char *optstring,
 			if ((opt_end = option_matches(carg+2, lo->name)))
 			    break;
 		}
-		if (opt_end)
+		if (!opt_end)
 			return '?';
 
 		if (longindex)
 			*longindex = lo-longopts;
 
-		if (lo->has_arg && *opt_end == '=') {
-			optarg = (char *)opt_end+1;
+		if (*opt_end == '=') {
+			if (lo->has_arg)
+				optarg = (char *)opt_end+1;
+			else
+				return '?';
 		} else if (lo->has_arg == 1) {
 			if (!(optarg = argv[optind]))
 				return '?';
