@@ -98,7 +98,7 @@ static __inline__ off_t llseek(int __f, off_t __o, int __w)
 __extern ssize_t read(int, void *, size_t);
 __extern ssize_t write(int, const void *, size_t);
 __extern ssize_t pread(int, void *, size_t, off_t);
-__extern ssize_t pwrite(int, void *, size_t, off_t);
+__extern ssize_t pwrite(int, const void *, size_t, off_t);
 
 __extern int dup(int);
 __extern int dup2(int, int);
