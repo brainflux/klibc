@@ -187,8 +187,8 @@ static int mount_call(uint32_t proc, uint32_t version,
 	}
 
 	if (mnt_reply.status != 0) {
-		fprintf(stderr, "mount call failed: %d\n",
-			ntohl(mnt_reply.status));
+		fprintf(stderr, "mount call failed - server replied: %s.\n",
+			strerror(ntohl(mnt_reply.status)));
 		goto bail;
 	}
 
