@@ -31,6 +31,7 @@
 #include "xfs_sb.h"
 #include "luks_fs.h"
 #include "lvm2_sb.h"
+#include "iso9660_sb.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -221,6 +222,21 @@ static int lvm2_image(const void *buf, unsigned long long *blocks)
 	return 0;
 }
 
+static int iso_image(const void *buf, unsigned long long *blocks)
+{
+	const struct iso_volume_descriptor *isovd =
+	    (const struct iso_volume_descriptor *)buf;
+	const struct iso_hs_volume_descriptor *isohsvd =
+	    (const struct iso_hs_volume_descriptor *)buf;
+
+	if (!memcmp(isovd->id, ISO_MAGIC, ISO_MAGIC_L) ||
+	    !memcmp(isohsvd->id, ISO_HS_MAGIC, ISO_HS_MAGIC_L)) {
+		*blocks = 0;
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t block;
 	const char name[12];
@@ -250,6 +266,7 @@ static struct imagetype images[] = {
 	{8, "reiserfs", reiserfs_image},
 	{64, "reiserfs", reiserfs_image},
 	{32, "jfs", jfs_image},
+	{32, "iso9660", iso_image},
 	{0, "luks", luks_image},
 	{0, "lvm2", lvm2_image},
 	{1, "lvm2", lvm2_image},
