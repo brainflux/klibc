@@ -34,14 +34,13 @@
 # define F_SETLKW F_SETLKW64
 #endif
 
-/* This is defined here as well as in <unistd.h> since old-style code
-   would still include <fcntl.h> when using open(), and open() being
-   a varadic function changes its calling convention on some architectures. */
+/* This is defined here as well as in <unistd.h> */
 #ifndef _KLIBC_IN_OPEN_C
 __extern int open(const char *, int, ...);
 __extern int openat(int, const char *, int, ...);
 #endif
 
+__extern int creat(const char *, mode_t);
 __extern int fcntl(int, int, ...);
 
 #endif				/* _FCNTL_H */
