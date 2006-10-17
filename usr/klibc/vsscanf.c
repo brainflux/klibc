@@ -69,6 +69,7 @@ int vsscanf(const char *buffer, const char *format, va_list ap)
 {
 	const char *p = format;
 	char ch;
+	unsigned char uc;
 	const char *q = buffer;
 	const char *qq;
 	uintmax_t val = 0;
@@ -223,7 +224,8 @@ int vsscanf(const char *buffer, const char *format, va_list ap)
 						break;
 					}
 					q = qq;
-					converted++;
+					if (!(flags & FL_SPLAT))
+						converted++;
 					/* fall through */
 
 				      set_integer:
@@ -266,40 +268,55 @@ int vsscanf(const char *buffer, const char *format, va_list ap)
 				case 'c':	/* Character */
 					/* Default width == 1 */
 					width = (flags & FL_WIDTH) ? width : 1;
-					sarg = va_arg(ap, char *);
-					while (width--) {
-						if (!*q) {
-							bail = bail_eof;
-							break;
+					if (flags & FL_SPLAT) {
+						while (width--) {
+							if (!*q) {
+								bail = bail_eof;
+								break;
+							}
 						}
-						*sarg++ = *q++;
+					} else {
+						sarg = va_arg(ap, char *);
+						while (width--) {
+							if (!*q) {
+								bail = bail_eof;
+								break;
+							}
+							*sarg++ = *q++;
+						}
+						if (!bail)
+							converted++;
 					}
-					if (!bail)
-						converted++;
 					break;
 
 				case 's':	/* String */
-					{
+					uc = 1;	/* Anything nonzero */
+					if (flags & FL_SPLAT) {
+						while (width-- && (uc = *q) &&
+						       !isspace(uc)) {
+							q++;
+						}
+					} else {
 						char *sp;
 						sp = sarg = va_arg(ap, char *);
-						while (width-- && *q
-						       &&
-						       !isspace((unsigned char)
-								*q)) {
-							*sp++ = *q++;
+						while (width-- && (uc = *q) &&
+						       !isspace(uc)) {
+							*sp++ = uc;
+							q++;
 						}
 						if (sarg != sp) {
 							/* Terminate output */
 							*sp = '\0';
 							converted++;
-						} else {
-							bail = bail_eof;
 						}
 					}
+					if (!uc)
+						bail = bail_eof;
 					break;
 
 				case '[':	/* Character range */
-					sarg = va_arg(ap, char *);
+					sarg = (flags & FL_SPLAT) ? NULL
+						: va_arg(ap, char *);
 					state = st_match_init;
 					matchinv = 0;
 					memset(matchmap, 0, sizeof matchmap);
@@ -356,17 +373,21 @@ int vsscanf(const char *buffer, const char *format, va_list ap)
 
 		      match_run:	/* Match expression finished */
 			qq = q;
-			while (width && *q
-			       && test_bit(matchmap,
-					   (unsigned char)*q) ^ matchinv) {
-				*sarg++ = *q++;
+			uc = 1;	/* Anything nonzero */
+			while (width && (uc = *q)
+			       && test_bit(matchmap, uc)^matchinv) {
+				if (sarg)
+					*sarg++ = uc;
+				q++;
 			}
-			if (q != qq) {
+			if (q != qq && sarg) {
 				*sarg = '\0';
 				converted++;
 			} else {
-				bail = *q ? bail_err : bail_eof;
+				bail = bail_err;
 			}
+			if (!uc)
+				bail = bail_eof;
 			break;
 		}
 	}
