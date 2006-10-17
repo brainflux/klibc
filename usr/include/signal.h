@@ -68,18 +68,21 @@ static __inline__ int sigfillset(sigset_t * __set)
 static __inline__ int sigaddset(sigset_t * __set, int __signum)
 {
 	unsigned long *__lset = (unsigned long *)__set;
+	__signum--;		/* Signal 0 is not in the set */
 	__lset[__signum / LONG_BIT] |= 1UL << (__signum % LONG_BIT);
 	return 0;
 }
 static __inline__ int sigdelset(sigset_t * __set, int __signum)
 {
 	unsigned long *__lset = (unsigned long *)__set;
+	__signum--;		/* Signal 0 is not in the set */
 	__lset[__signum / LONG_BIT] &= ~(1UL << (__signum % LONG_BIT));
 	return 0;
 }
 static __inline__ int sigismember(sigset_t * __set, int __signum)
 {
 	unsigned long *__lset = (unsigned long *)__set;
+	__signum--;		/* Signal 0 is not in the set */
 	return (int)((__lset[__signum / LONG_BIT] >> (__signum % LONG_BIT)) &
 		     1);
 }

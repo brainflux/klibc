@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
 {
 	struct sigaction act, oact;
 	pid_t f;
+	sigset_t set;
 
 	(void)argc;
 
@@ -31,13 +32,23 @@ int main(int argc, char *argv[])
 	sigaction(SIGINT, &act, &oact);
 	sigaction(SIGTERM, &act, &oact);
 
+	sigemptyset(&set);
+	sigaddset(&set, SIGINT);
+	sigprocmask(SIG_BLOCK, &set, NULL);
+
 	f = fork();
 
 	if (f < 0) {
 		perror(argv[0]);
 		exit(255);
 	} else if (f > 0) {
-		sleep(5);
+		sleep(3);
+		if (counter) {
+			fprintf(stderr, "Signal received while masked!\n");
+			exit(1);
+		}
+		sigprocmask(SIG_UNBLOCK, &set, NULL);
+		sleep(3);
 		if (!counter) {
 			fprintf(stderr, "No signal received!\n");
 			exit(1);
