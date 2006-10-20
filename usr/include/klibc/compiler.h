@@ -116,6 +116,13 @@
 # define __bitwise
 #endif
 
+/* Shut up unused warnings */
+#ifdef __GNUC__
+# define __attribute_used__ __attribute__((used))
+#else
+# define __attribute_used__
+#endif
+
 /* Compiler pragma to make an alias symbol */
 #define __ALIAS(__t, __f, __p, __a) \
   __t __f __p __attribute__((weak, alias(#__a)));
