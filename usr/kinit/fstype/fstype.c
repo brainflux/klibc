@@ -202,6 +202,20 @@ static int swap_image(const void *buf, unsigned long long *blocks)
 	return 0;
 }
 
+static int suspend_image(const void *buf, unsigned long long *blocks)
+{
+	const struct swap_super_block *ssb =
+	    (const struct swap_super_block *)buf;
+
+	if (!memcmp(ssb->magic, SUSP_MAGIC_1, SUSP_MAGIC_L) ||
+	    !memcmp(ssb->magic, SUSP_MAGIC_2, SUSP_MAGIC_L) ||
+	    !memcmp(ssb->magic, SUSP_MAGIC_U, SUSP_MAGIC_L)) {
+		*blocks = 0;
+		return 1;
+	}
+	return 0;
+}
+
 static int lvm2_image(const void *buf, unsigned long long *blocks)
 {
 	const struct lvm2_super_block *lsb;
@@ -271,6 +285,7 @@ static struct imagetype images[] = {
 	{0, "lvm2", lvm2_image},
 	{1, "lvm2", lvm2_image},
 	{-1, "swap", swap_image},
+	{-1, "suspend", suspend_image},
 	{0, "", NULL}
 };
 

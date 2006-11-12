@@ -6,6 +6,13 @@
 #define SWAP_RESERVED_L		(1024 - SWAP_MAGIC_L)
 #define SWAP_MAGIC_1		"SWAP-SPACE"
 #define SWAP_MAGIC_2		"SWAPSPACE2"
+
+/* Suspend signatures, located at same addr as swap magic */
+#define SUSP_MAGIC_L		9
+#define SUSP_MAGIC_1		"S1SUSPEND"
+#define SUSP_MAGIC_2		"S2SUSPEND"
+#define SUSP_MAGIC_U		"ULSUSPEND"
+
 /* The superblock is the last block in the first page */
 #define SWAP_OFFSET()		((getpagesize() - 1024) >> 10)
 
