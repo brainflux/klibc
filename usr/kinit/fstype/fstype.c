@@ -116,7 +116,7 @@ static int ext3_image(const void *buf, unsigned long long *bytes)
 	    sb->
 	    s_feature_compat & __cpu_to_le32(EXT3_FEATURE_COMPAT_HAS_JOURNAL)) {
 		*bytes = (unsigned long long)__le32_to_cpu(sb->s_blocks_count)
-		    << (10 + sb->s_log_block_size);
+		    << (10 + __le32_to_cpu(sb->s_log_block_size));
 		return 1;
 	}
 	return 0;
@@ -129,7 +129,7 @@ static int ext2_image(const void *buf, unsigned long long *bytes)
 
 	if (sb->s_magic == __cpu_to_le16(EXT2_SUPER_MAGIC)) {
 		*bytes = (unsigned long long)__le32_to_cpu(sb->s_blocks_count)
-		    << (10 + sb->s_log_block_size);
+		    << (10 + __le32_to_cpu(sb->s_log_block_size));
 		return 1;
 	}
 	return 0;
