@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == '\0') {
+	if (argc > 1 && !(argv[1][0] == '-' && argv[1][1] == '\0')) {
 		fd = open(file = argv[1], O_RDONLY);
 		if (fd < 0) {
 			perror(argv[1]);
