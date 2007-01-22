@@ -27,6 +27,9 @@ void qsort(void *base, size_t nmemb, size_t size,
 	char *p1, *p2;
 	int swapped;
 
+	if (!nmemb)
+		return;
+
 	do {
 		gap = newgap(gap);
 		swapped = 0;
