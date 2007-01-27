@@ -251,8 +251,9 @@ inline
 STATIC char *
 getpwd()
 {
-	char *dir = getcwd(0, 0);
-	return dir ? dir : nullstr;
+	char buf[PATH_MAX];
+	char *dir = getcwd(buf, sizeof(buf));
+	return dir ? savestr(dir) : nullstr;
 }
 
 int
