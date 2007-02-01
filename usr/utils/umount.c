@@ -17,12 +17,15 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 
 	do {
-		c = getopt(argc, argv, "f");
+		c = getopt(argc, argv, "fl");
 		if (c == EOF)
 			break;
 		switch (c) {
 		case 'f':
 			flag |= MNT_FORCE;
+			break;
+		case 'l':
+			flag |= MNT_DETACH;
 			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
@@ -32,7 +35,7 @@ int main(int argc, char *argv[])
 	} while (1);
 
 	if (optind + 1 != argc) {
-		fprintf(stderr, "Usage: %s [-f] mntpoint\n", progname);
+		fprintf(stderr, "Usage: %s [-f] [-l] mntpoint\n", progname);
 		return 1;
 	}
 
