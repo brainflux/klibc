@@ -96,6 +96,10 @@ typedef uint32_t __bitwise __be32;
 typedef uint64_t __bitwise __le64;
 typedef uint64_t __bitwise __be64;
 
+typedef uint16_t __sum16;
+typedef uint32_t __sum32;
+typedef uint64_t __sum64;
+
 /*
  * Some headers seem to require this...
  */
