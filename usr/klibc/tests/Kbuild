@@ -31,6 +31,7 @@ nfs_no_rpc.shared-y	:= nfs_no_rpc.o
 opentest.shared-y	:= opentest.o
 pipetest.shared-y	:= pipetest.o
 rtsig.shared-y		:= rtsig.o
+select.shared-y		:= select.o
 setenvtest.shared-y	:= setenvtest.o
 setjmptest.shared-y	:= setjmptest.o
 sigint.shared-y		:= sigint.o
