@@ -29,7 +29,11 @@ KLIBCLDFLAGS      = -m elf_x86_64
 # This address needs to be reachable using normal inter-module
 # calls, and work on the memory models for this architecture
 # 2 MB - normal binaries start at 4 MB
-KLIBCSHAREDFLAGS     = -Ttext 0x00200200
+#
+# Recent binutils use max-page-size=0x200000 by default, which pushes
+# klibc.so data over the 4 MB mark, overlapping the executable.
+# Revert to the old max-page-size=0x100000 value.
+KLIBCSHAREDFLAGS     = -Ttext 0x00200200 -z max-page-size=0x100000
 
 # Additional asm- directories needed during installation
 ASMARCH = asm-i386
