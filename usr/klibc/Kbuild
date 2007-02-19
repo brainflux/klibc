@@ -145,7 +145,8 @@ $(SOLIB).hash: $(SOLIB) $(obj)/sha1hash FORCE
 
 quiet_cmd_sohash = GEN     $@
       cmd_sohash = cat $< > $@;                                           \
-                     $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@;                   \
+                     $(KLIBCSTRIP) $(KLIBCSTRIPFLAGS) $@;                 \
+		     chmod a+x $@;					  \
                      rm -f $(obj)/klibc-???????????????????????????.so;   \
                      ln -f $@ $(obj)/klibc-$(SOLIBHASH).so
 $(SOHASH): $(SOLIB) $(SOLIB).hash
