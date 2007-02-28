@@ -45,6 +45,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdint.h>
+#include <time.h>		/* strtotimeval() */
 
 #include "shell.h"
 #include "options.h"
@@ -79,15 +80,33 @@ readcmd(int argc, char **argv)
 	char *p;
 	int startword;
 	int status;
+	int timeout;
 	int i;
+	fd_set set;
+	struct timeval ts, t0, t1, to;
+
+	ts.tv_sec = ts.tv_usec = 0;
 
 	rflag = 0;
+	timeout = 0;
 	prompt = NULL;
-	while ((i = nextopt("p:r")) != '\0') {
-		if (i == 'p')
+	while ((i = nextopt("p:rt:")) != '\0') {
+		switch(i) {
+		case 'p':
 			prompt = optionarg;
-		else
+			break;
+		case 't':
+			p = strtotimeval(optionarg, &ts);
+			if (*p || (!ts.tv_sec && !ts.tv_usec))
+				sh_error("invalid timeout");
+			timeout = 1;
+			break;
+		case 'r':
 			rflag = 1;
+			break;
+		default:
+			break;
+		}
 	}
 	if (prompt && isatty(0)) {
 		out2str(prompt);
@@ -102,8 +121,44 @@ readcmd(int argc, char **argv)
 	status = 0;
 	startword = 1;
 	backslash = 0;
+	if (timeout) {
+		gettimeofday(&t0, NULL);
+
+		/* ts += t0; */
+		ts.tv_usec += t0.tv_usec;
+		while (ts.tv_usec >= 1000000) {
+			ts.tv_sec++;
+			ts.tv_usec -= 1000000;
+		}
+		ts.tv_sec += t0.tv_sec;
+	}
 	STARTSTACKSTR(p);
 	for (;;) {
+		if (timeout) {
+			gettimeofday(&t1, NULL);
+			if (t1.tv_sec > ts.tv_sec ||
+			    (t1.tv_sec == ts.tv_sec &&
+			     t1.tv_usec >= ts.tv_usec)) {
+				status = 1;
+				break;	/* Timeout! */
+			}
+
+			/* to = ts - t1; */
+			if (ts.tv_usec >= t1.tv_usec) {
+				to.tv_usec = ts.tv_usec - t1.tv_usec;
+				to.tv_sec  = ts.tv_sec - t1.tv_sec;
+			} else {
+				to.tv_usec = ts.tv_usec - t1.tv_usec + 1000000;
+				to.tv_sec  = ts.tv_sec - t1.tv_sec - 1;
+			}
+
+			FD_ZERO(&set);
+			FD_SET(0, &set);
+			if (select(1, &set, NULL, NULL, &to) != 1) {
+				status = 1;
+				break; /* Timeout! */
+			}
+		}
 		if (read(0, &c, 1) != 1) {
 			status = 1;
 			break;
