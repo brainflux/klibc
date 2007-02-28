@@ -4,7 +4,7 @@
 
 progs := chroot dd mkdir mkfifo mknod mount pivot_root umount
 progs += true false sleep ln nuke minips cat
-progs += insmod uname halt kill readlink
+progs += insmod uname halt kill readlink cpio
 
 static-y := $(addprefix static/, $(progs))
 shared-y := $(addprefix shared/, $(progs))
@@ -50,6 +50,8 @@ static/kill-y       := kill.o
 shared/kill-y       := kill.o
 static/readlink-y   := readlink.o
 shared/readlink-y   := readlink.o
+static/cpio-y	    := cpio.o
+shared/cpio-y       := cpio.o
 
 # Additionally linked targets
 always := static/reboot static/poweroff shared/reboot shared/poweroff
