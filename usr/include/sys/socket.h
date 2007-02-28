@@ -7,9 +7,17 @@
 
 #include <klibc/extern.h>
 #include <klibc/compiler.h>
+#include <klibc/sysconfig.h>
 #include <linux/socket.h>
+#if _KLIBC_HAS_ARCHSOCKET_H
+#include <klibc/archsocket.h>
+#endif
 
-/* For some reason these may be protected by __KERNEL__ in asm/socket.h */
+/* Great job, guys!  These are *architecture-specific* ABI constants,
+   that are hidden under #ifdef __KERNEL__... what a brilliant idea!
+   These are the "common" definitions; if not appropriate, override
+   them in <klibc/archsocket.h>. */
+   
 #ifndef SOCK_STREAM
 # define SOCK_STREAM    1
 # define SOCK_DGRAM     2

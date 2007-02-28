@@ -163,6 +163,7 @@
 # define _KLIBC_STATFS_F_TYPE_64 (_BITSIZE == 64)
 #endif
 
+
 /*
  * _KLIBC_STATFS_F_TYPE_32B:
  *
@@ -171,6 +172,16 @@
  */	
 #ifndef _KLIBC_STATFS_F_TYPE_32B
 # define _KLIBC_STATFS_F_TYPE_32B 0
+#endif
+
+
+/*
+ * _KLIBC_HAS_ARCHSOCKET_H
+ *
+ *       This architecture has <klibc/archsocket.h>
+ */
+#ifndef _KLIBC_HAS_ARCHSOCKET_H
+# define _KLIBC_HAS_ARCHSOCKET_H 0
 #endif
 
 #endif /* _KLIBC_SYSCONFIG_H */

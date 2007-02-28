@@ -15,4 +15,7 @@
 /* MIPS defines it's own statfs */
 #define _KLIBC_STATFS_F_TYPE_32B 1
 
+/* MIPS has nonstandard socket definitions */
+#define _KLIBC_HAS_ARCHSOCKET_H 1
+
 #endif				/* _KLIBC_ARCHCONFIG_H */

@@ -9,6 +9,7 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* All defaults */
+/* MIPS has nonstandard socket definitions */
+#define _KLIBC_HAS_ARCHSOCKET_H 1
 
 #endif				/* _KLIBC_ARCHCONFIG_H */
