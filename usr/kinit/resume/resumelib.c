@@ -23,6 +23,7 @@ int do_resume(int argc, char *argv[])
 {
 	const char *resume_file = CONFIG_PM_STD_PARTITION;
 	const char *resume_arg;
+	unsigned long long resume_offset;
 
 	resume_arg = get_arg(argc, argv, "resume=");
 	resume_file = resume_arg ? resume_arg : resume_file;
@@ -30,15 +31,18 @@ int do_resume(int argc, char *argv[])
 	if (!resume_file[0])
 		return 0;
 
+	resume_arg = get_arg(argc, argv, "resume_offset=");
+	resume_offset = resume_arg ? strtoull(resume_arg, NULL, 0) : 0ULL;
+
 	/* Fix: we either should consider reverting the device back to
 	   ordinary swap, or (better) put that code into swapon */
 	/* Noresume requested */
 	if (get_flag(argc, argv, "noresume"))
 		return 0;
-	return resume(resume_file);
+	return resume(resume_file, resume_offset);
 }
 
-int resume(const char *resume_file)
+int resume(const char *resume_file, unsigned long long resume_offset)
 {
 	dev_t resume_device;
 	int powerfd = -1;
@@ -55,8 +59,10 @@ int resume(const char *resume_file)
 	if ((powerfd = open("/sys/power/resume", O_WRONLY)) < 0)
 		goto fail_r;
 
-	len = snprintf(device_string, sizeof device_string, "%u:%u",
-		       major(resume_device), minor(resume_device));
+	len = snprintf(device_string, sizeof device_string,
+		       "%u:%u:%llu",
+		       major(resume_device), minor(resume_device),
+		       resume_offset);
 
 	/* This should never happen */
 	if (len >= sizeof device_string)
