@@ -1,5 +1,4 @@
-#include <asm/asm.h>
-#include <asm/regdef.h>
+#include <machine/asm.h>
 #include <asm/unistd.h>
 
 #define CLONE_VM	0x00000100

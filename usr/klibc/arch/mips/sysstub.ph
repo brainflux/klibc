@@ -14,8 +14,7 @@ sub make_sysstub($$$$$@) {
 
     $stype = $stype || 'common';
     open(OUT, '>', "${outputdir}/${fname}.S");
-    print OUT "#include <asm/asm.h>\n";
-    print OUT "#include <asm/regdef.h>\n";
+    print OUT "#include <machine/asm.h>\n";
     print OUT "#include <asm/unistd.h>\n";
     print OUT "\n";
     print OUT "\t.set noreorder\n";
