@@ -8,8 +8,6 @@
  *
  * We currently detect the filesystems listed below in the struct
  * "imagetype images" (in the order they are listed).
- *
- * MINIX, ext3 and Reiserfs bits are currently untested.
  */
 
 #include <sys/types.h>
