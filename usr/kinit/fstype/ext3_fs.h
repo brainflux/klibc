@@ -1,3 +1,6 @@
+#ifndef __EXT3_FS_H
+#define __EXT3_FS_H
+
 /*
  * The second extended file system magic number
  */
@@ -90,3 +93,5 @@ struct ext3_super_block {
 	__u16 s_reserved_word_pad;
 	__u32 s_reserved[192];	/* Padding to the end of the block */
 };
+
+#endif /* __EXT3_FS_H */
