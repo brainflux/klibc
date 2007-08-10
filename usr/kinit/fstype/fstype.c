@@ -44,6 +44,7 @@
  * Use a cleaned up version.
  */
 #include "reiserfs_fs.h"
+#include "reiser4_fs.h"
 
 #include "fstype.h"
 
@@ -148,6 +149,20 @@ static int reiserfs_image(const void *buf, unsigned long long *bytes)
 		   sizeof(REISER2FS_JR_SUPER_MAGIC_STRING) - 1) == 0) {
 		*bytes = (unsigned long long)REISERFS_BLOCK_COUNT(sb) *
 		    REISERFS_BLOCKSIZE(sb);
+		return 1;
+	}
+	return 0;
+}
+
+static int reiser4_image(const void *buf, unsigned long long *bytes)
+{
+	const struct reiser4_master_sb *sb =
+		(const struct reiser4_master_sb *)buf;
+
+	if (memcmp(sb->ms_magic, REISER4_SUPER_MAGIC_STRING,
+		sizeof(REISER4_SUPER_MAGIC_STRING) - 1) == 0) {
+		*bytes = (unsigned long long) __le32_to_cpu(sb->ms_format) *
+			__le32_to_cpu(sb->ms_blksize);
 		return 1;
 	}
 	return 0;
@@ -279,6 +294,7 @@ static struct imagetype images[] = {
 	{1, "minix", minix_image},
 	{8, "reiserfs", reiserfs_image},
 	{64, "reiserfs", reiserfs_image},
+	{64, "reiser4", reiser4_image},
 	{32, "jfs", jfs_image},
 	{32, "iso9660", iso_image},
 	{0, "luks", luks_image},
