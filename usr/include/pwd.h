@@ -14,6 +14,8 @@ struct passwd {
 	char *pw_shell;
 };
 
+__extern struct passwd *getpwuid(uid_t uid);
+
 __extern struct passwd *getpwnam(const char *name);
 
 #endif	/* _PWD_H */
