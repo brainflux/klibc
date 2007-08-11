@@ -24,7 +24,7 @@ struct reiser4_master_sb {
 
 	/* Filesystem label in use. */
 	char ms_label[SS_MAGIC_SIZE];
-};
+} __attribute__ ((packed));
 
 #define REISER4_SUPER_MAGIC_STRING "ReIsEr4"
 
