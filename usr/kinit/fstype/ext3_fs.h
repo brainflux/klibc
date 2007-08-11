@@ -7,6 +7,10 @@
 #define EXT3_SUPER_MAGIC        0xEF53
 
 #define EXT3_FEATURE_COMPAT_HAS_JOURNAL         0x0004
+#define EXT3_FEATURE_INCOMPAT_JOURNAL_DEV       0x0008
+#define EXT3_FEATURE_INCOMPAT_EXTENTS           0x0040
+#define EXT4_FEATURE_INCOMPAT_64BIT             0x0080
+#define EXT4_FEATURE_INCOMPAT_MMP               0x0100
 
 /*
  * Structure of the super block

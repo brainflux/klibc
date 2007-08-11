@@ -107,6 +107,25 @@ static int minix_image(const void *buf, unsigned long long *bytes)
 	return 0;
 }
 
+static int ext4_image(const void *buf, unsigned long long *bytes)
+{
+	const struct ext3_super_block *sb =
+		(const struct ext3_super_block *)buf;
+
+	if (sb->s_magic == __cpu_to_le16(EXT2_SUPER_MAGIC)
+		&& (sb->s_feature_incompat
+		& __cpu_to_le32(EXT3_FEATURE_INCOMPAT_EXTENTS)
+		|| sb->s_feature_incompat
+		& __cpu_to_le32(EXT4_FEATURE_INCOMPAT_64BIT)
+		|| sb->s_feature_incompat
+		& __cpu_to_le32(EXT4_FEATURE_INCOMPAT_MMP))) {
+		*bytes = (unsigned long long)__le32_to_cpu(sb->s_blocks_count)
+		    << (10 + __le32_to_cpu(sb->s_log_block_size));
+		return 1;
+	}
+	return 0;
+}
+
 static int ext3_image(const void *buf, unsigned long long *bytes)
 {
 	const struct ext3_super_block *sb =
@@ -302,6 +321,7 @@ static struct imagetype images[] = {
 	{0, "romfs", romfs_image},
 	{0, "xfs", xfs_image},
 	{0, "squashfs", squashfs_image},
+	{1, "ext4dev", ext4_image},
 	{1, "ext3", ext3_image},
 	{1, "ext2", ext2_image},
 	{1, "minix", minix_image},
