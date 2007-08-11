@@ -30,6 +30,7 @@
 #include "luks_fs.h"
 #include "lvm2_sb.h"
 #include "iso9660_sb.h"
+#include "squashfs_fs.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -264,6 +265,19 @@ static int iso_image(const void *buf, unsigned long long *blocks)
 	return 0;
 }
 
+static int squashfs_image(const void *buf, unsigned long long *blocks)
+{
+	const struct squashfs_super_block *sb =
+		(const struct squashfs_super_block *)buf;
+
+	if (sb->s_magic == SQUASHFS_MAGIC
+	    || sb->s_magic == SQUASHFS_MAGIC_SWAP) {
+		*blocks = (unsigned long long) sb->bytes_used;
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t block;
 	const char name[12];
@@ -287,6 +301,7 @@ static struct imagetype images[] = {
 	{0, "cramfs", cramfs_image},
 	{0, "romfs", romfs_image},
 	{0, "xfs", xfs_image},
+	{0, "squashfs", squashfs_image},
 	{1, "ext3", ext3_image},
 	{1, "ext2", ext2_image},
 	{1, "minix", minix_image},
