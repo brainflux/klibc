@@ -12,7 +12,7 @@ subdir-      := $(include-subdir) $(klibc-subdir) $(usr-subdirs)
 usr-subdirs  := $(addprefix _usr_,$(usr-subdirs))
 klibc-subdir := $(addprefix _usr_,$(klibc-subdir))
 
-# Klibc binaries
+# klibc binaries
 ifdef CONFIG_KLIBC
 
 # .initramfs_data.cpio.gz.d is used to identify all files included

@@ -16,7 +16,7 @@ repository can be viewed on the web at:
 
 	http://www.kernel.org/git/?p=libs/klibc/klibc.git;a=summary
 
-To clone the klibc repository using Cogito:
+To clone the klibc repository using git:
 
 	git clone git://git.kernel.org/pub/scm/libs/klibc/klibc.git <workdir>
 
