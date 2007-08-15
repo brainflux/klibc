@@ -31,6 +31,7 @@
 #include "lvm2_sb.h"
 #include "iso9660_sb.h"
 #include "squashfs_fs.h"
+#include "gfs2_fs.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -297,6 +298,20 @@ static int squashfs_image(const void *buf, unsigned long long *blocks)
 	return 0;
 }
 
+static int gfs2_image(const void *buf, unsigned long long *bytes)
+{
+	const struct gfs2_sb *sb =
+		(const struct gfs2_sb *)buf;
+
+	if (__be32_to_cpu(sb->sb_header.mh_magic) == GFS2_MAGIC
+		&& (__be32_to_cpu(sb->sb_fs_format) == GFS2_FORMAT_FS
+		|| __be32_to_cpu(sb->sb_fs_format) == GFS2_FORMAT_MULTI)) {
+		*bytes = 0; /* cpu_to_be32(sb->sb_bsize) * ?; */
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t block;
 	const char name[12];
@@ -328,6 +343,7 @@ static struct imagetype images[] = {
 	{8, "reiserfs", reiserfs_image},
 	{64, "reiserfs", reiserfs_image},
 	{64, "reiser4", reiser4_image},
+	{64, "gfs2", gfs2_image},
 	{32, "jfs", jfs_image},
 	{32, "iso9660", iso_image},
 	{0, "luks", luks_image},
