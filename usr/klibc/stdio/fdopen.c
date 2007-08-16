@@ -6,7 +6,6 @@
 
 FILE *fdopen(int fd, const char *mode)
 {
-	FILE *f = NULL;
 	int flags = __parse_open_mode(mode);
 	int oldflags;
 
@@ -17,5 +16,5 @@ FILE *fdopen(int fd, const char *mode)
 	if (fcntl(fd, F_SETFL, &oldflags))
 		return NULL;
 
-	return __fxopen(fd, mode, 0);
+	return __fxopen(fd, flags, 0);
 }
