@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 #include <sys/syscall.h>
 #include "atexit.h"
 
@@ -25,6 +26,7 @@ __noreturn exit(int rv)
 	}
 
 	/* Handle any library destructors if we ever start using them... */
+	fflush(NULL);
 
 	_exit(rv);
 }

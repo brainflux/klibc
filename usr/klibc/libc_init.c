@@ -39,6 +39,8 @@ struct auxentry {
 	uintptr_t v;
 };
 
+extern void __init_stdio(void);
+
 __noreturn __libc_init(uintptr_t * elfdata, void (*onexit) (void))
 {
 	int argc;
@@ -101,6 +103,8 @@ __noreturn __libc_init(uintptr_t * elfdata, void (*onexit) (void))
 	}
 #endif
 	__page_shift = page_shift;
+
+	__init_stdio();
 
 	environ = envp;
 	exit(MAIN(argc, argv, envp));

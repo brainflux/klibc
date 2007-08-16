@@ -10,17 +10,39 @@
 #include <stddef.h>
 #include <unistd.h>
 
-/* This structure doesn't really exist, but it gives us something
-   to define FILE * with */
-struct _IO_file;
+/* Unidirectional buffer */
+struct _IO_buf {
+	char *buf;		/* Actual buffer */
+};
+
+/* Actual FILE structure */
+struct _IO_file {
+	struct _IO_file *prev, *next;
+	off_t filepos;		/* File position */
+	char *buf;		/* Buffer */
+	int offset;		/* Offset to data in buffer */
+	int bytes;		/* Data bytes in buffer */
+	int bufsiz;		/* Total size of buffer */
+	int fd;			/* Underlying file descriptor */
+	int flags;		/* Error, end of file */
+};
 typedef struct _IO_file FILE;
+
+enum _IO_file_flags {
+	_IO_FILE_FLAG_WRITE	=  1, /* Buffer has write data */
+	_IO_FILE_FLAG_READ	=  2, /* Buffer has read data */
+	_IO_FILE_FLAG_LINE_BUF  =  4, /* Line buffered */
+	_IO_FILE_FLAG_UNBUF     =  8, /* Unbuffered */
+	_IO_FILE_FLAG_EOF	= 16,
+	_IO_FILE_FLAG_ERR	= 32,
+};
 
 #ifndef EOF
 # define EOF (-1)
 #endif
 
 #ifndef BUFSIZ
-# define BUFSIZ 4096
+# define BUFSIZ 65536
 #endif
 
 #define SEEK_SET 0
@@ -28,46 +50,22 @@ typedef struct _IO_file FILE;
 #define SEEK_END 2
 
 /*
- * Convert between a FILE * and a file descriptor.  We don't actually
- * have any in-memory data, so we just abuse the pointer itself to
- * hold the data.  Note, however, that for file descriptors, -1 is
- * error and 0 is a valid value; for FILE *, NULL (0) is error and
- * non-NULL are valid.
+ * Convert between a FILE * and a file descriptor.
  */
 static __inline__ int fileno(FILE * __f)
 {
-	/* This should really be intptr_t, but size_t should be the same size */
-	return (int)(size_t) __f - 1;
+	return __f->fd;
 }
 
-/* This is a macro so it can be used as initializer */
-#define __create_file(__fd) ((FILE *)(size_t)((__fd) + 1))
-
-#define stdin  __create_file(0)
-#define stdout __create_file(1)
-#define stderr __create_file(2)
+__extern FILE *stdin, *stdout, *stderr;
 
 __extern FILE *fopen(const char *, const char *);
-
-static __inline__ FILE *fdopen(int __fd, const char *__m)
-{
-	(void)__m;
-	return __create_file(__fd);
-}
-static __inline__ int fclose(FILE * __f)
-{
-	extern int close(int);
-	return close(fileno(__f));
-}
-static __inline__ int fseek(FILE * __f, off_t __o, int __w)
-{
-	extern off_t lseek(int, off_t, int);
-	return (lseek(fileno(__f), __o, __w) == (off_t) - 1) ? -1 : 0;
-}
+__extern FILE *fdopen(int, const char *);
+__extern int fclose(FILE *);
+__extern int fseek(FILE *, off_t, int);
 static __inline__ off_t ftell(FILE * __f)
 {
-	extern off_t lseek(int, off_t, int);
-	return lseek(fileno(__f), 0, SEEK_CUR);
+	return __f->filepos;
 }
 
 __extern int fputs(const char *, FILE *);
@@ -108,12 +106,7 @@ __extern int vsnprintf(char *, size_t n, const char *, va_list);
 __extern int asprintf(char **, const char *, ...);
 __extern int vasprintf(char **, const char *, va_list);
 
-/* No buffering, so no flushing needed */
-extern __inline__ int fflush(FILE * __f)
-{
-	(void)__f;
-	return 0;
-}
+__extern int fflush(FILE *);
 
 __extern int sscanf(const char *, const char *, ...);
 __extern int vsscanf(const char *, const char *, va_list);

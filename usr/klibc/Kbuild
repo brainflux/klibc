@@ -19,8 +19,8 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  printf.o vprintf.o fprintf.o vfprintf.o perror.o \
 	  statfs.o fstatfs.o umount.o \
 	  creat.o open.o openat.o open_cloexec.o \
-	  fopen.o fread.o fread2.o fgetc.o fgets.o \
-	  fwrite.o fwrite2.o fputc.o fputs.o puts.o putchar.o \
+	  fread2.o fgetc.o fgets.o \
+	  fwrite2.o fputc.o fputs.o puts.o putchar.o \
 	  sleep.o usleep.o strtotimespec.o strtotimeval.o \
 	  raise.o abort.o assert.o alarm.o pause.o \
 	  __signal.o sysv_signal.o bsd_signal.o siglist.o sigabbrev.o \
@@ -55,7 +55,9 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  ctype/ispunct.o ctype/isspace.o ctype/isupper.o \
 	  ctype/isxdigit.o ctype/tolower.o ctype/toupper.o \
 	  userdb/getgrgid.o userdb/getgrnam.o userdb/getpwnam.o \
-	  userdb/getpwuid.o userdb/root_group.o userdb/root_user.o
+	  userdb/getpwuid.o userdb/root_group.o userdb/root_user.o \
+	  stdio/fclose.o stdio/fopen.o stdio/fdopen.o stdio/fxopen.o \
+	  stdio/fread.o stdio/fwrite.o stdio/fflush.o stdio/fseek.o
 
 klib-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 
