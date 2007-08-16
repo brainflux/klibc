@@ -78,6 +78,7 @@ __extern int fgetc(FILE *);
 __extern char *fgets(char *, int, FILE *);
 #define getc(f) fgetc(f)
 #define getchar() fgetc(stdin)
+__extern int ungetc(int, FILE *);
 
 __extern size_t _fread(void *, size_t, FILE *);
 __extern size_t _fwrite(const void *, size_t, FILE *);

@@ -57,7 +57,8 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  userdb/getgrgid.o userdb/getgrnam.o userdb/getpwnam.o \
 	  userdb/getpwuid.o userdb/root_group.o userdb/root_user.o \
 	  stdio/fclose.o stdio/fopen.o stdio/fdopen.o stdio/fxopen.o \
-	  stdio/fread.o stdio/fwrite.o stdio/fflush.o stdio/fseek.o
+	  stdio/fread.o stdio/fwrite.o stdio/fflush.o \
+	  stdio/fseek.o stdio/ungetc.o
 
 klib-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 
