@@ -6,6 +6,7 @@
 #define _STDIO_H
 
 #include <klibc/extern.h>
+#include <klibc/sysconfig.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <unistd.h>
@@ -42,7 +43,7 @@ enum _IO_file_flags {
 #endif
 
 #ifndef BUFSIZ
-# define BUFSIZ 65536
+# define BUFSIZ _KLIBC_BUFSIZ
 #endif
 
 #define SEEK_SET 0
