@@ -4,7 +4,7 @@
 
 progs := chroot dd mkdir mkfifo mknod mount pivot_root umount
 progs += true false sleep ln nuke minips cat
-progs += insmod uname halt kill readlink cpio sync
+progs += insmod uname halt kill readlink cpio sync dmesg
 
 static-y := $(addprefix static/, $(progs))
 shared-y := $(addprefix shared/, $(progs))
@@ -14,6 +14,8 @@ static/chroot-y     := chroot.o
 shared/chroot-y     := chroot.o
 static/dd-y         := dd.o
 shared/dd-y         := dd.o
+static/dmesg-y      := dmesg.o
+shared/dmesg-y      := dmesg.o
 static/mkdir-y      := mkdir.o file_mode.o
 shared/mkdir-y      := mkdir.o file_mode.o
 static/mkfifo-y     := mkfifo.o file_mode.o
