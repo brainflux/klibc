@@ -32,6 +32,7 @@
 #include "iso9660_sb.h"
 #include "squashfs_fs.h"
 #include "gfs2_fs.h"
+#include "ocfs2_fs.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -312,6 +313,19 @@ static int gfs2_image(const void *buf, unsigned long long *bytes)
 	return 0;
 }
 
+static int ocfs2_image(const void *buf, unsigned long long *bytes)
+{
+	const struct ocfs2_dinode *sb =
+		(const struct ocfs2_dinode *)buf;
+
+	if (!memcmp(sb->i_signature, OCFS2_SUPER_BLOCK_SIGNATURE,
+			sizeof(OCFS2_SUPER_BLOCK_SIGNATURE) - 1)) {
+		*bytes = 0;
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t block;
 	const char name[12];
@@ -340,6 +354,7 @@ static struct imagetype images[] = {
 	{1, "ext3", ext3_image},
 	{1, "ext2", ext2_image},
 	{1, "minix", minix_image},
+	{2, "ocfs2", ocfs2_image},
 	{8, "reiserfs", reiserfs_image},
 	{64, "reiserfs", reiserfs_image},
 	{64, "reiser4", reiser4_image},
