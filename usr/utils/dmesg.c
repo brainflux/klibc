@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <sys/klog.h>
 
 static void usage(char *name)
 {
