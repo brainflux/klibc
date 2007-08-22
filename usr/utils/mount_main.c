@@ -64,10 +64,13 @@ int main(int argc, char *argv[])
 	rwflag = MS_VERBOSE;
 
 	do {
-		c = getopt(argc, argv, "o:rt:w");
+		c = getopt(argc, argv, "no:rt:w");
 		if (c == EOF)
 			break;
 		switch (c) {
+		case 'n':
+			/* no mtab writing */
+			break;
 		case 'o':
 			rwflag = parse_mount_options(optarg, rwflag, &extra);
 			break;
@@ -96,7 +99,7 @@ int main(int argc, char *argv[])
 
 	if (optind + 2 != argc || type == NULL) {
 		fprintf(stderr, "Usage: %s [-r] [-w] [-o options] [-t type] "
-			"device directory\n", progname);
+			"[-n] device directory\n", progname);
 		exit(1);
 	}
 
