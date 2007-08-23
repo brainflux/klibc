@@ -2,6 +2,6 @@ This version of dash was obtained from
 
 http://gondor.apana.org.au/~herbert/dash/dash.git/
 
-It corresponds to changeset 3c98399cdf8d376b2c1ebd9cd32ca5d8c84f3ac9.
+It corresponds to changeset e592f4dfe80dcac85764ac9aaad3132e5ba28663.
 
 The only changes made are the addition of config.h and a new Makefile.
