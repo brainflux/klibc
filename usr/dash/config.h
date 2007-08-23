@@ -53,16 +53,16 @@
 #define PACKAGE_NAME "dash"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "dash 0.5.2"
+#define PACKAGE_STRING "dash 0.5.4"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "dash"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.5.2"
+#define PACKAGE_VERSION "0.5.4"
 
 /* Version number of package */
-#define VERSION "0.5.2"
+#define VERSION "0.5.4"
 
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE

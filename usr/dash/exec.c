@@ -110,7 +110,6 @@ shellexec(char **argv, const char *path, int idx)
 	char **envp;
 	int exerrno;
 
-	clearredir(1);
 	envp = environment();
 	if (strchr(argv[0], '/') != NULL) {
 		tryexec(argv[0], argv, envp);
@@ -846,6 +845,7 @@ commandcmd(argc, argv)
 	int argc;
 	char **argv;
 {
+	char *cmd;
 	int c;
 	enum {
 		VERIFY_BRIEF = 1,
@@ -862,8 +862,9 @@ commandcmd(argc, argv)
 			abort();
 #endif
 
-	if (verify)
-		return describe_command(out1, *argptr, verify - VERIFY_BRIEF);
+	cmd = *argptr;
+	if (verify && cmd)
+		return describe_command(out1, cmd, verify - VERIFY_BRIEF);
 
 	return 0;
 }

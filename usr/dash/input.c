@@ -428,7 +428,6 @@ int
 setinputfile(const char *fname, int flags)
 {
 	int fd;
-	int fd2;
 
 	INTOFF;
 	if ((fd = open(fname, O_RDONLY)) < 0) {
@@ -436,13 +435,8 @@ setinputfile(const char *fname, int flags)
 			goto out;
 		sh_error("Can't open %s", fname);
 	}
-	if (fd < 10) {
-		fd2 = copyfd(fd, 10);
-		close(fd);
-		if (fd2 < 0)
-			sh_error("Out of file descriptors");
-		fd = fd2;
-	}
+	if (fd < 10)
+		fd = savefd(fd);
 	setinputfd(fd, flags & INPUT_PUSH_FILE);
 out:
 	INTON;
@@ -458,7 +452,6 @@ out:
 void
 setinputfd(int fd, int push)
 {
-	(void) fcntl(fd, F_SETFD, FD_CLOEXEC);
 	if (push) {
 		pushfile();
 		parsefile->buf = 0;

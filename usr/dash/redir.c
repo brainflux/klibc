@@ -57,7 +57,10 @@
 #include "error.h"
 
 
+#define REALLY_CLOSED -3	/* fd that was closed and still is */
 #define EMPTY -2		/* marks an unused slot in redirtab */
+#define CLOSED -1		/* fd opened for redir needs to be closed */
+
 #ifndef PIPE_BUF
 # define PIPESIZE 4096		/* amount of buffering in a pipe */
 #else
@@ -116,7 +119,7 @@ redirect(union node *redir, int flags)
 	}
 	sv = NULL;
 	INTOFF;
-	if (flags & REDIR_PUSH) {
+	if (likely(flags & REDIR_PUSH)) {
 		struct redirtab *q;
 		q = ckmalloc(sizeof (struct redirtab));
 		q->next = redirlist;
@@ -129,31 +132,34 @@ redirect(union node *redir, int flags)
 	}
 	n = redir;
 	do {
-		fd = n->nfile.fd;
-		if ((n->nfile.type == NTOFD || n->nfile.type == NFROMFD) &&
-		    n->ndup.dupfd == fd)
-			continue; /* redirect from/to same file descriptor */
-
 		newfd = openredirect(n);
+		if (newfd < -1)
+			continue;
+
+		fd = n->nfile.fd;
+
+		if (sv) {
+			p = &sv->renamed[fd];
+			i = *p;
+
+			if (likely(i == EMPTY)) {
+				i = CLOSED;
+				if (fd != newfd) {
+					i = savefd(fd);
+					fd = -1;
+				}
+			}
+
+			if (i == newfd)
+				/* Can only happen if i == newfd == CLOSED */
+				i = REALLY_CLOSED;
+
+			*p = i;
+		}
+
 		if (fd == newfd)
 			continue;
-		if (sv && *(p = &sv->renamed[fd]) == EMPTY) {
-			int i = fcntl(fd, F_DUPFD, 10);
-			if (i == -1) {
-				i = errno;
-				if (i != EBADF) {
-					const char *m = strerror(i);
-					close(newfd);
-					sh_error("%d: %s", fd, m);
-					/* NOTREACHED */
-				}
-			} else {
-				*p = i;
-				close(fd);
-			}
-		} else {
-			close(fd);
-		}
+
 #ifdef notyet
 		dupredirect(n, newfd, memory);
 #else
@@ -167,7 +173,7 @@ redirect(union node *redir, int flags)
 	if (memory[2])
 		out2 = &memout;
 #endif
-	if (flags & REDIR_SAVEFD2 && sv && sv->renamed[2] >= 0)
+	if (flags & REDIR_SAVEFD2 && sv->renamed[2] >= 0)
 		preverrout.fd = sv->renamed[2];
 }
 
@@ -208,15 +214,17 @@ openredirect(union node *redir)
 		if ((f = open64(fname, O_WRONLY|O_CREAT|O_APPEND, 0666)) < 0)
 			goto ecreate;
 		break;
+	case NTOFD:
+	case NFROMFD:
+		f = redir->ndup.dupfd;
+		if (f == redir->nfile.fd)
+			f = -2;
+		break;
 	default:
 #ifdef DEBUG
 		abort();
 #endif
 		/* Fall through to eliminate warning. */
-	case NTOFD:
-	case NFROMFD:
-		f = -1;
-		break;
 	case NHERE:
 	case NXHERE:
 		f = openhere(redir);
@@ -244,27 +252,37 @@ dupredirect(redir, f)
 #endif
 	{
 	int fd = redir->nfile.fd;
+	int err = 0;
 
 #ifdef notyet
 	memory[fd] = 0;
 #endif
 	if (redir->nfile.type == NTOFD || redir->nfile.type == NFROMFD) {
-		if (redir->ndup.dupfd >= 0) {	/* if not ">&-" */
+		/* if not ">&-" */
+		if (f >= 0) {
 #ifdef notyet
-			if (memory[redir->ndup.dupfd])
+			if (memory[f])
 				memory[fd] = 1;
 			else
 #endif
-				copyfd(redir->ndup.dupfd, fd);
+				if (dup2(f, fd) < 0) {
+					err = errno;
+					goto err;
+				}
+			return;
 		}
-		return;
-	}
+		f = fd;
+	} else if (dup2(f, fd) < 0)
+		err = errno;
 
-	if (f != fd) {
-		copyfd(f, fd);
-		close(f);
-	}
+	close(f);
+	if (err < 0)
+		goto err;
+
 	return;
+
+err:
+	sh_error("%d: %s", f, strerror(err));
 }
 
 
@@ -326,12 +344,19 @@ popredir(int drop)
 	INTOFF;
 	rp = redirlist;
 	for (i = 0 ; i < 10 ; i++) {
-		if (rp->renamed[i] != EMPTY) {
-			if (!drop) {
+		switch (rp->renamed[i]) {
+		case CLOSED:
+			if (!drop)
 				close(i);
-				copyfd(rp->renamed[i], i);
-			}
+			break;
+		case EMPTY:
+		case REALLY_CLOSED:
+			break;
+		default:
+			if (!drop)
+				dup2(rp->renamed[i], i);
 			close(rp->renamed[i]);
+			break;
 		}
 	}
 	redirlist = rp->next;
@@ -349,47 +374,42 @@ popredir(int drop)
 INCLUDE "redir.h"
 
 RESET {
-	clearredir(0);
-}
-
-#endif
-
-/*
- * Discard all saved file descriptors.
- */
-
-void
-clearredir(int drop)
-{
+	/*
+	 * Discard all saved file descriptors.
+	 */
 	for (;;) {
 		nullredirs = 0;
 		if (!redirlist)
 			break;
-		popredir(drop);
+		popredir(0);
 	}
 }
+
+#endif
 
 
 
 /*
- * Copy a file descriptor to be >= to.  Returns -1
- * if the source file descriptor is closed, EMPTY if there are no unused
- * file descriptors left.
+ * Move a file descriptor to > 10.  Invokes sh_error on error unless
+ * the original file dscriptor is not open.
  */
 
 int
-copyfd(int from, int to)
+savefd(int from)
 {
 	int newfd;
+	int err;
 
-	newfd = fcntl(from, F_DUPFD, to);
-	if (newfd < 0) {
-		int errno2 = errno;
-		if (errno2 == EMFILE)
-			return EMPTY;
+	newfd = fcntl(from, F_DUPFD, 10);
+	err = newfd < 0 ? errno : 0;
+	if (err != EBADF) {
+		close(from);
+		if (err)
+			sh_error("%d: %s", from, strerror(err));
 		else
-			sh_error("%d: %s", from, strerror(errno2));
+			fcntl(newfd, F_SETFD, FD_CLOEXEC);
 	}
+
 	return newfd;
 }
 
