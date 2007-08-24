@@ -13,7 +13,7 @@ static __noreturn usage(void)
 
 int main(int argc, char *argv[])
 {
-	char *name, *link = NULL;
+	char *name, *link_name = NULL;
 	size_t max_siz = 128;
 
 	progname = *argv++;
@@ -22,17 +22,17 @@ int main(int argc, char *argv[])
 	if (!name)
 		usage();
 
-	link = malloc(max_siz);
-	if (!link) {
+	link_name = malloc(max_siz);
+	if (!link_name) {
 		perror("malloc");
 		exit(1);
 	}
 
-	if (readlink(name, link, max_siz) == -1) {
+	if (readlink(name, link_name, max_siz) == -1) {
 		perror("readlink");
 		exit(1);
 	}
-	printf("%s\n", link);
+	printf("%s\n", link_name);
 
 	exit(0);
 }
