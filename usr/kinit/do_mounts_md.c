@@ -142,7 +142,7 @@ static int mdp_major(void)
  */
 static int md_setup(char *str)
 {
-	int minor, level, factor, fault, partitioned = 0;
+	int minor_num, level, factor, fault, partitioned = 0;
 	char *pername = "";
 	char *str1;
 	int ent;
@@ -151,28 +151,28 @@ static int md_setup(char *str)
 		partitioned = 1;
 		str++;
 	}
-	if (get_option(&str, &minor) != 2) {	/* MD Number */
+	if (get_option(&str, &minor_num) != 2) {	/* MD Number */
 		fprintf(stderr, "md: Too few arguments supplied to md=.\n");
 		return 0;
 	}
 	str1 = str;
-	if (minor >= MAX_MD_DEVS) {
+	if (minor_num >= MAX_MD_DEVS) {
 		fprintf(stderr, "md: md=%d, Minor device number too high.\n",
-			minor);
+			minor_num);
 		return 0;
 	}
 	for (ent = 0; ent < md_setup_ents; ent++)
-		if (md_setup_args[ent].minor == minor &&
+		if (md_setup_args[ent].minor == minor_num &&
 		    md_setup_args[ent].partitioned == partitioned) {
 			fprintf(stderr,
 				"md: md=%s%d, Specified more than once. "
 				"Replacing previous definition.\n",
-				partitioned ? "d" : "", minor);
+				partitioned ? "d" : "", minor_num);
 			break;
 		}
 	if (ent >= MAX_MD_DEVS) {
 		fprintf(stderr, "md: md=%s%d - too many md initialisations\n",
-			partitioned ? "d" : "", minor);
+			partitioned ? "d" : "", minor_num);
 		return 0;
 	}
 	if (ent >= md_setup_ents)
@@ -204,10 +204,10 @@ static int md_setup(char *str)
 	}
 
 	fprintf(stderr, "md: Will configure md%s%d (%s) from %s, below.\n",
-		partitioned?"_d":"", minor, pername, str);
+		partitioned?"_d":"", minor_num, pername, str);
 	md_setup_args[ent].device_names = str;
 	md_setup_args[ent].partitioned = partitioned;
-	md_setup_args[ent].minor = minor;
+	md_setup_args[ent].minor = minor_num;
 
 	return 1;
 }

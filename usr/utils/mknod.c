@@ -13,7 +13,7 @@ static __noreturn usage(void)
 int main(int argc, char *argv[])
 {
 	char *name, *type, typec, *endp;
-	unsigned int major, minor;
+	unsigned int major_num, minor_num;
 	mode_t mode;
 	dev_t dev;
 
@@ -49,13 +49,13 @@ int main(int argc, char *argv[])
 		if (!argv[0] || !argv[1])
 			usage();
 
-		major = strtol(*argv++, &endp, 0);
+		major_num = strtol(*argv++, &endp, 0);
 		if (*endp != '\0')
 			usage();
-		minor = strtol(*argv++, &endp, 0);
+		minor_num = strtol(*argv++, &endp, 0);
 		if (*endp != '\0')
 			usage();
-		dev = makedev(major, minor);
+		dev = makedev(major_num, minor_num);
 	}
 
 	if (*argv)

@@ -20,7 +20,7 @@ static dev_t try_name(char *name, int part)
 	char path[BUF_SZ];
 	char buf[BUF_SZ];
 	int range;
-	unsigned int major, minor;
+	unsigned int major_num, minor_num;
 	dev_t res;
 	char *s;
 	int len;
@@ -37,13 +37,13 @@ static dev_t try_name(char *name, int part)
 	if (len <= 0 || len == BUF_SZ || buf[len - 1] != '\n')
 		goto fail;
 	buf[len - 1] = '\0';
-	major = strtoul(buf, &s, 10);
+	major_num = strtoul(buf, &s, 10);
 	if (*s != ':')
 		goto fail;
-	minor = strtoul(s + 1, &s, 10);
+	minor_num = strtoul(s + 1, &s, 10);
 	if (*s)
 		goto fail;
-	res = makedev(major, minor);
+	res = makedev(major_num, minor_num);
 
 	/* if it's there and we are not looking for a partition - that's it */
 	if (!part)
@@ -105,7 +105,7 @@ static inline dev_t name_to_dev_t_real(const char *name)
 	int len;
 	const char *devname;
 	char *cptr, *e1, *e2;
-	int major, minor;
+	int major_num, minor_num;
 
 
 	if (name[0] == '/') {
@@ -124,10 +124,10 @@ static inline dev_t name_to_dev_t_real(const char *name)
 		    cptr[1] != '\0') {
 			/* Colon-separated decimal device number */
 			*cptr = '\0';
-			major = strtoul(devname+5, &e1, 10);
-			minor = strtoul(cptr+1, &e2, 10);
+			major_num = strtoul(devname+5, &e1, 10);
+			minor_num = strtoul(cptr+1, &e2, 10);
 			if (!*e1 && !*e2)
-				return makedev(major, minor);
+				return makedev(major_num, minor_num);
 			*cptr = ':';
 		} else {
 			/* Hexadecimal device number */
