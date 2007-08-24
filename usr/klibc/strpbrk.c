@@ -2,6 +2,8 @@
  * strpbrk
  */
 
+#include <string.h>
+
 #include "strxspn.h"
 
 char *strpbrk(const char *s, const char *accept)

@@ -2,6 +2,8 @@
  * strcspn
  */
 
+#include <string.h>
+
 #include "strxspn.h"
 
 size_t strcspn(const char *s, const char *reject)
