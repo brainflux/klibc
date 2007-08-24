@@ -15,7 +15,7 @@ static __noreturn usage(void)
 	exit(1);
 }
 
-int main(int argc, char *argv[], char *envp[])
+int main(int argc, char *argv[])
 {
 	progname = argv[0];
 	if (argc < 2 || argc > 3)

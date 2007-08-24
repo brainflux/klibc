@@ -10,7 +10,7 @@ static __noreturn usage(void)
 	fprintf(stderr, "Usage: %s pid\n", progname);
 	exit(1);
 }
-int main(int argc, char *argv[], char *envp[])
+int main(int argc, char *argv[])
 {
 	long pid;
 	char *endp;
