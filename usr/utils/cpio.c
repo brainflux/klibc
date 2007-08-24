@@ -43,16 +43,6 @@
 #  define ISSLASH(C) ((C) == DIRECTORY_SEPARATOR)
 # endif
 
-# ifndef FILE_SYSTEM_PREFIX_LEN
-#  define FILE_SYSTEM_PREFIX_LEN(Filename) 0
-# endif
-
-#ifndef SYMLINK_USES_UMASK
-# define UMASKED_SYMLINK(name1,name2,mode)    symlink(name1,name2)
-#else
-# define UMASKED_SYMLINK(name1,name2,mode)    umasked_symlink(name1,name2,mode)
-#endif				/* SYMLINK_USES_UMASK */
-
 /* Return 1 if an array of N objects, each of size S, cannot exist due
    to size arithmetic overflow.  S must be positive and N must be
    nonnegative.  This is a macro, not an inline function, so that it
@@ -110,16 +100,10 @@ struct new_cpio_header {
 };
 
 /* Total number of bytes read and written for all files.  
-   Now that many tape drives hold more than 4Gb we need more than 32
-   bits to hold input_bytes and output_bytes.  But it's not worth
-   the trouble of adding special multi-precision arithmetic if the 
-   compiler doesn't support 64 bit ints since input_bytes and
-   output_bytes are only used to print the number of blocks copied.  */
-#ifdef __GNUC__
+ * Now that many tape drives hold more than 4Gb we need more than 32
+ *  bits to hold input_bytes and output_bytes.
+ */
 long long input_bytes, output_bytes;
-#else
-long input_bytes, output_bytes;
-#endif
 
 /* Allocate N bytes of memory dynamically, with error checking.  */
 
@@ -709,7 +693,7 @@ copyin_regular_file(struct new_cpio_header *file_hdr, int in_file_des)
 
 static char *base_name(char const *name)
 {
-	char const *base = name + FILE_SYSTEM_PREFIX_LEN(name);
+	char const *base = name;
 	char const *p;
 
 	for (p = base; *p; p++) {
@@ -856,9 +840,9 @@ static void copyin_link(struct new_cpio_header *file_hdr, int in_file_des)
 	tape_buffered_read(link_name, in_file_des, file_hdr->c_filesize);
 	tape_skip_padding(in_file_des, file_hdr->c_filesize);
 
-	res = UMASKED_SYMLINK(link_name, file_hdr->c_name, file_hdr->c_mode);
+	res = symlink(link_name, file_hdr->c_name);
 	if (res < 0) {
-		fprintf(stderr, "%s: UMASKED_SYMLINK %s: %s\n",
+		fprintf(stderr, "%s: symlink %s: %s\n",
 			progname, file_hdr->c_name, strerror(errno));
 		free(link_name);
 		return;
@@ -890,20 +874,14 @@ static void copyin_file(struct new_cpio_header *file_hdr, int in_file_des)
 
 	case S_IFCHR:
 	case S_IFBLK:
-#ifdef S_IFSOCK
 	case S_IFSOCK:
-#endif
-#ifdef S_IFIFO
 	case S_IFIFO:
-#endif
 		copyin_device(file_hdr);
 		break;
 
-#ifdef S_IFLNK
 	case S_IFLNK:
 		copyin_link(file_hdr, in_file_des);
 		break;
-#endif
 
 	default:
 		fprintf(stderr, "%s: %s: unknown file type\n",
