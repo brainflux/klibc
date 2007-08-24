@@ -123,7 +123,7 @@ long input_bytes, output_bytes;
 
 /* Allocate N bytes of memory dynamically, with error checking.  */
 
-void *xmalloc(size_t n)
+static void *xmalloc(size_t n)
 {
 	void *p;
 	if (xalloc_oversized(n, 1) || (!(p = malloc(n)) && n != 0)) {
@@ -134,22 +134,9 @@ void *xmalloc(size_t n)
 /*   return xnmalloc_inline (n, 1); */
 }
 
-/* Change the size of an allocated block of memory P to N bytes,
-   with error checking.  */
-
-void *xrealloc(void *p, size_t n)
-{
-	if (xalloc_oversized(n, 1) || (!(p = realloc(p, n)) && n != 0)) {
-		fprintf(stderr, "%s: memory exhausted\n", progname);
-		exit(1);
-	}
-	return p;
-/*   return xnrealloc_inline (p, n, 1); */
-}
-
 /* Clone STRING.  */
 
-char *xstrdup(char const *string)
+static char *xstrdup(char const *string)
 {
 	size_t s = strlen(string) + 1;
 	return memcpy(xmalloc(s), string, s);
@@ -187,7 +174,7 @@ static void tape_fill_input_buffer(int in_des, int num_bytes)
    must always be a multiple of 4 helps us (and our callers)
    insure this.  */
 
-void disk_empty_output_buffer(int out_des)
+static void disk_empty_output_buffer(int out_des)
 {
 	int bytes_written;
 
@@ -206,7 +193,7 @@ void disk_empty_output_buffer(int out_des)
 /* Copy NUM_BYTES of buffer IN_BUF to `out_buff', which may be partly full.
    When `out_buff' fills up, flush it to file descriptor OUT_DES.  */
 
-void disk_buffered_write(char *in_buf, int out_des, long num_bytes)
+static void disk_buffered_write(char *in_buf, int out_des, long num_bytes)
 {
 	register long bytes_left = num_bytes;	/* Bytes needing to be copied.  */
 	register long space_left;	/* Room left in output buffer.  */
@@ -235,7 +222,7 @@ void disk_buffered_write(char *in_buf, int out_des, long num_bytes)
    OUT_DES is the file descriptor for output;
    NUM_BYTES is the number of bytes to copy.  */
 
-void copy_files_tape_to_disk(int in_des, int out_des, long num_bytes)
+static void copy_files_tape_to_disk(int in_des, int out_des, long num_bytes)
 {
 	long size;
 
@@ -251,7 +238,7 @@ void copy_files_tape_to_disk(int in_des, int out_des, long num_bytes)
 }
 
 /* if IN_BUF is NULL, Skip the next NUM_BYTES bytes of file descriptor IN_DES. */
-void tape_buffered_read(char *in_buf, int in_des, long num_bytes)
+static void tape_buffered_read(char *in_buf, int in_des, long num_bytes)
 {
 	register long bytes_left = num_bytes;	/* Bytes needing to be copied.  */
 	register long space_left;	/* Bytes to copy from input buffer.  */
@@ -282,7 +269,7 @@ struct deferment {
 	struct new_cpio_header header;
 };
 
-struct deferment *create_deferment(struct new_cpio_header *file_hdr)
+static struct deferment *create_deferment(struct new_cpio_header *file_hdr)
 {
 	struct deferment *d;
 	d = (struct deferment *)xmalloc(sizeof(struct deferment));
@@ -292,13 +279,13 @@ struct deferment *create_deferment(struct new_cpio_header *file_hdr)
 	return d;
 }
 
-void free_deferment(struct deferment *d)
+static void free_deferment(struct deferment *d)
 {
 	free(d->header.c_name);
 	free(d);
 }
 
-int link_to_name(char *link_name, char *link_target)
+static int link_to_name(char *link_name, char *link_target)
 {
 	int res = link(link_target, link_name);
 	return res;
@@ -352,7 +339,7 @@ static void hash_insert(struct inode_val *new_value)
 
 /* Associate FILE_NAME with the inode NODE_NUM.  (Insert into hash table.)  */
 
-void
+static void
 add_inode(unsigned long node_num, char *file_name, unsigned long major_num,
 	  unsigned long minor_num)
 {
@@ -399,7 +386,7 @@ add_inode(unsigned long node_num, char *file_name, unsigned long major_num,
 	hash_num++;
 }
 
-char *find_inode_file(unsigned long node_num, unsigned long major_num,
+static char *find_inode_file(unsigned long node_num, unsigned long major_num,
 		      unsigned long minor_num)
 {
 	int start;		/* Initial hash location.  */
@@ -439,7 +426,7 @@ char *find_inode_file(unsigned long node_num, unsigned long major_num,
    numbers is found, try and create another link to it using
    link_to_name, and return 0 for success and -1 for failure.  */
 
-int
+static int
 link_to_maj_min_ino(char *file_name, int st_dev_maj, int st_dev_min, int st_ino)
 {
 	int link_res;
@@ -457,7 +444,7 @@ link_to_maj_min_ino(char *file_name, int st_dev_maj, int st_dev_min, int st_ino)
 static void copyin_regular_file(struct new_cpio_header *file_hdr,
 				int in_file_des);
 
-void warn_junk_bytes(long bytes_skipped)
+static void warn_junk_bytes(long bytes_skipped)
 {
 	fprintf(stderr, "%s: warning: skipped %ld byte(s) of junk\n",
 		progname, bytes_skipped);
@@ -578,7 +565,7 @@ static void create_defered_links(struct new_cpio_header *file_hdr)
    we are done reading the whole archive.  Write out all of these
    empty links that are still on the deferments list.  */
 
-static void create_final_defers()
+static void create_final_defers(void)
 {
 	struct deferment *d;
 	int link_res;
@@ -720,7 +707,7 @@ copyin_regular_file(struct new_cpio_header *file_hdr, int in_file_des)
    NAME has no file name components because it is all slashes, return
    NAME if it is empty, the address of its last slash otherwise.  */
 
-char *base_name(char const *name)
+static char *base_name(char const *name)
 {
 	char const *base = name + FILE_SYSTEM_PREFIX_LEN(name);
 	char const *p;
@@ -752,7 +739,7 @@ char *base_name(char const *name)
    value returned by base_name.  Act like strlen (NAME), except omit
    redundant trailing slashes.  */
 
-size_t base_len(char const *name)
+static size_t base_len(char const *name)
 {
 	size_t len;
 
@@ -769,7 +756,7 @@ size_t base_len(char const *name)
    the Unix rename and rmdir system calls return an "Invalid argument" error
    when given a path that ends in "/" (except for the root directory).  */
 
-bool strip_trailing_slashes(char *path)
+static bool strip_trailing_slashes(char *path)
 {
 	char *base = base_name(path);
 	char *base_lim = base + base_len(base);
@@ -930,7 +917,7 @@ static void copyin_file(struct new_cpio_header *file_hdr, int in_file_des)
    file descriptor IN_DES, except for the magic number, which is
    already filled in.  */
 
-void read_in_new_ascii(struct new_cpio_header *file_hdr, int in_des)
+static void read_in_new_ascii(struct new_cpio_header *file_hdr, int in_des)
 {
 	char ascii_header[112];
 
@@ -963,7 +950,7 @@ void read_in_new_ascii(struct new_cpio_header *file_hdr, int in_des)
 /* Read the header, including the name of the file, from file
    descriptor IN_DES into FILE_HDR.  */
 
-void read_in_header(struct new_cpio_header *file_hdr, int in_des)
+static void read_in_header(struct new_cpio_header *file_hdr, int in_des)
 {
 	long bytes_skipped = 0;	/* Bytes of junk found before magic number.  */
 
@@ -991,7 +978,7 @@ void read_in_header(struct new_cpio_header *file_hdr, int in_des)
 /* Read the collection from standard input and create files
    in the file system.  */
 
-void process_copy_in()
+static void process_copy_in(void)
 {
 	char done = false;	/* True if trailer reached.  */
 	struct new_cpio_header file_hdr;	/* Output header information.  */
@@ -1033,7 +1020,7 @@ void process_copy_in()
    initialize all variables associated with the input and output
    buffers.  */
 
-void initialize_buffers()
+static void initialize_buffers(void)
 {
 	int in_buf_size, out_buf_size;
 
