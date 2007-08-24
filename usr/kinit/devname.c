@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/sysmacros.h>
 
+#include "kinit.h"
+
 /*
  * Print the name of a block device.
  */
