@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <inttypes.h>
 #include <stdlib.h>
+#include <time.h>
 #include <sys/time.h>
 
 char *NAME(const char *str, TIMEX * ts)
