@@ -16,5 +16,7 @@ struct group {
 };
 
 __extern int setgroups(size_t, const gid_t *);
+__extern struct group *getgrgid(gid_t);
+__extern struct group *getgrnam(const char *);
 
 #endif				/* _GRP_H */
