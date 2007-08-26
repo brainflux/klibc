@@ -4,6 +4,8 @@
  * Dummy getgrnam() to support udev
  */
 
+#include <grp.h>
+
 #include "userdb.h"
 
 struct group *getgrnam(const char *name)
