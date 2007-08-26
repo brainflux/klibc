@@ -5,6 +5,7 @@
  */
 
 #include <stddef.h>
+#include <stdlib.h>
 #include <inttypes.h>
 
 TYPE NAME(const char *nptr, char **endptr, int base)

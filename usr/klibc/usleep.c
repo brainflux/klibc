@@ -3,6 +3,7 @@
  */
 
 #include <errno.h>
+#include <stdlib.h>
 #include <time.h>
 
 void usleep(unsigned long usec)

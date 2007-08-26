@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <ctype.h>
+#include <inttypes.h>
 
 static inline int digitval(int ch)
 {
