@@ -4,6 +4,8 @@
  * Dummy getpwuid() to support udev
  */
 
+#include <pwd.h>
+
 #include "userdb.h"
 
 

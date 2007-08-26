@@ -4,6 +4,8 @@
  * Dummy getpwnam() to support udev
  */
 
+#include <pwd.h>
+
 #include "userdb.h"
 
 
