@@ -20,6 +20,7 @@
 #include <sys/md.h>
 #include <linux/major.h>
 
+#include "kinit.h"
 #include "do_mounts.h"
 
 #define  LEVEL_NONE              (-1000000)
