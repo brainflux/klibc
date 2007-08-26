@@ -28,6 +28,22 @@ enum {
 	__ctype_cntrl = (1 << 7),
 };
 
+__extern int isalnum(int);
+__extern int isalpha(int);
+__extern int isascii(int);
+__extern int isblank(int);
+__extern int iscntrl(int);
+__extern int isdigit(int);
+__extern int isgraph(int);
+__extern int islower(int);
+__extern int isprint(int);
+__extern int ispunct(int);
+__extern int isspace(int);
+__extern int isupper(int);
+__extern int isxdigit(int);
+__extern int toupper(int);
+__extern int tolower(int);
+
 extern const unsigned char __ctypes[];
 
 static inline int __ctype_isalnum(int __c)
