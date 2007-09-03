@@ -28,7 +28,7 @@ enum uname_fields {
 	UN_NR_FIELDS
 };
 
-void usage(FILE * stream, const char *progname)
+static void usage(FILE * stream, const char *progname)
 {
 	fprintf(stream,
 		"Usage: %s [OPTION] . . .\n"
@@ -49,7 +49,7 @@ void usage(FILE * stream, const char *progname)
 		"\n" "  -h   help/usage\n" "\n", progname);
 }
 
-char *make_hardware(const char *machine)
+static char *make_hardware(const char *machine)
 {
 	char *hardware;
 
