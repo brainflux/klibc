@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "xpio.h"
+
 ssize_t xpread(int fd, void *buf, size_t count, off_t offset)
 {
 	ssize_t ctr = 0;

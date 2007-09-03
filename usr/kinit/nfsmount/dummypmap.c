@@ -15,6 +15,7 @@
 #include <string.h>
 #include <sys/socket.h>
 
+#include "dummypmap.h"
 #include "sunrpc.h"
 
 extern const char *progname;
