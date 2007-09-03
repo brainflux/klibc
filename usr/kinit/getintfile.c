@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "kinit.h"
+
 int getintfile(const char *path, long *val)
 {
 	char buffer[64];

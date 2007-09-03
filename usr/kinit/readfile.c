@@ -11,6 +11,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 
+#include "kinit.h"
+
 ssize_t freadfile(FILE *f, char **pp)
 {
 	size_t bs;		/* Decent starting point... */
