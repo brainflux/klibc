@@ -33,6 +33,7 @@ __extern int execlp(const char *, const char *, ...);
 __extern int execle(const char *, const char *, ...);
 __extern int execlpe(const char *, const char *, ...);
 
+__extern int nice(int);
 __extern int setuid(uid_t);
 __extern uid_t getuid(void);
 __extern int seteuid(uid_t);
