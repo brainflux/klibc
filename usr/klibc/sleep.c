@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 unsigned int sleep(unsigned int seconds)
 {
