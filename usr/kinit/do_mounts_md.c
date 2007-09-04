@@ -227,6 +227,7 @@ static void md_setup_drive(void)
 		char *devname;
 		mdu_disk_info_t dinfo;
 		char name[16];
+		struct stat st_chk;
 
 		dev_minor = md_setup_args[ent].minor;
 		partitioned = md_setup_args[ent].partitioned;
@@ -234,6 +235,9 @@ static void md_setup_drive(void)
 
 		snprintf(name, sizeof name,
 			 "/dev/md%s%d", partitioned ? "_d" : "", dev_minor);
+
+		if (stat(name, &st_chk) == 0)
+			continue;
 
 		if (partitioned)
 			dev = makedev(mdp_major(), dev_minor << MdpMinorShift);
