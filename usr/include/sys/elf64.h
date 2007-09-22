@@ -110,4 +110,8 @@ typedef struct elf64_note {
 	Elf64_Word n_type;	/* Content type */
 } Elf64_Nhdr;
 
+/* Both Elf32_Sym and Elf64_Sym use the same one-byte st_info field.  */
+#define ELF64_ST_BIND(val)		ELF32_ST_BIND (val)
+#define ELF64_ST_TYPE(val)		ELF32_ST_TYPE (val)
+
 #endif				/* _SYS_ELF64_H */

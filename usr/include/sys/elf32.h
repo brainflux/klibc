@@ -110,4 +110,8 @@ typedef struct elf32_note {
 	Elf32_Word n_type;	/* Content type */
 } Elf32_Nhdr;
 
+/* How to extract and insert information held in the st_info field.  */
+#define ELF32_ST_BIND(val)		(((unsigned char) (val)) >> 4)
+#define ELF32_ST_TYPE(val)		((val) & 0xf)
+
 #endif				/* _SYS_ELF32_H */

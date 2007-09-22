@@ -184,4 +184,14 @@
 #define ELFOSABI_NONE   0
 #define ELFOSABI_LINUX  3
 
+/* Legal values for ST_BIND subfield of st_info (symbol binding).  */
+#define STB_LOCAL	0		/* Local symbol */
+#define STB_GLOBAL	1		/* Global symbol */
+#define STB_WEAK	2		/* Weak symbol */
+#define STB_NUM		3		/* Number of defined types.  */
+#define STB_LOOS	10		/* Start of OS-specific */
+#define STB_HIOS	12		/* End of OS-specific */
+#define STB_LOPROC	13		/* Start of processor-specific */
+#define STB_HIPROC	15		/* End of processor-specific */
+
 #endif				/* _SYS_ELFCOMMON_H */
