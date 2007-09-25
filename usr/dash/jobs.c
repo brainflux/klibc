@@ -1376,12 +1376,7 @@ cmdputs(const char *s)
 				str = "${#";
 			else
 				str = "${";
-			if (!(subtype & VSQUOTE) != !(quoted & 1)) {
-				quoted ^= 1;
-				c = '"';
-			} else
-				goto dostr;
-			break;
+			goto dostr;
 		case CTLENDVAR:
 			str = "\"}" + !(quoted & 1);
 			quoted >>= 1;
@@ -1389,9 +1384,6 @@ cmdputs(const char *s)
 			goto dostr;
 		case CTLBACKQ:
 			str = "$(...)";
-			goto dostr;
-		case CTLBACKQ+CTLQUOTE:
-			str = "\"$(...)\"";
 			goto dostr;
 		case CTLARI:
 			str = "$((";
