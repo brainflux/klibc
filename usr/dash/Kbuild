@@ -11,17 +11,17 @@ EXTRA_KLIBCCFLAGS += $(config-cppflags)
 
 HOST_EXTRACFLAGS  := $(config-cppflags)
 
-init-o-files := alias.o arith_yylex.o cd.o error.o eval.o exec.o expand.o \
+init-o-files := alias.o arith_yacc.o arith_yylex.o cd.o error.o eval.o exec.o expand.o \
 		histedit.o input.o jobs.o mail.o main.o memalloc.o miscbltin.o \
 		mystring.o options.o parser.o redir.o show.o trap.o output.o \
 		bltin/printf.o system.o bltin/test.o var.o
 
-gen-o-files := arith.o builtins.o init.o nodes.o syntax.o
+gen-o-files := builtins.o init.o nodes.o syntax.o
 
 sh-y := $(init-o-files) $(gen-o-files)
 
 hostprogs-y := mkinit mksyntax mknodes mksignames
-gen-h-files := arith.h builtins.h nodes.h syntax.h token.h
+gen-h-files := builtins.h nodes.h syntax.h token.h
 
 static-y := sh
 
@@ -90,21 +90,6 @@ $(obj)/syntax.c: $(obj)/mksyntax
 
 # side effect..
 $(obj)/syntax.h: $(obj)/syntax.c
-	$(Q):
-
-# Generate arith parser - arith{.c + .h}
-targets += arith.c arith.h
-# Prefer bison, but BSD yacc should work as well
-YACC ?= bison
-
-quiet_cmd_yacc	= YACC    $@
-      cmd_yacc = $(YACC) -d -o $(@:.h=.c) $<
-
-$(obj)/arith.h: $(src)/arith.y
-	$(call if_changed,yacc)
-
-# side effect..
-$(obj)/arith.c: $(obj)/arith.h
 	$(Q):
 
 # Targets to install

@@ -37,6 +37,8 @@
 #ifndef DASH_STRLIST_H
 #define DASH_STRLIST_H
 
+#include <stdint.h>
+
 struct strlist {
 	struct strlist *next;
 	char *text;
@@ -71,7 +73,7 @@ char *_rmescapes(char *, int);
 int casematch(union node *, char *);
 
 /* From arith.y */
-int arith(const char *);
+intmax_t arith(const char *);
 int expcmd(int , char **);
 #ifdef USE_LEX
 void arith_lex_reset(void);
