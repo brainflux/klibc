@@ -65,7 +65,6 @@ struct arglist {
 
 
 union node;
-void expandhere(union node *, int);
 void expandarg(union node *, struct arglist *, int);
 void expari(int);
 #define rmescapes(p) _rmescapes((p), 0)
