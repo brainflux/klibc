@@ -8,6 +8,13 @@
 #define SQUASHFS_MAGIC			0x73717368
 #define SQUASHFS_MAGIC_SWAP		0x68737173
 
+/*
+ * Squashfs + LZMA
+ */
+
+#define SQUASHFS_MAGIC_LZMA		0x71736873
+#define SQUASHFS_MAGIC_LZMA_SWAP	0x73687371
+
 /* definitions for structures on disk */
 struct squashfs_super_block {
 	unsigned int		s_magic;

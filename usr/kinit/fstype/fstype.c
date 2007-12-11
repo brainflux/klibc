@@ -292,7 +292,9 @@ static int squashfs_image(const void *buf, unsigned long long *blocks)
 		(const struct squashfs_super_block *)buf;
 
 	if (sb->s_magic == SQUASHFS_MAGIC
-	    || sb->s_magic == SQUASHFS_MAGIC_SWAP) {
+	    || sb->s_magic == SQUASHFS_MAGIC_SWAP
+	    || sb->s_magic == SQUASHFS_MAGIC_LZMA
+	    || sb->s_magic == SQUASHFS_MAGIC_LZMA_SWAP) {
 		*blocks = (unsigned long long) sb->bytes_used;
 		return 1;
 	}
