@@ -95,12 +95,12 @@ header:
 	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include
 	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)lib
 	$(Q)mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)bin
-	$(Q)set -e ; for d in linux scsi asm-$(KLIBCARCH) asm-generic $(ASMKLIBCARCH); do \
-	  mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)include/$$d ; \
+	$(Q)set -e ; for d in linux asm asm-$(KLIBCARCH) asm-generic $(ASMKLIBCARCH); do \
 	  for r in $(KLIBCKERNELSRC)/include $(KLIBCKERNELOBJ)/include \
 	           $(KLIBCKERNELOBJ)/include2 ; do \
-	    [ ! -d $$r/$$d ] || \
-	      cp -rfL $$r/$$d/. \
+	    [ ! -d $$r/$$d ] && continue; \
+	    mkdir -p $(INSTALLROOT)$(INSTALLDIR)/$(KLIBCCROSS)include/$$d ; \
+	    cp -rfL $$r/$$d/. \
 	          $(INSTALLROOT)$(INSTALLDIR)/$(KCROSS)include/$$d/. ; \
 	  done ; \
 	done
