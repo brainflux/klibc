@@ -70,6 +70,8 @@ static struct bool_opts {
 	{"noac", ~NFS_MOUNT_NOAC, NFS_MOUNT_NOAC},
 	{"lock", ~NFS_MOUNT_NONLM, 0},
 	{"nolock", ~NFS_MOUNT_NONLM, NFS_MOUNT_NONLM},
+	{"acl", ~NFS_MOUNT_NOACL, 0},
+	{"noacl", ~NFS_MOUNT_NOACL, NFS_MOUNT_NOACL},
 	{"v2", ~NFS_MOUNT_VER3, 0},
 	{"v3", ~NFS_MOUNT_VER3, NFS_MOUNT_VER3},
 	{"udp", ~NFS_MOUNT_TCP, 0},
