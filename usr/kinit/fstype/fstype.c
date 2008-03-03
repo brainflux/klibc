@@ -205,7 +205,7 @@ static int jfs_image(const void *buf, unsigned long long *bytes)
 	const struct jfs_superblock *sb = (const struct jfs_superblock *)buf;
 
 	if (!memcmp(sb->s_magic, JFS_MAGIC, 4)) {
-		*bytes = __le32_to_cpu(sb->s_size);
+		*bytes = __le64_to_cpu(sb->s_size) << __le16_to_cpu(sb->s_l2pbsize);
 		return 1;
 	}
 	return 0;
