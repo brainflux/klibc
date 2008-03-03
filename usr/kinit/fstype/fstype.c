@@ -33,6 +33,7 @@
 #include "squashfs_fs.h"
 #include "gfs2_fs.h"
 #include "ocfs2_fs.h"
+#include "nilfs_fs.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -328,6 +329,19 @@ static int ocfs2_image(const void *buf, unsigned long long *bytes)
 	return 0;
 }
 
+static int nilfs2_image(const void *buf, unsigned long long *bytes)
+{
+	const struct nilfs_super_block *sb =
+	    (const struct nilfs_super_block *)buf;
+
+	if (sb->s_magic == __cpu_to_le16(NILFS_SUPER_MAGIC) &&
+	    sb->s_rev_level == __cpu_to_le32(2)) {
+		*bytes = (unsigned long long)__le64_to_cpu(sb->s_dev_size);
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t block;
 	const char name[12];
@@ -356,6 +370,7 @@ static struct imagetype images[] = {
 	{1, "ext3", ext3_image},
 	{1, "ext2", ext2_image},
 	{1, "minix", minix_image},
+	{1, "nilfs2", nilfs2_image},
 	{2, "ocfs2", ocfs2_image},
 	{8, "reiserfs", reiserfs_image},
 	{64, "reiserfs", reiserfs_image},
