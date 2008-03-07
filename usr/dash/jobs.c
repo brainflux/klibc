@@ -1234,11 +1234,12 @@ donode:
 		cmdputs("if ");
 		cmdtxt(n->nif.test);
 		cmdputs("; then ");
-		n = n->nif.ifpart;
 		if (n->nif.elsepart) {
-			cmdtxt(n);
+			cmdtxt(n->nif.ifpart);
 			cmdputs("; else ");
 			n = n->nif.elsepart;
+		} else {
+			n = n->nif.ifpart;
 		}
 		p = "; fi";
 		goto dotail;
