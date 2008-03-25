@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 
 	do {
-		c = getopt(argc, argv, "fl");
+		c = getopt(argc, argv, "fli");
 		if (c == EOF)
 			break;
 		switch (c) {
@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
 		case 'l':
 			flag |= MNT_DETACH;
 			break;
+		case 'i':
+			/* ignore for now; no support for umount helpers */
+			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
@@ -35,7 +38,8 @@ int main(int argc, char *argv[])
 	} while (1);
 
 	if (optind + 1 != argc) {
-		fprintf(stderr, "Usage: %s [-f] [-l] mntpoint\n", progname);
+		fprintf(stderr, "Usage: %s [-f] [-l] [-i] mntpoint\n",
+			progname);
 		return 1;
 	}
 

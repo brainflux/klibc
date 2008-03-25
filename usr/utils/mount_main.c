@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	rwflag = MS_VERBOSE;
 
 	do {
-		c = getopt(argc, argv, "no:rt:w");
+		c = getopt(argc, argv, "no:rt:wfi");
 		if (c == EOF)
 			break;
 		switch (c) {
@@ -83,6 +83,12 @@ int main(int argc, char *argv[])
 		case 'w':
 			rwflag &= ~MS_RDONLY;
 			break;
+		case 'f':
+			/* we can't edit /etc/mtab yet anyway; exit */
+			exit(0);
+		case 'i':
+			/* ignore for now; no support for mount helpers */
+			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
@@ -98,7 +104,7 @@ int main(int argc, char *argv[])
 		type = "none";
 
 	if (optind + 2 != argc || type == NULL) {
-		fprintf(stderr, "Usage: %s [-r] [-w] [-o options] [-t type] "
+		fprintf(stderr, "Usage: %s [-r] [-w] [-o options] [-t type] [-f] [-i] "
 			"[-n] device directory\n", progname);
 		exit(1);
 	}
