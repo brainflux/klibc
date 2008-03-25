@@ -534,6 +534,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 	if (dev->name == NULL ||
 	    dev->name[0] == '\0' || strcmp(dev->name, "all") == 0) {
 		add_all_devices(dev);
+		bringup_first = 1;
 		return 0;
 	}
 	return 1;
