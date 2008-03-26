@@ -22,7 +22,7 @@ do_mount(char *dev, char *dir, char *type, unsigned long rwflag, void *data)
 	int error = 0;
 
 	while ((s = strsep(&type, ",")) != NULL) {
-	      retry:
+retry:
 		if (mount(dev, dir, s, rwflag, data) == -1) {
 			error = errno;
 			/*

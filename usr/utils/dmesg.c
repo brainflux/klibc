@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	int i = 0;
 
 	while ((opt = getopt(argc, argv, "c")) != -1) {
-		switch(opt) {
+		switch (opt) {
 		/* Read and clear all messages remaining in the ring buffer */
 		case 'c':
 			cmd = 4;
@@ -53,10 +53,10 @@ int main(int argc, char *argv[])
 	while (buf[i] && i < len)
 		switch (buf[i]) {
 		case '<':
-			if (i == 0 || buf[i-1] == '\n')	
+			if (i == 0 || buf[i-1] == '\n')
 				i++;
 		case '0' ... '9':
-			if (i > 0 && buf[i-1] == '<')	
+			if (i > 0 && buf[i-1] == '<')
 				i++;
 		case '>':
 			if (i > 0 && isdigit(buf[i-1]))

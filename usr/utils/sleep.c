@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 	return 0;
 
-      err:
+err:
 	fprintf(stderr, "Usage: %s seconds[.fraction]\n", argv[0]);
 	return 1;
 }

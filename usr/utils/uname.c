@@ -28,7 +28,7 @@ enum uname_fields {
 	UN_NR_FIELDS
 };
 
-static void usage(FILE * stream, const char *progname)
+static void usage(FILE *stream, const char *progname)
 {
 	fprintf(stream,
 		"Usage: %s [OPTION] . . .\n"
@@ -53,7 +53,8 @@ static char *make_hardware(const char *machine)
 {
 	char *hardware;
 
-	if (!(hardware = strdup(machine))) {
+	hardware = strdup(machine);
+	if (!hardware) {
 		fprintf(stderr, "strdup() failed: %s\n", strerror(errno));
 		goto end;
 	}
@@ -61,7 +62,7 @@ static char *make_hardware(const char *machine)
 	    && hardware[0] == 'i' && hardware[2] == '8' && hardware[3] == '6') {
 		hardware[1] = '3';
 	}
-      end:
+end:
 	return hardware;
 }
 
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
 
 	ec = 0;
 
-      end:
+end:
 	if (uname_fields[UN_HARDWARE])
 		free(uname_fields[UN_HARDWARE]);
 	return ec;

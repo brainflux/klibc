@@ -65,7 +65,8 @@ static int nuke_dir(const char *what)
 	struct dirent *d;
 	int err = 0;
 
-	if (!(dir = opendir(what))) {
+	dir = opendir(what);
+	if (!dir) {
 		/* EACCES means we can't read it.  Might be empty and removable;
 		   if not, the rmdir() in nuke() will trigger an error. */
 		return (errno == EACCES) ? 0 : errno;

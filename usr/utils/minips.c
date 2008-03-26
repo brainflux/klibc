@@ -303,8 +303,10 @@ static int stat2proc(int pid)
 	int fd;
 	char *tmp;
 	struct stat sb;		/* stat() used to get EUID */
+
 	snprintf(buf, 32, "/proc/%d/stat", pid);
-	if ((fd = open(buf, O_RDONLY, 0)) == -1)
+	fd = open(buf, O_RDONLY, 0);
+	if (fd == -1)
 		return 0;
 	num = read(fd, buf, sizeof buf - 1);
 	fstat(fd, &sb);
