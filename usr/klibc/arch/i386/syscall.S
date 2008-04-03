@@ -6,30 +6,28 @@
  * The arguments are on the stack; the system call number in %eax.
  */
 
-#define ARG(n)	(4*n+20)(%esp)
+#define ARG(n)	(4*(n)+24)(%esp)
+#define SYSNO	ARG(-2)
 
 	.text
 	.align	4
 	.globl	__syscall_common
 	.type	__syscall_common,@function
 __syscall_common:
-#ifdef _REGPARM
-	xchgl	%ebx,(%esp)
-#else
-	popl	%eax
 	pushl	%ebx
-#endif
 	pushl	%esi
 	pushl	%edi
 	pushl	%ebp
 
 #ifdef _REGPARM
-	xchgl	%eax,%ebx
 	xchgl	%ecx,%edx
+	movl	%eax,%ebx
+	movl	SYSNO,%eax
 	movl	ARG(0),%esi
 	movl	ARG(1),%edi
 	movl	ARG(2),%ebp
 #else
+	movl	SYSNO,%eax
 	movl	ARG(0),%ebx		# Syscall arguments
 	movl	ARG(1),%ecx
 	movl	ARG(2),%edx
@@ -47,6 +45,7 @@ __syscall_common_tail:
 	popl	%edi
 	popl	%esi
 	popl	%ebx
+	popl	%edx			# Drop system call number
 
 	jb	1f
 

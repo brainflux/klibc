@@ -9,19 +9,20 @@
 
 #ifdef	_REGPARM
 
-#define ARG(n)	(4*n+20)(%esp)
+#define ARG(n)	(4*n+24)(%esp)
+#define SYSNO	ARG(-2)
 
 	.text
 	.align	4
 	.globl	__syscall_varadic
 	.type	__syscall_varadic,@function
 __syscall_varadic:
-	popl	%eax
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
 	pushl	%ebp
 
+	movl	SYSNO,%eax
 	movl	ARG(0),%ebx		# Syscall arguments
 	movl	ARG(1),%ecx
 	movl	ARG(2),%edx
