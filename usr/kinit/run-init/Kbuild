@@ -14,6 +14,10 @@ objs := run-init.o runinitlib.o
 # Create built-in.o with all object files (used by kinit)
 lib-y := $(objs)
 
+# force run-init to not have an executable stack (to keep READ_IMPLIES_EXEC
+# personality(2) flag from getting set and passed to init).
+EXTRA_KLIBCLDFLAGS += -z noexecstack
+
 # .o files used to built executables
 static/run-init-y := $(objs)
 shared/run-init-y := $(objs)
