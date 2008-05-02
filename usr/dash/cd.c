@@ -241,8 +241,6 @@ updatepwd(const char *dir)
 }
 
 
-#define MAXPWD 256
-
 /*
  * Find out what the current directory is. If we already know the current
  * directory, this routine returns immediately.
@@ -251,9 +249,14 @@ inline
 STATIC char *
 getpwd()
 {
+#ifdef _GNU_SOURCE
+	char *dir = getcwd(0, 0);
+	return dir ? dir : nullstr;
+#else
 	char buf[PATH_MAX];
 	char *dir = getcwd(buf, sizeof(buf));
 	return dir ? savestr(dir) : nullstr;
+#endif
 }
 
 int
