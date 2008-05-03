@@ -52,6 +52,7 @@
 #include "error.h"
 #include "exec.h"
 #include "redir.h"
+#include "main.h"
 #include "mystring.h"
 #include "show.h"
 #include "cd.h"
@@ -251,12 +252,14 @@ getpwd()
 {
 #ifdef __GLIBC__
 	char *dir = getcwd(0, 0);
-	return dir ? dir : nullstr;
 #else
 	char buf[PATH_MAX];
 	char *dir = getcwd(buf, sizeof(buf));
-	return dir ? savestr(dir) : nullstr;
 #endif
+	if (dir)
+		return dir;
+	sh_warnx("getcwd() failed: %s", strerror(errno));
+	return nullstr;
 }
 
 int
