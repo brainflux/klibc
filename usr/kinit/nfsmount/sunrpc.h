@@ -38,6 +38,17 @@
 #define GARBAGE_ARGS	4
 #define SYSTEM_ERR	5
 
+enum {
+	AUTH_NULL,
+	AUTH_UNIX,
+};
+
+struct rpc_auth {
+	uint32_t flavor;
+	uint32_t len;
+	uint32_t body[];
+};
+
 struct rpc_udp_header {
 	uint32_t xid;
 	uint32_t msg_type;
