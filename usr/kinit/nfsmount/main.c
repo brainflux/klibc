@@ -167,7 +167,7 @@ int nfsmount_main(int argc, char *argv[])
 	int c;
 	const char *portmap_file;
 	pid_t spoof_portmap;
-	int err;
+	int err, ret;
 
 	if ((err = setjmp(abort_buf)))
 		return err;
@@ -243,13 +243,14 @@ int nfsmount_main(int argc, char *argv[])
 		return 1;
 #endif
 
+	ret = 0;
 	if (nfs_mount(rem_name, hostname, server, rem_path, path,
 		      &mount_data) != 0)
-		return 1;
+		ret = 1;
 
 	/* If we set up the spoofer, tear it down now */
 	if (spoof_portmap) {
-		kill(SIGTERM, spoof_portmap);
+		kill(spoof_portmap, SIGTERM);
 		while (waitpid(spoof_portmap, NULL, 0) == -1 &&
 		       errno == EINTR)
 		  ;
@@ -257,5 +258,5 @@ int nfsmount_main(int argc, char *argv[])
 
 	free(rem_name);
 
-	return 0;
+	return ret;
 }
