@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
 	int cmd = 3;	/* Read all messages remaining in the ring buffer */
 	int len = 0;
 	int opt;
-	int i = 0;
 	int newline;
 
 	while ((opt = getopt(argc, argv, "c")) != -1) {
