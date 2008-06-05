@@ -9,6 +9,14 @@
 *.o.cmd
 .*.cmd
 *.g
+\#*
+.\#*
+*~
 
-# generated header
-usr/include/klibc/havesyscall.h
+# Top-level ignorables
+/linux
+/.config
+
+# Common generated subdirectores
+shared
+static

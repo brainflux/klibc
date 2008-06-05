@@ -7,3 +7,5 @@ libc.a
 libc.so
 libc.so.hash
 sha1hash
+tests/*
+!tests/Kbuild
