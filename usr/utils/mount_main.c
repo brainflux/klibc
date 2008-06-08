@@ -42,8 +42,10 @@ retry:
 				rwflag |= MS_RDONLY;
 				goto retry;
 			}
-			break;
+		} else {
+			error = 0;
 		}
+		break;
 	}
 
 	if (error) {
