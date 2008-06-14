@@ -77,8 +77,8 @@ static struct iovec dhcp_request_iov[] = {
  * 5 = DHCPACK
  * 6 = DHCPNACK
  */
-static int
-dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, uint8_t * exts, int extlen)
+static int dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr,
+		      uint8_t * exts, int extlen)
 {
 	uint8_t type = 0;
 	uint32_t serverid = INADDR_NONE;
@@ -151,8 +151,8 @@ static int dhcp_recv(struct netdev *dev)
 
 	DEBUG(("\n   dhcp xid %08x ", dev->bootp.xid));
 
-	if (ret < sizeof(struct bootp_hdr) || bootp.op != BOOTP_REPLY ||	/* RFC951 7.5 */
-	    bootp.xid != dev->bootp.xid ||
+	if (ret < sizeof(struct bootp_hdr) || bootp.op != BOOTP_REPLY ||
+	    /* RFC951 7.5 */ bootp.xid != dev->bootp.xid ||
 	    memcmp(bootp.chaddr, dev->hwaddr, 16))
 		return 0;
 

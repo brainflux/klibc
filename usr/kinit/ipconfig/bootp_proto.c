@@ -135,7 +135,7 @@ int bootp_parse(struct netdev *dev, struct bootp_hdr *hdr,
 				memcpy(&dev->nisdomainname, ext, len);
 				dev->nisdomainname[len] = '\0';
 				break;
-			case 54: 	/* server identifier */
+			case 54:	/* server identifier */
 				if (len == 4 && !dev->ip_server)
 					memcpy(&dev->ip_server, ext, 4);
 				break;

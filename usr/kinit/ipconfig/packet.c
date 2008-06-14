@@ -44,7 +44,8 @@ int packet_open(void)
 	/*
 	 * We want to broadcast
 	 */
-	if (setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one)) == -1) {
+	if (setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &one,
+		       sizeof(one)) == -1) {
 		perror("SO_BROADCAST");
 		close(fd);
 		fd = -1;
@@ -199,7 +200,8 @@ void packet_discard(void)
 	struct sockaddr_ll sll;
 	socklen_t sllen = sizeof(sll);
 
-	recvfrom(pkt_fd, &iph, sizeof(iph), 0, (struct sockaddr *)&sll, &sllen);
+	recvfrom(pkt_fd, &iph, sizeof(iph), 0,
+		 (struct sockaddr *)&sll, &sllen);
 }
 
 /*
