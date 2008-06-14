@@ -192,7 +192,7 @@ static int process_receive_event(struct state *s, time_t now)
 		case -1:
 			s->state = DEVST_ERROR;
 			break;
-		case 1:	/* Offer received */
+		case DHCPOFFER:	/* Offer received */
 			s->state = DEVST_DHCPREQ;
 			dhcp_send_request(s->dev);
 			break;
@@ -205,10 +205,10 @@ static int process_receive_event(struct state *s, time_t now)
 		case -1:	/* error */
 			s->state = DEVST_ERROR;
 			break;
-		case 1:	/* ACK received */
+		case DHCPACK:	/* ACK received */
 			s->state = DEVST_COMPLETE;
 			break;
-		case 2:	/* NAK received */
+		case DHCPNAK:	/* NAK received */
 			s->state = DEVST_DHCPDISC;
 			break;
 		}

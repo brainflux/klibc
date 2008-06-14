@@ -71,6 +71,11 @@ static struct iovec dhcp_request_iov[] = {
 
 /*
  * Parse a DHCP response packet
+ * Returns:
+ * 0 = Not handled
+ * 2 = DHCPOFFER (from dhcp_proto.h)
+ * 5 = DHCPACK
+ * 6 = DHCPNACK
  */
 static int
 dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, uint8_t * exts, int extlen)
@@ -101,19 +106,19 @@ dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, uint8_t * exts, int extlen
 
 	switch (type) {
 	case DHCPOFFER:
-		ret = bootp_parse(dev, hdr, exts, extlen);
-		if (ret == 1 && serverid != INADDR_NONE)
+		ret = bootp_parse(dev, hdr, exts, extlen) ? DHCPOFFER : 0;
+		if (ret == DHCPOFFER && serverid != INADDR_NONE)
 			dev->serverid = serverid;
 		DEBUG(("\n   dhcp offer\n"));
 		break;
 
 	case DHCPACK:
-		ret = bootp_parse(dev, hdr, exts, extlen);
+		ret = bootp_parse(dev, hdr, exts, extlen) ? DHCPACK : 0;
 		DEBUG(("\n   dhcp ack\n"));
 		break;
 
 	case DHCPNAK:
-		ret = 2;
+		ret = DHCPNAK;
 		DEBUG(("\n   dhcp nak\n"));
 		break;
 	}
@@ -122,6 +127,12 @@ dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr, uint8_t * exts, int extlen
 
 /*
  * Receive and parse a DHCP packet
+ * Returns:
+ *-1 = Error in packet_recv
+ * 0 = Not handled
+ * 2 = DHCPOFFER (from dhcp_proto.h)
+ * 5 = DHCPACK
+ * 6 = DHCPNACK
  */
 static int dhcp_recv(struct netdev *dev)
 {
