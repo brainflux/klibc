@@ -153,6 +153,10 @@ int bootp_parse(struct netdev *dev, struct bootp_hdr *hdr,
 
 /*
  * Receive a bootp reply and parse packet
+ * Returns:
+ *-1 = Error in packet_recv, try again later
+ * 0 = Unexpected packet, discarded
+ * 1 = Correctly received and parsed packet
  */
 int bootp_recv_reply(struct netdev *dev)
 {
@@ -167,7 +171,7 @@ int bootp_recv_reply(struct netdev *dev)
 
 	ret = packet_recv(iov, 3);
 	if (ret <= 0)
-		return ret;
+		return -1;
 
 	if (ret < sizeof(struct bootp_hdr) ||
 	    bootp.op != BOOTP_REPLY ||	/* RFC951 7.5 */

@@ -165,6 +165,12 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 	return sendmsg(pkt_fd, &msg, 0);
 }
 
+/*
+ * Fetches a bootp packet, but doesn't remove it.
+ * Returns:
+ *  0 = Error
+ * >0 = A packet of size "ret" is available for interface ifindex
+ */
 int packet_peek(int *ifindex)
 {
 	struct sockaddr_ll sll;
@@ -177,7 +183,7 @@ int packet_peek(int *ifindex)
 	ret = recvfrom(pkt_fd, &iph, sizeof(struct iphdr),
 		       MSG_PEEK, (struct sockaddr *)&sll, &sllen);
 	if (ret == -1)
-		return -1;
+		return 0;
 
 	if (sll.sll_family != AF_PACKET)
 		goto discard_pkt;
@@ -187,7 +193,7 @@ int packet_peek(int *ifindex)
 
 	*ifindex = sll.sll_ifindex;
 
-	return 0;
+	return ret;
 
 discard_pkt:
 	packet_discard();
@@ -207,6 +213,9 @@ void packet_discard(void)
 /*
  * Receive a bootp packet.  The options are listed in iov[1...iov_len].
  * iov[0] must point to the bootp packet header.
+ * Returns:
+ *  0 = Error, try again later
+ * >0 = Size of packet
  */
 int packet_recv(struct iovec *iov, int iov_len)
 {
@@ -226,7 +235,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 	ret = recvfrom(pkt_fd, &iph, sizeof(struct iphdr),
 		       MSG_PEEK, NULL, NULL);
 	if (ret == -1)
-		return -1;
+		return 0;
 
 	if (iph.ihl < 5 || iph.version != IPVERSION)
 		goto discard_pkt;

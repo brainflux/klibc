@@ -74,7 +74,7 @@ static struct iovec dhcp_request_iov[DHCP_IOV_LEN] = {
 /*
  * Parse a DHCP response packet
  * Returns:
- * 0 = Not handled
+ * 0 = Unexpected packet, not parsed
  * 2 = DHCPOFFER (from dhcp_proto.h)
  * 5 = DHCPACK
  * 6 = DHCPNACK
@@ -130,8 +130,8 @@ static int dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr,
 /*
  * Receive and parse a DHCP packet
  * Returns:
- *-1 = Error in packet_recv
- * 0 = Not handled
+ *-1 = Error in packet_recv, try again later
+ * 0 = Unexpected packet, discarded
  * 2 = DHCPOFFER (from dhcp_proto.h)
  * 5 = DHCPACK
  * 6 = DHCPNACK
@@ -148,8 +148,8 @@ static int dhcp_recv(struct netdev *dev)
 	int ret;
 
 	ret = packet_recv(iov, 3);
-	if (ret <= 0)
-		return ret;
+	if (ret == 0)
+		return -1;
 
 	DEBUG(("\n   dhcp xid %08x ", dev->bootp.xid));
 

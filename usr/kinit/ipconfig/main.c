@@ -169,6 +169,11 @@ static void complete_device(struct netdev *dev)
 	ifaces = dev;
 }
 
+/*
+ * Returns:
+ *  0 = Not handled, the packet is still in the queue
+ *  1 = Handled
+ */
 static int process_receive_event(struct state *s, time_t now)
 {
 	int handled = 1;
@@ -214,6 +219,10 @@ static int process_receive_event(struct state *s, time_t now)
 			break;
 		}
 		break;
+
+	default:
+		handled = 0;
+		break;
 	}
 
 	switch (s->state) {
@@ -224,9 +233,6 @@ static int process_receive_event(struct state *s, time_t now)
 	case DEVST_ERROR:
 		/* error occurred, try again in 10 seconds */
 		s->expire = now + 10;
-	default:
-		DEBUG(("\n"));
-		handled = 0;
 		break;
 	}
 
@@ -288,23 +294,30 @@ static void process_timeout_event(struct state *s, time_t now)
 static struct state *slist;
 struct netdev *ifaces;
 
+/*
+ * Returns:
+ *  0 = Error, packet not received or discarded
+ *  1 = A packet was received and handled
+ */
 static int do_pkt_recv(int pkt_fd, time_t now)
 {
 	int ifindex, ret;
 	struct state *s;
 
 	ret = packet_peek(&ifindex);
-	if (ret < 0)
-		goto bail;
+	if (ret == 0)
+		return ret;
 
 	for (s = slist; s; s = s->next) {
 		if (s->dev->ifindex == ifindex) {
-			ret |= process_receive_event(s, now);
+			ret = process_receive_event(s, now);
 			break;
 		}
 	}
 
-      bail:
+	if (ret == 0)
+		packet_discard();
+
 	return ret;
 }
 
@@ -371,11 +384,8 @@ static int loop(void)
 			gettimeofday(&now, NULL);
 
 			if ((fds[0].revents & POLLRDNORM)) {
-				nr = do_pkt_recv(pkt_fd, now.tv_sec);
-				if (nr == 1)
+				if (do_pkt_recv(pkt_fd, now.tv_sec) == 1)
 					break;
-				else if (nr == 0)
-					packet_discard();
 			}
 
 			if (loop_timeout >= 0 &&
