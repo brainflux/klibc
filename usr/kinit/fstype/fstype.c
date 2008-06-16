@@ -115,11 +115,15 @@ static int ext4_image(const void *buf, unsigned long long *bytes)
 	const struct ext3_super_block *sb =
 		(const struct ext3_super_block *)buf;
 
+	/* ext4dev needs ext2 + journal + test_fs flag + one !ext3 feature */
 	if (sb->s_magic == __cpu_to_le16(EXT2_SUPER_MAGIC)
+		&& (sb->s_feature_compat
+		& __cpu_to_le32(EXT3_FEATURE_COMPAT_HAS_JOURNAL))
+		&& (sb->s_flags & __cpu_to_le32(EXT2_FLAGS_TEST_FILESYS))
 		&& (sb->s_feature_incompat
-		& __cpu_to_le32(EXT3_FEATURE_INCOMPAT_EXTENTS)
+		& __cpu_to_le32(EXT3_FEATURE_RO_COMPAT_SUPP)
 		|| sb->s_feature_incompat
-		& __cpu_to_le32(EXT4_FEATURE_INCOMPAT_64BIT)
+		& __cpu_to_le32(EXT3_FEATURE_INCOMPAT_UNSUPPORTED)
 		|| sb->s_feature_incompat
 		& __cpu_to_le32(EXT4_FEATURE_INCOMPAT_MMP))) {
 		*bytes = (unsigned long long)__le32_to_cpu(sb->s_blocks_count)

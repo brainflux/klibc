@@ -6,11 +6,30 @@
  */
 #define EXT3_SUPER_MAGIC        0xEF53
 
+#define EXT2_FLAGS_TEST_FILESYS                 0x0004
+#define EXT2_FEATURE_RO_COMPAT_SPARSE_SUPER     0x0001
+#define EXT2_FEATURE_RO_COMPAT_LARGE_FILE       0x0002
+#define EXT2_FEATURE_RO_COMPAT_BTREE_DIR        0x0004
+#define EXT2_FEATURE_INCOMPAT_FILETYPE          0x0002
+#define EXT2_FEATURE_INCOMPAT_META_BG           0x0010
 #define EXT3_FEATURE_COMPAT_HAS_JOURNAL         0x0004
 #define EXT3_FEATURE_INCOMPAT_JOURNAL_DEV       0x0008
+#define EXT3_FEATURE_INCOMPAT_RECOVER           0x0004
+
 #define EXT3_FEATURE_INCOMPAT_EXTENTS           0x0040
 #define EXT4_FEATURE_INCOMPAT_64BIT             0x0080
 #define EXT4_FEATURE_INCOMPAT_MMP               0x0100
+
+#define EXT3_FEATURE_RO_COMPAT_SUPP     (EXT2_FEATURE_RO_COMPAT_SPARSE_SUPER| \
+					 EXT2_FEATURE_RO_COMPAT_LARGE_FILE| \
+					 EXT2_FEATURE_RO_COMPAT_BTREE_DIR)
+#define EXT3_FEATURE_RO_COMPAT_UNSUPPORTED      ~EXT3_FEATURE_RO_COMPAT_SUPP
+#define EXT3_FEATURE_INCOMPAT_SUPP      (EXT2_FEATURE_INCOMPAT_FILETYPE| \
+					 EXT3_FEATURE_INCOMPAT_RECOVER| \
+					 EXT2_FEATURE_INCOMPAT_META_BG)
+#define EXT3_FEATURE_INCOMPAT_UNSUPPORTED       ~EXT3_FEATURE_INCOMPAT_SUPP
+
+
 
 /*
  * Structure of the super block
@@ -93,9 +112,23 @@ struct ext3_super_block {
 	__u32 s_last_orphan;	/* start of list of inodes to delete */
 	__u32 s_hash_seed[4];	/* HTREE hash seed */
 	__u8 s_def_hash_version;	/* Default hash version to use */
-	__u8 s_reserved_char_pad;
-	__u16 s_reserved_word_pad;
-	__u32 s_reserved[192];	/* Padding to the end of the block */
+	__u8    s_jnl_backup_type;
+	__u16   s_reserved_word_pad;
+	__u32   s_default_mount_opts;
+	__u32   s_first_meta_bg;
+	__u32   s_mkfs_time;
+	__u32   s_jnl_blocks[17];
+	__u32   s_blocks_count_hi;
+	__u32   s_r_blocks_count_hi;
+	__u32   s_free_blocks_hi;
+	__u16   s_min_extra_isize;
+	__u16   s_want_extra_isize;
+	__u32   s_flags;
+	__u16   s_raid_stride;
+	__u16   s_mmp_interval;
+	__u64   s_mmp_block;
+	__u32   s_raid_stripe_width;
+	__u32   s_reserved[163];
 };
 
 #endif /* __EXT3_FS_H */
