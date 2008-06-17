@@ -9,6 +9,8 @@ klibc is archived at:
 
 There is a mailing list for klibc and early-userspace issues at:
 
+	klibc@zytor.com
+
 	http://www.zytor.com/mailman/listinfo/klibc/
 
 klibc is maintained in the git version control system.  The git
