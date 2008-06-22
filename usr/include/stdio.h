@@ -109,7 +109,7 @@ __extern int asprintf(char **, const char *, ...);
 __extern int vasprintf(char **, const char *, va_list);
 
 /* No buffering, so no flushing needed */
-extern __inline__ int fflush(FILE * __f)
+static __inline__ int fflush(FILE * __f)
 {
 	(void)__f;
 	return 0;
