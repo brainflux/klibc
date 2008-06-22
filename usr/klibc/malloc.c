@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <assert.h>
 #include "malloc.h"
 
 /* Both the arena list and the free memory list are double linked
