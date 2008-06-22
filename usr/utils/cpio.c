@@ -82,19 +82,24 @@ int io_block_size = 512;
 
 struct new_cpio_header {
 	unsigned short c_magic;
-	unsigned long c_ino;
-	unsigned long c_mode;
-	unsigned long c_uid;
-	unsigned long c_gid;
-	unsigned long c_nlink;
-	unsigned long c_mtime;
-	unsigned long c_filesize;
-	long c_dev_maj;
-	long c_dev_min;
-	long c_rdev_maj;
-	long c_rdev_min;
-	unsigned long c_namesize;
-	unsigned long c_chksum;
+	union {
+		struct {
+			unsigned long c_ino;
+			unsigned long c_mode;
+			unsigned long c_uid;
+			unsigned long c_gid;
+			unsigned long c_nlink;
+			unsigned long c_mtime;
+			unsigned long c_filesize;
+			long c_dev_maj;
+			long c_dev_min;
+			long c_rdev_maj;
+			long c_rdev_min;
+			unsigned long c_namesize;
+			unsigned long c_chksum;
+		};
+		unsigned long c_hdr[13];
+	};
 	char *c_name;
 	char *c_tar_linkname;
 };
@@ -897,18 +902,17 @@ static void copyin_file(struct new_cpio_header *file_hdr, int in_file_des)
 
 static void read_in_new_ascii(struct new_cpio_header *file_hdr, int in_des)
 {
-	char ascii_header[112];
+	char ascii_header[13*8], *ah, hexbuf[9];
+	int i;
 
-	tape_buffered_read(ascii_header, in_des, 104L);
-	ascii_header[104] = '\0';
-	sscanf(ascii_header,
-	       "%8lx%8lx%8lx%8lx%8lx%8lx%8lx%8lx%8lx%8lx%8lx%8lx%8lx",
-	       &file_hdr->c_ino, &file_hdr->c_mode, &file_hdr->c_uid,
-	       &file_hdr->c_gid, &file_hdr->c_nlink, &file_hdr->c_mtime,
-	       &file_hdr->c_filesize, &file_hdr->c_dev_maj,
-	       &file_hdr->c_dev_min, &file_hdr->c_rdev_maj,
-	       &file_hdr->c_rdev_min, &file_hdr->c_namesize,
-	       &file_hdr->c_chksum);
+	tape_buffered_read(ascii_header, in_des, 13*8);
+	ah = ascii_header;
+	hexbuf[8] = '\0';
+	for (i = 0; i < 13; i++) {
+		memcpy(hexbuf, ah, 8);
+		file_hdr->c_hdr[i] = strtoul(hexbuf, NULL, 16);
+		ah += 8;
+	}
 	/* Read file name from input.  */
 	if (file_hdr->c_name != NULL)
 		free(file_hdr->c_name);
