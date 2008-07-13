@@ -16,8 +16,13 @@ int main(int argc, char *argv[], char *envp[])
 		return 1;
 	}
 
-	if (execve(argv[2], argv + 2, envp) == -1) {
-		perror("execve");
+	if (chdir("/") == -1) {
+		perror("chdir");
+		return 1;
+	}
+
+	if (execvp(argv[2], argv + 2) == -1) {
+		perror("execvp");
 		return 1;
 	}
 
