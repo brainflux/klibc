@@ -12,6 +12,8 @@ struct mntent {
 
 extern FILE *setmntent(const char *, const char *);
 
+extern struct mntent *getmntent(FILE *);
+
 extern int endmntent(FILE *fp);
 
 #endif  /* mntent.h */

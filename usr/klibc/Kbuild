@@ -57,7 +57,7 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  ctype/isxdigit.o ctype/tolower.o ctype/toupper.o \
 	  userdb/getgrgid.o userdb/getgrnam.o userdb/getpwnam.o \
 	  userdb/getpwuid.o userdb/root_group.o userdb/root_user.o \
-	  setmntent.o endmntent.o
+	  setmntent.o endmntent.o getmntent.o
 
 klib-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 
