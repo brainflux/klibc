@@ -84,6 +84,7 @@ static __inline__ void srandom(unsigned int __s)
 __extern int unlockpt(int);
 __extern char *ptsname(int);
 __extern int getpt(void);
+__extern int posix_openpt(int);
 
 static __inline__ int grantpt(int __fd)
 {
