@@ -4,7 +4,7 @@
 #include <sys/utsname.h>
 #include <net/if.h>
 
-#define BPLEN		40
+#define BPLEN		256
 #define FNLEN		128			/* from DHCP  RFC 2131 */
 
 struct netdev {
