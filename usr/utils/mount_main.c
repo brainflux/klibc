@@ -7,8 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <mntent.h>
 
 #include "mount_opts.h"
+
+#define _PATH_MOUNTED		"/etc/mtab"
+#define _PATH_PROC_MOUNTS	"/proc/mounts"
 
 char *progname;
 
@@ -20,6 +24,31 @@ static __noreturn usage(void)
 	fprintf(stderr, "Usage: %s [-r] [-w] [-o options] [-t type] [-f] [-i] "
 		"[-n] device directory\n", progname);
 	exit(1);
+}
+
+static __noreturn print_mount(void)
+{
+	FILE *mfp;
+	struct mntent *mnt;
+
+	mfp = setmntent(_PATH_MOUNTED, "r");
+	if (!mfp)
+		mfp = setmntent(_PATH_PROC_MOUNTS, "r");
+	if (!mfp)
+		perror("setmntent");
+
+	while ((mnt = getmntent(mfp)) != NULL) {
+		if (mnt->mnt_fsname && !strncmp(mnt->mnt_fsname, "no", 2))
+			continue;
+		printf("%s on %s", mnt->mnt_fsname, mnt->mnt_dir);
+		if (mnt->mnt_type != NULL && mnt->mnt_type != '\0')
+			printf (" type %s", mnt->mnt_type);
+		if (mnt->mnt_opts != NULL && mnt->mnt_opts != '\0')
+			printf (" (%s)", mnt->mnt_opts);
+		printf("\n");
+	}
+	endmntent(mfp);
+	exit(0);
 }
 
 static int
@@ -113,6 +142,9 @@ int main(int argc, char *argv[])
 	 */
 	if (rwflag & MS_TYPE)
 		type = "none";
+
+	if (optind == argc)
+		print_mount();
 
 	if (optind + 2 != argc || type == NULL)
 		usage();
