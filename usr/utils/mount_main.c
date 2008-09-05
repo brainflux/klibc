@@ -15,6 +15,13 @@ char *progname;
 static struct extra_opts extra;
 static unsigned long rwflag;
 
+static __noreturn usage(void)
+{
+	fprintf(stderr, "Usage: %s [-r] [-w] [-o options] [-t type] [-f] [-i] "
+		"[-n] device directory\n", progname);
+	exit(1);
+}
+
 static int
 do_mount(char *dev, char *dir, char *type, unsigned long rwflag, void *data)
 {
@@ -66,10 +73,18 @@ int main(int argc, char *argv[])
 	rwflag = MS_VERBOSE;
 
 	do {
-		c = getopt(argc, argv, "no:rt:wfi");
+		c = getopt(argc, argv, "fhino:rt:w");
 		if (c == EOF)
 			break;
 		switch (c) {
+		case 'f':
+			/* we can't edit /etc/mtab yet anyway; exit */
+			exit(0);
+		case 'i':
+			/* ignore for now; no support for mount helpers */
+			break;
+		case 'h':
+			usage();
 		case 'n':
 			/* no mtab writing */
 			break;
@@ -85,12 +100,6 @@ int main(int argc, char *argv[])
 		case 'w':
 			rwflag &= ~MS_RDONLY;
 			break;
-		case 'f':
-			/* we can't edit /etc/mtab yet anyway; exit */
-			exit(0);
-		case 'i':
-			/* ignore for now; no support for mount helpers */
-			break;
 		case '?':
 			fprintf(stderr, "%s: invalid option -%c\n",
 				progname, optopt);
@@ -105,11 +114,8 @@ int main(int argc, char *argv[])
 	if (rwflag & MS_TYPE)
 		type = "none";
 
-	if (optind + 2 != argc || type == NULL) {
-		fprintf(stderr, "Usage: %s [-r] [-w] [-o options] [-t type] [-f] [-i] "
-			"[-n] device directory\n", progname);
-		exit(1);
-	}
+	if (optind + 2 != argc || type == NULL)
+		usage();
 
 	return do_mount(argv[optind], argv[optind + 1], type, rwflag,
 			extra.str);
