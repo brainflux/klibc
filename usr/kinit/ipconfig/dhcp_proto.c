@@ -171,7 +171,8 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec)
 	bootp.htype	= dev->hwtype;
 	bootp.hlen	= dev->hwlen;
 	bootp.xid	= dev->bootp.xid;
-	bootp.ciaddr	= dev->ip_addr;
+	bootp.ciaddr	= INADDR_NONE;
+	bootp.yiaddr	= dev->ip_addr;
 	bootp.giaddr	= INADDR_ANY;
 	bootp.secs	= htons(time(NULL) - dev->open_time);
 	memcpy(bootp.chaddr, dev->hwaddr, 16);
