@@ -31,9 +31,9 @@ static __noreturn print_mount(char *type)
 	FILE *mfp;
 	struct mntent *mnt;
 
-	mfp = setmntent(_PATH_MOUNTED, "r");
+	mfp = setmntent(_PATH_PROC_MOUNTS, "r");
 	if (!mfp)
-		mfp = setmntent(_PATH_PROC_MOUNTS, "r");
+		mfp = setmntent(_PATH_MOUNTED, "r");
 	if (!mfp)
 		perror("setmntent");
 
