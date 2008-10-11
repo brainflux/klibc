@@ -12,11 +12,13 @@
 
 #include <sys/types.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <endian.h>
 #include <netinet/in.h>
+#include <sys/utsname.h>
 #include <sys/vfs.h>
 
 #define cpu_to_be32(x) __cpu_to_be32(x)	/* Needed by romfs_fs.h */
@@ -110,27 +112,140 @@ static int minix_image(const void *buf, unsigned long long *bytes)
 	return 0;
 }
 
-static int ext4_image(const void *buf, unsigned long long *bytes)
+/*
+ * Check to see if a filesystem is in /proc/filesystems.
+ * Returns 1 if found, 0 if not
+ */
+static int fs_proc_check(const char *fs_name)
+{
+	FILE	*f;
+	char	buf[80], *cp, *t;
+
+	f = fopen("/proc/filesystems", "r");
+	if (!f)
+		return (0);
+	while (fgets(buf, sizeof(buf), f)) {
+		cp = buf;
+		if (!isspace(*cp)) {
+			while (*cp && !isspace(*cp))
+				cp++;
+		}
+		while (*cp && isspace(*cp))
+			cp++;
+		if ((t = strchr(cp, '\n')) != NULL)
+			*t = 0;
+		if ((t = strchr(cp, '\t')) != NULL)
+			*t = 0;
+		if ((t = strchr(cp, ' ')) != NULL)
+			*t = 0;
+		if (!strcmp(fs_name, cp)) {
+			fclose(f);
+			return (1);
+		}
+	}
+	fclose(f);
+	return (0);
+}
+
+/*
+ * Check to see if a filesystem is available as a module
+ * Returns 1 if found, 0 if not
+ */
+static int check_for_modules(const char *fs_name)
+{
+	struct utsname	uts;
+	FILE		*f;
+	char		buf[1024], *cp, *t;
+	int		i;
+
+	if (uname(&uts))
+		return (0);
+	snprintf(buf, sizeof(buf), "/lib/modules/%s/modules.dep", uts.release);
+
+	f = fopen(buf, "r");
+	if (!f)
+		return (0);
+	while (fgets(buf, sizeof(buf), f)) {
+		if ((cp = strchr(buf, ':')) != NULL)
+			*cp = 0;
+		else
+			continue;
+		if ((cp = strrchr(buf, '/')) != NULL)
+			cp++;
+		i = strlen(cp);
+		if (i > 3) {
+			t = cp + i - 3;
+			if (!strcmp(t, ".ko"))
+				*t = 0;
+		}
+		if (!strcmp(cp, fs_name)) {
+			fclose(f);
+			return (1);
+		}
+	}
+	fclose(f);
+	return (0);
+}
+
+static int base_ext4_image(const void *buf, unsigned long long *bytes,
+			   int *test_fs)
 {
 	const struct ext3_super_block *sb =
 		(const struct ext3_super_block *)buf;
 
-	/* ext4dev needs ext2 + journal + test_fs flag + one !ext3 feature */
-	if (sb->s_magic == __cpu_to_le16(EXT2_SUPER_MAGIC)
-		&& (sb->s_feature_compat
-		& __cpu_to_le32(EXT3_FEATURE_COMPAT_HAS_JOURNAL))
-		&& (sb->s_flags & __cpu_to_le32(EXT2_FLAGS_TEST_FILESYS))
-		&& (sb->s_feature_incompat
-		& __cpu_to_le32(EXT3_FEATURE_RO_COMPAT_SUPP)
-		|| sb->s_feature_incompat
-		& __cpu_to_le32(EXT3_FEATURE_INCOMPAT_UNSUPPORTED)
-		|| sb->s_feature_incompat
-		& __cpu_to_le32(EXT4_FEATURE_INCOMPAT_MMP))) {
+	if (sb->s_magic != __cpu_to_le16(EXT2_SUPER_MAGIC))
+		return 0;
+
+	/*
+	 * For now, ext4 requires a journal -- but this may change
+	 * soon if we get that patch from Google.  :-)
+	 */
+	if ((sb->s_feature_compat
+	     & __cpu_to_le32(EXT3_FEATURE_COMPAT_HAS_JOURNAL)) == 0)
+		return 0;
+
+	/* There is at least one feature not supported by ext3 */
+	if ((sb->s_feature_incompat
+	     & __cpu_to_le32(EXT3_FEATURE_INCOMPAT_UNSUPPORTED)) ||
+	    (sb->s_feature_ro_compat
+	     & __cpu_to_le32(EXT3_FEATURE_RO_COMPAT_UNSUPPORTED))) {
 		*bytes = (unsigned long long)__le32_to_cpu(sb->s_blocks_count)
-		    << (10 + __le32_to_cpu(sb->s_log_block_size));
+			<< (10 + __le32_to_cpu(sb->s_log_block_size));
+		*test_fs = (sb->s_flags &
+			    __cpu_to_le32(EXT2_FLAGS_TEST_FILESYS)) != 0;
 		return 1;
 	}
 	return 0;
+}
+
+static int ext4_image(const void *buf, unsigned long long *bytes)
+{
+	int ret, test_fs, ext4dev_present, ext4_present;
+
+	ret = base_ext4_image(buf, bytes, &test_fs);
+	if (ret == 0)
+		return 0;
+	ext4dev_present = (fs_proc_check("ext4dev") ||
+			   check_for_modules("ext4dev"));
+	ext4_present = (fs_proc_check("ext4") || check_for_modules("ext4"));
+	if ((test_fs || !ext4_present) && ext4dev_present)
+		return 0;
+	return 1;
+}
+
+static int ext4dev_image(const void *buf, unsigned long long *bytes)
+{
+	int ret, test_fs, ext4dev_present, ext4_present;
+
+	ret = base_ext4_image(buf, bytes, &test_fs);
+	if (ret == 0)
+		return 0;
+	ext4dev_present = (fs_proc_check("ext4dev") ||
+			   check_for_modules("ext4dev"));
+	ext4_present = (fs_proc_check("ext4") || check_for_modules("ext4"));
+	if ((!test_fs || !ext4dev_present) && ext4_present)
+		return 0;
+	return 1;
 }
 
 static int ext3_image(const void *buf, unsigned long long *bytes)
@@ -370,7 +485,8 @@ static struct imagetype images[] = {
 	{0, "romfs", romfs_image},
 	{0, "xfs", xfs_image},
 	{0, "squashfs", squashfs_image},
-	{1, "ext4dev", ext4_image},
+	{1, "ext4dev", ext4dev_image},
+	{1, "ext4", ext4_image},
 	{1, "ext3", ext3_image},
 	{1, "ext2", ext2_image},
 	{1, "minix", minix_image},
