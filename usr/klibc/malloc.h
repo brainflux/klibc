@@ -16,7 +16,7 @@ struct free_arena_header;
 
 struct arena_header {
 	size_t type;
-	size_t size;		/* Also gives the location of the next entry */
+	size_t size;
 	struct free_arena_header *next, *prev;
 };
 
