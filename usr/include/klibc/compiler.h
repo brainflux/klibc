@@ -21,9 +21,10 @@
 #endif
 
 /* How to declare a function that *must* be inlined */
+/* Use "extern inline" even in the gcc3+ case to avoid warnings in ctype.h */
 #ifdef __GNUC__
 # if __GNUC__ >= 3
-#  define __must_inline static __inline__ __attribute__((always_inline))
+#  define __must_inline extern __inline__ __attribute__((always_inline))
 # else
 #  define __must_inline extern __inline__
 # endif
