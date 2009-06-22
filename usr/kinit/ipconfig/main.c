@@ -522,6 +522,8 @@ static int parse_device(struct netdev *dev, const char *ip)
 			case 4:
 				strncpy(dev->hostname, ip, SYS_NMLN - 1);
 				dev->hostname[SYS_NMLN - 1] = '\0';
+				memcpy(dev->reqhostname, dev->hostname, 
+				       SYS_NMLN);
 				break;
 			case 5:
 				dev->name = ip;
@@ -569,6 +571,8 @@ static void bringup_one_dev(struct netdev *template, struct netdev *dev)
 		dev->ip_nameserver[1] = template->ip_nameserver[1];
 	if (template->hostname[0] != '\0')
 		strcpy(dev->hostname, template->hostname);
+	if (template->reqhostname[0] != '\0')
+		strcpy(dev->reqhostname, template->reqhostname);
 	dev->caps &= template->caps;
 
 	bringup_device(dev);
