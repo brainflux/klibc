@@ -45,5 +45,5 @@ union node;
 void redirect(union node *, int);
 void popredir(int);
 void clearredir(void);
-int savefd(int);
+int savefd(int, int);
 int redirectsafe(union node *, int);
