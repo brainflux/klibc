@@ -24,7 +24,12 @@
 /* Use "extern inline" even in the gcc3+ case to avoid warnings in ctype.h */
 #ifdef __GNUC__
 # if __GNUC__ >= 3
-#  define __must_inline extern __inline__ __attribute__((always_inline))
+#  ifdef __GNUC_STDC_INLINE__
+#   define __must_inline extern __inline__ \
+	__attribute__((__gnu_inline__,__always_inline__))
+#  else
+#   define __must_inline extern __inline__ __attribute__((__always_inline__))
+#  endif
 # else
 #  define __must_inline extern __inline__
 # endif
