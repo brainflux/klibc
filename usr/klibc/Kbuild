@@ -36,6 +36,7 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  strncat.o strlcpy.o strlcat.o \
 	  strstr.o strncmp.o strncpy.o strrchr.o \
 	  strxspn.o strspn.o strcspn.o strpbrk.o strsep.o strtok.o \
+	  strtok_r.o \
 	  fnmatch.o \
 	  gethostname.o getdomainname.o getcwd.o \
 	  seteuid.o setegid.o \
@@ -55,7 +56,8 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  ctype/ispunct.o ctype/isspace.o ctype/isupper.o \
 	  ctype/isxdigit.o ctype/tolower.o ctype/toupper.o \
 	  userdb/getgrgid.o userdb/getgrnam.o userdb/getpwnam.o \
-	  userdb/getpwuid.o userdb/root_group.o userdb/root_user.o
+	  userdb/getpwuid.o userdb/root_group.o userdb/root_user.o \
+	  setmntent.o endmntent.o getmntent.o
 
 klib-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 
