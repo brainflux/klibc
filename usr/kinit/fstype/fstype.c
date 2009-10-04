@@ -196,14 +196,6 @@ static int base_ext4_image(const void *buf, unsigned long long *bytes,
 	if (sb->s_magic != __cpu_to_le16(EXT2_SUPER_MAGIC))
 		return 0;
 
-	/*
-	 * For now, ext4 requires a journal -- but this may change
-	 * soon if we get that patch from Google.  :-)
-	 */
-	if ((sb->s_feature_compat
-	     & __cpu_to_le32(EXT3_FEATURE_COMPAT_HAS_JOURNAL)) == 0)
-		return 0;
-
 	/* There is at least one feature not supported by ext3 */
 	if ((sb->s_feature_incompat
 	     & __cpu_to_le32(EXT3_FEATURE_INCOMPAT_UNSUPPORTED)) ||
