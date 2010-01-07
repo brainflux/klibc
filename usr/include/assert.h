@@ -9,7 +9,7 @@
 
 #ifdef NDEBUG
 
-#define assert(x) ((void)(x))
+#define assert(x) ((void)(0))
 
 #else
 
