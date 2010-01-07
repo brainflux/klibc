@@ -115,6 +115,13 @@ static __inline__ int fflush(FILE * __f)
 	return 0;
 }
 
+/* stream errors are not kept track of by klibc implementation */
+static __inline__ int ferror(FILE * __f)
+{
+	(void)__f;
+	return 0;
+}
+
 __extern int sscanf(const char *, const char *, ...);
 __extern int vsscanf(const char *, const char *, va_list);
 
