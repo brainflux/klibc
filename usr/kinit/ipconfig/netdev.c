@@ -12,6 +12,7 @@
 #include <net/if_arp.h>
 #include <netinet/in.h>
 #include <linux/route.h>
+#include <linux/sockios.h>
 
 #include "netdev.h"
 
