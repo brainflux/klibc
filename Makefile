@@ -4,12 +4,12 @@ SRCROOT = .
 export srctree  := $(shell pwd)
 export objtree  := $(shell pwd)
 export KLIBCSRC := usr/klibc
-export VERSION := $(shell cat $(KLIBCSRC)/version)
+export VERSION := $(shell cat $(srctree)/$(KLIBCSRC)/version)
 export KLIBCINC := usr/include
 export KLIBCOBJ := usr/klibc
 export KLIBCKERNELSRC := linux/
 export KLIBCKERNELOBJ := linux/
-include scripts/Kbuild.include
+include $(srctree)/scripts/Kbuild.include
 
 KLIBCROSS	?= $(CROSS_COMPILE)
 export KLIBCROSS

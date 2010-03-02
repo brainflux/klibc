@@ -76,7 +76,7 @@ KLIBCLDFLAGS      :=
 KLIBCCFLAGS       :=
 
 # Arch specific definitions for klibc
-include $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/MCONFIG
+include $(srctree)/$(KLIBCSRC)/arch/$(KLIBCARCHDIR)/MCONFIG
 
 # include/asm-* architecture
 KLIBCASMARCH	  ?= $(KLIBCARCH)
@@ -141,7 +141,7 @@ export KLIBCCRT0 KLIBCLIBC SHLIBDIR
 objectify = $(foreach o,$(1),$(if $(filter /%,$(o)),$(o),$(obj)/$(o)))
 
 # Kbuild file in the directory that is being build
-include $(obj)/Kbuild
+include $(srctree)/$(obj)/Kbuild
 
 #####
 # static-y + shared-y handling
@@ -412,4 +412,4 @@ endif
 # Shorthand for $(Q)$(MAKE) -f scripts/Kbuild.klibc obj
 # Usage:
 # $(Q)$(MAKE) $(klibc)=dir
-klibc := -rR -f $(if $(KBUILD_SRC),$(srctree)/)scripts/Kbuild.klibc obj
+klibc := -rR -f $(srctree)/scripts/Kbuild.klibc obj
