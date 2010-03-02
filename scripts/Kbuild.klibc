@@ -200,13 +200,8 @@ klib-dirs       := $(addprefix $(obj)/,$(klib-dirs))
 __klibccflags    = $(KLIBCCFLAGS) $(EXTRA_KLIBCCFLAGS) $(KLIBCCFLAGS_$(*F).o)
 __klibcaflags    = $(KLIBCAFLAGS) $(EXTRA_KLIBCAFLAGS) $(KLIBCAFLAGS_$(*F).o)
 
-ifeq ($(KBUILD_SRC),)
-_klibccflags    = $(__klibccflags)
-_klibcaflags    = $(__klibcaflags)
-else
 _klibccflags    = $(call flags,__klibccflags)
 _klibcaflags    = $(call flags,__klibcaflags)
-endif
 
 klibccflags     = -Wp,-MD,$(depfile) $(NOSTDINC_FLAGS) $(_klibccflags)
 klibcaflags     = -Wp,-MD,$(depfile) $(NOSTDINC_FLAGS) $(_klibcaflags)
