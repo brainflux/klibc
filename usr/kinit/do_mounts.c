@@ -139,6 +139,30 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 	return 0;
 }
 
+static int
+mount_roots(int argc, char *argv[], const char *root_dev_name)
+{
+	char *roots = strdup(root_dev_name);
+	char *root;
+	const char *sep = ",";
+	char *saveptr;
+	int ret = -ESRCH;
+
+	root = strtok_r(roots, sep, &saveptr);
+	while (root) {
+		dev_t root_dev;
+
+		DEBUG(("kinit: trying to mount %s\n", root));
+		root_dev = name_to_dev_t(root);
+		ret = mount_root(argc, argv, root_dev, root);
+		if (!ret)
+			break;
+		root = strtok_r(NULL, sep, &saveptr);
+	}
+	free(roots);
+	return ret;
+}
+
 int
 mount_root(int argc, char *argv[], dev_t root_dev, const char *root_dev_name)
 {
@@ -217,5 +241,7 @@ int do_mounts(int argc, char *argv[])
 			root_dev = Root_RAM0;
 	}
 
+	if (root_dev == Root_MULTI)
+		return mount_roots(argc, argv, root_dev_name);
 	return mount_root(argc, argv, root_dev, root_dev_name);
 }

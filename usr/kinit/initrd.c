@@ -182,6 +182,12 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 
 	DEBUG(("kinit: initrd copied\n"));
 
+	if (root_dev == Root_MULTI) {
+		DEBUG(("kinit: skipping linuxrc: incompatible with multiple roots\n"));
+		/* Mounting initrd as ordinary root */
+		return 0;
+	}
+
 	if (root_dev != Root_RAM0) {
 		int err;
 		DEBUG(("kinit: running linuxrc\n"));

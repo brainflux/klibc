@@ -107,6 +107,9 @@ static inline dev_t name_to_dev_t_real(const char *name)
 	char *cptr, *e1, *e2;
 	int major_num, minor_num;
 
+	/* Are we a multi root line? */
+	if (strchr(name, ','))
+		return Root_MULTI;
 
 	if (name[0] == '/') {
 		devname = name;
