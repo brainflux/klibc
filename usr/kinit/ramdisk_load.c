@@ -189,7 +189,7 @@ load_ramdisk_raw(const char *devpath, FILE * wfd, off_t ramdisk_start,
 	return !!fssize;
 }
 
-int ramdisk_load(int argc, char *argv[], dev_t root_dev)
+int ramdisk_load(int argc, char *argv[])
 {
 	const char *arg_prompt_ramdisk = get_arg(argc, argv, "prompt_ramdisk=");
 	const char *arg_ramdisk_blocksize =

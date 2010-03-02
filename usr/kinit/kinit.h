@@ -11,7 +11,7 @@
 
 int do_mounts(int argc, char *argv[]);
 int mount_nfs_root(int argc, char *argv[], int flags);
-int ramdisk_load(int argc, char *argv[], dev_t root_dev);
+int ramdisk_load(int argc, char *argv[]);
 void md_run(int argc, char *argv[]);
 const char *bdevname(dev_t dev);
 

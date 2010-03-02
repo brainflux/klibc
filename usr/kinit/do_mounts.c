@@ -213,7 +213,7 @@ int do_mounts(int argc, char *argv[])
 	}
 
 	if (load_ramdisk && atoi(load_ramdisk)) {
-		if (ramdisk_load(argc, argv, root_dev))
+		if (ramdisk_load(argc, argv))
 			root_dev = Root_RAM0;
 	}
 
