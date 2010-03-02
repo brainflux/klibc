@@ -75,6 +75,9 @@ KLIBCBITSIZE      :=
 KLIBCLDFLAGS      :=
 KLIBCCFLAGS       :=
 
+# Defaults for arch to override
+KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(KLIBCARCH)/include
+
 # Arch specific definitions for klibc
 include $(srctree)/$(KLIBCSRC)/arch/$(KLIBCARCHDIR)/MCONFIG
 

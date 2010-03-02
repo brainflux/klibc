@@ -35,5 +35,8 @@ KLIBCLDFLAGS      = -m elf_x86_64
 # Revert to the old max-page-size=0x100000 value.
 KLIBCSHAREDFLAGS     = -Ttext 0x00200200 -z max-page-size=0x100000
 
+# Asm includes for x86_64 are in the merged x86 tree
+KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/x86/include
+
 # Additional asm- directories needed during installation
 ASMARCH = asm-i386
