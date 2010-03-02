@@ -137,9 +137,6 @@ export KLIBCLD KLIBCCC KLIBCAR KLIBCSTRIP KLIBCNM
 export KLIBCCFLAGS KLIBCAFLAGS KLIBCLIBGCC KLIBCSHAREDFLAGS KLIBCSTRIPFLAGS
 export KLIBCCRT0 KLIBCLIBC SHLIBDIR
 
-# kernel configuration
-include .config
-
 # Add $(obj)/ for paths that is not absolute
 objectify = $(foreach o,$(1),$(if $(filter /%,$(o)),$(o),$(obj)/$(o)))
 
