@@ -32,4 +32,11 @@ enum nfs_proto {
 #define DEBUG(x) do { } while(0)
 #endif
 
+#ifndef MNTPROC_MNT
+#define MNTPROC_MNT 1
+#endif
+#ifndef MNTPROC_UMNT
+#define MNTPROC_UMNT 3
+#endif
+
 #endif /* NFSMOUNT_NFSMOUNT_H */
