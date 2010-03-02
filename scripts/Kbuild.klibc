@@ -58,7 +58,7 @@ targets :=
 __build:
 
 # Read .config if it exist, otherwise ignore
--include .config
+-include $(objtree)/.config
 
 # Generic Kbuild routines
 include $(srctree)/scripts/Kbuild.include
