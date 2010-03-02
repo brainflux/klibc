@@ -9,6 +9,9 @@ export KLIBCINC := usr/include
 export KLIBCOBJ := usr/klibc
 export KLIBCKERNELSRC := linux/
 export KLIBCKERNELOBJ := linux/
+
+export VPATH := $(srctree)
+
 include $(srctree)/scripts/Kbuild.include
 
 KLIBCROSS	?= $(CROSS_COMPILE)
