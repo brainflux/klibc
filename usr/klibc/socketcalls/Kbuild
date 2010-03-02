@@ -39,12 +39,12 @@ $(obj)/SOCKETCALLS.i: $(KLIBCSRC)/SOCKETCALLS.def FORCE
 
 # Generate socketcall stubs
 quiet_cmd_socketcalls = GEN     $@
-      cmd_socketcalls = $(PERL) $(KLIBCSRC)/socketcalls.pl          \
-                                $(obj)/SOCKETCALLS.i	            \
-                                $(KLIBCARCH) $(obj) > $@ 	    \
-				|| ( rm -f $@ ; exit 1 )
+      cmd_socketcalls = $(PERL) $(srctree)/$(KLIBCSRC)/socketcalls.pl      \
+                                $(obj)/SOCKETCALLS.i                       \
+                                $(KLIBCARCH) $(obj) > $@                   \
+                                || ( rm -f $@ ; exit 1 )
 
-$(obj)/socketcalls.mk: $(KLIBCSRC)/socketcalls.pl                   \
+$(obj)/socketcalls.mk: $(srctree)/$(KLIBCSRC)/socketcalls.pl        \
                        $(obj)/SOCKETCALLS.i                         \
                        $(src)/socketcommon.h
 	$(call cmd,socketcalls)
