@@ -53,18 +53,20 @@ $(obj)/syscalls.nrs: $(KLIBCINC)/sys/syscall.h FORCE
 
 # Generate typesize.c
 quiet_cmd_syscalsz = GEN     $@
-      cmd_syscalsz = mkdir -p $(KLIBCINC)/klibc/;                           \
-                     $(PERL) $(KLIBCSRC)/syscalls.pl -1 $(obj)/SYSCALLS.i   \
-                             $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph    \
-                             $(KLIBCARCH) $(KLIBCBITSIZE) $(obj)/syscalls.nrs \
-                             $(obj)                                         \
-                             $(KLIBCINC)/klibc/havesyscall.h 		    \
-			     $(obj)/typesize.c > $@                      \
-                             || ( rm -f $@ ; exit 1 )
+      cmd_syscalsz = \
+            mkdir -p $(KLIBCINC)/klibc/;                                    \
+            $(PERL) $(srctree)/$(KLIBCSRC)/syscalls.pl                      \
+                  -1 $(obj)/SYSCALLS.i                                      \
+                  $(srctree)/$(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph    \
+                  $(KLIBCARCH) $(KLIBCBITSIZE) $(obj)/syscalls.nrs          \
+                  $(obj)                                                    \
+                  $(KLIBCINC)/klibc/havesyscall.h                           \
+                  $(obj)/typesize.c > $@                                    \
+                  || ( rm -f $@ ; exit 1 )
 
-$(obj)/typesize.c: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
-                      $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \
-                      $(src)/syscommon.h $(obj)/syscalls.nrs FORCE
+$(obj)/typesize.c: $(srctree)/$(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i     \
+                   $(srctree)/$(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph   \
+                   $(src)/syscommon.h $(obj)/syscalls.nrs FORCE
 	$(call if_changed,syscalsz)
 
 # Convert typesize.o to typesize.bin
@@ -77,18 +79,19 @@ $(obj)/typesize.bin: $(obj)/typesize.o FORCE
 # Generate $(KLIBINC)/klibc/havesyscall.h + makefile fragment
 # Using sysstub.pl in arch dir generate all .S files
 quiet_cmd_syscalls = GEN     $@
-      cmd_syscalls = mkdir -p $(KLIBCINC)/klibc/;                           \
-                     $(PERL) $(KLIBCSRC)/syscalls.pl -2 $(obj)/SYSCALLS.i   \
-                             $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph    \
-                             $(KLIBCARCH) $(KLIBCBITSIZE) $(obj)/syscalls.nrs \
-                             $(obj)                                         \
-                             $(KLIBCINC)/klibc/havesyscall.h 		    \
-			     $(obj)/typesize.bin > $@                    \
-                             || ( rm -f $@ ; exit 1 )
+      cmd_syscalls = \
+            mkdir -p $(KLIBCINC)/klibc/;                                    \
+            $(PERL) $(srctree)/$(KLIBCSRC)/syscalls.pl -2 $(obj)/SYSCALLS.i \
+                  $(srctree)/$(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph    \
+                  $(KLIBCARCH) $(KLIBCBITSIZE) $(obj)/syscalls.nrs          \
+                  $(obj)                                                    \
+                  $(KLIBCINC)/klibc/havesyscall.h                           \
+                  $(obj)/typesize.bin > $@                                  \
+                  || ( rm -f $@ ; exit 1 )
 
-$(obj)/syscalls.mk: $(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i \
-                    $(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \
-                    $(call objectify, $(syscall-objs:.o=.S)) \
-                    $(src)/syscommon.h $(obj)/syscalls.nrs \
-		    $(obj)/typesize.bin FORCE
+$(obj)/syscalls.mk: $(srctree)/$(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i   \
+                    $(srctree)/$(KLIBCSRC)/arch/$(KLIBCARCHDIR)/sysstub.ph \
+                    $(call objectify, $(syscall-objs:.o=.S))               \
+                    $(src)/syscommon.h $(obj)/syscalls.nrs                 \
+                    $(obj)/typesize.bin FORCE
 	$(call if_changed,syscalls)
