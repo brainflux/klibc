@@ -1,6 +1,8 @@
 #ifndef IPCONFIG_PACKET_H
 #define IPCONFIG_PACKET_H
 
+struct iovec;
+
 int packet_open(void);
 void packet_close(void);
 int packet_send(struct netdev *dev, struct iovec *iov, int iov_len);
