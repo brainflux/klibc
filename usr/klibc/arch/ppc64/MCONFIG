@@ -20,7 +20,7 @@ KLIBCLDFLAGS      = -m elf64ppc
 KLIBCSHAREDFLAGS     = -Ttext 0x0f000200
 
 # The kernel so far has both asm-ppc* and asm-powerpc.
-KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/powerpc/include
+KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)/arch/powerpc/include
 
 # The asm include files live in asm-powerpc
 KLIBCASMARCH	= powerpc

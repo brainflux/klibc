@@ -7,8 +7,8 @@ export KLIBCSRC := usr/klibc
 export VERSION := $(shell cat $(srctree)/$(KLIBCSRC)/version)
 export KLIBCINC := usr/include
 export KLIBCOBJ := usr/klibc
-export KLIBCKERNELSRC := linux/
-export KLIBCKERNELOBJ := linux/
+export KLIBCKERNELSRC ?= linux
+export KLIBCKERNELOBJ ?= $(KLIBCKERNELSRC)
 
 export VPATH := $(srctree)
 

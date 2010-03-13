@@ -76,7 +76,7 @@ KLIBCLDFLAGS      :=
 KLIBCCFLAGS       :=
 
 # Defaults for arch to override
-KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)arch/$(KLIBCARCH)/include
+KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)/arch/$(KLIBCARCH)/include
 
 # Arch specific definitions for klibc
 include $(srctree)/$(KLIBCSRC)/arch/$(KLIBCARCHDIR)/MCONFIG
@@ -105,9 +105,11 @@ KLIBCCPPFLAGS    := -nostdinc -iwithprefix include \
 		    -I$(KLIBCOBJ)/../include		\
                     -I$(KLIBCINC)
 # kernel include paths
-KLIBCKERNELSRC	 ?= $(srctree)/
-KLIBCCPPFLAGS    += -I$(KLIBCKERNELSRC)include		\
-                     $(if $(KBUILD_SRC),-I$(KLIBCKERNELOBJ)include2 -I$(KLIBCKERNELOBJ)include -I$(srctree)/include)    \
+KLIBCKERNELSRC	 ?= $(srctree)
+KLIBCKERNELOBJ	 ?= $(objtree)
+KLIBCCPPFLAGS    += -I$(KLIBCKERNELSRC)/include				    \
+                     $(if $(KBUILD_SRC),-I$(KLIBCKERNELOBJ)/include2 	    \
+		       -I$(KLIBCKERNELOBJ)/include -I$(srctree)/include)    \
 		     $(KLIBCARCHINCFLAGS)
 
 # klibc definitions
