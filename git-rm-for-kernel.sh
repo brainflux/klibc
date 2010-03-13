@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ -z "$RM" ]; then
-  export RM='cg-rm -rf'
+  export RM='git rm -rf'
 fi
 
 nuke () {
