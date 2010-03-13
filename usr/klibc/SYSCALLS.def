@@ -47,6 +47,7 @@ int execve(const char *, char * const *, char * const *);
 <alpha,ia64> int getpriority(int, int);
 <!alpha,ia64> int getpriority::__getpriority(int, int);
 int setpriority(int, int, int);
+int getrusage(int, struct rusage *);
 int sched_setscheduler(pid_t, int, const struct sched_param *);
 int sched_yield();
 <i386> int prctl@varadic(int, unsigned long, unsigned long, unsigned long, unsigned long);
