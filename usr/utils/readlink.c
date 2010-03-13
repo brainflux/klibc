@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
 	}
 
 	if (readlink(name, link_name, max_siz) == -1) {
-		perror("readlink");
 		exit(1);
 	}
 	printf("%s\n", link_name);
