@@ -3,7 +3,7 @@
 #
 
 progs := chroot dd mkdir mkfifo mknod mount pivot_root umount
-progs += true false sleep ln nuke minips cat ls
+progs += true false sleep ln nuke minips cat ls losetup
 progs += uname halt kill readlink cpio sync dmesg
 
 static-y := $(addprefix static/, $(progs))
@@ -56,6 +56,8 @@ static/cpio-y	    := cpio.o
 shared/cpio-y       := cpio.o
 static/sync-y       := sync.o
 shared/sync-y       := sync.o
+static/losetup-y    := losetup.o
+shared/losetup-y    := losetup.o
 
 # Additionally linked targets
 always := static/reboot static/poweroff shared/reboot shared/poweroff
