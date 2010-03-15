@@ -259,4 +259,6 @@ int sysinfo(struct sysinfo *);
  * system calls.
  */
 <?!i386> long socketcall::__socketcall(int, const unsigned long *);
+#if ! _KLIBC_SYS_SOCKETCALL
 #include "SOCKETCALLS.def"
+#endif

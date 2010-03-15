@@ -63,7 +63,7 @@ while ( defined($line = <FILE>) ) {
 
 	    print OUT "#include \"socketcommon.h\"\n";
 	    print OUT "\n";
-	    print OUT "#ifndef __NR_${name}\n\n";
+	    print OUT "#if defined(_KLIBC_SYS_SOCKETCALL) || !defined __NR_${name}\n\n";
 
 	    print OUT "extern long __socketcall(int, const unsigned long *);\n\n";
 
