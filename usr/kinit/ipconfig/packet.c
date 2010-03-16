@@ -108,7 +108,7 @@ static char *ntoa(uint32_t addr)
 #endif
 
 /*
- * Send a packet.  The options are listed in iov[1...iov_len].
+ * Send a packet.  The options are listed in iov[1...iov_len-1].
  * iov[0] is reserved for the bootp packet header.
  */
 int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)

@@ -212,7 +212,7 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec)
 	vec[i].iov_base = dhcp_end;
 	vec[i].iov_len  = sizeof(dhcp_end);
 
-	return packet_send(dev, vec, i);
+	return packet_send(dev, vec, i + 1);
 }
 
 /*
