@@ -1,5 +1,8 @@
 SRCROOT = .
 
+# *DOCUMENTATION*
+# To see a list of typical targets execute "make help"
+
 # kbuild compatibility
 export srctree  := $(shell pwd)
 export objtree  := $(shell pwd)
@@ -114,6 +117,25 @@ klibc: $(objtree)/.config
 test: klibc
 	$(Q)$(MAKE) $(klibc)=usr/klibc/tests
 
+help:
+	@echo	'Cleaning targets:'
+	@echo	'  clean	- Remove most generated files'
+	@echo	'  mrproper	- Remove all generated files + config'
+	@echo	'  distclean	- mprproper + editor backup + patch files'
+	@echo	''
+	@echo	'Build targets:'
+	@echo	'all		- Build all targets'
+	@echo	'install	- Install klibc'
+	@echo	'klcc		- Wrapper around gcc to compile against klibc'
+	@echo	'test		- Run klibc tests'
+	@echo
+	@echo	'Build options:'
+	@echo	'KLIBCKERNELSRC - Path to a configured linux-2.6 tree'
+	@echo	'KLIBCKERNELOBJ - Path to kernel output dir (defaults to KLIBCKERNELSRC)'
+	@echo	'make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
+	@echo
+	@echo	'Sample invocation:'
+	@echo	'make  KLIBCKERNELSRC=`pwd`/../linux-2.6'
 
 ###
 # allow one to say make dir/file.o
