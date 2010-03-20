@@ -184,4 +184,16 @@
 # define _KLIBC_HAS_ARCHSOCKET_H 0
 #endif
 
+
+/*
+ * _KLIBC_SYS_SOCKETCALL
+ *
+ *	This architecture (e.g. SPARC) advertises socket-related
+ *	system calls, which are not actually implemented.  Use
+ *	socketcalls unconditionally instead.
+ */
+#ifndef _KLIBC_SYS_SOCKETCALL
+# define _KLIBC_SYS_SOCKETCALL 0
+#endif
+
 #endif /* _KLIBC_SYSCONFIG_H */
