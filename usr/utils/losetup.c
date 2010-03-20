@@ -290,7 +290,7 @@ int set_loop(const char *device, const char *file, unsigned long long offset,
 		loopinfo64.lo_encrypt_key_size = LO_KEY_SIZE;
 	}
 
-	if (ioctl(fd, LOOP_SET_FD, ffd) < 0) {
+	if (ioctl(fd, LOOP_SET_FD, (void *)(size_t)ffd) < 0) {
 		perror("ioctl: LOOP_SET_FD");
 		return 1;
 	}

@@ -42,8 +42,8 @@ struct loop_info64 {
 	unsigned int		lo_encrypt_type;
 	unsigned int		lo_encrypt_key_size;
 	unsigned int		lo_flags;
-	unsigned char		lo_file_name[LO_NAME_SIZE];
-	unsigned char		lo_crypt_name[LO_NAME_SIZE];
-	unsigned char		lo_encrypt_key[LO_KEY_SIZE];
+	char			lo_file_name[LO_NAME_SIZE];
+	char			lo_crypt_name[LO_NAME_SIZE];
+	char			lo_encrypt_key[LO_KEY_SIZE];
 	unsigned long long	lo_init[2];
 };
