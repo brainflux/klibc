@@ -78,12 +78,12 @@ ln -f %{buildroot}%{klibcdir}/lib/klibc-*.so %{buildroot}/lib
 # Install the docs
 mkdir -p %{buildroot}%{bindocdir} %{buildroot}%{libdocdir}
 install -m 444 README %{buildroot}%{libdocdir}
-install -m 444 usr/klibc/README %{buildroot}%{libdocdir}/README.klibc
-install -m 444 usr/klibc/arch/README %{buildroot}%{libdocdir}/README.klibc.arch
+install -m 444 usr/klibc/README.klibc %{buildroot}%{libdocdir}
+install -m 444 usr/klibc/arch/README.klibc.arch %{buildroot}%{libdocdir}
 
 install -m 444 usr/gzip/COPYING %{buildroot}%{bindocdir}/COPYING.gzip
 install -m 444 usr/gzip/README %{buildroot}%{bindocdir}/README.gzip
-install -m 444 usr/kinit/ipconfig/README %{buildroot}%{bindocdir}/README.ipconfig
+install -m 444 usr/kinit/ipconfig/README.ipconfig %{buildroot}%{bindocdir}
 install -m 444 usr/kinit/README %{buildroot}%{bindocdir}/README.kinit
 
 %clean
