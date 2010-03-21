@@ -1,0 +1,25 @@
+This version of dash was obtained from
+
+git://git.kernel.org/pub/scm/utils/dash/dash.git
+
+It corresponds to changeset ea2cf705d50024b09e00f8f5bf9c666429bccfa5.
+
+HOWTO sync branch:
+1) Generate patch and fix up their path
+
+Remember to set Herbert Xu name and email, as format-patch, looses -s blocks:
+git format-patch -s <changeset>..
+
+Path fixup:
+perl -i -pe 's#^([-+]{3} [ab]/)src/#$1#g' 00*patch
+
+2) Import patches on by one
+git am --directory="usr/dash" --exclude="usr/dash/configure.ac" \
+	--exclude="usr/dash/ChangeLog" --exclude="usr/dash/dash.1" \
+	--exclude="usr/dash/Makefile.am" --exclude="usr/dash/mksignames.c" \
+	-i -s ../dash/000X-foo.patch
+
+The only changes made are the addition of config.h, Kbuild usage
+and the omition of Changelog and manpage.
+
+3) update config.h
