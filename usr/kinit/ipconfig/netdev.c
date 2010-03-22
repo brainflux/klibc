@@ -41,10 +41,12 @@ int netdev_getflags(struct netdev *dev, short *flags)
 
 static int netdev_sif_addr(struct ifreq *ifr, int cmd, uint32_t addr)
 {
-	struct sockaddr_in *sin = (struct sockaddr_in *)&ifr->ifr_addr;
+	struct sockaddr_in sin;
 
-	sin->sin_family = AF_INET;
-	sin->sin_addr.s_addr = addr;
+	sin.sin_family = AF_INET;
+	sin.sin_addr.s_addr = addr;
+
+	memcpy(&ifr->ifr_addr, &sin, sizeof sin);
 
 	return ioctl(cfd, cmd, ifr);
 }
@@ -76,6 +78,15 @@ int netdev_setaddress(struct netdev *dev)
 	return 0;
 }
 
+static void set_s_addr(struct sockaddr *saddr, uint32_t ipaddr)
+{
+	struct sockaddr_in sin = {
+		.sin_family = AF_INET,
+		.sin_addr.s_addr = ipaddr,
+	};
+	memcpy(saddr, &sin, sizeof sin);
+}
+
 int netdev_setdefaultroute(struct netdev *dev)
 {
 	struct rtentry r;
@@ -85,13 +96,9 @@ int netdev_setdefaultroute(struct netdev *dev)
 
 	memset(&r, 0, sizeof(r));
 
-	((struct sockaddr_in *)&r.rt_dst)->sin_family = AF_INET;
-	((struct sockaddr_in *)&r.rt_dst)->sin_addr.s_addr = INADDR_ANY;
-	((struct sockaddr_in *)&r.rt_gateway)->sin_family = AF_INET;
-	((struct sockaddr_in *)&r.rt_gateway)->sin_addr.s_addr =
-	    dev->ip_gateway;
-	((struct sockaddr_in *)&r.rt_genmask)->sin_family = AF_INET;
-	((struct sockaddr_in *)&r.rt_genmask)->sin_addr.s_addr = INADDR_ANY;
+	set_s_addr(&r.rt_dst, INADDR_ANY);
+	set_s_addr(&r.rt_gateway, dev->ip_gateway);
+	set_s_addr(&r.rt_genmask, INADDR_ANY);
 	r.rt_flags = RTF_UP | RTF_GATEWAY;
 
 	if (ioctl(cfd, SIOCADDRT, &r) == -1 && errno != EEXIST) {
