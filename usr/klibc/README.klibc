@@ -38,10 +38,11 @@ b) If you're cross-compiling, you need to set KLIBCARCH to the
    arm-thumb:	 Untested
    arm:		 Working
    arm26:	 Not yet ported
+   avr32:	 Not yet ported
    cris:	 Working
    h8300:	 Not yet ported
    i386:	 Working
-   ia64:	 Working
+   ia64:	 Working static, shared untested
    m32r:	 Untested
    m68k:	 Untested
    m68knommu:	 Not yet ported
@@ -51,7 +52,7 @@ b) If you're cross-compiling, you need to set KLIBCARCH to the
    parisc64:	 Not yet ported
    ppc:		 Working
    ppc64:	 Working
-   s390:	 Working static, shared untested
+   s390:	 Working
    s390x:	 Working
    sh:		 Untested
    sh64:	 Not yet ported
