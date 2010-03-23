@@ -23,8 +23,8 @@ int mount_mtd_root(int argc, char *argv[], const char *root_dev_name,
 	if (!type)
 		type = "jffs2";
 
-	DEBUG(("Trying to mount MTD %s as root (%s filesystem)\n",
-	       root_dev_name, type));
+	printf("Trying to mount MTD %s as root (%s filesystem)\n",
+		root_dev_name, type);
 
 	if (mount(root_dev_name, "/root", type, flags, data)) {
 		int err = errno;

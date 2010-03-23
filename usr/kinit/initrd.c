@@ -27,7 +27,7 @@ static int rd_copy_uncompressed(int ffd, int dfd)
 	off_t bytes;
 	struct stat st;
 
-	DEBUG(("kinit: uncompressed initrd\n"));
+	dprintf("kinit: uncompressed initrd\n");
 
 	if (ffd < 0 || fstat(ffd, &st) || !S_ISREG(st.st_mode) ||
 	    (bytes = st.st_size) == 0)
@@ -37,8 +37,8 @@ static int rd_copy_uncompressed(int ffd, int dfd)
 		ssize_t blocksize = ((bytes - 1) & (BUF_SIZE - 1)) + 1;
 		off_t offset = bytes - blocksize;
 
-		DEBUG(("kinit: copying %zd bytes at offset %llu\n",
-		       blocksize, offset));
+		dprintf("kinit: copying %zd bytes at offset %llu\n",
+			blocksize, offset);
 
 		if (xpread(ffd, buffer, blocksize, offset) != blocksize ||
 		    xpwrite(dfd, buffer, blocksize, offset) != blocksize)
@@ -91,13 +91,13 @@ static int run_linuxrc(int argc, char *argv[], dev_t root_dev)
 	const char *ramdisk_name = "/dev/ram0";
 	FILE *fp;
 
-	DEBUG(("kinit: mounting initrd\n"));
+	dprintf("kinit: mounting initrd\n");
 	mkdir("/root", 0700);
 	if (!mount_block(ramdisk_name, "/root", NULL, MS_VERBOSE, NULL))
 		return -errno;
 
 	/* Write the current "real root device" out to procfs */
-	DEBUG(("kinit: real_root_dev = %#x\n", root_dev));
+	dprintf("kinit: real_root_dev = %#x\n", root_dev);
 	fp = fopen("/proc/sys/kernel/real-root-dev", "w");
 	fprintf(fp, "%u", root_dev);
 	fclose(fp);
@@ -121,9 +121,9 @@ static int run_linuxrc(int argc, char *argv[], dev_t root_dev)
 		execl("/linuxrc", "linuxrc", NULL);
 		_exit(255);
 	} else if (pid > 0) {
-		DEBUG(("kinit: Waiting for linuxrc to complete...\n"));
+		dprintf("kinit: Waiting for linuxrc to complete...\n");
 		while (waitpid(pid, NULL, 0) != pid) ;
-		DEBUG(("kinit: linuxrc done\n"));
+		dprintf("kinit: linuxrc done\n");
 	} else {
 		return -errno;
 	}
@@ -170,7 +170,7 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 	if (access("/initrd.image", R_OK))
 		return 0;	/* No initrd */
 
-	DEBUG(("kinit: initrd found\n"));
+	dprintf("kinit: initrd found\n");
 
 	create_dev("/dev/ram0", Root_RAM0);
 
@@ -180,24 +180,24 @@ int initrd_load(int argc, char *argv[], dev_t root_dev)
 		return 0;	/* Failed to copy initrd */
 	}
 
-	DEBUG(("kinit: initrd copied\n"));
+	dprintf("kinit: initrd copied\n");
 
 	if (root_dev == Root_MULTI) {
-		DEBUG(("kinit: skipping linuxrc: incompatible with multiple roots\n"));
+		dprintf("kinit: skipping linuxrc: incompatible with multiple roots\n");
 		/* Mounting initrd as ordinary root */
 		return 0;
 	}
 
 	if (root_dev != Root_RAM0) {
 		int err;
-		DEBUG(("kinit: running linuxrc\n"));
+		dprintf("kinit: running linuxrc\n");
 		err = run_linuxrc(argc, argv, root_dev);
 		if (err)
 			fprintf(stderr, "%s: running linuxrc: %s\n", progname,
 				strerror(-err));
 		return 1;	/* initrd is root, or run_linuxrc took care of it */
 	} else {
-		DEBUG(("kinit: permament (or pivoting) initrd, not running linuxrc\n"));
+		dprintf("kinit: permament (or pivoting) initrd, not running linuxrc\n");
 		return 0;	/* Mounting initrd as ordinary root */
 	}
 }

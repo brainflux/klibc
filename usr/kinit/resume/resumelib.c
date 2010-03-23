@@ -68,7 +68,7 @@ int resume(const char *resume_file, unsigned long long resume_offset)
 	if (len >= sizeof device_string)
 		goto fail_r;
 
-	DEBUG(("kinit: trying to resume from %s\n", resume_file));
+	dprintf("kinit: trying to resume from %s\n", resume_file);
 
 	if (write(powerfd, device_string, len) != len)
 		goto fail_r;

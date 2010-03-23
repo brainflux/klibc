@@ -65,8 +65,8 @@ static dev_t try_name(char *name, int part)
 
 	/* if partition is within range - we got it */
 	if (part < range) {
-		DEBUG(("kinit: try_name %s,%d = %s\n", name, part,
-		       bdevname(res + part)));
+		dprintf("kinit: try_name %s,%d = %s\n", name, part,
+			bdevname(res + part));
 		return res + part;
 	}
 
@@ -186,7 +186,7 @@ dev_t name_to_dev_t(const char *name)
 {
 	dev_t dev = name_to_dev_t_real(name);
 
-	DEBUG(("kinit: name_to_dev_t(%s) = %s\n", name, bdevname(dev)));
+	dprintf("kinit: name_to_dev_t(%s) = %s\n", name, bdevname(dev));
 	return dev;
 }
 

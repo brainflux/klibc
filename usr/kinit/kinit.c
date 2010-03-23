@@ -19,7 +19,7 @@ const char *progname = "kinit";
 int mnt_procfs;
 int mnt_sysfs;
 
-#ifdef INI_DEBUG
+#ifdef DEBUG
 void dump_args(int argc, char *argv[])
 {
 	int i;
@@ -32,10 +32,10 @@ void dump_args(int argc, char *argv[])
 
 	if (argv[argc] != NULL) {
 		printf("  argv[%d]: \"%s\" (SHOULD BE NULL)\n",
-		       argc, argv[argc]);
+			argc, argv[argc]);
 	}
 }
-#endif
+#endif /* DEBUG */
 
 
 static int do_ipconfig(int argc, char *argv[])
@@ -50,7 +50,7 @@ static int do_ipconfig(int argc, char *argv[])
 	args[a++] = (char *)"-i";
 	args[a++] = (char *)"Linux kinit";
 
-	DEBUG(("Running ipconfig\n"));
+	dprintf("Running ipconfig\n");
 
 	for (i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "ip=", 3) == 0 ||
@@ -173,13 +173,13 @@ static const char *find_init(const char *root, const char *user)
 	}
 
 	if (user)
-		DEBUG(("Checking for init: %s\n", user));
+		dprintf("Checking for init: %s\n", user);
 
 	if (user && user[0] == '/' && !access(user+1, X_OK)) {
 		path = user;
 	} else {
 		for (p = init_paths; *p; p++) {
-			DEBUG(("Checking for init: %s\n", *p));
+			dprintf("Checking for init: %s\n", *p);
 			if (!access(*p+1, X_OK))
 				break;
 		}

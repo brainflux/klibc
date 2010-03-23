@@ -95,7 +95,7 @@ int load_ramdisk_compressed(const char *devpath, FILE * wfd,
 				if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
 					ramdisk_size = ~0ULL;
 				ramdisk_start = 0;
-				DEBUG(("New size = %llu\n", ramdisk_size));
+				dprintf("New size = %llu\n", ramdisk_size);
 			}
 			do {
 				ramdisk_left = ramdisk_size - ramdisk_start;
@@ -117,14 +117,14 @@ int load_ramdisk_compressed(const char *devpath, FILE * wfd,
 		rv = inflate(&zs, Z_SYNC_FLUSH);
 	} while (rv == Z_OK || rv == Z_BUF_ERROR);
 
-	DEBUG(("kinit: inflate returned %d\n", rv));
+	dprintf("kinit: inflate returned %d\n", rv);
 
 	if (rv != Z_STREAM_END)
 		goto err2;
 
 	/* Write the last */
 	_fwrite(out_buf, BUF_SZ - zs.avail_out, wfd);
-	DEBUG(("kinit: writing %d bytes\n", BUF_SZ - zs.avail_out));
+	dprintf("kinit: writing %d bytes\n", BUF_SZ - zs.avail_out);
 
 	inflateEnd(&zs);
 	return 0;
@@ -153,8 +153,8 @@ load_ramdisk_raw(const char *devpath, FILE * wfd, off_t ramdisk_start,
 	if (ioctl(rfd, BLKGETSIZE64, &ramdisk_size))
 		ramdisk_size = ~0ULL;
 
-	DEBUG(("start: %llu  size: %llu  fssize: %llu\n",
-	       ramdisk_start, ramdisk_size, fssize));
+	dprintf("start: %llu  size: %llu  fssize: %llu\n",
+		ramdisk_start, ramdisk_size, fssize);
 
 	while (fssize) {
 
@@ -246,7 +246,7 @@ int ramdisk_load(int argc, char *argv[])
 		return 0;
 	}
 
-	DEBUG(("kinit: ramdisk is %s, size %llu\n", fstype, fssize));
+	dprintf("kinit: ramdisk is %s, size %llu\n", fstype, fssize);
 
 	fprintf(stderr, "Loading ramdisk (%s) ...", is_gzip ? "gzip" : "raw");
 
