@@ -17,19 +17,11 @@ enum nfs_proto {
 
 /* masked with NFS_MOUNT_FLAGMASK before mount() call */
 #define NFS_MOUNT_KLIBC_RONLY	0x00010000U
-/*
- * Note for gcc 3.2.2:
- *
- * If you're turning on debugging, make sure you get rid of -Os from
- * the gcc command line, or else ipconfig will fail to link.
- */
-#undef NFS_DEBUG
 
-#undef DEBUG
-#ifdef NFS_DEBUG
-#define DEBUG(x) printf x
+#ifdef DEBUG
+# define dprintf printf
 #else
-#define DEBUG(x) do { } while(0)
+# define dprintf(...) ((void)0)
 #endif
 
 #ifndef MNTPROC_MNT

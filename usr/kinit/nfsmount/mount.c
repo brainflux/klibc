@@ -93,7 +93,7 @@ static inline void dump_params(uint32_t server,
 	(void)path;
 	(void)data;
 
-#ifdef NFS_DEBUG
+#ifdef DEBUG
 	struct in_addr addr = { server };
 
 	printf("NFS params:\n");
@@ -121,7 +121,7 @@ static inline void dump_fh(const char *data, int len)
 	(void)data;
 	(void)len;
 
-#ifdef NFS_DEBUG
+#ifdef DEBUG
 	int i = 0;
 	int max = len - (len % 8);
 
@@ -329,7 +329,7 @@ int nfs_mount(const char *pathname, const char *hostname,
 		goto bail;
 	}
 
-	DEBUG(("Mounted %s on %s\n", pathname, path));
+	dprintf("Mounted %s on %s\n", pathname, path);
 
 	goto done;
 

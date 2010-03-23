@@ -6,7 +6,6 @@
 #include <string.h>
 #include <assert.h>
 
-#include "ipconfig.h"
 #include "kinit.h"
 #include "netdev.h"
 #include "nfsmount.h"
