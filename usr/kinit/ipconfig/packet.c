@@ -99,13 +99,13 @@ static struct header ipudp_hdrs = {
 		},
 };
 
-#ifdef IPC_DEBUG		/* Only used by DEBUG(()) */
+#ifdef DEBUG /* Only used with dprintf() */
 static char *ntoa(uint32_t addr)
 {
 	struct in_addr in = { addr };
 	return inet_ntoa(in);
 }
-#endif
+#endif /* DEBUG */
 
 /*
  * Send a packet.  The options are listed in iov[1...iov_len-1].
@@ -130,11 +130,11 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 		ipudp_hdrs.udp.dest = htons(cfg_remote_port);
 	}
 
-	DEBUG(("\n   udp src %d dst %d", ntohs(ipudp_hdrs.udp.source),
-	       ntohs(ipudp_hdrs.udp.dest)));
+	dprintf("\n   udp src %d dst %d", ntohs(ipudp_hdrs.udp.source),
+		ntohs(ipudp_hdrs.udp.dest));
 
-	DEBUG(("\n   ip src %s ", ntoa(ipudp_hdrs.ip.saddr)));
-	DEBUG(("dst %s ", ntoa(ipudp_hdrs.ip.daddr)));
+	dprintf("\n   ip src %s ", ntoa(ipudp_hdrs.ip.saddr));
+	dprintf("dst %s ", ntoa(ipudp_hdrs.ip.daddr));
 
 	/*
 	 * Glue in the ip+udp header iovec
@@ -160,7 +160,7 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 
 	ipudp_hdrs.udp.len    = htons(len - sizeof(struct iphdr));
 
-	DEBUG(("\n   bytes %d\n", len));
+	dprintf("\n   bytes %d\n", len);
 
 	return sendmsg(pkt_fd, &msg, 0);
 }
@@ -255,21 +255,21 @@ int packet_recv(struct iovec *iov, int iov_len)
 	if (ret == -1)
 		goto free_pkt;
 
-	DEBUG(("<- bytes %d ", ret));
+	dprintf("<- bytes %d ", ret);
 
 	if (ip_checksum((uint16_t *) ip, ip->ihl) != 0)
 		goto free_pkt;
 
-	DEBUG(("\n   ip src %s ", ntoa(ip->saddr)));
-	DEBUG(("dst %s ", ntoa(ip->daddr)));
+	dprintf("\n   ip src %s ", ntoa(ip->saddr));
+	dprintf("dst %s ", ntoa(ip->daddr));
 
 	if (ntohs(ip->tot_len) > ret || ip->protocol != IPPROTO_UDP)
 		goto free_pkt;
 
 	ret -= 4 * ip->ihl;
 
-	DEBUG(("\n   udp src %d dst %d ", ntohs(udp->source),
-	       ntohs(udp->dest)));
+	dprintf("\n   udp src %d dst %d ", ntohs(udp->source),
+		ntohs(udp->dest));
 
 	if (udp->source != htons(cfg_remote_port) ||
 	    udp->dest != htons(cfg_local_port))
@@ -285,11 +285,12 @@ int packet_recv(struct iovec *iov, int iov_len)
 	return ret;
 
 free_pkt:
+	dprintf("freed\n");
 	free(ip);
 	return 0;
 
 discard_pkt:
-	DEBUG(("discarded\n"));
+	dprintf("discarded\n");
 	packet_discard();
 	return 0;
 }

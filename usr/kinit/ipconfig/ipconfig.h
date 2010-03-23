@@ -16,19 +16,10 @@ extern int vendor_class_identifier_len;
 int ipconfig_main(int argc, char *argv[]);
 uint32_t ipconfig_server_address(void *next);
 
-/*
- * Note for gcc 3.2.2:
- *
- * If you're turning on debugging, make sure you get rid of -Os from
- * the gcc command line, or else ipconfig will fail to link.
- */
-#undef IPC_DEBUG
-
-#undef DEBUG
-#ifdef IPC_DEBUG
-#define DEBUG(x) printf x
+#ifdef DEBUG
+# define dprintf printf
 #else
-#define DEBUG(x) do { } while(0)
+# define dprintf(...) ((void)0)
 #endif
 
 #endif /* IPCONFIG_IPCONFIG_H */

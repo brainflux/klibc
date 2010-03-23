@@ -187,7 +187,7 @@ static int process_receive_event(struct state *s, time_t now)
 			break;
 		case 1:
 			s->state = DEVST_COMPLETE;
-			DEBUG(("\n   bootp reply\n"));
+			dprintf("\n   bootp reply\n");
 			break;
 		}
 		break;
@@ -221,6 +221,7 @@ static int process_receive_event(struct state *s, time_t now)
 		break;
 
 	default:
+		dprintf("\n");
 		handled = 0;
 		break;
 	}
@@ -350,7 +351,7 @@ static int loop(void)
 		int x;
 
 		for (s = slist; s; s = s->next) {
-			DEBUG(("%s: state = %d\n", s->dev->name, s->state));
+			dprintf("%s: state = %d\n", s->dev->name, s->state);
 
 			if (s->state == DEVST_COMPLETE) {
 				done++;
@@ -360,7 +361,7 @@ static int loop(void)
 			pending++;
 
 			if (s->expire - now.tv_sec <= 0) {
-				DEBUG(("timeout\n"));
+				dprintf("timeout\n");
 				process_timeout_event(s, now.tv_sec);
 			}
 
@@ -398,7 +399,7 @@ static int loop(void)
 			delta_ms = (now.tv_sec - prev.tv_sec) * 1000;
 			delta_ms += (now.tv_usec - prev.tv_usec) / 1000;
 
-			DEBUG(("Delta: %d ms\n", delta_ms));
+			dprintf("Delta: %d ms\n", delta_ms);
 
 			timeout_ms -= delta_ms;
 		}
@@ -482,7 +483,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 	int i, opt;
 	int is_ip = 0;
 
-	DEBUG(("IP-Config: parse_device: \"%s\"\n", ip));
+	dprintf("IP-Config: parse_device: \"%s\"\n", ip);
 
 	if (strncmp(ip, "ip=", 3) == 0) {
 		ip += 3;
@@ -514,7 +515,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 
 			if (*ip == '\0')
 				continue;
-			DEBUG(("IP-Config: opt #%d: '%s'\n", opt, ip));
+			dprintf("IP-Config: opt #%d: '%s'\n", opt, ip);
 			switch (opt) {
 			case 0:
 				parse_addr(&dev->ip_addr, ip);
@@ -665,7 +666,7 @@ static int add_all_devices(struct netdev *template)
 		   logic the in-kernel ipconfig uses... */
 		if (!(flags & IFF_LOOPBACK) &&
 		    (flags & (IFF_BROADCAST | IFF_POINTOPOINT))) {
-			DEBUG(("Trying to bring up %s\n", de->d_name));
+			dprintf("Trying to bring up %s\n", de->d_name);
 
 			if (!(dev = add_device(de->d_name)))
 				continue;

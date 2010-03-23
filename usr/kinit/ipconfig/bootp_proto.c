@@ -49,8 +49,8 @@ int bootp_send_request(struct netdev *dev)
 	bootp.secs	= htons(time(NULL) - dev->open_time);
 	memcpy(bootp.chaddr, dev->hwaddr, 16);
 
-	DEBUG(("-> bootp xid 0x%08x secs 0x%08x ",
-	       bootp.xid, ntohs(bootp.secs)));
+	dprintf("-> bootp xid 0x%08x secs 0x%08x ",
+		bootp.xid, ntohs(bootp.secs));
 
 	return packet_send(dev, iov, 2);
 }

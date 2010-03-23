@@ -111,17 +111,17 @@ static int dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr,
 		ret = bootp_parse(dev, hdr, exts, extlen) ? DHCPOFFER : 0;
 		if (ret == DHCPOFFER && serverid != INADDR_NONE)
 			dev->serverid = serverid;
-		DEBUG(("\n   dhcp offer\n"));
+		dprintf("\n   dhcp offer\n");
 		break;
 
 	case DHCPACK:
 		ret = bootp_parse(dev, hdr, exts, extlen) ? DHCPACK : 0;
-		DEBUG(("\n   dhcp ack\n"));
+		dprintf("\n   dhcp ack\n");
 		break;
 
 	case DHCPNAK:
 		ret = DHCPNAK;
-		DEBUG(("\n   dhcp nak\n"));
+		dprintf("\n   dhcp nak\n");
 		break;
 	}
 	return ret;
@@ -151,7 +151,7 @@ static int dhcp_recv(struct netdev *dev)
 	if (ret == 0)
 		return -1;
 
-	DEBUG(("\n   dhcp xid %08x ", dev->bootp.xid));
+	dprintf("\n   dhcp xid %08x ", dev->bootp.xid);
 
 	if (ret < sizeof(struct bootp_hdr) || bootp.op != BOOTP_REPLY ||
 	    /* RFC951 7.5 */ bootp.xid != dev->bootp.xid ||
@@ -184,16 +184,16 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec)
 	vec[1].iov_base	= &bootp;
 	vec[1].iov_len	= sizeof(struct bootp_hdr);
 
-	DEBUG(("xid %08x secs %d ", bootp.xid, ntohs(bootp.secs)));
+	dprintf("xid %08x secs %d ", bootp.xid, ntohs(bootp.secs));
 
 	if (vendor_class_identifier_len > 2) {
 		vec[i].iov_base = vendor_class_identifier;
 		vec[i].iov_len  = vendor_class_identifier_len;
 		i++;
 
-		DEBUG(("vendor_class_identifier \"%.*s\" ", 
-		       vendor_class_identifier_len-2, 
-		       vendor_class_identifier+2));
+		dprintf("vendor_class_identifier \"%.*s\" ",
+			vendor_class_identifier_len-2,
+			vendor_class_identifier+2);
 	}
 
 	if (dev->reqhostname[0] != '\0') {
@@ -206,7 +206,7 @@ static int dhcp_send(struct netdev *dev, struct iovec *vec)
 		vec[i].iov_len  = len+2;
 		i++;
 
-		DEBUG(("hostname %.*s ", len, dhcp_hostname+2));
+		printf("hostname %.*s ", len, dhcp_hostname+2);
 	}
 
 	vec[i].iov_base = dhcp_end;
@@ -223,7 +223,7 @@ int dhcp_send_discover(struct netdev *dev)
 	dev->ip_addr = INADDR_ANY;
 	dev->ip_gateway = INADDR_ANY;
 
-	DEBUG(("-> dhcp discover "));
+	dprintf("-> dhcp discover ");
 
 	return dhcp_send(dev, dhcp_discover_iov);
 }
@@ -244,7 +244,7 @@ int dhcp_send_request(struct netdev *dev)
 	memcpy(&dhcp_request_hdr[SERVER_IP_OFF], &dev->serverid, 4);
 	memcpy(&dhcp_request_hdr[REQ_IP_OFF], &dev->ip_addr, 4);
 
-	DEBUG(("-> dhcp request "));
+	dprintf("-> dhcp request ");
 
 	return dhcp_send(dev, dhcp_request_iov);
 }
