@@ -36,6 +36,7 @@
 #include "gfs2_fs.h"
 #include "ocfs2_fs.h"
 #include "nilfs_fs.h"
+#include "btrfs.h"
 
 /*
  * Slightly cleaned up version of jfs_superblock to
@@ -453,6 +454,18 @@ static int nilfs2_image(const void *buf, unsigned long long *bytes)
 	return 0;
 }
 
+static int btrfs_image(const void *buf, unsigned long long *bytes)
+{
+	const struct btrfs_super_block *sb =
+	    (const struct btrfs_super_block *)buf;
+
+	if (!memcmp(sb->magic, BTRFS_MAGIC, BTRFS_MAGIC_L)) {
+		*bytes = sb->total_bytes;
+		return 1;
+	}
+	return 0;
+}
+
 struct imagetype {
 	off_t block;
 	const char name[12];
@@ -488,6 +501,7 @@ static struct imagetype images[] = {
 	{64, "reiserfs", reiserfs_image},
 	{64, "reiser4", reiser4_image},
 	{64, "gfs2", gfs2_image},
+	{64, "btrfs", btrfs_image},
 	{32, "jfs", jfs_image},
 	{32, "iso9660", iso_image},
 	{0, "luks", luks_image},
