@@ -95,7 +95,7 @@
 #define PACKAGE_NAME "dash"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "dash 0.5.5.1"
+#define PACKAGE_STRING "dash 0.5.6"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "dash"
@@ -104,7 +104,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.5.5.1"
+#define PACKAGE_VERSION "0.5.6"
 
 /* Define if you build with -DSMALL */
 #define SMALL 1
@@ -135,7 +135,7 @@
 
 
 /* Version number of package */
-#define VERSION "0.5.5.1"
+#define VERSION "0.5.6"
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */
