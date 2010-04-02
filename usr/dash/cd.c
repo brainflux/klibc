@@ -253,12 +253,13 @@ getpwd()
 {
 #ifdef __GLIBC__
 	char *dir = getcwd(0, 0);
-#else
-	char buf[PATH_MAX];
-	char *dir = getcwd(buf, sizeof(buf));
-#endif
 	if (dir)
 		return dir;
+#else
+	char buf[PATH_MAX];
+	if(getcwd(buf, sizeof(buf)))
+		return savestr(buf);
+#endif
 	sh_warnx("getcwd() failed: %s", strerror(errno));
 	return nullstr;
 }
