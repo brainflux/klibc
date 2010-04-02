@@ -10,6 +10,9 @@
 /* Define to 1 if you have the `bsearch' function. */
 #define HAVE_BSEARCH 1
 
+/* Define to 1 if you have the `faccessat' function. */
+/* #undef HAVE_FACCESSAT */
+
 /* Define to 1 if you have the `fnmatch' function. */
 /* #undef HAVE_FNMATCH */
 
