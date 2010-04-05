@@ -77,7 +77,7 @@ int resume(const char *resume_file, unsigned long long resume_offset)
 failure:
 	if (powerfd >= 0)
 		close(powerfd);
-	fprintf(stderr, "kinit: No resume image, doing normal boot...\n");
+	dprintf("kinit: No resume image, doing normal boot...\n");
 	return -1;
 
 fail_r:
