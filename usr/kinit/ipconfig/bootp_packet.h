@@ -28,4 +28,4 @@ struct bootp_hdr {
 	/* 312 bytes of extensions */
 };
 
-#endif
+#endif /* BOOTP_PACKET_H */
