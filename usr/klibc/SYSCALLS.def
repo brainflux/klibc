@@ -98,7 +98,6 @@ int swapoff(const char *);
  * Inode-related system calls
  */
 int access(const char *, int);
-<?> int faccessat(int, const char *, int);
 int link(const char *, const char *);
 <?> int linkat(int, const char *, int, const char *);
 int unlink(const char *);
