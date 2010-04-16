@@ -2,7 +2,7 @@
 # klibc files for sh
 #
 
-klib-y := setjmp.o syscall.o
+klib-y := pipe.o setjmp.o syscall.o
 
 always  := crt0.o
 targets := crt0.o
