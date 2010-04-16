@@ -2,7 +2,7 @@ This version of dash was obtained from
 
 git://git.kernel.org/pub/scm/utils/dash/dash.git
 
-It corresponds to changeset ea2cf705d50024b09e00f8f5bf9c666429bccfa5.
+It corresponds up to changeset dc2bc17c7bbe3188cfb0c695dc472b39bcf0b27a.
 
 HOWTO sync branch:
 1) Generate patch and fix up their path
