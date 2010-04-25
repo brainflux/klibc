@@ -460,7 +460,7 @@ static int btrfs_image(const void *buf, unsigned long long *bytes)
 	    (const struct btrfs_super_block *)buf;
 
 	if (!memcmp(sb->magic, BTRFS_MAGIC, BTRFS_MAGIC_L)) {
-		*bytes = sb->total_bytes;
+		*bytes = (unsigned long long)__le64_to_cpu(sb->total_bytes);
 		return 1;
 	}
 	return 0;
