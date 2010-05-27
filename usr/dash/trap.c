@@ -79,6 +79,8 @@ char sigmode[NSIG - 1];
 static char gotsig[NSIG - 1];
 /* last pending signal */
 volatile sig_atomic_t pendingsigs;
+/* received SIGCHLD */
+int gotsigchld;
 
 #ifdef mkinit
 INCLUDE "trap.h"
@@ -283,6 +285,12 @@ ignoresig(int signo)
 void
 onsig(int signo)
 {
+	if (signo == SIGCHLD) {
+		gotsigchld = 1;
+		if (!trap[SIGCHLD])
+			return;
+	}
+
 	gotsig[signo - 1] = 1;
 	pendingsigs = signo;
 
