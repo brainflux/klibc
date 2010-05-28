@@ -58,6 +58,7 @@
 #include "main.h"
 #include "expand.h"
 #include "parser.h"
+#include "trap.h"
 
 #undef rflag
 
@@ -213,9 +214,16 @@ readcmd(int argc, char **argv)
 				break; /* Timeout! */
 			}
 		}
-		if (read(0, &c, 1) != 1) {
-			status = 1;
+		switch (read(0, &c, 1)) {
+		case 1:
 			break;
+		default:
+			if (errno == EINTR && !pendingsigs)
+				continue;
+				/* fall through */
+		case 0:
+			status = 1;
+			goto out;
 		}
 		if (c == '\0')
 			continue;
@@ -236,6 +244,7 @@ put:
 resetbs:
 		backslash = 0;
 	}
+out:
 	STACKSTRNUL(p);
 	readcmd_handle_line(stackblock(), ap, p + 1 - (char *)stackblock());
 	return status;
