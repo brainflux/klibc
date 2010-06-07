@@ -159,6 +159,86 @@ struct msghdr {
 	unsigned msg_flags;
 };
 
+/* Ancillary data structures and cmsg macros are also hidden under __KERNEL__ */
+#ifndef CMSG_FIRSTHDR
+/*
+ *	POSIX 1003.1g - ancillary data object information
+ *	Ancillary data consits of a sequence of pairs of
+ *	(cmsghdr, cmsg_data[])
+ */
+
+struct cmsghdr {
+	__kernel_size_t	cmsg_len;	/* data byte count, including hdr */
+        int		cmsg_level;	/* originating protocol */
+        int		cmsg_type;	/* protocol-specific type */
+};
+
+/*
+ *	Ancilliary data object information MACROS
+ *	Table 5-14 of POSIX 1003.1g
+ */
+
+#define __CMSG_NXTHDR(ctl, len, cmsg) __cmsg_nxthdr((ctl),(len),(cmsg))
+#define CMSG_NXTHDR(mhdr, cmsg) cmsg_nxthdr((mhdr), (cmsg))
+
+#define CMSG_ALIGN(len) ( ((len)+sizeof(long)-1) & ~(sizeof(long)-1) )
+
+#define CMSG_DATA(cmsg)	((void *)((char *)(cmsg) + CMSG_ALIGN(sizeof(struct cmsghdr))))
+#define CMSG_SPACE(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + CMSG_ALIGN(len))
+#define CMSG_LEN(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + (len))
+
+#define __CMSG_FIRSTHDR(ctl,len) ((len) >= sizeof(struct cmsghdr) ? \
+				  (struct cmsghdr *)(ctl) : \
+				  (struct cmsghdr *)NULL)
+#define CMSG_FIRSTHDR(msg)	__CMSG_FIRSTHDR((msg)->msg_control, (msg)->msg_controllen)
+#define CMSG_OK(mhdr, cmsg) ((cmsg)->cmsg_len >= sizeof(struct cmsghdr) && \
+			     (cmsg)->cmsg_len <= (unsigned long) \
+			     ((mhdr)->msg_controllen - \
+			      ((char *)(cmsg) - (char *)(mhdr)->msg_control)))
+
+/*
+ *	Get the next cmsg header
+ *
+ *	PLEASE, do not touch this function. If you think, that it is
+ *	incorrect, grep kernel sources and think about consequences
+ *	before trying to improve it.
+ *
+ *	Now it always returns valid, not truncated ancillary object
+ *	HEADER. But caller still MUST check, that cmsg->cmsg_len is
+ *	inside range, given by msg->msg_controllen before using
+ *	ancillary object DATA.				--ANK (980731)
+ */
+
+static inline struct cmsghdr * __cmsg_nxthdr(void *__ctl, __kernel_size_t __size,
+					       struct cmsghdr *__cmsg)
+{
+	struct cmsghdr * __ptr;
+
+	__ptr = (struct cmsghdr*)(((unsigned char *) __cmsg) +  CMSG_ALIGN(__cmsg->cmsg_len));
+	if ((unsigned long)((char*)(__ptr+1) - (char *) __ctl) > __size)
+		return (struct cmsghdr *)0;
+
+	return __ptr;
+}
+
+static inline struct cmsghdr * cmsg_nxthdr (struct msghdr *__msg, struct cmsghdr *__cmsg)
+{
+	return __cmsg_nxthdr(__msg->msg_control, __msg->msg_controllen, __cmsg);
+}
+
+/* "Socket"-level control message types: */
+
+#define	SCM_RIGHTS	0x01		/* rw: access rights (array of int) */
+#define SCM_CREDENTIALS 0x02		/* rw: struct ucred		*/
+#define SCM_SECURITY	0x03		/* rw: security label		*/
+
+struct ucred {
+	__u32	pid;
+	__u32	uid;
+	__u32	gid;
+};
+#endif /* CMSG_FIRSTHDR */
+
 
 __extern int socket(int, int, int);
 __extern int bind(int, struct sockaddr *, int);
