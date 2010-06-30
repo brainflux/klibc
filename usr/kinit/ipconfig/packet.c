@@ -114,16 +114,17 @@ static char *ntoa(uint32_t addr)
 int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 {
 	struct sockaddr_ll sll;
-	struct msghdr msg = {
-		.msg_name	= &sll,
-		.msg_namelen	= sizeof(sll),
-		.msg_iov	= iov,
-		.msg_iovlen	= iov_len,
-		.msg_control	= NULL,
-		.msg_controllen	= 0,
-		.msg_flags	= 0
-	};
+	struct msghdr msg;
 	int i, len = 0;
+
+	memset(&sll, 0, sizeof(sll));
+	msg.msg_name = &sll;
+	msg.msg_namelen = sizeof(sll);
+	msg.msg_iov = iov;
+	msg.msg_iovlen = iov_len;
+	msg.msg_control = NULL;
+	msg.msg_controllen = 0;
+	msg.msg_flags = 0;
 
 	if (cfg_local_port != LOCAL_PORT) {
 		ipudp_hdrs.udp.source = htons(cfg_local_port);
