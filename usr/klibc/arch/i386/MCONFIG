@@ -31,3 +31,6 @@ KLIBCBITSIZE  = 32
 # calls, and work on the memory models for this architecture
 # 96 MB - normal binaries start at 128 MB
 KLIBCSHAREDFLAGS	= -Ttext 0x06000200
+
+# Asm includes for i386 are in the merged x86 tree
+KLIBCARCHINCFLAGS = -I$(KLIBCKERNELOBJ)/arch/x86/include
