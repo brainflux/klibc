@@ -43,6 +43,7 @@ static int netdev_sif_addr(struct ifreq *ifr, int cmd, uint32_t addr)
 {
 	struct sockaddr_in sin;
 
+	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = addr;
 
