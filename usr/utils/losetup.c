@@ -353,14 +353,16 @@ int del_loop (const char *device)
 int verbose = 0;
 char *progname;
 
-static void usage(void) {
-	fprintf(stderr, "usage:\n\
+static void usage(FILE *f)
+{
+	fprintf(f, "usage:\n\
   %s loop_device                                       # give info\n\
   %s -d loop_device                                    # delete\n\
   %s -f                                                # find unused\n\
+  %s -h                                                # this help\n\
   %s [-e encryption] [-o offset] {-f|loop_device} file # setup\n",
-		progname, progname, progname, progname);
-	exit(1);
+		progname, progname, progname, progname, progname);
+	exit(f == stderr ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
 char * xstrdup (const char *s) {
@@ -407,7 +409,7 @@ int main(int argc, char **argv)
 	if ((p = strrchr(progname, '/')) != NULL)
 		progname = p+1;
 
-	while ((c = getopt(argc, argv, "de:E:fo:p:v")) != -1) {
+	while ((c = getopt(argc, argv, "de:E:fho:p:v")) != -1) {
 		switch (c) {
 		case 'd':
 			delete = 1;
@@ -419,6 +421,9 @@ int main(int argc, char **argv)
 		case 'f':
 			find = 1;
 			break;
+		case 'h':
+			usage(stdout);
+			break;
 		case 'o':
 			offset = optarg;
 			break;
@@ -429,21 +434,21 @@ int main(int argc, char **argv)
 			verbose = 1;
 			break;
 		default:
-			usage();
+			usage(stderr);
 		}
 	}
 
 	if (argc == 1) {
-		usage();
+		usage(stderr);
 	} else if (delete) {
 		if (argc != optind+1 || encryption || offset || find)
-			usage();
+			usage(stderr);
 	} else if (find) {
 		if (argc < optind || argc > optind+1)
-			usage();
+			usage(stderr);
 	} else {
 		if (argc < optind+1 || argc > optind+2)
-			usage();
+			usage(stderr);
 	}
 
 	if (find) {
@@ -471,9 +476,9 @@ int main(int argc, char **argv)
 		res = show_loop(device);
 	else {
 		if (offset && sscanf(offset, "%llu", &off) != 1)
-			usage();
+			usage(stderr);
 		if (passfd && sscanf(passfd, "%d", &pfd) != 1)
-			usage();
+			usage(stderr);
 		res = set_loop(device, file, off, encryption, pfd, &ro);
 	}
 	return res;
