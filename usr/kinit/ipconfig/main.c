@@ -179,6 +179,9 @@ static int process_receive_event(struct state *s, time_t now)
 	int handled = 1;
 
 	switch (s->state) {
+	case DEVST_ERROR:
+		return 0; /* Not handled */
+
 	case DEVST_BOOTP:
 		s->restart_state = DEVST_BOOTP;
 		switch (bootp_recv_reply(s->dev)) {
