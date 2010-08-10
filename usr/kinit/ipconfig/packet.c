@@ -215,7 +215,8 @@ void packet_discard(void)
  * Receive a bootp packet.  The options are listed in iov[1...iov_len].
  * iov[0] must point to the bootp packet header.
  * Returns:
- *  0 = Error, try again later
+ * -1 = Error, try again later
+*   0 = Discarded packet (non-DHCP/BOOTP traffic)
  * >0 = Size of packet
  */
 int packet_recv(struct iovec *iov, int iov_len)
@@ -236,7 +237,7 @@ int packet_recv(struct iovec *iov, int iov_len)
 	ret = recvfrom(pkt_fd, &iph, sizeof(struct iphdr),
 		       MSG_PEEK, NULL, NULL);
 	if (ret == -1)
-		return 0;
+		return -1;
 
 	if (iph.ihl < 5 || iph.version != IPVERSION)
 		goto discard_pkt;

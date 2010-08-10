@@ -148,8 +148,8 @@ static int dhcp_recv(struct netdev *dev)
 	int ret;
 
 	ret = packet_recv(iov, 3);
-	if (ret == 0)
-		return -1;
+	if (ret <= 0)
+		return ret;
 
 	dprintf("\n   dhcp xid %08x ", dev->bootp.xid);
 

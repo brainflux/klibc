@@ -171,7 +171,7 @@ int bootp_recv_reply(struct netdev *dev)
 
 	ret = packet_recv(iov, 3);
 	if (ret <= 0)
-		return -1;
+		return ret;
 
 	if (ret < sizeof(struct bootp_hdr) ||
 	    bootp.op != BOOTP_REPLY ||	/* RFC951 7.5 */
