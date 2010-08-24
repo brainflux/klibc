@@ -331,7 +331,7 @@ static int loop(void)
 	struct pollfd fds[NR_FDS];
 	struct state *s;
 	int pkt_fd;
-	int nr = 0;
+	int nr = 0, rc = 0;
 	struct timeval now, prev;
 	time_t start;
 
@@ -396,6 +396,7 @@ static int loop(void)
 			    now.tv_sec - start >= loop_timeout) {
 				printf("IP-Config: no response after %d "
 				       "secs - giving up\n", loop_timeout);
+				rc = -1;
 				goto bail;
 			}
 
@@ -410,7 +411,7 @@ static int loop(void)
       bail:
 	packet_close();
 
-	return 0;
+	return rc;
 }
 
 static int add_one_dev(struct netdev *dev)
@@ -724,7 +725,7 @@ int ipconfig_main(int argc, char *argv[])
 {
 	struct netdev *dev;
 	int c, port;
-	int err;
+	int err = 0;
 
 	/* If progname is set we're invoked from another program */
 	if (!progname) {
@@ -802,8 +803,8 @@ int ipconfig_main(int argc, char *argv[])
 			       "dest to %d\n",
 			       cfg_local_port, cfg_remote_port);
 		}
-		loop();
+		err = loop();
 	}
 
-	return 0;
+	return err;
 }
