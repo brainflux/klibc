@@ -115,7 +115,7 @@ static void dump_device_config(struct netdev *dev)
 		fprintf(f, "IPV4DNS1=%s\n",
 			my_inet_ntoa(dev->ip_nameserver[1]));
 		fprintf(f, "HOSTNAME=%s\n", dev->hostname);
-		fprintf(f, "DNSDOMAIN=%s\n", dev->dnsdomainname);
+		fprintf(f, "DNSDOMAIN=\"%s\"\n", dev->dnsdomainname);
 		fprintf(f, "NISDOMAIN=%s\n", dev->nisdomainname);
 		fprintf(f, "ROOTSERVER=%s\n", my_inet_ntoa(dev->ip_server));
 		fprintf(f, "ROOTPATH=%s\n", dev->bootpath);
