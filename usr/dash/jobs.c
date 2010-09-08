@@ -1188,8 +1188,7 @@ commandtext(union node *n)
 	STARTSTACKSTR(cmdnextc);
 	cmdtxt(n);
 	name = stackblock();
-	TRACE(("commandtext: name %p, end %p\n\t\"%s\"\n",
-		name, cmdnextc, ps->cmd));
+	TRACE(("commandtext: name %p, end %p\n", name, cmdnextc));
 	return savestr(name);
 }
 
