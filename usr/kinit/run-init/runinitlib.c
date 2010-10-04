@@ -157,7 +157,7 @@ static int nuke(const char *what)
 const char *run_init(const char *realroot, const char *console,
 		     const char *init, char **initargs)
 {
-	struct stat rst, cst, ist;
+	struct stat rst, cst;
 	struct statfs sfs;
 	int confd;
 
