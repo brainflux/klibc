@@ -5,6 +5,7 @@
 #ifndef _SYS_SOCKET_H
 #define _SYS_SOCKET_H
 
+#include <sys/types.h>
 #include <klibc/extern.h>
 #include <klibc/compiler.h>
 #include <klibc/sysconfig.h>
