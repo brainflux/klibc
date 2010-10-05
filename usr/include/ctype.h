@@ -133,7 +133,7 @@ __must_inline int __ctype_tolower(int __c)
   __extern int X(int);
 #else
 #define __CTYPEFUNC(X) \
-  __extern inline int X(int __c)		\
+  __extern_inline int X(int __c)		\
   {						\
     return __ctype_##X(__c); 			\
   }

@@ -49,22 +49,22 @@ static __inline__ int fileno(FILE * __f)
 
 __extern FILE *fopen(const char *, const char *);
 
-static __inline__ FILE *fdopen(int __fd, const char *__m)
+__static_inline FILE *fdopen(int __fd, const char *__m)
 {
 	(void)__m;
 	return __create_file(__fd);
 }
-static __inline__ int fclose(FILE * __f)
+__static_inline int fclose(FILE * __f)
 {
 	extern int close(int);
 	return close(fileno(__f));
 }
-static __inline__ int fseek(FILE * __f, off_t __o, int __w)
+__static_inline int fseek(FILE * __f, off_t __o, int __w)
 {
 	extern off_t lseek(int, off_t, int);
 	return (lseek(fileno(__f), __o, __w) == (off_t) - 1) ? -1 : 0;
 }
-static __inline__ off_t ftell(FILE * __f)
+__static_inline off_t ftell(FILE * __f)
 {
 	extern off_t lseek(int, off_t, int);
 	return lseek(fileno(__f), 0, SEEK_CUR);
@@ -85,12 +85,13 @@ __extern size_t _fread(void *, size_t, FILE *);
 __extern size_t _fwrite(const void *, size_t, FILE *);
 
 #ifndef __NO_FREAD_FWRITE_INLINES
-extern __inline__ size_t fread(void *__p, size_t __s, size_t __n, FILE * __f)
+__extern_inline size_t
+fread(void *__p, size_t __s, size_t __n, FILE * __f)
 {
 	return _fread(__p, __s * __n, __f) / __s;
 }
 
-extern __inline__ size_t
+__extern_inline size_t
 fwrite(const void *__p, size_t __s, size_t __n, FILE * __f)
 {
 	return _fwrite(__p, __s * __n, __f) / __s;
@@ -109,14 +110,14 @@ __extern int asprintf(char **, const char *, ...);
 __extern int vasprintf(char **, const char *, va_list);
 
 /* No buffering, so no flushing needed */
-static __inline__ int fflush(FILE * __f)
+__static_inline int fflush(FILE * __f)
 {
 	(void)__f;
 	return 0;
 }
 
 /* stream errors are not kept track of by klibc implementation */
-static __inline__ int ferror(FILE * __f)
+__static_inline int ferror(FILE * __f)
 {
 	(void)__f;
 	return 0;

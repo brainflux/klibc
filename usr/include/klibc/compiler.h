@@ -20,16 +20,38 @@
 # define __cdecl		/* Meaningless on non-i386 */
 #endif
 
+/*
+ * How to declare a function which should be inlined or instantiated locally
+ */
+#ifdef __GNUC__
+# ifdef __GNUC_STDC_INLINE__
+#  define __static_inline static __inline__ __attribute__((__gnu_inline__))
+# else
+#  define __static_inline static __inline__
+# endif
+#else
+# define __extern_inline inline	/* Just hope this works... */
+#endif
+
+/*
+ * How to declare a function which should be inlined or have a call to
+ * an external module
+ */
+#ifdef __GNUC__
+# ifdef __GNUC_STDC_INLINE__
+#  define __extern_inline extern __inline__ __attribute__((__gnu_inline__))
+# else
+#  define __extern_inline extern __inline__
+# endif
+#else
+# define __extern_inline inline	/* Just hope this works... */
+#endif
+
 /* How to declare a function that *must* be inlined */
 /* Use "extern inline" even in the gcc3+ case to avoid warnings in ctype.h */
 #ifdef __GNUC__
 # if __GNUC__ >= 3
-#  ifdef __GNUC_STDC_INLINE__
-#   define __must_inline extern __inline__ \
-	__attribute__((__gnu_inline__,__always_inline__))
-#  else
-#   define __must_inline extern __inline__ __attribute__((__always_inline__))
-#  endif
+#  define __must_inline __extern_inline __attribute__((__always_inline__))
 # else
 #  define __must_inline extern __inline__
 # endif
