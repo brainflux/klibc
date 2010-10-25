@@ -109,7 +109,7 @@ klib-o-files = $(shell cat $(obj)/klib.list \
 targets += libc.a __static_init.o
 quiet_cmd_libc = KLIBCAR $@
       cmd_libc = rm -f $@;						\
-                 $(KLIBCAR) cq $@					\
+                 $(call klibc-ar,cq,Dcq) $@				\
 		 $(call objectify,__static_init.o) $(klib-o-files);	\
                  $(KLIBCRANLIB) $@
 
