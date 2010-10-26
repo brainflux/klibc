@@ -30,7 +30,7 @@
 #  define __static_inline static __inline__
 # endif
 #else
-# define __extern_inline inline	/* Just hope this works... */
+# define __static_inline inline	/* Just hope this works... */
 #endif
 
 /*
