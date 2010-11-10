@@ -486,6 +486,7 @@ int main(int argc, char *argv[])
 		wr_fd = open(OPT_OF->str, flags, 0666);
 		if (wr_fd == -1) {
 			perror("open output file");
+			close(rd_fd);
 			return 1;
 		}
 	}
@@ -493,14 +494,20 @@ int main(int argc, char *argv[])
 	/*
 	 * Skip obs-sized blocks of output file.
 	 */
-	if (OPT_SEEK->str && skip_blocks(wr_fd, out_buf, seek, obs))
+	if (OPT_SEEK->str && skip_blocks(wr_fd, out_buf, seek, obs)) {
+		close(rd_fd);
+		close(wr_fd);
 		return 1;
+	}
 
 	/*
 	 * Skip ibs-sized blocks of input file.
 	 */
-	if (OPT_SKIP->str && skip_blocks(rd_fd, in_buf, skip, ibs))
+	if (OPT_SKIP->str && skip_blocks(rd_fd, in_buf, skip, ibs)) {
+		close(rd_fd);
+		close(wr_fd);
 		return 1;
+	}
 
 	memset(&stats, 0, sizeof(stats));
 
