@@ -48,3 +48,6 @@ $(obj)/socketcalls.mk: $(srctree)/$(KLIBCSRC)/socketcalls.pl        \
                        $(obj)/SOCKETCALLS.i                         \
                        $(src)/socketcommon.h
 	$(call cmd,socketcalls)
+
+PHONY += FORCE
+

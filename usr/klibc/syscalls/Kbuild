@@ -95,3 +95,6 @@ $(obj)/syscalls.mk: $(srctree)/$(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i   \
                     $(src)/syscommon.h $(obj)/syscalls.nrs                 \
                     $(obj)/typesize.bin FORCE
 	$(call if_changed,syscalls)
+
+PHONY += FORCE
+
