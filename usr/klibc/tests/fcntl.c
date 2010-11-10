@@ -46,5 +46,6 @@ int main(int argc, char *argv[])
 
 	/* Eventually, fork and try to conflict with this lock... */
 
+	close(fd);
 	return 0;
 }
