@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
 	dev_t dev;
 
 	progname = *argv++;
+	if (argc == 1)
+		usage();
 
 	if (argv[0][0] == '-' && argv[0][1] == 'm' && !argv[0][2]) {
 		mode_set = strtoul(argv[1], &endp, 8);
@@ -36,7 +38,7 @@ int main(int argc, char *argv[])
 	typec = type[0];
 
 	mode = 0;
-	switch (type[0]) {
+	switch (typec) {
 	case 'c':
 		mode = S_IFCHR;
 		break;
