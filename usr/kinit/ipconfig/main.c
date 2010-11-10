@@ -484,7 +484,7 @@ static int add_all_devices(struct netdev *template);
 static int parse_device(struct netdev *dev, const char *ip)
 {
 	char *cp;
-	int i, opt;
+	int opt;
 	int is_ip = 0;
 
 	dprintf("IP-Config: parse_device: \"%s\"\n", ip);
@@ -506,7 +506,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 			dev->name = ip;
 		}
 	} else {
-		for (i = opt = 0; ip && *ip; ip = cp, opt++) {
+		for (opt = 0; ip && *ip; ip = cp, opt++) {
 			if ((cp = strchr(ip, ':'))) {
 				*cp++ = '\0';
 			}
