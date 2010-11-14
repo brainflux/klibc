@@ -249,6 +249,7 @@ pid_t start_dummy_portmap(const char *file)
 		if (errno == EINVAL || errno == EADDRINUSE)
 			return 0;	/* Assume not needed */
 		else {
+			fclose(portmap_filep);
 			fprintf(stderr, "%s: portmap spoofing failed\n",
 				progname);
 			return -1;
@@ -257,6 +258,7 @@ pid_t start_dummy_portmap(const char *file)
 
 	spoof_portmap = fork();
 	if (spoof_portmap == -1) {
+		fclose(portmap_filep);
 		fprintf(stderr, "%s: cannot fork\n", progname);
 		return -1;
 	} else if (spoof_portmap == 0) {
