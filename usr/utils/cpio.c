@@ -365,8 +365,7 @@ add_inode(unsigned long node_num, char *file_name, unsigned long major_num,
 		for (i = 0; i < hash_num; i++)
 			hash_insert(old_table[i]);
 
-		if (old_table != NULL)
-			free(old_table);
+		free(old_table);
 	}
 
 	/* Insert the new record and increment the count of elements in the
@@ -914,8 +913,7 @@ static void read_in_new_ascii(struct new_cpio_header *file_hdr, int in_des)
 		ah += 8;
 	}
 	/* Read file name from input.  */
-	if (file_hdr->c_name != NULL)
-		free(file_hdr->c_name);
+	free(file_hdr->c_name);
 	file_hdr->c_name = (char *)xmalloc(file_hdr->c_namesize);
 	tape_buffered_read(file_hdr->c_name, in_des,
 			   (long)file_hdr->c_namesize);
