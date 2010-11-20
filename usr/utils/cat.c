@@ -39,13 +39,6 @@
 #define __RCSID(arg)
 #endif
 
-#if HAVE_NBTOOL_CONFIG_H
-#include "nbtool_config.h"
-#endif
-
-#ifndef __KLIBC__
-#include <sys/cdefs.h>
-#endif
 #if !defined(lint)
 __COPYRIGHT("@(#) Copyright (c) 1989, 1993\n\
 	The Regents of the University of California.  All rights reserved.\n");
@@ -60,14 +53,8 @@ __RCSID("$NetBSD: cat.c,v 1.43 2004/01/04 03:31:28 jschauma Exp $");
 #include <sys/stat.h>
 
 #include <ctype.h>
-#ifndef __KLIBC__
-#include <err.h>
-#endif
 #include <errno.h>
 #include <fcntl.h>
-#ifndef __KLIBC__
-#include <locale.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -87,11 +74,6 @@ int main(int argc, char *argv[])
 {
 	int ch;
 	struct flock stdout_lock;
-
-#ifndef __KLIBC__
-	setprogname(argv[0]);
-	(void)setlocale(LC_ALL, "");
-#endif
 
 	while ((ch = getopt(argc, argv, "beflnstuv")) != -1)
 		switch (ch) {
@@ -117,9 +99,7 @@ int main(int argc, char *argv[])
 			tflag = vflag = 1;	/* -t implies -v */
 			break;
 		case 'u':
-#ifndef __KLIBC__
-			setbuf(stdout, NULL);
-#endif
+			/* unimplemented */
 			break;
 		case 'v':
 			vflag = 1;
