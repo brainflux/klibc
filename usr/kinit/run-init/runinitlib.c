@@ -40,7 +40,6 @@
  * On failure, returns a human-readable error message.
  */
 
-#include <alloca.h>
 #include <assert.h>
 #include <dirent.h>
 #include <errno.h>

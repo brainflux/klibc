@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <poll.h>
 #include <limits.h>
 #include <setjmp.h>

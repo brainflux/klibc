@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <alloca.h>
 #include <inttypes.h>
 #include <sys/sysmacros.h>
 #include <sys/md.h>
