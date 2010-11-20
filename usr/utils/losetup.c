@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/sysmacros.h>
+#include <stdarg.h>
 #include <string.h>
 
 #include "loop.h"
@@ -348,9 +349,6 @@ int del_loop (const char *device)
 	return 0;
 }
 
-
-#include <getopt.h>
-#include <stdarg.h>
 
 int verbose = 0;
 char *progname;

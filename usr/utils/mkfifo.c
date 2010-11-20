@@ -1,6 +1,5 @@
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>

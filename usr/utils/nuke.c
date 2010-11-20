@@ -32,7 +32,6 @@
  * do anything.
  */
 
-#include <alloca.h>
 #include <assert.h>
 #include <dirent.h>
 #include <errno.h>
