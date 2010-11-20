@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <sys/vfs.h>
 
 static void do_statfs(const char *path)
