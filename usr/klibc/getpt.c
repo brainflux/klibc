@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
 
 int getpt(void)
 {
