@@ -308,8 +308,7 @@ onsig(int signo)
  * handlers while we are executing a trap handler.
  */
 
-int
-dotrap(void)
+void dotrap(void)
 {
 	char *p;
 	char *q;
@@ -331,10 +330,8 @@ dotrap(void)
 		evalstring(p, 0);
 		exitstatus = savestatus;
 		if (evalskip)
-			return evalskip;
+			break;
 	}
-
-	return 0;
 }
 
 
