@@ -9,7 +9,7 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* On i386, only half the signals are accessible using the legacy calls. */
-#define _KLIBC_USE_RT_SIG 1
+/* The i386 <asm/signal.h> is still not clean enough for this... */
+#define _KLIBC_USE_RT_SIG 0
 
 #endif				/* _KLIBC_ARCHCONFIG_H */
