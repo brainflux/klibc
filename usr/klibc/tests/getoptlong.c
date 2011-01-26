@@ -11,7 +11,7 @@
 #include <getopt.h>
 
 static int foo = 0;
-	
+
 static const struct option long_options[] = {
 	{ "first",   1, NULL, 'f' },
 	{ "second",  0, NULL, 's' },

@@ -104,7 +104,7 @@ struct new_cpio_header {
 	char *c_tar_linkname;
 };
 
-/* Total number of bytes read and written for all files.  
+/* Total number of bytes read and written for all files.
  * Now that many tape drives hold more than 4Gb we need more than 32
  *  bits to hold input_bytes and output_bytes.
  */
@@ -157,7 +157,7 @@ static void tape_fill_input_buffer(int in_des, int num_bytes)
    descriptor OUT_DES and reset `output_size' and `out_buff'.
    If `swapping_halfwords' or `swapping_bytes' is set,
    do the appropriate swapping first.  Our callers have
-   to make sure to only set these flags if `output_size' 
+   to make sure to only set these flags if `output_size'
    is appropriate (a multiple of 4 for `swapping_halfwords',
    2 for `swapping_bytes').  The fact that DISK_IO_BLOCK_SIZE
    must always be a multiple of 4 helps us (and our callers)
@@ -406,7 +406,7 @@ static char *find_inode_file(unsigned long node_num, unsigned long major_num,
 	return NULL;
 }
 
-/* Try and create a hard link from FILE_NAME to another file 
+/* Try and create a hard link from FILE_NAME to another file
    with the given major/minor device number and inode.  If no other
    file with the same major/minor/inode numbers is known, add this file
    to the list of known files and associated major/minor/inode numbers
@@ -481,10 +481,10 @@ try_existing_file(struct new_cpio_header *file_hdr, int in_file_des,
 	return 0;
 }
 
-/* The newc and crc formats store multiply linked copies of the same file 
-   in the archive only once.  The actual data is attached to the last link 
-   in the archive, and the other links all have a filesize of 0.  When a 
-   file in the archive has multiple links and a filesize of 0, its data is 
+/* The newc and crc formats store multiply linked copies of the same file
+   in the archive only once.  The actual data is attached to the last link
+   in the archive, and the other links all have a filesize of 0.  When a
+   file in the archive has multiple links and a filesize of 0, its data is
    probably "attatched" to another file in the archive, so we can't create
    it right away.  We have to "defer" creating it until we have created
    the file that has the data "attatched" to it.  We keep a list of the
@@ -679,8 +679,8 @@ copyin_regular_file(struct new_cpio_header *file_hdr, int in_file_des)
 
 	tape_skip_padding(in_file_des, file_hdr->c_filesize);
 	if (file_hdr->c_nlink > 1) {
-		/* (see comment above for how the newc and crc formats 
-		   store multiple links).  Now that we have the data 
+		/* (see comment above for how the newc and crc formats
+		   store multiple links).  Now that we have the data
 		   for this file, create any other links to it which
 		   we defered.  */
 		create_defered_links(file_hdr);

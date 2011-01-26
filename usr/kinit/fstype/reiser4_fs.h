@@ -8,7 +8,7 @@
  * Master super block structure. It is the same for all reiser4 filesystems,
  * so, we can declare it here. It contains common for all format fields like
  * block size etc.
- */  
+ */
 struct reiser4_master_sb {
 	/* Master super block magic. */
 	char ms_magic[SS_MAGIC_SIZE];

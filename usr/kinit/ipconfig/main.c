@@ -536,7 +536,7 @@ static int parse_device(struct netdev *dev, const char *ip)
 			case 4:
 				strncpy(dev->hostname, ip, SYS_NMLN - 1);
 				dev->hostname[SYS_NMLN - 1] = '\0';
-				memcpy(dev->reqhostname, dev->hostname, 
+				memcpy(dev->reqhostname, dev->hostname,
 				       SYS_NMLN);
 				break;
 			case 5:

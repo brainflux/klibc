@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	FD_SET(fdz, &readset);
 
 	rv = select(FD_SETSIZE, &readset, NULL, NULL, &timeout);
-	
+
 	if (rv != 1 || !FD_ISSET(fdz, &readset) ||
 	    FD_ISSET(fdn, &readset)) {
 		fprintf(stderr,
