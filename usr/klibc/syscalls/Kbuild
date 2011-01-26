@@ -97,4 +97,3 @@ $(obj)/syscalls.mk: $(srctree)/$(KLIBCSRC)/syscalls.pl $(obj)/SYSCALLS.i   \
 	$(call if_changed,syscalls)
 
 PHONY += FORCE
-

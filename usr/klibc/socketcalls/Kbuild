@@ -50,4 +50,3 @@ $(obj)/socketcalls.mk: $(srctree)/$(KLIBCSRC)/socketcalls.pl        \
 	$(call cmd,socketcalls)
 
 PHONY += FORCE
-
