@@ -91,7 +91,7 @@ klibc := -f $(srctree)/scripts/Kbuild.klibc obj
 .PHONY: all klcc klibc
 all: klcc klibc
 
-$(objtree)/.config: $(srctree)/defconfig $(KLIBCKERNELOBJ)
+$(objtree)/.config: $(srctree)/defconfig
 	@echo "defconfig has changed, please remove or edit .config"
 	@false
 
