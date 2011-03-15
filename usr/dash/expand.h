@@ -37,7 +37,7 @@
 #ifndef DASH_STRLIST_H
 #define DASH_STRLIST_H
 
-#include <stdint.h>
+#include <inttypes.h>
 
 struct strlist {
 	struct strlist *next;

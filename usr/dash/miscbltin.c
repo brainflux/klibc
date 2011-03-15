@@ -44,7 +44,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <time.h>		/* strtotimeval() */
 
 #include "shell.h"
@@ -465,7 +465,7 @@ static void printlim(enum limtype how, const struct rlimit *limit,
 		out1fmt("unlimited\n");
 	else {
 		val /= l->factor;
-		out1fmt("%jd\n", (intmax_t) val);
+		out1fmt("%" PRIdMAX "\n", (intmax_t) val);
 	}
 }
 
