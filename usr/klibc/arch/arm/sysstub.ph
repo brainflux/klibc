@@ -52,7 +52,7 @@ sub make_sysstub($$$$$@) {
 
     print  OUT "#endif /* __thumb__*/\n";
 
-    print  OUT "	.size	__syscall${i},.-__syscall${i}\n";
+    print  OUT "	.size	${fname},.-${fname}\n";
 }
 
 1;
