@@ -12,16 +12,17 @@
 	.section ".toc","aw"
 .LC0:	.tc	environ[TC],environ
 
-	.section ".opd","aw"
-	.align 3
-	.globl _start
-_start:
-	.quad	._start
-	.quad	.TOC.@tocbase, 0
-
 	.text
-	.globl	._start
+	.align 4
+
+	.section ".opd","aw"
+_start:
+	.quad	._start, .TOC.@tocbase, 0
+	.previous
+	.size	_start, 24
 	.type	._start,@function
+	.globl	_start
+	.globl	._start
 ._start:
 	stdu    %r1,-32(%r1)
 	addi    %r3,%r1,32
@@ -29,4 +30,4 @@ _start:
 	b 	.__libc_init
 	nop
 
-	.size _start,.-_start
+	.size ._start,.-._start
