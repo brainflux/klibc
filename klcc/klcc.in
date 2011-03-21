@@ -159,6 +159,9 @@ while ( defined($a = shift(@ARGV)) ) {
 	# gcc options, that force preprocessing mode
 	push(@ccopt, $a);
 	$operation = 'E';
+    } elsif ( $a eq '--param' ) {
+	push(@ccopt, $a);
+	push(@ccopt, shift(@ARGV));
     } elsif ( $a =~ /^-[gp]/ || $a eq '-p' ) {
 	# Debugging options to gcc
 	push(@ccopt, $a);
