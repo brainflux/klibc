@@ -170,7 +170,7 @@ static void complete_device(struct netdev *dev)
 
 /*
  * Returns:
- *  0 = Not handled, the packet is still in the queue
+ *  0 = Not handled, try again later
  *  1 = Handled
  */
 static int process_receive_event(struct state *s, time_t now)
@@ -187,6 +187,9 @@ static int process_receive_event(struct state *s, time_t now)
 		case -1:
 			s->state = DEVST_ERROR;
 			break;
+		case 0:
+			handled = 0;
+			break;
 		case 1:
 			s->state = DEVST_COMPLETE;
 			dprintf("\n   bootp reply\n");
@@ -200,6 +203,9 @@ static int process_receive_event(struct state *s, time_t now)
 		case -1:
 			s->state = DEVST_ERROR;
 			break;
+		case 0:
+			handled = 0;
+			break;
 		case DHCPOFFER:	/* Offer received */
 			s->state = DEVST_DHCPREQ;
 			dhcp_send_request(s->dev);
@@ -212,6 +218,9 @@ static int process_receive_event(struct state *s, time_t now)
 		switch (dhcp_recv_ack(s->dev)) {
 		case -1:	/* error */
 			s->state = DEVST_ERROR;
+			break;
+		case 0:
+			handled = 0;
 			break;
 		case DHCPACK:	/* ACK received */
 			s->state = DEVST_COMPLETE;
@@ -299,23 +308,16 @@ struct netdev *ifaces;
 
 /*
  * Returns:
- *  0 = Error, packet not received or discarded
+ *  0 = No dhcp/bootp packet was received
  *  1 = A packet was received and handled
  */
 static int do_pkt_recv(int pkt_fd, time_t now)
 {
-	int ret = 0;
+	int ret;
 	struct state *s;
 
 	for (s = slist; s; s = s->next) {
-		ret = packet_peek(s->dev);
-		if (ret) {
-			ret = process_receive_event(s, now);
-			if (ret == 0) {
-				packet_discard(s->dev);
-			}
-			break;
-		}
+		ret |= process_receive_event(s, now);
 	}
 	return ret;
 }
