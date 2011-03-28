@@ -167,17 +167,18 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 }
 
 /*
- * Fetches a bootp packet, but doesn't remove it.
+ * Fetches a bootp packet from specified device, but doesn't remove it.
  * Returns:
  *  0 = Error
  * >0 = A packet of size "ret" is available for interface ifindex
  */
-int packet_peek(int *ifindex)
+int packet_peek(struct netdev *dev)
 {
 	struct sockaddr_ll sll;
 	struct iphdr iph;
 	int ret, sllen = sizeof(struct sockaddr_ll);
 
+	sll.sll_ifindex = dev->ifindex;
 	/*
 	 * Peek at the IP header.
 	 */
@@ -192,20 +193,21 @@ int packet_peek(int *ifindex)
 	if (iph.ihl < 5 || iph.version != IPVERSION)
 		goto discard_pkt;
 
-	*ifindex = sll.sll_ifindex;
 
 	return ret;
 
 discard_pkt:
-	packet_discard();
+	packet_discard(dev);
 	return 0;
 }
 
-void packet_discard(void)
+void packet_discard(struct netdev *dev)
 {
 	struct iphdr iph;
 	struct sockaddr_ll sll;
 	socklen_t sllen = sizeof(sll);
+
+	sll.sll_ifindex = dev->ifindex;
 
 	recvfrom(pkt_fd, &iph, sizeof(iph), 0,
 		 (struct sockaddr *)&sll, &sllen);
@@ -219,7 +221,7 @@ void packet_discard(void)
 *   0 = Discarded packet (non-DHCP/BOOTP traffic)
  * >0 = Size of packet
  */
-int packet_recv(struct iovec *iov, int iov_len)
+int packet_recv(struct netdev* dev, struct iovec *iov, int iov_len)
 {
 	struct iphdr *ip, iph;
 	struct udphdr *udp;
@@ -293,6 +295,6 @@ free_pkt:
 
 discard_pkt:
 	dprintf("discarded\n");
-	packet_discard();
+	packet_discard(dev);
 	return 0;
 }

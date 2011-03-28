@@ -169,7 +169,7 @@ int bootp_recv_reply(struct netdev *dev)
 	};
 	int ret;
 
-	ret = packet_recv(iov, 3);
+	ret = packet_recv(dev, iov, 3);
 	if (ret <= 0)
 		return ret;
 

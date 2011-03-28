@@ -304,23 +304,19 @@ struct netdev *ifaces;
  */
 static int do_pkt_recv(int pkt_fd, time_t now)
 {
-	int ifindex, ret;
+	int ret = 0;
 	struct state *s;
 
-	ret = packet_peek(&ifindex);
-	if (ret == 0)
-		return ret;
-
 	for (s = slist; s; s = s->next) {
-		if (s->dev->ifindex == ifindex) {
+		ret = packet_peek(s->dev);
+		if (ret) {
 			ret = process_receive_event(s, now);
+			if (ret == 0) {
+				packet_discard(s->dev);
+			}
 			break;
 		}
 	}
-
-	if (ret == 0)
-		packet_discard();
-
 	return ret;
 }
 
