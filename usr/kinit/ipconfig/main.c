@@ -180,6 +180,8 @@ static int process_receive_event(struct state *s, time_t now)
 	switch (s->state) {
 	case DEVST_ERROR:
 		return 0; /* Not handled */
+	case DEVST_COMPLETE:
+		return 0; /* Not handled as already configured */
 
 	case DEVST_BOOTP:
 		s->restart_state = DEVST_BOOTP;
