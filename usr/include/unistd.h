@@ -82,8 +82,10 @@ __extern int lchown(const char *, uid_t, gid_t);
 __extern char *getcwd(char *, size_t);
 
 /* Also in <fcntl.h> */
+#ifndef _KLIBC_IN_OPEN_C
 __extern int open(const char *, int, ...);
 __extern int openat(int, const char *, int, ...);
+#endif
 __extern int creat(const char *, mode_t);
 __extern int open_cloexec(const char *, int, mode_t);
 __extern int close(int);
