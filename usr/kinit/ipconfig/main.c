@@ -95,6 +95,25 @@ static void configure_device(struct netdev *dev)
 			dev->hostname, dev->name);
 }
 
+static void write_option(FILE* f, const char* name, const char* chr)
+{
+
+	fprintf(f, "%s='", name);
+	while (*chr) {
+		switch (*chr) {
+			case '!':
+			case '\'':
+				fprintf(f, "'\\%c'", *chr);
+				break;
+			default:
+				fprintf(f, "%c", *chr);
+				break;
+		}
+		++chr;
+	}
+	fprintf(f, "'\n");
+}
+
 static void dump_device_config(struct netdev *dev)
 {
 	char fn[40];
@@ -103,22 +122,26 @@ static void dump_device_config(struct netdev *dev)
 	snprintf(fn, sizeof(fn), "/tmp/net-%s.conf", dev->name);
 	f = fopen(fn, "w");
 	if (f) {
-		fprintf(f, "DEVICE=%s\n", dev->name);
-		fprintf(f, "IPV4ADDR=%s\n", my_inet_ntoa(dev->ip_addr));
-		fprintf(f, "IPV4BROADCAST=%s\n",
-			my_inet_ntoa(dev->ip_broadcast));
-		fprintf(f, "IPV4NETMASK=%s\n", my_inet_ntoa(dev->ip_netmask));
-		fprintf(f, "IPV4GATEWAY=%s\n", my_inet_ntoa(dev->ip_gateway));
-		fprintf(f, "IPV4DNS0=%s\n",
-			my_inet_ntoa(dev->ip_nameserver[0]));
-		fprintf(f, "IPV4DNS1=%s\n",
-			my_inet_ntoa(dev->ip_nameserver[1]));
-		fprintf(f, "HOSTNAME=%s\n", dev->hostname);
-		fprintf(f, "DNSDOMAIN=\"%s\"\n", dev->dnsdomainname);
-		fprintf(f, "NISDOMAIN=%s\n", dev->nisdomainname);
-		fprintf(f, "ROOTSERVER=%s\n", my_inet_ntoa(dev->ip_server));
-		fprintf(f, "ROOTPATH=%s\n", dev->bootpath);
-		fprintf(f, "filename=\"%s\"\n", dev->filename);
+		write_option(f, "DEVICE", dev->name);
+		write_option(f, "IPV4ADDR",
+				my_inet_ntoa(dev->ip_addr));
+		write_option(f, "IPV4BROADCAST",
+				my_inet_ntoa(dev->ip_broadcast));
+		write_option(f, "IPV4NETMASK",
+				my_inet_ntoa(dev->ip_netmask));
+		write_option(f, "IPV4GATEWAY",
+				my_inet_ntoa(dev->ip_gateway));
+		write_option(f, "IPV4DNS0",
+				my_inet_ntoa(dev->ip_nameserver[0]));
+		write_option(f, "IPV4DNS1",
+				my_inet_ntoa(dev->ip_nameserver[1]));
+		write_option(f, "HOSTNAME",  dev->hostname);
+		write_option(f, "DNSDOMAIN", dev->dnsdomainname);
+		write_option(f, "NISDOMAIN", dev->nisdomainname);
+		write_option(f, "ROOTSERVER",
+				my_inet_ntoa(dev->ip_server));
+		write_option(f, "ROOTPATH", dev->bootpath);
+		write_option(f, "filename", dev->filename);
 		fclose(f);
 	}
 }
