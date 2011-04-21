@@ -4,6 +4,8 @@
 # setjmp/longjmp for the ARM architecture
 #
 
+#include <klibc/asmmacros.h>
+
 #ifndef	__thumb__
 
 #
@@ -29,7 +31,7 @@
 setjmp:
 	stmia	r0, {r4, r5, r6, r7, r8, r9, r10, fp, sp, lr}
 	mov	r0, #0
-	mov	pc, lr
+	BX(lr)
 	.size setjmp,.-setjmp
 
 	.text
@@ -39,7 +41,7 @@ setjmp:
 longjmp:
 	ldmia	r0, {r4, r5, r6, r7, r8, r9, r10, fp, sp, lr}
 	mov	r0, r1
-	mov	pc, lr
+	BX(lr)
 	.size longjmp,.-longjmp
 
 #else /* __thumb__ */
@@ -75,7 +77,7 @@ setjmp:
 	mov	r7, sp
 	stmia	r0!, {r3, r4, r5, r6, r7}
 	mov	r0, #0
-	mov	pc, lr
+	BX(lr)
 	.size setjmp,.-setjmp
 
 	.text
@@ -96,7 +98,7 @@ longjmp:
 	mov	r0, r1
 	bne	1f
 	mov	r0, #1
-1:	mov	pc, r3
+1:	BX(r3)
 	.size longjmp,.-longjmp
 
 #endif /* __thumb__ */

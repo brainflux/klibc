@@ -27,4 +27,10 @@
 	 (((x) & ~0xf000000f) == 0) || \
 	 (((x) & ~0xc000003f) == 0))
 
+#if _KLIBC_ARM_USE_BX
+# define BX(x) bx	x
+#else
+# define BX(x) mov	pc, x
+#endif
+
 #endif /* _KLIBC_ASMMACROS_H */

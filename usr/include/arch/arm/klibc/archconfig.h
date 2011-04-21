@@ -9,6 +9,10 @@
 #ifndef _KLIBC_ARCHCONFIG_H
 #define _KLIBC_ARCHCONFIG_H
 
-/* All defaults */
+/* newer arm arch support bx instruction */
+#if (!defined(__ARM_ARCH_2__) && !defined(__ARM_ARCH_3__) \
+	&& !defined(__ARM_ARCH_3M__) && !defined(__ARM_ARCH_4__))
+# define _KLIBC_ARM_USE_BX 1
+#endif
 
 #endif				/* _KLIBC_ARCHCONFIG_H */

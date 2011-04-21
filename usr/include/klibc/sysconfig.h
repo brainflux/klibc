@@ -196,4 +196,13 @@
 # define _KLIBC_SYS_SOCKETCALL 0
 #endif
 
+/*
+ * _KLIBC_ARM_USE_BX
+ *
+ *	This arm architecture supports bx instruction.
+ */
+#ifndef _KLIBC_ARM_USE_BX
+# define _KLIBC_ARM_USE_BX 0
+#endif
+
 #endif /* _KLIBC_SYSCONFIG_H */

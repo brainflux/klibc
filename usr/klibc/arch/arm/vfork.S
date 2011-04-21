@@ -4,6 +4,7 @@
  * vfork - nasty system call which must not use the stack.
  */
 
+#include <klibc/asmmacros.h>
 #include <asm/unistd.h>
 
 	.type	vfork,#function
@@ -25,7 +26,7 @@ vfork:
         ldrcs	r3, 1f
         mvncs	r0, #0
         strcs	r2, [r3]
-	mov	pc, lr
+	BX(lr)
 
 	.balign 4
 1:
@@ -49,7 +50,7 @@ vfork:
 	str	r2, [r1]
 	neg	r0, r0
 1:
-	mov	pc, lr
+	BX(lr)
 
 	.balign	4
 2:
