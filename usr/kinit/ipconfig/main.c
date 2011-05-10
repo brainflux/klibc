@@ -95,6 +95,11 @@ static void configure_device(struct netdev *dev)
 			dev->hostname, dev->name);
 }
 
+/*
+ * Escape shell varialbes in git style:
+ * Always start with a single quote ('), then leave all characters
+ * except ' and ! unchanged.
+ */
 static void write_option(FILE* f, const char* name, const char* chr)
 {
 
