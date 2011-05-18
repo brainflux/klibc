@@ -7,8 +7,8 @@
 # accordingly.
 #
 
-CPU_ARCH := armv4
-CPU_TUNE := strongarm
+CPU_ARCH ?= armv4
+CPU_TUNE ?= strongarm
 
 KLIBCOPTFLAGS += -Os -march=$(CPU_ARCH) -mtune=$(CPU_TUNE)
 KLIBCBITSIZE  = 32
