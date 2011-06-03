@@ -2,24 +2,28 @@ This version of dash was obtained from
 
 git://git.kernel.org/pub/scm/utils/dash/dash.git
 
-It corresponds up to changeset dc2bc17c7bbe3188cfb0c695dc472b39bcf0b27a.
+It corresponds up to changeset ec2c84d3c4dba4b74440d72bdd1de416a9acd2a9.
 
 HOWTO sync branch:
 1) Generate patch and fix up their path
 
-Remember to set Herbert Xu name and email, as format-patch, looses -s blocks:
-git format-patch -s <changeset>..
+ git format-patch --subject-prefix=klibc -N <changeset>..
 
 Path fixup:
-perl -i -pe 's#^([-+]{3} [ab]/)src/#$1#g' 00*patch
+ perl -i -pe 's#^([-+]{3} [ab]/)src/#$1#g' 00*patch
 
 2) Import patches on by one
-git am --directory="usr/dash" --exclude="usr/dash/configure.ac" \
+ git am --directory="usr/dash" --exclude="usr/dash/configure.ac" \
 	--exclude="usr/dash/ChangeLog" --exclude="usr/dash/dash.1" \
 	--exclude="usr/dash/Makefile.am" --exclude="usr/dash/mksignames.c" \
-	-i -s ../dash/000X-foo.patch
+	--whitespace=fix -k -i -s ../dash/000X-foo.patch
 
-The only changes made are the addition of config.h, Kbuild usage
-and the omition of Changelog and manpage.
+The only changes made are the addition of config.h, Kbuild usage,
+the omition of Changelog and manpage and automatic whitespace fixups.
 
 3) update config.h
+
+Generate klibc config.h in dash repository:
+ automake --add-missing
+ autoreconf
+ ./configure CC=klcc

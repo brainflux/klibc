@@ -10,6 +10,10 @@
 /* Define to 1 if you have the `bsearch' function. */
 #define HAVE_BSEARCH 1
 
+/* Define to 1 if you have the declaration of `isblank', and to 0 if you
+   don't. */
+#define HAVE_DECL_ISBLANK 1
+
 /* Define to 1 if you have the `faccessat' function. */
 /* #undef HAVE_FACCESSAT */
 
@@ -42,6 +46,9 @@
 
 /* Define to 1 if you have the `mempcpy' function. */
 /* #undef HAVE_MEMPCPY */
+
+/* Define to 1 if you have the <paths.h> header file. */
+#define HAVE_PATHS_H 1
 
 /* Define to 1 if you have the `sigsetmask' function. */
 /* #undef HAVE_SIGSETMASK */
@@ -109,6 +116,15 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "0.5.6"
 
+/* Define to printf format string for intmax_t */
+/* #undef PRIdMAX */
+
+/* The size of `intmax_t', as computed by sizeof. */
+#define SIZEOF_INTMAX_T 8
+
+/* The size of `long long int', as computed by sizeof. */
+#define SIZEOF_LONG_LONG_INT 8
+
 /* Define if you build with -DSMALL */
 #define SMALL 1
 
@@ -142,6 +158,15 @@
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */
+
+/* Define to system shell path */
+/* #undef _PATH_BSHELL */
+
+/* Define to devnull device node path */
+/* #undef _PATH_DEVNULL */
+
+/* Define to tty device node path */
+/* #undef _PATH_TTY */
 
 /* Define to 2 if the system does not provide POSIX.1 features except with
    this defined. */
