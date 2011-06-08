@@ -176,11 +176,6 @@ static void postprocess_device(struct netdev *dev)
 		printf("IP-Config: %s guessed broadcast address %s\n",
 		       dev->name, my_inet_ntoa(dev->ip_broadcast));
 	}
-	if (dev->ip_nameserver[0] == INADDR_ANY) {
-		dev->ip_nameserver[0] = dev->ip_server;
-		printf("IP-Config: %s guessed nameserver address %s\n",
-		       dev->name, my_inet_ntoa(dev->ip_nameserver[0]));
-	}
 }
 
 static void complete_device(struct netdev *dev)
