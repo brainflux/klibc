@@ -343,7 +343,7 @@ struct netdev *ifaces;
  */
 static int do_pkt_recv(int pkt_fd, time_t now)
 {
-	int ret;
+	int ret = 0;
 	struct state *s;
 
 	for (s = slist; s; s = s->next) {
