@@ -18,6 +18,8 @@ struct sched_param {
 };
 
 __extern int sched_setscheduler(pid_t, int, const struct sched_param *);
+__extern int sched_setaffinity(pid_t, unsigned int, unsigned long *);
+__extern int sched_getaffinity(pid_t, unsigned int, unsigned long *);
 __extern int sched_yield(void);
 
 /* Raw interfaces to clone(2); only actually usable for non-VM-cloning */
