@@ -13,6 +13,6 @@ char *strndup(const char *s, size_t n)
 		return NULL;
 
 	memcpy(d, s, l);
-	d[n] = '\0';
+	d[l] = '\0';
 	return d;
 }
