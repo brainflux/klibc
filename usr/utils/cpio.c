@@ -27,9 +27,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
-#ifndef	FNM_PATHNAME
 #include <fnmatch.h>
-#endif
 
 # ifndef DIRECTORY_SEPARATOR
 #  define DIRECTORY_SEPARATOR '/'
