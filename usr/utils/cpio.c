@@ -31,10 +31,6 @@
 #include <fnmatch.h>
 #endif
 
-#ifndef	O_BINARY
-# define O_BINARY 0
-#endif
-
 # ifndef DIRECTORY_SEPARATOR
 #  define DIRECTORY_SEPARATOR '/'
 # endif
@@ -576,8 +572,7 @@ static void create_final_defers(void)
 		if (link_res == 0) {
 			continue;
 		}
-		out_file_des = open(d->header.c_name,
-				    O_CREAT | O_WRONLY | O_BINARY, 0600);
+		out_file_des = open(d->header.c_name, O_CREAT | O_WRONLY, 0600);
 		if (out_file_des < 0) {
 			fprintf(stderr, "%s: open %s: %s\n",
 				progname, d->header.c_name, strerror(errno));
@@ -647,8 +642,7 @@ copyin_regular_file(struct new_cpio_header *file_hdr, int in_file_des)
 	}
 
 	/* If not linked, copy the contents of the file.  */
-	out_file_des = open(file_hdr->c_name,
-			    O_CREAT | O_WRONLY | O_BINARY, 0600);
+	out_file_des = open(file_hdr->c_name, O_CREAT | O_WRONLY, 0600);
 
 	if (out_file_des < 0) {
 		fprintf(stderr, "%s: open %s: %s\n",
