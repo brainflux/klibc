@@ -124,7 +124,7 @@ static int fs_proc_check(const char *fs_name)
 
 	f = fopen("/proc/filesystems", "r");
 	if (!f)
-		return (0);
+		return 0;
 	while (fgets(buf, sizeof(buf), f)) {
 		cp = buf;
 		if (!isspace(*cp)) {
@@ -141,11 +141,11 @@ static int fs_proc_check(const char *fs_name)
 			*t = 0;
 		if (!strcmp(fs_name, cp)) {
 			fclose(f);
-			return (1);
+			return 1;
 		}
 	}
 	fclose(f);
-	return (0);
+	return 0;
 }
 
 /*
@@ -160,12 +160,12 @@ static int check_for_modules(const char *fs_name)
 	int		i;
 
 	if (uname(&uts))
-		return (0);
+		return 0;
 	snprintf(buf, sizeof(buf), "/lib/modules/%s/modules.dep", uts.release);
 
 	f = fopen(buf, "r");
 	if (!f)
-		return (0);
+		return 0;
 	while (fgets(buf, sizeof(buf), f)) {
 		if ((cp = strchr(buf, ':')) != NULL)
 			*cp = 0;
@@ -181,11 +181,11 @@ static int check_for_modules(const char *fs_name)
 		}
 		if (!strcmp(cp, fs_name)) {
 			fclose(f);
-			return (1);
+			return 1;
 		}
 	}
 	fclose(f);
-	return (0);
+	return 0;
 }
 
 static int base_ext4_image(const void *buf, unsigned long long *bytes,
