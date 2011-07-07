@@ -20,26 +20,31 @@ static void do_preformat(const struct stat *st)
 {
 	int bytes;
 
-	if ((bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_nlink)) > max_nlinks)
+	bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_nlink);
+	if (bytes > max_nlinks)
 		max_nlinks = bytes;
 
-	if ((bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_uid)) > max_uid)
+	bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_uid);
+	if (bytes > max_uid)
 		max_uid = bytes;
 
-	if ((bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_gid)) > max_gid)
+	bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_gid);
+	if (bytes > max_gid)
 		max_gid = bytes;
 
 	if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
-		if ((bytes = snprintf(NULL, 0, "%u", major(st->st_rdev))) > max_maj)
+		bytes = snprintf(NULL, 0, "%u", major(st->st_rdev));
+		if (bytes > max_maj)
 			max_maj = bytes;
 
-		if ((bytes = snprintf(NULL, 0, "%u", minor(st->st_rdev))) > max_min)
+		bytes = snprintf(NULL, 0, "%u", minor(st->st_rdev));
+		if (bytes > max_min)
 			max_min = bytes;
 
 		max_size = max_maj + max_min + 1;
-	}
-	else {
-		if ((bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_size)) > max_size)
+	} else {
+		bytes = snprintf(NULL, 0, "%ju", (uintmax_t) st->st_size);
+		if (bytes > max_size)
 			max_size = bytes;
 	}
 	return;
@@ -51,14 +56,30 @@ static void do_stat(const struct stat *st, const char *path)
 	int rc;
 
 	switch (st->st_mode & S_IFMT) {
-		case S_IFBLK:  putchar('b'); break;
-		case S_IFCHR:  putchar('c'); break;
-		case S_IFDIR:  putchar('d'); break;
-		case S_IFIFO:  putchar('p'); break;
-		case S_IFLNK:  putchar('l'); break;
-		case S_IFSOCK: putchar('s'); break;
-		case S_IFREG:  putchar('-'); break;
-		default:       putchar('?'); break;
+	case S_IFBLK:
+		putchar('b');
+		break;
+	case S_IFCHR:
+		putchar('c');
+		break;
+	case S_IFDIR:
+		putchar('d');
+		break;
+	case S_IFIFO:
+		putchar('p');
+		break;
+	case S_IFLNK:
+		putchar('l');
+		break;
+	case S_IFSOCK:
+		putchar('s');
+		break;
+	case S_IFREG:
+		putchar('-');
+		break;
+	default:
+		putchar('?');
+		break;
 	}
 	putchar(STAT_ISSET(st->st_mode, S_IRUSR) ? 'r' : '-');
 	putchar(STAT_ISSET(st->st_mode, S_IWUSR) ? 'w' : '-');
@@ -82,8 +103,8 @@ static void do_stat(const struct stat *st, const char *path)
 		putchar(S_ISDIR(st->st_mode) ? 't' : 'T');
 
 	if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
-		rc = asprintf(&fmt," %%%dju %%%dju %%%dju %%%du,%%%du %%s",
-		              max_nlinks, max_uid, max_gid, max_maj, max_min);
+		rc = asprintf(&fmt, " %%%dju %%%dju %%%dju %%%du,%%%du %%s",
+				max_nlinks, max_uid, max_gid, max_maj, max_min);
 		if (rc == -1) {
 			perror("asprintf");
 			exit(1);
@@ -95,10 +116,9 @@ static void do_stat(const struct stat *st, const char *path)
 			major(st->st_rdev),
 			minor(st->st_rdev),
 			path);
-	}
-	else {
-		rc = asprintf(&fmt," %%%dju %%%dju %%%dju %%%dju %%s",
-		              max_nlinks, max_uid, max_gid, max_size);
+	} else {
+		rc = asprintf(&fmt, " %%%dju %%%dju %%%dju %%%dju %%s",
+				max_nlinks, max_uid, max_gid, max_size);
 		if (rc == -1) {
 			perror("asprintf");
 			exit(1);
@@ -113,11 +133,13 @@ static void do_stat(const struct stat *st, const char *path)
 	free(fmt);
 
 	if (S_ISLNK(st->st_mode)) {
-		if ((link_name = malloc(max_linksiz)) == NULL) {
+		link_name = malloc(max_linksiz);
+		if (link_name == NULL) {
 			perror("malloc");
 			exit(1);
 		}
-		if ((rc = readlink(path, link_name, max_linksiz)) == -1) {
+		rc = readlink(path, link_name, max_linksiz);
+		if (rc == -1) {
 			free(link_name);
 			perror("readlink");
 			exit(1);
@@ -142,7 +164,8 @@ static void do_dir(const char *path, int preformat)
 		exit(1);
 	}
 
-	if ((dir = opendir(path)) == NULL) {
+	dir = opendir(path);
+	if (dir == NULL) {
 		perror(path);
 		exit(1);
 	}
