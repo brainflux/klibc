@@ -78,7 +78,8 @@ const char *mount_block(const char *source, const char *target,
 		if (!p)
 			break;
 		*p++ = '\0';
-		if (*type != '\t')	/* We can't mount a block device as a "nodev" fs */
+		/* We can't mount a block device as a "nodev" fs */
+		if (*type != '\t')
 			continue;
 
 		type++;
@@ -116,7 +117,7 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 	    && (rp = mount_block("/dev/root", "/root", NULL, flags, data)))
 		goto ok;
 
-      bad:
+bad:
 	if (errno != EINVAL) {
 		/*
 		 * Allow the user to distinguish between failed open
@@ -131,7 +132,7 @@ mount_block_root(int argc, char *argv[], dev_t root_dev,
 		return -ESRCH;
 	}
 
-      ok:
+ok:
 	printf("%s: Mounted root (%s filesystem)%s.\n",
 	       progname, rp, (flags & MS_RDONLY) ? " readonly" : "");
 	return 0;

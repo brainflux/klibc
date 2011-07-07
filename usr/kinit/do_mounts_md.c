@@ -204,7 +204,7 @@ static int md_setup(char *str)
 	}
 
 	fprintf(stderr, "md: Will configure md%s%d (%s) from %s, below.\n",
-		partitioned?"_d":"", minor_num, pername, str);
+		partitioned ? "_d" : "", minor_num, pername, str);
 	md_setup_args[ent].device_names = str;
 	md_setup_args[ent].partitioned = partitioned;
 	md_setup_args[ent].minor = minor_num;
@@ -330,9 +330,9 @@ static void md_setup_drive(void)
 				dev_minor);
 		else {
 			/* reread the partition table.
-			 * I (neilb) and not sure why this is needed, but I cannot
-			 * boot a kernel with devfs compiled in from partitioned md
-			 * array without it
+			 * I (neilb) and not sure why this is needed, but I
+			 * cannot boot a kernel with devfs compiled in from
+			 * partitioned md array without it
 			 */
 			close(fd);
 			fd = open(name, 0, 0);

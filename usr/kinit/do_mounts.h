@@ -9,12 +9,12 @@
 #include <sys/sysmacros.h>
 #include <sys/stat.h>
 
-#define	Root_RAM0	__makedev(1,0)
+#define	Root_RAM0	__makedev(1, 0)
 
 /* These device numbers are only used internally */
-#define Root_NFS	__makedev(0,255)
-#define Root_MTD	__makedev(0,254)
-#define Root_MULTI	__makedev(0,253)
+#define Root_NFS	__makedev(0, 255)
+#define Root_MTD	__makedev(0, 254)
+#define Root_MULTI	__makedev(0, 253)
 
 int create_dev(const char *name, dev_t dev);
 

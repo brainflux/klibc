@@ -25,7 +25,8 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 	char *ep;
 	ssize_t rd;
 
-	if (!(dir = opendir(sysdir)))
+	dir = opendir(sysdir);
+	if (!dir)
 		return 0;
 
 	*dirtailptr++ = '/';
@@ -46,7 +47,8 @@ static int scansysdir(char *namebuf, char *sysdir, dev_t dev)
 		systail = strchr(sysdir, '\0');
 
 		strcpy(systail, "/dev");
-		if (!(sysdev = fopen(sysdir, "r")))
+		sysdev = fopen(sysdir, "r");
+		if (!sysdev)
 			continue;
 
 		/* Abusing the namebuf as temporary storage here. */
