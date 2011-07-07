@@ -71,7 +71,7 @@ static const char *protoname(uint32_t proto)
 	}
 }
 
-static void * get_auth(struct rpc_auth *auth)
+static void *get_auth(struct rpc_auth *auth)
 {
 	switch (ntohl(auth->flavor)) {
 	case AUTH_NULL:

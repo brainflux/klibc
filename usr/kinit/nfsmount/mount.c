@@ -155,7 +155,8 @@ static int mount_call(uint32_t proc, uint32_t version,
 	path_len = strlen(path);
 	call_len = sizeof(*mnt_call) + pad_len(path_len);
 
-	if ((mnt_call = malloc(call_len)) == NULL) {
+	mnt_call = malloc(call_len);
+	if (mnt_call == NULL) {
 		perror("malloc");
 		goto bail;
 	}
@@ -176,9 +177,8 @@ static int mount_call(uint32_t proc, uint32_t version,
 	if (rpc_call(clnt, &rpc) < 0)
 		goto bail;
 
-	if (proc != MNTPROC_MNT) {
+	if (proc != MNTPROC_MNT)
 		goto done;
-	}
 
 	if (rpc.reply_len < MNT_REPLY_MINSIZE) {
 		fprintf(stderr, "incomplete reply: %zu < %zu\n",
@@ -198,9 +198,8 @@ bail:
 	ret = -1;
 
 done:
-	if (mnt_call) {
+	if (mnt_call)
 		free(mnt_call);
-	}
 
 	return ret;
 }
@@ -262,38 +261,32 @@ int nfs_mount(const char *pathname, const char *hostname,
 	int ret = 0;
 	int mountflags;
 
-	if (get_ports(server, data) != 0) {
+	if (get_ports(server, data) != 0)
 		goto bail;
-	}
 
 	dump_params(server, rem_path, data);
 
-	if (data->flags & NFS_MOUNT_TCP) {
+	if (data->flags & NFS_MOUNT_TCP)
 		clnt = tcp_client(server, mount_port, CLI_RESVPORT);
-	} else {
+	else
 		clnt = udp_client(server, mount_port, CLI_RESVPORT);
-	}
 
-	if (clnt == NULL) {
+	if (clnt == NULL)
 		goto bail;
-	}
 
-	if (data->flags & NFS_MOUNT_VER3) {
+	if (data->flags & NFS_MOUNT_VER3)
 		ret = mount_v3(rem_path, data, clnt);
-	} else {
+	else
 		ret = mount_v2(rem_path, data, clnt);
-	}
 
-	if (ret == -1) {
+	if (ret == -1)
 		goto bail;
-	}
 	mounted = 1;
 
-	if (data->flags & NFS_MOUNT_TCP) {
+	if (data->flags & NFS_MOUNT_TCP)
 		sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	} else {
+	else
 		sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	}
 
 	if (sock == -1) {
 		perror("socket");
@@ -333,25 +326,22 @@ int nfs_mount(const char *pathname, const char *hostname,
 
 	goto done;
 
-      bail:
+bail:
 	if (mounted) {
-		if (data->flags & NFS_MOUNT_VER3) {
+		if (data->flags & NFS_MOUNT_VER3)
 			umount_v3(path, clnt);
-		} else {
+		else
 			umount_v2(path, clnt);
-		}
 	}
 
 	ret = -1;
 
-      done:
-	if (clnt) {
+done:
+	if (clnt)
 		client_free(clnt);
-	}
 
-	if (sock != -1) {
+	if (sock != -1)
 		close(sock);
-	}
 
 	return ret;
 }

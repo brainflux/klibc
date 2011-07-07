@@ -102,7 +102,8 @@ static void parse_opts(char *opts)
 	while ((cp = strsep(&opts, ",")) != NULL) {
 		if (*cp == '\0')
 			continue;
-		if ((val = strchr(cp, '=')) != NULL) {
+		val = strchr(cp, '=');
+		if (val != NULL) {
 			struct int_opts *opts = int_opts;
 			*val++ = '\0';
 			while (opts->name && strcmp(opts->name, cp) != 0)
@@ -207,12 +208,14 @@ int nfsmount_main(int argc, char *argv[])
 
 	hostname = rem_path = argv[optind];
 
-	if ((rem_name = strdup(rem_path)) == NULL) {
+	rem_name = strdup(rem_path);
+	if (rem_name == NULL) {
 		perror("strdup");
 		return 1;
 	}
 
-	if ((rem_path = strchr(rem_path, ':')) == NULL) {
+	rem_path = strchr(rem_path, ':');
+	if (rem_path == NULL) {
 		fprintf(stderr, "%s: need a server\n", progname);
 		free(rem_name);
 		return 1;
@@ -235,7 +238,7 @@ int nfsmount_main(int argc, char *argv[])
 
 	check_path(path);
 
-#if! _KLIBC_NO_MMU
+#if !_KLIBC_NO_MMU
 	/* Note: uClinux can't fork(), so the spoof portmapper is not
 	   available on uClinux. */
 	if (portmap_file)
@@ -255,9 +258,9 @@ int nfsmount_main(int argc, char *argv[])
 	/* If we set up the spoofer, tear it down now */
 	if (spoof_portmap) {
 		kill(spoof_portmap, SIGTERM);
-		while (waitpid(spoof_portmap, NULL, 0) == -1 &&
-		       errno == EINTR)
-		  ;
+		while (waitpid(spoof_portmap, NULL, 0) == -1
+		       && errno == EINTR)
+			;
 	}
 
 	free(rem_name);

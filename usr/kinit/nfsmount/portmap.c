@@ -35,10 +35,11 @@ uint32_t portmap(uint32_t server, uint32_t program, uint32_t version, uint32_t p
 	struct rpc rpc;
 	uint32_t port = 0;
 
-	if ((clnt = tcp_client(server, RPC_PMAP_PORT, 0)) == NULL) {
-		if ((clnt = udp_client(server, RPC_PMAP_PORT, 0)) == NULL) {
+	clnt = tcp_client(server, RPC_PMAP_PORT, 0);
+	if (clnt == NULL) {
+		clnt = udp_client(server, RPC_PMAP_PORT, 0);
+		if (clnt == NULL)
 			goto bail;
-		}
 	}
 
 	call.program = htonl(program);
@@ -65,9 +66,8 @@ bail:
 	dprintf("Port for %d/%d[%s]: %d\n", program, version,
 		proto == IPPROTO_TCP ? "tcp" : "udp", port);
 
-	if (clnt) {
+	if (clnt)
 		client_free(clnt);
-	}
 
 	return port;
 }
