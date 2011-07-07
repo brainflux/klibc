@@ -28,9 +28,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if (readlink(name, link_name, max_siz) == -1) {
+	if (readlink(name, link_name, max_siz) == -1)
 		exit(1);
-	}
 	printf("%s\n", link_name);
 
 	exit(0);
