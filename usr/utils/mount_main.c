@@ -44,9 +44,9 @@ static __noreturn print_mount(char *type)
 			continue;
 		printf("%s on %s", mnt->mnt_fsname, mnt->mnt_dir);
 		if (mnt->mnt_type != NULL && mnt->mnt_type != '\0')
-			printf (" type %s", mnt->mnt_type);
+			printf(" type %s", mnt->mnt_type);
 		if (mnt->mnt_opts != NULL && mnt->mnt_opts != '\0')
-			printf (" (%s)", mnt->mnt_opts);
+			printf(" (%s)", mnt->mnt_opts);
 		printf("\n");
 	}
 	endmntent(mfp);
