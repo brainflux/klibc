@@ -15,7 +15,8 @@ int main(int argc, char *argv[])
 	if (*p)
 		goto err;
 
-	while (nanosleep(&ts, &ts) == -1 && errno == EINTR) ;
+	while (nanosleep(&ts, &ts) == -1 && errno == EINTR)
+		;
 
 	return 0;
 
