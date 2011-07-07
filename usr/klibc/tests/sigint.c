@@ -7,7 +7,7 @@ static sig_atomic_t counter = 0;
 
 static void sig_handler(int signum)
 {
-	static char msg[] = "Signal handler\n";
+	static const char msg[] = "Signal handler\n";
 
 	(void)signum;
 

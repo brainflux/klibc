@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
 
 	/* Get the flags on this FD */
 
-	if ((flags = fcntl(fd, F_GETFL)) == -1) {
+	flags = fcntl(fd, F_GETFL);
+	if (flags == -1) {
 		perror("F_GETFL");
 		exit(1);
 	}

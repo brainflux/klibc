@@ -15,11 +15,10 @@ void do_stuff(int v)
 
 void recurse(int ctr, int v)
 {
-	if (ctr--) {
+	if (ctr--)
 		recurse(ctr, v);
-	} else {
+	else
 		do_stuff(v);
-	}
 
 	printf("ERROR!\n");	/* We should never get here... */
 }
