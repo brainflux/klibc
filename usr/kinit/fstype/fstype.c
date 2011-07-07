@@ -133,11 +133,14 @@ static int fs_proc_check(const char *fs_name)
 		}
 		while (*cp && isspace(*cp))
 			cp++;
-		if ((t = strchr(cp, '\n')) != NULL)
+		t = strchr(cp, '\n');
+		if (t != NULL)
 			*t = 0;
-		if ((t = strchr(cp, '\t')) != NULL)
+		t = strchr(cp, '\t');
+		if (t != NULL)
 			*t = 0;
-		if ((t = strchr(cp, ' ')) != NULL)
+		t = strchr(cp, ' ');
+		if (t != NULL)
 			*t = 0;
 		if (!strcmp(fs_name, cp)) {
 			fclose(f);
@@ -167,11 +170,13 @@ static int check_for_modules(const char *fs_name)
 	if (!f)
 		return 0;
 	while (fgets(buf, sizeof(buf), f)) {
-		if ((cp = strchr(buf, ':')) != NULL)
+		cp = strchr(buf, ':');
+		if (cp != NULL)
 			*cp = 0;
 		else
 			continue;
-		if ((cp = strrchr(buf, '/')) != NULL)
+		cp = strrchr(buf, '/');
+		if (cp != NULL)
 			cp++;
 		i = strlen(cp);
 		if (i > 3) {
@@ -318,7 +323,8 @@ static int jfs_image(const void *buf, unsigned long long *bytes)
 	const struct jfs_superblock *sb = (const struct jfs_superblock *)buf;
 
 	if (!memcmp(sb->s_magic, JFS_MAGIC, 4)) {
-		*bytes = __le64_to_cpu(sb->s_size) << __le16_to_cpu(sb->s_l2pbsize);
+		*bytes = __le64_to_cpu(sb->s_size)
+			<< __le16_to_cpu(sb->s_l2pbsize);
 		return 1;
 	}
 	return 0;
@@ -516,7 +522,7 @@ int identify_fs(int fd, const char **fstype,
 		unsigned long long *bytes, off_t offset)
 {
 	uint64_t buf[BLOCK_SIZE >> 3];	/* 64-bit worst case alignment */
-	off_t cur_block = (off_t) - 1;
+	off_t cur_block = (off_t) -1;
 	struct imagetype *ip;
 	int ret;
 	unsigned long long dummy;
