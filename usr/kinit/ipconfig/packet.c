@@ -156,7 +156,7 @@ int packet_send(struct netdev *dev, struct iovec *iov, int iov_len)
 
 	ipudp_hdrs.ip.tot_len = htons(len);
 	ipudp_hdrs.ip.check   = 0;
-	ipudp_hdrs.ip.check   = ip_checksum((uint16_t *) & ipudp_hdrs.ip,
+	ipudp_hdrs.ip.check   = ip_checksum((uint16_t *) &ipudp_hdrs.ip,
 					    ipudp_hdrs.ip.ihl);
 
 	ipudp_hdrs.udp.len    = htons(len - sizeof(struct iphdr));
@@ -186,7 +186,7 @@ void packet_discard(struct netdev *dev)
 *   0 = Discarded packet (non-DHCP/BOOTP traffic)
  * >0 = Size of packet
  */
-int packet_recv(struct netdev* dev, struct iovec *iov, int iov_len)
+int packet_recv(struct netdev *dev, struct iovec *iov, int iov_len)
 {
 	struct iphdr *ip, iph;
 	struct udphdr *udp;

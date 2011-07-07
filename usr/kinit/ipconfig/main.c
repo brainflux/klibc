@@ -100,19 +100,19 @@ static void configure_device(struct netdev *dev)
  * Always start with a single quote ('), then leave all characters
  * except ' and ! unchanged.
  */
-static void write_option(FILE* f, const char* name, const char* chr)
+static void write_option(FILE *f, const char *name, const char *chr)
 {
 
 	fprintf(f, "%s='", name);
 	while (*chr) {
 		switch (*chr) {
-			case '!':
-			case '\'':
-				fprintf(f, "'\\%c'", *chr);
-				break;
-			default:
-				fprintf(f, "%c", *chr);
-				break;
+		case '!':
+		case '\'':
+			fprintf(f, "'\\%c'", *chr);
+			break;
+		default:
+			fprintf(f, "%c", *chr);
+			break;
 		}
 		++chr;
 	}
@@ -341,9 +341,8 @@ static int do_pkt_recv(int pkt_fd, time_t now)
 	int ret = 0;
 	struct state *s;
 
-	for (s = slist; s; s = s->next) {
+	for (s = slist; s; s = s->next)
 		ret |= process_receive_event(s, now);
-	}
 	return ret;
 }
 
@@ -430,7 +429,7 @@ static int loop(void)
 			timeout_ms -= delta_ms;
 		}
 	}
-      bail:
+bail:
 	packet_close();
 
 	return rc;
@@ -451,13 +450,12 @@ static int add_one_dev(struct netdev *dev)
 	/*
 	 * Select the state that we start from.
 	 */
-	if (dev->caps & CAP_DHCP && dev->ip_addr == INADDR_ANY) {
+	if (dev->caps & CAP_DHCP && dev->ip_addr == INADDR_ANY)
 		state->restart_state = state->state = DEVST_DHCPDISC;
-	} else if (dev->caps & CAP_DHCP) {
+	else if (dev->caps & CAP_DHCP)
 		state->restart_state = state->state = DEVST_DHCPREQ;
-	} else if (dev->caps & CAP_BOOTP) {
+	else if (dev->caps & CAP_BOOTP)
 		state->restart_state = state->state = DEVST_BOOTP;
-	}
 
 	state->next = slist;
 	slist = state;
@@ -465,7 +463,7 @@ static int add_one_dev(struct netdev *dev)
 	return 0;
 }
 
-static void parse_addr(uint32_t * addr, const char *ip)
+static void parse_addr(uint32_t *addr, const char *ip)
 {
 	struct in_addr in;
 	if (inet_aton(ip, &in) == 0) {
@@ -497,7 +495,7 @@ static unsigned int parse_proto(const char *ip)
 		fprintf(stderr, "%s: invalid protocol '%s'\n", progname, ip);
 		longjmp(abort_buf, 1);
 	}
-      bail:
+bail:
 	return caps;
 }
 
@@ -584,11 +582,10 @@ static int parse_device(struct netdev *dev, const char *ip)
 static void bringup_device(struct netdev *dev)
 {
 	if (netdev_up(dev) == 0) {
-		if (dev->caps) {
+		if (dev->caps)
 			add_one_dev(dev);
-		} else {
+		else
 			complete_device(dev);
-		}
 	}
 }
 
@@ -646,7 +643,7 @@ static struct netdev *add_device(const char *info)
 	       dev->caps & CAP_BOOTP ? " BOOTP" : "",
 	       dev->caps & CAP_RARP ? " RARP" : "");
 	return dev;
-      bail:
+bail:
 	free(dev);
 	return NULL;
 }
@@ -694,7 +691,8 @@ static int add_all_devices(struct netdev *template)
 		    (flags & (IFF_BROADCAST | IFF_POINTOPOINT))) {
 			dprintf("Trying to bring up %s\n", de->d_name);
 
-			if (!(dev = add_device(de->d_name)))
+			dev = add_device(de->d_name);
+			if (!dev)
 				continue;
 			bringup_one_dev(template, dev);
 		}

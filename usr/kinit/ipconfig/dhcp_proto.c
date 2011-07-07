@@ -80,7 +80,7 @@ static struct iovec dhcp_request_iov[DHCP_IOV_LEN] = {
  * 6 = DHCPNACK
  */
 static int dhcp_parse(struct netdev *dev, struct bootp_hdr *hdr,
-		      uint8_t * exts, int extlen)
+		      uint8_t *exts, int extlen)
 {
 	uint8_t type = 0;
 	uint32_t serverid = INADDR_NONE;
