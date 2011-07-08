@@ -18,7 +18,6 @@
 #include <sys/mman.h>
 #include <sys/sysmacros.h>
 #include <stdarg.h>
-#include <string.h>
 
 #include "loop.h"
 
