@@ -228,11 +228,9 @@ int main (argc, argv)
     char **argv;
 {
     int file_count;     /* number of files to precess */
-    int proglen;        /* length of progname */
     int optc;           /* current option */
 
     progname = basename(argv[0]);
-    proglen = strlen(progname);
 
     /* Add options in GZIP environment variable if there is one */
     env = add_envopt(&argc, &argv, OPTIONS_VAR);
