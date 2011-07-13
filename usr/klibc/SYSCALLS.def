@@ -104,7 +104,7 @@ int access(const char *, int);
 int link(const char *, const char *);
 <?> int linkat(int, const char *, int, const char *);
 int unlink(const char *);
-<?> int unlinkat(int, const char *);
+<?> int unlinkat(int, const char *, int);
 int chdir(const char *);
 int fchdir(int);
 int rename(const char *, const char *);
