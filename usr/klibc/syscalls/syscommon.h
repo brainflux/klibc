@@ -12,6 +12,7 @@
 
 #include <poll.h>
 #include <sched.h>
+#include <sys/capability.h>
 #include <sys/dirent.h>
 #include <sys/klog.h>
 #include <sys/mman.h>

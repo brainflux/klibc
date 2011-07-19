@@ -77,6 +77,12 @@ int setfsgid32,setfsgid::setfsgid(gid_t);
 int setresuid32,setresuid::setresuid(int, uid_t, uid_t, uid_t);
 
 /*
+ * POSIX Capabilities
+ */
+int capget(cap_user_header_t, cap_user_data_t);
+int capset(cap_user_header_t, cap_user_data_t);
+
+/*
  * Filesystem-related system calls
  */
 int mount(const char *, const char *, const char *, unsigned long, const void *);
