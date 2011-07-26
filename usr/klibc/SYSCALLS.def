@@ -248,6 +248,7 @@ long delete_module(const char *, unsigned int);
 int reboot::__reboot(int, int, int, void *);
 int syslog::klogctl(int, char *, int);
 int sysinfo(struct sysinfo *);
+long kexec_load(void *, unsigned long, struct kexec_segment *, unsigned long);
 
 /*
  * Low-level I/O (generally architecture-specific);
