@@ -28,6 +28,8 @@
 # define SOCK_RDM       4
 # define SOCK_SEQPACKET 5
 # define SOCK_PACKET    10
+# define SOCK_CLOEXEC   02000000
+# define SOCK_NONBLOCK  04000
 #endif
 
 #ifndef AF_INET
