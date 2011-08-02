@@ -30,4 +30,9 @@ static __inline__ int dirfd(DIR * __d)
 	return __d->__fd;
 }
 
+__extern int scandir(const char *, struct dirent ***,
+		     int (*)(const struct dirent *),
+		     int (*)(const struct dirent **,
+			     const struct dirent **));
+
 #endif				/* _DIRENT_H */
