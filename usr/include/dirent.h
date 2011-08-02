@@ -35,4 +35,6 @@ __extern int scandir(const char *, struct dirent ***,
 		     int (*)(const struct dirent **,
 			     const struct dirent **));
 
+__extern int alphasort(const struct dirent **, const struct dirent **);
+
 #endif				/* _DIRENT_H */
