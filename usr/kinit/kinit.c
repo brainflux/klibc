@@ -284,6 +284,8 @@ int main(int argc, char *argv[])
 	check_path("/root");
 	do_mounts(cmdc, cmdv);
 
+	drop_capabilities(get_arg(cmdc, cmdv, "drop_capabilities="));
+
 	if (mnt_procfs) {
 		umount2("/proc", 0);
 		mnt_procfs = 0;

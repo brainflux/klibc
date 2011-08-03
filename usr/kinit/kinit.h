@@ -65,4 +65,6 @@ static inline void dump_args(int argc, char *argv[])
 }
 #endif
 
+int drop_capabilities(const char *caps);
+
 #endif				/* KINIT_H */
