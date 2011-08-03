@@ -159,9 +159,17 @@ while ( defined($a = shift(@ARGV)) ) {
 	# gcc options, that force preprocessing mode
 	push(@ccopt, $a);
 	$operation = 'E';
-    } elsif ( $a eq '--param' ) {
-	push(@ccopt, $a);
-	push(@ccopt, shift(@ARGV));
+	} elsif ( $a =~ /^--param/ ) {
+	# support --param name=value and --param=name=value
+	my @values=split('=', $a);
+	if ( @values == 1 ) {
+		push(@ccopt, $a);
+		push(@ccopt, shift(@ARGV));
+	}
+	elsif ( @values == 3 ) {
+		push(@ccopt, $values[0]);
+		push(@ccopt, join('=', $values[1],$values[2]));
+	}
     } elsif ( $a =~ /^-[gp]/ || $a eq '-p' ) {
 	# Debugging options to gcc
 	push(@ccopt, $a);
