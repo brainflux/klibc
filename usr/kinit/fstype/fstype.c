@@ -171,13 +171,13 @@ static int check_for_modules(const char *fs_name)
 		return 0;
 	while (fgets(buf, sizeof(buf), f)) {
 		cp = strchr(buf, ':');
-		if (cp != NULL)
-			*cp = 0;
-		else
+		if (cp == NULL)
 			continue;
+		*cp = 0;
 		cp = strrchr(buf, '/');
-		if (cp != NULL)
-			cp++;
+		if (cp == NULL)
+			continue;
+		cp++;
 		i = strlen(cp);
 		if (i > 3) {
 			t = cp + i - 3;
