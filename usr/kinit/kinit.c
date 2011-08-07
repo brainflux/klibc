@@ -26,14 +26,12 @@ void dump_args(int argc, char *argv[])
 
 	printf("  argc == %d\n", argc);
 
-	for (i = 0; i < argc; i++) {
+	for (i = 0; i < argc; i++)
 		printf("  argv[%d]: \"%s\"\n", i, argv[i]);
-	}
 
-	if (argv[argc] != NULL) {
+	if (argv[argc] != NULL)
 		printf("  argv[%d]: \"%s\" (SHOULD BE NULL)\n",
 			argc, argv[argc]);
-	}
 }
 #endif /* DEBUG */
 
@@ -125,9 +123,8 @@ static int mount_sys_fs(const char *check, const char *fsname,
 {
 	struct stat st;
 
-	if (stat(check, &st) == 0) {
+	if (stat(check, &st) == 0)
 		return 0;
-	}
 
 	mkdir(fsname, 0555);
 
@@ -220,9 +217,8 @@ int main(int argc, char *argv[])
 		dup2(fd, STDOUT_FILENO);
 		dup2(fd, STDERR_FILENO);
 
-		if (fd > STDERR_FILENO) {
+		if (fd > STDERR_FILENO)
 			close(fd);
-		}
 	}
 
 	mnt_procfs = mount_sys_fs("/proc/cmdline", "/proc", "proc") >= 0;

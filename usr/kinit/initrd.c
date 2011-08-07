@@ -122,7 +122,8 @@ static int run_linuxrc(int argc, char *argv[], dev_t root_dev)
 		_exit(255);
 	} else if (pid > 0) {
 		dprintf("kinit: Waiting for linuxrc to complete...\n");
-		while (waitpid(pid, NULL, 0) != pid) ;
+		while (waitpid(pid, NULL, 0) != pid)
+			;
 		dprintf("kinit: linuxrc done\n");
 	} else {
 		return -errno;

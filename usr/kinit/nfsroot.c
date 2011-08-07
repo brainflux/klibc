@@ -56,9 +56,8 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 			dev_bootpath = dev->bootpath;
 			break;
 		}
-		if (dev->ip_addr != INADDR_NONE && dev->ip_addr != INADDR_ANY) {
+		if (dev->ip_addr != INADDR_NONE && dev->ip_addr != INADDR_ANY)
 			client = dev->ip_addr;
-		}
 	}
 
 	/*
@@ -107,6 +106,6 @@ int mount_nfs_root(int argc, char *argv[], int flags)
 		goto done;
 	}
 
-      done:
+done:
 	return ret;
 }

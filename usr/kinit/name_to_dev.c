@@ -69,7 +69,7 @@ static dev_t try_name(char *name, int part)
 		return res + part;
 	}
 
-      fail:
+fail:
 	return (dev_t) 0;
 }
 
@@ -122,8 +122,8 @@ static inline dev_t name_to_dev_t_real(const char *name)
 		return st.st_rdev;
 
 	if (strncmp(name, "/dev/", 5)) {
-		if ((cptr = strchr(devname+5, ':')) &&
-		    cptr[1] != '\0') {
+		cptr = strchr(devname+5, ':');
+		if (cptr && cptr[1] != '\0') {
 			/* Colon-separated decimal device number */
 			*cptr = '\0';
 			major_num = strtoul(devname+5, &e1, 10);
