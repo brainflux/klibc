@@ -137,7 +137,7 @@ int readlink(const char *, char *, size_t);
 <ppc64> int lstat::lstat(const char *, struct stat *);
 <ppc64> int fstat::fstat(int, struct stat *);
 /* XXX: Is this right?! */
-<?> int fstatat64,newstatat,fstatat::fstatat(int, const char *, struct stat *, int);
+<?> int fstatat64,newfstatat,fstatat::fstatat(int, const char *, struct stat *, int);
 int getdents64,getdents::getdents(unsigned int, struct dirent *, unsigned int);
 int chown32,chown::chown(const char *, uid_t, gid_t);
 int fchown32,fchown::fchown(int, uid_t, gid_t);
