@@ -35,6 +35,7 @@ select.shared-y		:= select.o
 setenvtest.shared-y	:= setenvtest.o
 setjmptest.shared-y	:= setjmptest.o
 sigint.shared-y		:= sigint.o
+sig-nodefer.shared-y	:= sig-nodefer.o
 socket.shared-y		:= socket.o
 stat.shared-y		:= stat.o
 statfs.shared-y		:= statfs.o
