@@ -1,5 +1,5 @@
 /*
- * Expected output of ./sig-defer:
+ * Expected output of ./sig-nodefer:
  * SIGUSR2: blocked
  * SIGTERM: blocked
  */
