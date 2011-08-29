@@ -5,8 +5,8 @@
  * SYSCALLS.def.
  */
 <?> int socket(int, int, int);
-<?> int bind(int, struct sockaddr *, int);
-<?> int connect(int, struct sockaddr *, socklen_t);
+<?> int bind(int, const struct sockaddr *, int);
+<?> int connect(int, const struct sockaddr *, socklen_t);
 <?> int listen(int, int);
 <?> int accept(int, struct sockaddr *, socklen_t *);
 <?> int getsockname(int, struct sockaddr *, socklen_t *);

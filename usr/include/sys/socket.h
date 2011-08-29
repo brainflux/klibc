@@ -244,8 +244,8 @@ struct ucred {
 
 
 __extern int socket(int, int, int);
-__extern int bind(int, struct sockaddr *, int);
-__extern int connect(int, struct sockaddr *, socklen_t);
+__extern int bind(int, const struct sockaddr *, int);
+__extern int connect(int, const struct sockaddr *, socklen_t);
 __extern int listen(int, int);
 __extern int accept(int, struct sockaddr *, socklen_t *);
 __extern int getsockname(int, struct sockaddr *, socklen_t *);
