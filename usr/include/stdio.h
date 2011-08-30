@@ -115,6 +115,7 @@ __static_inline int ferror(FILE * __f)
 	(void)__f;
 	return 0;
 }
+__extern int feof(FILE *);
 __extern int fflush(FILE *);
 
 __extern int sscanf(const char *, const char *, ...);
