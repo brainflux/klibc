@@ -107,6 +107,17 @@
 
 
 /*
+ * _KLIBC_BUFSIZ:
+ *	This is the size of an stdio buffer.  By default this is
+ *	_KLIBC_MALLOC_CHUNK_SIZE/4, which allows the three standard
+ *	streams to fit inside a malloc chunk.
+ */
+#ifndef _KLIBC_BUFSIZ
+# define _KLIBC_BUFSIZ (_KLIBC_MALLOC_CHUNK_SIZE >> 2)
+#endif
+
+
+/*
  * _KLIBC_SBRK_ALIGNMENT:
  *
  *	This is the minimum alignment for the memory returned by
