@@ -1,6 +1,8 @@
 #ifndef _MNTENT_H
 #define _MNTENT_H       1
 
+#define MNTTYPE_SWAP	"swap"
+
 struct mntent {
 	char *mnt_fsname;	/* name of mounted file system */
 	char *mnt_dir;		/* file system path prefix */
