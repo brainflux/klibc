@@ -60,7 +60,7 @@ klib-y := vsnprintf.o snprintf.o vsprintf.o sprintf.o \
 	  setmntent.o endmntent.o getmntent.o \
 	  stdio/fclose.o stdio/fopen.o stdio/fdopen.o stdio/fxopen.o \
 	  stdio/fread.o stdio/fwrite.o stdio/fflush.o \
-	  stdio/fseek.o stdio/ungetc.o stdio/feof.o
+	  stdio/fseek.o stdio/ungetc.o stdio/feof.o stdio/ferror.o
 
 klib-$(CONFIG_KLIBC_ERRLIST) += errlist.o
 

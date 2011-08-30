@@ -109,12 +109,7 @@ __extern int vsnprintf(char *, size_t n, const char *, va_list);
 __extern int asprintf(char **, const char *, ...);
 __extern int vasprintf(char **, const char *, va_list);
 
-/* XXX: stream errors should be kept track of */
-__static_inline int ferror(FILE * __f)
-{
-	(void)__f;
-	return 0;
-}
+__extern int ferror(FILE * );
 __extern int feof(FILE *);
 __extern int fflush(FILE *);
 
