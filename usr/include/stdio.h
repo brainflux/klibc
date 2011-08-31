@@ -78,6 +78,8 @@ __extern int fputc(int, FILE *);
 __extern int fgetc(FILE *);
 __extern char *fgets(char *, int, FILE *);
 #define getc(f) fgetc(f)
+__extern int getc_unlocked(FILE *);
+#define getc_unlocked(f) fgetc(f)
 #define getchar() fgetc(stdin)
 __extern int ungetc(int, FILE *);
 
