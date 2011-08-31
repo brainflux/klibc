@@ -53,7 +53,9 @@ enum _IO_file_flags {
 /*
  * Convert between a FILE * and a file descriptor.
  */
-static __inline__ int fileno(FILE * __f)
+__extern int fileno(FILE *);
+
+__extern_inline int fileno(FILE * __f)
 {
 	return __f->fd;
 }
