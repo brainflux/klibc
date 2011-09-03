@@ -18,7 +18,7 @@ int fflush(FILE *f)
 		return err;
 	}
 
-	if (!f->flags & _IO_FILE_FLAG_WRITE)
+	if (!(f->flags & _IO_FILE_FLAG_WRITE))
 		return 0;
 
 	p = f->buf;
