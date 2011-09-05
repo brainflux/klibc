@@ -105,7 +105,6 @@ __extern int dup(int);
 __extern int dup2(int, int);
 __extern int fcntl(int, int, ...);
 __extern int ioctl(int, int, void *);
-__extern int flock(int, int);
 __extern int ftruncate(int, off_t);
 
 /*
