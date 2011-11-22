@@ -70,7 +70,9 @@ __extern int lstat(const char *, struct stat *);
 __extern mode_t umask(mode_t);
 __extern int mknod(const char *, mode_t, dev_t);
 __extern int mknodat(int, const char *, const char *, mode_t, dev_t);
-static __inline__ int mkfifo(const char *__p, mode_t __m)
+__extern int mkfifo(const char *, mode_t);
+
+__extern_inline int mkfifo(const char *__p, mode_t __m)
 {
 	return mknod(__p, (__m & ~S_IFMT) | S_IFIFO, (dev_t) 0);
 }
