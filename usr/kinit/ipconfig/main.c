@@ -408,7 +408,7 @@ static int loop(void)
 			prev = now;
 			gettimeofday(&now, NULL);
 
-			if ((fds[0].revents & POLLRDNORM)) {
+			if ((nr > 0) && (fds[0].revents & POLLRDNORM)) {
 				if (do_pkt_recv(pkt_fd, now.tv_sec) == 1)
 					break;
 			}
