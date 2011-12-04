@@ -130,12 +130,12 @@ help:
 	@echo	'test		- Run klibc tests'
 	@echo
 	@echo	'Build options:'
-	@echo	'KLIBCKERNELSRC - Path to a configured linux-2.6 tree'
+	@echo	'KLIBCKERNELSRC - Path to a configured linux tree'
 	@echo	'KLIBCKERNELOBJ - Path to kernel output dir (defaults to KLIBCKERNELSRC)'
 	@echo	'make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
 	@echo
 	@echo	'Sample invocation:'
-	@echo	'make  KLIBCKERNELSRC=`pwd`/../linux-2.6'
+	@echo	'make  KLIBCKERNELSRC=`pwd`/../linux'
 
 ###
 # allow one to say make dir/file.o
