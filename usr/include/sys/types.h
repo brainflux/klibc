@@ -100,6 +100,10 @@ typedef uint16_t __sum16;
 typedef uint32_t __sum32;
 typedef uint64_t __sum64;
 
+#define __aligned_u64 __u64 __attribute__((aligned(8)))
+#define __aligned_be64 __be64 __attribute__((aligned(8)))
+#define __aligned_le64 __le64 __attribute__((aligned(8)))
+
 /*
  * Some headers seem to require this...
  */
